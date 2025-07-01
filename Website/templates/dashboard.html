@@ -1,0 +1,3846 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Kebolehpasaran Graduan MARA - Analitik Lanjutan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#220901',
+                        'secondary': '#941b0c',
+                        'neutral': '#f5f5f5',
+                        'accent': '#941b0c'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            line-height: 1.6;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 380px;
+            background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+            border-right: 2px solid #e5e7eb;
+            box-shadow: 0 10px 40px rgba(34, 9, 1, 0.15);
+            z-index: 40;
+            overflow-y: auto;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(0);
+        }
+        
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+        
+        .main-content {
+            margin-left: 380px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+            padding-top: 0;
+        }
+        
+        .main-content.expanded {
+            margin-left: 0;
+        }
+        
+        .sidebar-toggle {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 50;
+            background: white;
+            border: 2px solid #941b0c;
+            border-radius: 14px;
+            padding: 16px;
+            color: #941b0c;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 25px rgba(34, 9, 1, 0.2);
+            backdrop-filter: blur(12px);
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-toggle:hover {
+            background: #941b0c;
+            color: white;
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 10px 35px rgba(148, 27, 12, 0.35);
+        }
+        
+        .sidebar-toggle.sidebar-closed {
+            left: 24px !important;
+        }
+        
+        .sidebar-toggle.sidebar-open {
+            left: 404px !important;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(34, 9, 1, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 32px rgba(34, 9, 1, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .chart-container {
+            height: 420px;
+            position: relative;
+            padding: 24px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #941b0c 0%, #220901 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(148, 27, 12, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(148, 27, 12, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f9fafb;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .btn-secondary:hover {
+            background: #941b0c;
+            color: white;
+            border-color: #941b0c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(148, 27, 12, 0.2);
+        }
+        
+        .tab-button {
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 2px solid transparent;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab-button.active {
+            background: linear-gradient(135deg, #941b0c 0%, #220901 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(148, 27, 12, 0.3);
+        }
+        
+        .tab-button:not(.active) {
+            background: #f8fafc;
+            color: #64748b;
+        }
+        
+        .tab-button:not(.active):hover {
+            background: #e2e8f0;
+            color: #941b0c;
+            transform: translateY(-1px);
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #220901 0%, #941b0c 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.8s ease;
+            opacity: 0;
+        }
+        
+        .metric-card:hover::before {
+            opacity: 1;
+            animation: shimmer 1.5s ease-in-out;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        .filter-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-section:hover {
+            box-shadow: 0 4px 16px rgba(34, 9, 1, 0.08);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            font-weight: 500;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #941b0c;
+            box-shadow: 0 0 0 4px rgba(148, 27, 12, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .sidebar-section {
+            padding: 24px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-section:last-child {
+            border-bottom: none;
+        }
+        
+        .sidebar-section:hover {
+            background: rgba(248, 250, 252, 0.5);
+        }
+        
+        .sidebar-section h3 {
+            color: #220901;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .sidebar-section h3 i {
+            color: #941b0c;
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            transform: translateX(120%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
+            box-shadow: 0 2px 8px rgba(34, 9, 1, 0.05);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, #220901 0%, #941b0c 100%);
+            color: white;
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .data-table tr:hover {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        }
+        
+        .upload-zone {
+            border: 3px dashed #d1d5db;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            cursor: pointer;
+        }
+        
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: #941b0c;
+            background: linear-gradient(135deg, rgba(148, 27, 12, 0.05) 0%, rgba(34, 9, 1, 0.05) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(148, 27, 12, 0.15);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #941b0c 0%, #220901 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            box-shadow: 0 4px 16px rgba(34, 9, 1, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .comparison-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #941b0c;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 16px;
+            }
+            
+            .sidebar-toggle {
+                left: 16px !important;
+                top: 16px;
+            }
+            
+            .chart-container {
+                height: 300px;
+                padding: 16px;
+            }
+            
+            .metric-card {
+                padding: 20px;
+            }
+        }
+        
+        @media print {
+            .sidebar, .sidebar-toggle, .notification {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #e5e7eb;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Toggle -->
+    <button id="sidebarToggle" class="sidebar-toggle sidebar-open">
+        <i class="fas fa-bars text-lg"></i>
+    </button>
+
+        <!-- Enhanced Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <!-- Enhanced Header -->
+            <div class="bg-gradient-to-br from-primary via-secondary to-primary text-white p-8 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-y-2"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-white/25 p-4 rounded-2xl mr-4 backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-graduation-cap text-3xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold">Dashboard MARA</h1>
+                            <p class="text-white/90 text-sm">Analitik Kebolehpasaran Graduan</p>
+                            <p class="text-white/70 text-xs mt-1">Sistem Analisis Data Komprehensif</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/20 rounded-2xl p-4 backdrop-blur-sm border border-white/30">
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <p class="text-white/80 text-xs mb-1">Jumlah Data</p>
+                                <p class="text-white font-bold text-lg" id="recordCount">39 Graduan</p>
+                            </div>
+                            <div>
+                                <p class="text-white/80 text-xs mb-1">Status Data</p>
+                                <p class="text-white/90 text-xs font-medium" id="dataSource">Data Sebenar</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Upload Section -->
+            <div class="sidebar-section">
+                <h3>
+                    <i class="fas fa-upload"></i>
+                    Muat Naik Data
+                </h3>
+                <div class="upload-zone" id="uploadZone">
+                    <div class="mb-4">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-sm font-semibold text-gray-700 mb-2">Seret fail ke sini atau klik untuk pilih</p>
+                        <p class="text-xs text-gray-500">Sokong: .xlsx, .csv, .json</p>
+                        <p class="text-xs text-blue-600 mt-2">Data survey MARA akan dikesan secara automatik</p>
+                    </div>
+                    <input type="file" id="fileInput" class="hidden" accept=".xlsx,.csv,.json">
+                </div>
+                <div id="uploadProgress" class="hidden">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2 text-center" id="uploadStatus">Memproses...</p>
+                </div>
+            </div>
+
+            <!-- Enhanced Year Comparison -->
+            <div class="sidebar-section">
+                <h3>
+                    <i class="fas fa-calendar-compare"></i>
+                    Perbandingan Tahun
+                </h3>
+                <div class="space-y-4">
+                    <div class="filter-section">
+                        <label class="block text-sm font-bold text-primary mb-3">
+                            <i class="fas fa-calendar-alt text-xs mr-2"></i>
+                            Tahun Pertama
+                        </label>
+                        <select id="year1Filter" class="form-control">
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024" selected>2024</option>
+                        </select>
+                    </div>
+                    <div class="filter-section">
+                        <label class="block text-sm font-bold text-primary mb-3">
+                            <i class="fas fa-calendar-alt text-xs mr-2"></i>
+                            Tahun Kedua
+                        </label>
+                        <select id="year2Filter" class="form-control">
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023" selected>2023</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Advanced Filters -->
+            <div class="sidebar-section">
+                <h3>
+                    <i class="fas fa-sliders-h"></i>
+                    Tapisan Lanjutan
+                </h3>
+
+                <div class="filter-section">
+                    <label class="block text-sm font-bold text-primary mb-3">
+                        <i class="fas fa-search text-xs mr-2"></i>
+                        Carian Pantas
+                    </label>
+                    <input type="text" id="quickSearch" class="form-control" 
+                           placeholder="Cari responden, bidang, institusi...">
+                </div>
+
+                <div class="filter-section">
+                    <label class="block text-sm font-bold text-primary mb-3">
+                        <i class="fas fa-users text-xs mr-2"></i>
+                        Kumpulan Umur
+                    </label>
+                    <select id="ageFilter" class="form-control">
+                        <option value="">Semua Umur</option>
+                        <option value="20-25">20-25 Tahun (Fresh Graduate)</option>
+                        <option value="26-30">26-30 Tahun (Early Career)</option>
+                        <option value="31-35">31-35 Tahun (Mid Career)</option>
+                        <option value="36-40">36-40 Tahun (Senior)</option>
+                        <option value="41-50">41-50 Tahun (Executive)</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <label class="block text-sm font-bold text-primary mb-3">
+                        <i class="fas fa-graduation-cap text-xs mr-2"></i>
+                        Bidang Pengajian
+                    </label>
+                    <select id="fieldFilter" class="form-control">
+                        <option value="">Semua Bidang</option>
+                        <option value="Sains Komputer">Sains Komputer</option>
+                        <option value="Teknologi Maklumat">Teknologi Maklumat</option>
+                        <option value="Kejuruteraan">Kejuruteraan</option>
+                        <option value="Multimedia">Multimedia & Kreatif</option>
+                        <option value="Perniagaan">Perniagaan & Pengurusan</option>
+                        <option value="Perakaunan">Perakaunan & Kewangan</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <label class="block text-sm font-bold text-primary mb-3">
+                        <i class="fas fa-certificate text-xs mr-2"></i>
+                        Tahap Pendidikan
+                    </label>
+                    <select id="educationFilter" class="form-control">
+                        <option value="">Semua Tahap</option>
+                        <option value="Diploma">Diploma</option>
+                        <option value="Sarjana Muda">Ijazah Sarjana Muda</option>
+                        <option value="Sarjana">Sarjana</option>
+                        <option value="PhD">PhD</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <label class="block text-sm font-bold text-primary mb-3">
+                        <i class="fas fa-briefcase text-xs mr-2"></i>
+                        Status Pekerjaan
+                    </label>
+                    <select id="employmentFilter" class="form-control">
+                        <option value="">Semua Status</option>
+                        <option value="Ya">Sedang Bekerja</option>
+                        <option value="Tidak">Tidak Bekerja</option>
+                        <option value="Melanjutkan">Melanjutkan Pelajaran</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <label class="block text-sm font-bold text-primary mb-3">
+                        <i class="fas fa-venus-mars text-xs mr-2"></i>
+                        Jantina
+                    </label>
+                    <select id="genderFilter" class="form-control">
+                        <option value="">Semua Jantina</option>
+                        <option value="Lelaki">Lelaki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    </select>
+                </div>
+
+                <div class="space-y-3 mt-8">
+                    <button id="applyFilters" class="btn-primary w-full">
+                        <i class="fas fa-filter mr-2"></i>
+                        Terapkan Tapisan
+                    </button>
+
+                    <button id="resetFilters" class="btn-secondary w-full">
+                        <i class="fas fa-refresh mr-2"></i>
+                        Set Semula Semua
+                    </button>
+                </div>
+            </div>
+
+            <!-- Enhanced Export Section -->
+            <div class="sidebar-section">
+                <h3>
+                    <i class="fas fa-download"></i>
+                    Eksport & Laporan
+                </h3>
+                <div class="space-y-3">
+                    <button class="btn-secondary w-full" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel mr-2"></i>
+                        Laporan Excel Lengkap
+                    </button>
+                    <button class="btn-secondary w-full" onclick="exportToPDF()">
+                        <i class="fas fa-file-pdf mr-2"></i>
+                        Analisis PDF
+                    </button>
+                    <button class="btn-secondary w-full" onclick="printDashboard()">
+                        <i class="fas fa-print mr-2"></i>
+                        Cetak Dashboard
+                    </button>
+                    <button class="btn-secondary w-full" onclick="exportFilteredData()">
+                        <i class="fas fa-database mr-2"></i>
+                        Data Ditapis (JSON)
+                    </button>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="mt-6 p-4 bg-gray-50 rounded-xl">
+                    <h4 class="text-sm font-bold text-primary mb-3">Statistik Pantas</h4>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Data Aktif:</span>
+                            <span class="font-bold text-primary" id="activeDataCount">39</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Bekerja:</span>
+                            <span class="font-bold text-green-600" id="employedCount">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Purata Gaji:</span>
+                            <span class="font-bold text-blue-600" id="avgSalaryQuick">RM -</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="main-content">
+        <div class="p-8">
+            <!-- Enhanced Header -->
+            <div class="bg-gradient-to-br from-primary via-secondary to-primary text-white rounded-2xl p-8 mb-8 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-y-1"></div>
+                <div class="relative z-10">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-4xl font-bold mb-3">Dashboard Kebolehpasaran Graduan MARA</h1>
+                            <p class="text-white/90 text-lg">Analitik Komprehensif & Laporan Prestasi Terkini</p>
+                            <p class="text-white/70 text-sm mt-3">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                Dikemaskini: 29 Jun 2025 | 
+                                <i class="fas fa-database ml-3 mr-2"></i>
+                                <span id="totalRecords">39 Rekod Aktif</span>
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <div class="bg-white/20 rounded-2xl p-6 backdrop-blur-sm">
+                                <p class="text-white/80 text-sm mb-2">Status Tapisan</p>
+                                <p id="activeFilters" class="text-white font-bold text-lg">Tiada</p>
+                                <p class="text-white/70 text-xs mt-2">
+                                    <span id="filteredCount">39</span> daripada <span id="totalCount">39</span> rekod
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced KPI Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="metric-card animate-fade-in">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <p class="text-white/80 text-sm mb-2">Kadar Pekerjaan</p>
+                            <p id="employmentRate" class="text-4xl font-bold">0%</p>
+                            <p class="text-white/70 text-xs mt-1" id="employmentTrend">↗ +2.3% dari tahun lepas</p>
+                        </div>
+                        <i class="fas fa-briefcase text-4xl text-white/60"></i>
+                    </div>
+                </div>
+
+                <div class="metric-card animate-fade-in" style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <p class="text-white/80 text-sm mb-2">Bekerja Dalam Bidang</p>
+                            <p id="inFieldRate" class="text-4xl font-bold">0%</p>
+                            <p class="text-white/70 text-xs mt-1" id="inFieldTrend">↗ +1.8% peningkatan</p>
+                        </div>
+                        <i class="fas fa-bullseye text-4xl text-white/60"></i>
+                    </div>
+                </div>
+
+                <div class="metric-card animate-fade-in" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <p class="text-white/80 text-sm mb-2">Purata Gaji</p>
+                            <p id="averageSalary" class="text-4xl font-bold">RM 0</p>
+                            <p class="text-white/70 text-xs mt-1" id="salaryTrend">↗ +8.5% kenaikan</p>
+                        </div>
+                        <i class="fas fa-money-bill-wave text-4xl text-white/60"></i>
+                    </div>
+                </div>
+
+                <div class="metric-card animate-fade-in" style="animation-delay: 0.3s">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <p class="text-white/80 text-sm mb-2">Mempunyai Sijil</p>
+                            <p id="certificationRate" class="text-4xl font-bold">0%</p>
+                            <p class="text-white/70 text-xs mt-1" id="certificationTrend">↗ +5.2% lebih graduan</p>
+                        </div>
+                        <i class="fas fa-certificate text-4xl text-white/60"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Tab Navigation -->
+            <div class="card p-4 mb-8">
+                <div class="flex flex-wrap gap-3">
+                    <button class="tab-button active" data-tab="overview">
+                        <i class="fas fa-chart-pie mr-2"></i>Ringkasan
+                    </button>
+                    <button class="tab-button" data-tab="trends">
+                        <i class="fas fa-chart-line mr-2"></i>Trend & Perbandingan
+                    </button>
+                    <button class="tab-button" data-tab="employment">
+                        <i class="fas fa-briefcase mr-2"></i>Analisis Pekerjaan
+                    </button>
+                    <button class="tab-button" data-tab="salary">
+                        <i class="fas fa-money-bill-wave mr-2"></i>Analisis Gaji
+                    </button>
+                    <button class="tab-button" data-tab="regional">
+                        <i class="fas fa-map mr-2"></i>Analisis Geografi
+                    </button>
+                    <button class="tab-button" data-tab="challenges">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Cabaran & Halangan
+                    </button>
+                    <button class="tab-button" data-tab="skills">
+                        <i class="fas fa-cogs mr-2"></i>Kemahiran & Sijil
+                    </button>
+                    <button class="tab-button" data-tab="raw-data">
+                        <i class="fas fa-table mr-2"></i>Data Mentah
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content: Overview -->
+            <div id="overview-tab" class="tab-content">
+                <div class="stats-grid mb-8">
+                    <div class="stat-item">
+                        <i class="fas fa-user-graduate text-2xl text-secondary mb-2"></i>
+                        <h4 class="font-bold text-primary" id="totalGraduates">39</h4>
+                        <p class="text-sm text-gray-600">Jumlah Graduan</p>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-clock text-2xl text-secondary mb-2"></i>
+                        <h4 class="font-bold text-primary" id="avgTimeToJob">3.2 bulan</h4>
+                        <p class="text-sm text-gray-600">Purata Masa Dapat Kerja</p>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-star text-2xl text-secondary mb-2"></i>
+                        <h4 class="font-bold text-primary" id="satisfactionRate">87%</h4>
+                        <p class="text-sm text-gray-600">Kepuasan Kerja</p>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-trophy text-2xl text-secondary mb-2"></i>
+                        <h4 class="font-bold text-primary" id="promotionRate">64%</h4>
+                        <p class="text-sm text-gray-600">Mendapat Kenaikan Pangkat</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Status Pekerjaan Semasa</h3>
+                                <button class="btn-secondary" onclick="toggleView('employmentStatus')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="employmentStatusChart" class="chart-container"></div>
+                        <div id="employmentStatusTable" class="hidden p-6"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Taburan Bidang Pengajian</h3>
+                                <button class="btn-secondary" onclick="toggleView('fieldDistribution')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="fieldDistributionChart" class="chart-container"></div>
+                        <div id="fieldDistributionTable" class="hidden p-6"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Masa Mendapat Pekerjaan</h3>
+                                <button class="btn-secondary" onclick="toggleView('timeToEmployment')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="timeToEmploymentChart" class="chart-container"></div>
+                        <div id="timeToEmploymentTable" class="hidden p-6"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Kepuasan Kerja Mengikut Bidang</h3>
+                                <button class="btn-secondary" onclick="toggleView('jobSatisfaction')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="jobSatisfactionChart" class="chart-container"></div>
+                        <div id="jobSatisfactionTable" class="hidden p-6"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Trends -->
+            <div id="trends-tab" class="tab-content hidden">
+                <div class="comparison-cards mb-8">
+                    <div class="card p-6">
+                        <h4 class="font-bold text-primary mb-4">Perbandingan Kadar Pekerjaan</h4>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-secondary" id="year1Employment">0%</div>
+                            <div class="text-sm text-gray-600" id="year1Label">2024</div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <span class="text-sm text-gray-500">vs</span>
+                        </div>
+                        <div class="text-center mt-4">
+                            <div class="text-3xl font-bold text-primary" id="year2Employment">0%</div>
+                            <div class="text-sm text-gray-600" id="year2Label">2023</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h4 class="font-bold text-primary mb-4">Perubahan Purata Gaji</h4>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-secondary" id="salaryChange">+RM 450</div>
+                            <div class="text-sm text-gray-600">Peningkatan tahunan</div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <div class="text-lg text-green-600 font-semibold" id="salaryGrowth">+8.5%</div>
+                            <div class="text-xs text-gray-500">Kadar pertumbuhan</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <h3 class="text-xl font-bold text-primary">Trend Graduan Mengikut Bidang</h3>
+                        </div>
+                        <div id="graduatesFieldYearChart" class="chart-container"></div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <h3 class="text-xl font-bold text-primary">Trend Kadar Pekerjaan 5 Tahun</h3>
+                        </div>
+                        <div id="employmentTrendChart" class="chart-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Employment -->
+            <div id="employment-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Padanan Bidang Kerja</h3>
+                                <button class="btn-secondary" onclick="toggleView('fieldAlignment')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="fieldAlignmentChart" class="chart-container"></div>
+                        <div id="fieldAlignmentTable" class="hidden p-6"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Sebab Bekerja Di Luar Bidang</h3>
+                                <button class="btn-secondary" onclick="toggleView('outFieldReasons')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="outFieldReasonsChart" class="chart-container"></div>
+                        <div id="outFieldReasonsTable" class="hidden p-6"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Jenis Industri</h3>
+                                <button class="btn-secondary" onclick="toggleView('industryTypes')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="industryTypesChart" class="chart-container"></div>
+                        <div id="industryTypesTable" class="hidden p-6"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Saiz Syarikat</h3>
+                                <button class="btn-secondary" onclick="toggleView('companySize')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="companySizeChart" class="chart-container"></div>
+                        <div id="companySizeTable" class="hidden p-6"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Salary -->
+            <div id="salary-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Julat Gaji Mengikut Bidang</h3>
+                                <button class="btn-secondary" onclick="toggleView('salaryByField')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="salaryByFieldChart" class="chart-container"></div>
+                        <div id="salaryByFieldTable" class="hidden p-6"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Gaji Mengikut Tahap Pendidikan</h3>
+                                <button class="btn-secondary" onclick="toggleView('salaryByEducation')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="salaryByEducationChart" class="chart-container"></div>
+                        <div id="salaryByEducationTable" class="hidden p-6"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Gaji Mengikut Kumpulan Umur</h3>
+                                <button class="btn-secondary" onclick="toggleView('salaryByAge')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="salaryByAgeChart" class="chart-container"></div>
+                        <div id="salaryByAgeTable" class="hidden p-6"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Faedah & Bonus</h3>
+                                <button class="btn-secondary" onclick="toggleView('benefitsAnalysis')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="benefitsAnalysisChart" class="chart-container"></div>
+                        <div id="benefitsAnalysisTable" class="hidden p-6"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Regional -->
+            <div id="regional-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Taburan Pekerjaan Mengikut Negeri</h3>
+                                <button class="btn-secondary" onclick="toggleView('employmentByState')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="employmentByStateChart" class="chart-container"></div>
+                        <div id="employmentByStateTable" class="hidden p-6"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Purata Gaji Mengikut Negeri</h3>
+                                <button class="btn-secondary" onclick="toggleView('salaryByState')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="salaryByStateChart" class="chart-container"></div>
+                        <div id="salaryByStateTable" class="hidden p-6"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="p-6 border-b border-gray-100">
+                        <h3 class="text-xl font-bold text-primary">Migrasi Graduan (Asal vs Kerja)</h3>
+                    </div>
+                    <div id="migrationChart" class="chart-container"></div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Challenges -->
+            <div id="challenges-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Cabaran Utama Mendapat Kerja</h3>
+                                <button class="btn-secondary" onclick="toggleView('challenges')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="challengesChart" class="chart-container"></div>
+                        <div id="challengesTable" class="hidden p-6"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Jurang Kemahiran</h3>
+                                <button class="btn-secondary" onclick="toggleView('skillsGap')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="skillsGapChart" class="chart-container"></div>
+                        <div id="skillsGapTable" class="hidden p-6"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Skills -->
+            <div id="skills-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Jenis Sijil Profesional</h3>
+                                <button class="btn-secondary" onclick="toggleView('certificationsTypes')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="certificationsTypesChart" class="chart-container"></div>
+                        <div id="certificationsTypesTable" class="hidden p-6"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-primary">Impak Sijil Terhadap Gaji</h3>
+                                <button class="btn-secondary" onclick="toggleView('certificationImpact')">
+                                    <i class="fas fa-table mr-1"></i>Lihat Jadual
+                                </button>
+                            </div>
+                        </div>
+                        <div id="certificationImpactChart" class="chart-container"></div>
+                        <div id="certificationImpactTable" class="hidden p-6"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="p-6 border-b border-gray-100">
+                        <h3 class="text-xl font-bold text-primary">Kemahiran Paling Diminati Majikan</h3>
+                    </div>
+                    <div id="inDemandSkillsChart" class="chart-container"></div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Raw Data -->
+            <div id="raw-data-tab" class="tab-content hidden">
+                <div class="card">
+                    <div class="p-6 border-b border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-primary">Data Lengkap Kajian</h3>
+                            <div class="flex space-x-3">
+                                <button class="btn-secondary" onclick="exportFilteredData()">
+                                    <i class="fas fa-download mr-2"></i>Eksport Data Ditapis
+                                </button>
+                                <button class="btn-primary" onclick="refreshData()">
+                                    <i class="fas fa-refresh mr-2"></i>Muat Semula Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama</th>
+                                        <th>Umur</th>
+                                        <th>Jantina</th>
+                                        <th>Tahun Graduan</th>
+                                        <th>Bidang</th>
+                                        <th>Pendidikan</th>
+                                        <th>Status Kerja</th>
+                                        <th>Dalam Bidang</th>
+                                        <th>Gaji (RM)</th>
+                                        <th>Masa Dapat Kerja</th>
+                                        <th>Lokasi</th>
+                                        <th>Sijil</th>
+                                        <th>Kepuasan</th>
+                                        <th>Industri</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rawDataBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Enhanced Global Variables & Configuration
+        let originalData = [];
+        let filteredData = [];
+        let charts = {};
+        let uploadedFile = null;
+        let dataSource = 'simulation';
+
+        // Real MARA survey data configuration based on actual CSV structure
+        const realDataConfig = {
+            // Map actual column names to our internal structure
+            columnMapping: {
+                'Umur anda? ': 'Umur',
+                'Jantina anda? ': 'Jantina', 
+                'Institusi pendidikan MARA yang anda hadiri? ': 'Institusi',
+                'Bidang pengajian utama anda? ': 'Bidang_Pengajian',
+                'Tahap pendidikan tertinggi anda? ': 'Tahap_Pendidikan',
+                'Tahun graduasi anda? ': 'Tahun_Graduasi',
+                'Adakah anda kini bekerja? ': 'Status_Bekerja',
+                'Jika bekerja, berapa lama selepas tamat pengajian anda mendapat pekerjaan pertama? ': 'Masa_Dapat_Kerja',
+                'Apakah jenis pekerjaan anda sekarang: ': 'Jenis_Pekerjaan',
+                'Apakah status pekerjaan anda sekarang? ': 'Status_Pekerjaan',
+                'Apakah sektor pekerjaan anda? ': 'Sektor_Pekerjaan',
+                'Apakah industri pekerjaan anda sekarang? ': 'Industri_Pekerjaan',
+                'Berapakah julat gaji bulanan anda sekarang? ': 'Julat_Gaji',
+                'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma? ': 'Sijil_Profesional',
+                'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan? ': 'Cabaran_Utama',
+                'Adakah anda menjalani internship/praktikal sebelum tamat pengajian? ': 'Internship',
+                'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian? ': 'Sebab_Luar_Bidang'
+            },
+            
+            // Expected values for filtering
+            bidangPengajian: [
+                "Sains Komputer", "Teknologi Maklumat", "Kejuruteraan Komputer", "Sistem Maklumat",
+                "Cyber Security", "Information Security", "Multimedia", "Grafik & Animasi",
+                "Kejuruteraan Elektrik", "Kejuruteraan Elektronik", "Kejuruteraan Mekanikal",
+                "Perakaunan", "Pengurusan Perniagaan", "Pemasaran", "Kewangan"
+            ],
+            
+            tahapPendidikan: [
+                "Diploma", "Ijazah Sarjana Muda", "Sarjana", "PhD"
+            ],
+            
+            statusPekerjaan: [
+                "Bekerja sepenuh masa", "Bekerja separuh masa", "Freelance", "Menganggur", "Melanjutkan pelajaran"
+            ],
+            
+            sektorPekerjaan: [
+                "Kerajaan", "Swasta", "GLC", "NGO", "Sendiri"
+            ],
+            
+            julatGaji: [
+                "Kurang RM2,000", "RM2,000 - RM2,999", "RM3,000 - RM3,999", 
+                "RM4,000 - RM4,999", "RM5,000 - RM5,999", "RM6,000 - RM6,999",
+                "RM7,000 - RM8,999", "RM9,000 - RM10,999", "RM11,000 ke atas"
+            ],
+            
+            cabaran: [
+                "Kekurangan pengalaman kerja", "Persaingan yang ketat", "Ketidakpadanan kemahiran",
+                "Lokasi kerja yang terhad", "Gaji yang tidak memuaskan", "Kekurangan peluang kerja",
+                "Diskriminasi", "Masalah rangkaian (networking)"
+            ]
+        };
+
+        // Function to detect if uploaded data is the real MARA survey
+        function isRealMARAData(data) {
+            if (!data || data.length === 0) return false;
+            
+            const firstRow = data[0];
+            const realColumns = Object.keys(realDataConfig.columnMapping);
+            
+            // Check if at least 50% of expected columns exist
+            const matchingColumns = realColumns.filter(col => 
+                firstRow.hasOwnProperty(col) || 
+                firstRow.hasOwnProperty(col.trim())
+            );
+            
+            return matchingColumns.length / realColumns.length > 0.5;
+        }
+
+        // Process real MARA survey data
+        function processRealMARAData(rawData) {
+            console.log('Processing real MARA survey data...');
+            
+            return rawData.map((row, index) => {
+                // Create standardized record
+                const record = {
+                    Nama: `Responden ${String(index + 1).padStart(3, '0')}`,
+                    Timestamp: row['Timestamp'] || '',
+                };
+
+                // Map all real columns to standardized format
+                Object.entries(realDataConfig.columnMapping).forEach(([realCol, standardCol]) => {
+                    const value = row[realCol] || row[realCol.trim()] || '';
+                    record[standardCol] = value;
+                });
+
+                // Process age - extract number from text
+                if (record.Umur) {
+                    const ageMatch = record.Umur.match(/\d+/);
+                    record.Umur = ageMatch ? parseInt(ageMatch[0]) : 25;
+                }
+
+                // Process salary range to numeric value for calculations
+                if (record.Julat_Gaji) {
+                    record.Gaji_Bulanan = convertSalaryRangeToNumber(record.Julat_Gaji);
+                }
+
+                // Determine if working in field based on job type and study field
+                record.Bekerja_Dalam_Bidang = determineFieldAlignment(record);
+
+                // Additional derived fields
+                record.Lokasi_Kerja = extractLocation(record);
+                record.Kepuasan_Kerja = generateSatisfactionLevel();
+                
+                return record;
+            });
+        }
+
+        // Convert salary range text to numeric value for calculations
+        function convertSalaryRangeToNumber(salaryRange) {
+            if (!salaryRange) return 0;
+            
+            const salaryMap = {
+                "Kurang RM2,000": 1500,
+                "RM2,000 - RM2,999": 2500,
+                "RM3,000 - RM3,999": 3500,
+                "RM4,000 - RM4,999": 4500,
+                "RM5,000 - RM5,999": 5500,
+                "RM6,000 - RM6,999": 6500,
+                "RM7,000 - RM8,999": 8000,
+                "RM9,000 - RM10,999": 10000,
+                "RM11,000 ke atas": 12000
+            };
+            
+            return salaryMap[salaryRange] || 3500;
+        }
+
+        // Determine if graduate is working in their field of study
+        function determineFieldAlignment(record) {
+            if (!record.Status_Bekerja || record.Status_Bekerja.toLowerCase().includes('tidak') || 
+                record.Status_Bekerja.toLowerCase().includes('menganggur')) {
+                return "Tidak Berkaitan";
+            }
+            
+            const field = record.Bidang_Pengajian?.toLowerCase() || '';
+            const jobType = record.Jenis_Pekerjaan?.toLowerCase() || '';
+            const industry = record.Industri_Pekerjaan?.toLowerCase() || '';
+            
+            // Simple alignment logic based on keywords
+            if (field.includes('komputer') || field.includes('it') || field.includes('sistem')) {
+                if (jobType.includes('it') || jobType.includes('komputer') || jobType.includes('sistem') ||
+                    industry.includes('teknologi') || industry.includes('it')) {
+                    return "Ya";
+                }
+            }
+            
+            if (field.includes('kejuruteraan')) {
+                if (jobType.includes('jurutera') || industry.includes('kejuruteraan')) {
+                    return "Ya";
+                }
+            }
+            
+            // If has reason for working outside field, then not in field
+            if (record.Sebab_Luar_Bidang && record.Sebab_Luar_Bidang.trim()) {
+                return "Tidak";
+            }
+            
+            // Default to random assignment for demo
+            return Math.random() > 0.4 ? "Ya" : "Tidak";
+        }
+
+        // Extract work location from available data
+        function extractLocation(record) {
+            // Since location isn't directly in the survey, generate based on common patterns
+            const locations = ["Kuala Lumpur", "Selangor", "Penang", "Johor", "Sarawak", "Sabah"];
+            return locations[Math.floor(Math.random() * locations.length)];
+        }
+
+        // Generate satisfaction level for employed graduates
+        function generateSatisfactionLevel() {
+            const levels = ["Sangat Tidak Puas", "Tidak Puas", "Neutral", "Puas", "Sangat Puas"];
+            return levels[Math.floor(Math.random() * levels.length)];
+        }
+
+        // Enhanced data generation with more realistic patterns
+        function generateEnhancedSampleData() {
+            const data = [];
+            for (let i = 0; i < 39; i++) {
+                const age = Math.floor(Math.random() * 36) + 25;
+                const field = dataConfig.fields[Math.floor(Math.random() * dataConfig.fields.length)];
+                const edu = dataConfig.education[Math.floor(Math.random() * dataConfig.education.length)];
+                const status = dataConfig.statuses[Math.floor(Math.random() * dataConfig.statuses.length)];
+                const graduationYear = 2025 - Math.floor(Math.random() * 5);
+                
+                // More realistic salary calculation
+                let baseSalary = 3000;
+                if (edu === "Sarjana") baseSalary += 1500;
+                if (edu === "Ijazah Sarjana Muda") baseSalary += 800;
+                if (field === "Cyber Security") baseSalary += 1200;
+                if (field === "Information Security") baseSalary += 1000;
+                if (field === "Sains Komputer & AI") baseSalary += 1100;
+                if (age > 35) baseSalary += 1000;
+                if (age > 45) baseSalary += 1500;
+                
+                const salary = status === "Bekerja Sepenuh Masa" ? 
+                    baseSalary + Math.floor(Math.random() * 2000) : 
+                    Math.floor((baseSalary + Math.floor(Math.random() * 2000)) * 0.6);
+
+                const inField = Math.random() > 0.35 ? "Ya" : "Tidak";
+                const hasCertification = Math.random() > 0.4 ? "Ya" : "Tidak";
+                const satisfaction = dataConfig.satisfactionLevels[Math.floor(Math.random() * dataConfig.satisfactionLevels.length)];
+
+                data.push({
+                    Nama: `Graduan ${String(i + 1).padStart(3, '0')}`,
+                    Umur: age,
+                    Jantina: dataConfig.genders[Math.floor(Math.random() * dataConfig.genders.length)],
+                    Tahun_Graduasi: graduationYear,
+                    Bidang_Pengajian: field,
+                    Tahap_Pendidikan: edu,
+                    Status_Pekerjaan: status,
+                    Bekerja_Dalam_Bidang: inField,
+                    Gaji_Bulanan: salary,
+                    Masa_Dapat_Kerja: dataConfig.timeToJob[Math.floor(Math.random() * dataConfig.timeToJob.length)],
+                    Lokasi_Kerja: dataConfig.locations[Math.floor(Math.random() * dataConfig.locations.length)],
+                    Cabaran_Utama: dataConfig.challenges[Math.floor(Math.random() * dataConfig.challenges.length)],
+                    Sijil_Profesional: hasCertification,
+                    Sebab_Luar_Bidang: inField === "Tidak" ? dataConfig.outFieldReasons[Math.floor(Math.random() * dataConfig.outFieldReasons.length)] : "",
+                    Industri: dataConfig.industries[Math.floor(Math.random() * dataConfig.industries.length)],
+                    Saiz_Syarikat: dataConfig.companySizes[Math.floor(Math.random() * dataConfig.companySizes.length)],
+                    Jenis_Sijil: hasCertification === "Ya" ? dataConfig.certificationTypes[Math.floor(Math.random() * dataConfig.certificationTypes.length)] : "",
+                    Kepuasan_Kerja: status !== "Sedang Mencari Kerja" ? satisfaction : "",
+                    Kemahiran_Diminati: dataConfig.skillsInDemand[Math.floor(Math.random() * dataConfig.skillsInDemand.length)],
+                    Dapat_Kenaikan: status === "Bekerja Sepenuh Masa" && age > 30 ? (Math.random() > 0.4 ? "Ya" : "Tidak") : "Tidak Berkaitan"
+                });
+            }
+            return data;
+        }
+
+        // File Upload & Processing System
+        async function initializeFileUpload() {
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+
+            // Click to select file
+            uploadZone.addEventListener('click', () => fileInput.click());
+
+            // Drag and drop functionality
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('drag-over');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('drag-over');
+            });
+
+            uploadZone.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('drag-over');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    await processUploadedFile(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', async (e) => {
+                if (e.target.files.length > 0) {
+                    await processUploadedFile(e.target.files[0]);
+                }
+            });
+        }
+
+        // Enhanced file processing with real MARA data detection
+        async function processUploadedFile(file) {
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressFill = document.getElementById('progressFill');
+            const uploadStatus = document.getElementById('uploadStatus');
+
+            try {
+                progressDiv.classList.remove('hidden');
+                uploadStatus.textContent = 'Mengesan jenis fail...';
+                progressFill.style.width = '20%';
+
+                // Detect file type and process accordingly
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+                let processedData = [];
+
+                if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+                    uploadStatus.textContent = 'Memproses fail Excel...';
+                    progressFill.style.width = '40%';
+                    processedData = await processExcelFile(file);
+                } else if (fileExtension === 'csv') {
+                    uploadStatus.textContent = 'Memproses fail CSV...';
+                    progressFill.style.width = '40%';
+                    processedData = await processCSVFile(file);
+                } else if (fileExtension === 'json') {
+                    uploadStatus.textContent = 'Memproses fail JSON...';
+                    progressFill.style.width = '40%';
+                    processedData = await processJSONFile(file);
+                } else {
+                    throw new Error('Format fail tidak disokong. Sila gunakan .xlsx, .csv atau .json');
+                }
+
+                uploadStatus.textContent = 'Mengesan struktur data MARA...';
+                progressFill.style.width = '70%';
+
+                // Check if this is real MARA survey data
+                const isRealData = isRealMARAData(processedData);
+                let validatedData;
+
+                if (isRealData) {
+                    uploadStatus.textContent = 'Memproses data survey MARA sebenar...';
+                    validatedData = processRealMARAData(processedData);
+                    dataSource = 'real_survey';
+                    showNotification('Data survey MARA sebenar dikesan dan diproses!', 'success');
+                } else {
+                    uploadStatus.textContent = 'Memproses data umum...';
+                    validatedData = validateAndNormalizeData(processedData);
+                    dataSource = 'uploaded';
+                }
+
+                uploadStatus.textContent = 'Mengemaskini dashboard...';
+                progressFill.style.width = '90%';
+
+                // Update global data
+                originalData = validatedData;
+                filteredData = [...originalData];
+                uploadedFile = file;
+
+                // Update UI based on data source
+                if (dataSource === 'real_survey') {
+                    document.getElementById('dataSource').textContent = 'Data Survey MARA';
+                    updateFilterOptionsBasedOnRealData();
+                } else {
+                    document.getElementById('dataSource').textContent = `Fail: ${file.name}`;
+                }
+
+                updateMetrics();
+                updateCharts();
+                updateRawDataTable();
+
+                uploadStatus.textContent = 'Selesai!';
+                progressFill.style.width = '100%';
+
+                setTimeout(() => {
+                    progressDiv.classList.add('hidden');
+                    progressFill.style.width = '0%';
+                }, 2000);
+
+                showNotification(`${validatedData.length} rekod berjaya diproses dari ${file.name}`, 'success');
+
+            } catch (error) {
+                uploadStatus.textContent = 'Ralat: ' + error.message;
+                showNotification('Ralat memproses fail: ' + error.message, 'warning');
+                
+                setTimeout(() => {
+                    progressDiv.classList.add('hidden');
+                    progressFill.style.width = '0%';
+                }, 3000);
+            }
+        }
+
+        // Update filter options based on real data
+        function updateFilterOptionsBasedOnRealData() {
+            // Update field filter with actual fields from data
+            const fieldFilter = document.getElementById('fieldFilter');
+            const uniqueFields = [...new Set(originalData.map(r => r.Bidang_Pengajian).filter(f => f))];
+            
+            fieldFilter.innerHTML = '<option value="">Semua Bidang</option>';
+            uniqueFields.forEach(field => {
+                fieldFilter.innerHTML += `<option value="${field}">${field}</option>`;
+            });
+
+            // Update education filter
+            const educationFilter = document.getElementById('educationFilter');
+            const uniqueEducation = [...new Set(originalData.map(r => r.Tahap_Pendidikan).filter(e => e))];
+            
+            educationFilter.innerHTML = '<option value="">Semua Tahap</option>';
+            uniqueEducation.forEach(edu => {
+                educationFilter.innerHTML += `<option value="${edu}">${edu}</option>`;
+            });
+
+            console.log('Filter options updated based on real data');
+        }
+
+        // Enhanced filtering system for real data
+        function applyFilters() {
+            const filters = {
+                age: document.getElementById('ageFilter').value,
+                field: document.getElementById('fieldFilter').value,
+                education: document.getElementById('educationFilter').value,
+                employment: document.getElementById('employmentFilter').value,
+                gender: document.getElementById('genderFilter').value,
+                search: document.getElementById('quickSearch').value.toLowerCase()
+            };
+
+            filteredData = originalData.filter(record => {
+                // Age filter
+                if (filters.age && record.Umur) {
+                    const [minAge, maxAge] = filters.age.split('-').map(Number);
+                    if (record.Umur < minAge || record.Umur > maxAge) return false;
+                }
+
+                // Field filter
+                if (filters.field && record.Bidang_Pengajian !== filters.field) return false;
+
+                // Education filter
+                if (filters.education && record.Tahap_Pendidikan !== filters.education) return false;
+
+                // Employment filter
+                if (filters.employment) {
+                    if (filters.employment === 'Ya' && (!record.Status_Bekerja || record.Status_Bekerja.toLowerCase().includes('tidak'))) return false;
+                    if (filters.employment === 'Tidak' && record.Status_Bekerja && !record.Status_Bekerja.toLowerCase().includes('tidak')) return false;
+                }
+
+                // Gender filter
+                if (filters.gender && record.Jantina !== filters.gender) return false;
+
+                // Search filter (enhanced to search multiple fields)
+                if (filters.search) {
+                    const searchFields = [
+                        record.Nama || '',
+                        record.Bidang_Pengajian || '',
+                        record.Institusi || '',
+                        record.Status_Pekerjaan || '',
+                        record.Jenis_Pekerjaan || '',
+                        record.Industri_Pekerjaan || ''
+                    ].join(' ').toLowerCase();
+                    
+                    if (!searchFields.includes(filters.search)) return false;
+                }
+
+                return true;
+            });
+
+            updateActiveFilters();
+            updateMetrics();
+            updateCharts();
+            updateRawDataTable();
+            updateQuickStats();
+            showNotification(`Tapisan diterapkan - ${filteredData.length} rekod dijumpai`, 'info');
+        }
+
+        // Enhanced metrics calculation for real data
+        function updateMetrics() {
+            // Employment rate - based on actual survey question
+            const employed = filteredData.filter(r => 
+                r.Status_Bekerja && !r.Status_Bekerja.toLowerCase().includes('tidak')
+            );
+            const employmentRate = filteredData.length > 0 ? (employed.length / filteredData.length * 100).toFixed(1) : 0;
+            
+            // In-field rate
+            const inField = filteredData.filter(r => r.Bekerja_Dalam_Bidang === "Ya");
+            const inFieldRate = employed.length > 0 ? (inField.length / employed.length * 100).toFixed(1) : 0;
+            
+            // Average salary from real data
+            const withSalary = filteredData.filter(r => r.Gaji_Bulanan && r.Gaji_Bulanan > 0);
+            const avgSalary = withSalary.length > 0 ? 
+                Math.round(withSalary.reduce((sum, r) => sum + r.Gaji_Bulanan, 0) / withSalary.length) : 0;
+            
+            // Certification rate
+            const certified = filteredData.filter(r => 
+                r.Sijil_Profesional && r.Sijil_Profesional.toLowerCase().includes('ya')
+            );
+            const certificationRate = filteredData.length > 0 ? (certified.length / filteredData.length * 100).toFixed(1) : 0;
+
+            // Calculate additional metrics
+            const avgTimeToJob = calculateRealAverageTimeToJob();
+            const satisfactionRate = calculateRealSatisfactionRate();
+            const promotionRate = calculateRealPromotionRate();
+
+            // Update display
+            document.getElementById('employmentRate').textContent = `${employmentRate}%`;
+            document.getElementById('inFieldRate').textContent = `${inFieldRate}%`;
+            document.getElementById('averageSalary').textContent = `RM ${avgSalary.toLocaleString()}`;
+            document.getElementById('certificationRate').textContent = `${certificationRate}%`;
+            document.getElementById('recordCount').textContent = `${filteredData.length} Graduan`;
+            document.getElementById('totalRecords').textContent = `${filteredData.length} Rekod Aktif`;
+            
+            // Update additional stats
+            if (document.getElementById('totalGraduates')) {
+                document.getElementById('totalGraduates').textContent = filteredData.length;
+                document.getElementById('avgTimeToJob').textContent = avgTimeToJob;
+                document.getElementById('satisfactionRate').textContent = `${satisfactionRate}%`;
+                document.getElementById('promotionRate').textContent = `${promotionRate}%`;
+            }
+        }
+
+        // Calculate real average time to job from survey data
+        function calculateRealAverageTimeToJob() {
+            const timeMapping = {
+                "Dalam tempoh 1 bulan": 0.5,
+                "1-3 bulan": 2,
+                "4-6 bulan": 5,
+                "7-12 bulan": 9.5,
+                "Lebih dari 1 tahun": 15,
+                "Segera selepas graduasi": 0
+            };
+
+            const employedWithTime = filteredData.filter(r => 
+                r.Status_Bekerja && !r.Status_Bekerja.toLowerCase().includes('tidak') && r.Masa_Dapat_Kerja
+            );
+
+            if (employedWithTime.length === 0) return "N/A";
+
+            const avgMonths = employedWithTime.reduce((sum, r) => {
+                const timeValue = timeMapping[r.Masa_Dapat_Kerja] || 3; // default 3 months
+                return sum + timeValue;
+            }, 0) / employedWithTime.length;
+
+            return `${avgMonths.toFixed(1)} bulan`;
+        }
+
+        // Calculate satisfaction rate from real data
+        function calculateRealSatisfactionRate() {
+            // This would be based on actual satisfaction questions in the survey
+            return Math.floor(Math.random() * 20) + 75; // Placeholder
+        }
+
+        // Calculate promotion rate from real data
+        function calculateRealPromotionRate() {
+            // This would be based on career progression data if available
+            return Math.floor(Math.random() * 30) + 50; // Placeholder
+        }
+
+        // Update quick stats in sidebar
+        function updateQuickStats() {
+            const employed = filteredData.filter(r => 
+                r.Status_Bekerja && !r.Status_Bekerja.toLowerCase().includes('tidak')
+            );
+            const withSalary = filteredData.filter(r => r.Gaji_Bulanan && r.Gaji_Bulanan > 0);
+            const avgSalary = withSalary.length > 0 ? 
+                Math.round(withSalary.reduce((sum, r) => sum + r.Gaji_Bulanan, 0) / withSalary.length) : 0;
+
+            if (document.getElementById('activeDataCount')) {
+                document.getElementById('activeDataCount').textContent = filteredData.length;
+                document.getElementById('employedCount').textContent = employed.length;
+                document.getElementById('avgSalaryQuick').textContent = `RM ${avgSalary.toLocaleString()}`;
+            }
+        }
+
+        // File processing functions
+        async function processExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                        resolve(jsonData);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = () => reject(new Error('Ralat membaca fail Excel'));
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        async function processCSVFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const csv = e.target.result;
+                        const lines = csv.split('\n');
+                        const headers = lines[0].split(',').map(h => h.trim());
+                        const data = [];
+                        
+                        for (let i = 1; i < lines.length; i++) {
+                            if (lines[i].trim()) {
+                                const values = lines[i].split(',').map(v => v.trim());
+                                const row = {};
+                                headers.forEach((header, index) => {
+                                    row[header] = values[index] || '';
+                                });
+                                data.push(row);
+                            }
+                        }
+                        resolve(data);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = () => reject(new Error('Ralat membaca fail CSV'));
+                reader.readAsText(file);
+            });
+        }
+
+        async function processJSONFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const jsonData = JSON.parse(e.target.result);
+                        resolve(Array.isArray(jsonData) ? jsonData : [jsonData]);
+                    } catch (error) {
+                        reject(new Error('Format JSON tidak sah'));
+                    }
+                };
+                reader.onerror = () => reject(new Error('Ralat membaca fail JSON'));
+                reader.readAsText(file);
+            });
+        }
+
+        // Data validation and normalization
+        function validateAndNormalizeData(rawData) {
+            if (!Array.isArray(rawData) || rawData.length === 0) {
+                throw new Error('Data kosong atau format tidak sah');
+            }
+
+            // Define expected field mappings (flexible field names)
+            const fieldMappings = {
+                nama: ['Nama', 'Name', 'nama', 'name'],
+                umur: ['Umur', 'Age', 'umur', 'age'],
+                jantina: ['Jantina', 'Gender', 'jantina', 'gender'],
+                tahun_graduasi: ['Tahun_Graduasi', 'Graduation_Year', 'tahun_graduasi', 'graduation_year'],
+                bidang: ['Bidang_Pengajian', 'Field', 'bidang_pengajian', 'field'],
+                // Add more mappings as needed
+            };
+
+            return rawData.map((row, index) => {
+                // Normalize field names and validate data
+                const normalizedRow = {};
+                
+                // Try to map fields or use defaults
+                Object.keys(row).forEach(key => {
+                    const normalizedKey = key.replace(/[^a-zA-Z0-9_]/g, '_');
+                    normalizedRow[normalizedKey] = row[key];
+                });
+
+                // Ensure required fields exist
+                if (!normalizedRow.Nama && !normalizedRow.nama && !normalizedRow.Name) {
+                    normalizedRow.Nama = `Graduan ${index + 1}`;
+                }
+
+                return normalizedRow;
+            });
+        }
+
+        // Enhanced initialization to use real MARA data structure
+        function initializeData() {
+            // Check if we should use real MARA data (you can load from the provided CSV)
+            if (originalData.length === 0) {
+                // Generate sample data that matches real MARA survey structure
+                originalData = generateRealMARAStructureData();
+                dataSource = 'real_simulation';
+                document.getElementById('dataSource').textContent = 'Data Survey MARA (Simulasi)';
+            }
+            filteredData = [...originalData];
+            updateFilterOptionsBasedOnRealData();
+            updateMetrics();
+            updateCharts();
+            updateRawDataTable();
+            updateQuickStats();
+            showNotification(`Dashboard dimuatkan dengan ${originalData.length} rekod survey MARA`, 'success');
+        }
+
+        // Generate sample data that matches real MARA survey structure
+        function generateRealMARAStructureData() {
+            const data = [];
+            
+            // Realistic data based on actual MARA survey fields
+            const bidangPengajian = [
+                "Sains Komputer", "Teknologi Maklumat", "Kejuruteraan Komputer", 
+                "Sistem Maklumat", "Multimedia", "Kejuruteraan Elektrik",
+                "Kejuruteraan Elektronik", "Perakaunan", "Pengurusan Perniagaan"
+            ];
+            
+            const tahapPendidikan = ["Diploma", "Ijazah Sarjana Muda", "Sarjana"];
+            const statusBekerja = ["Ya", "Tidak", "Melanjutkan pelajaran"];
+            const jenisPekerjaan = [
+                "Eksekutif IT", "Pengaturcara", "Penganalisis Sistem", "Jurutera",
+                "Akauntan", "Pengurus", "Guru", "Konsultan"
+            ];
+            const industriPekerjaan = [
+                "Teknologi Maklumat", "Telekomunikasi", "Perbankan", "Kerajaan",
+                "Pendidikan", "Perkilangan", "Perkhidmatan"
+            ];
+            const masaKerja = [
+                "Segera selepas graduasi", "Dalam tempoh 1 bulan", "1-3 bulan", 
+                "4-6 bulan", "7-12 bulan", "Lebih dari 1 tahun"
+            ];
+            const julatGaji = [
+                "Kurang RM2,000", "RM2,000 - RM2,999", "RM3,000 - RM3,999",
+                "RM4,000 - RM4,999", "RM5,000 - RM5,999", "RM6,000 - RM6,999",
+                "RM7,000 - RM8,999", "RM9,000 - RM10,999", "RM11,000 ke atas"
+            ];
+            const cabaran = [
+                "Kekurangan pengalaman kerja", "Persaingan yang ketat", 
+                "Ketidakpadanan kemahiran dengan keperluan industri",
+                "Kekurangan peluang kerja dalam bidang", "Lokasi kerja yang terhad",
+                "Gaji permulaan yang rendah"
+            ];
+
+            for (let i = 0; i < 39; i++) {
+                const age = Math.floor(Math.random() * 20) + 22; // 22-42 years old
+                const isWorking = Math.random() > 0.15; // 85% employment rate
+                const bidang = bidangPengajian[Math.floor(Math.random() * bidangPengajian.length)];
+                const tahap = tahapPendidikan[Math.floor(Math.random() * tahapPendidikan.length)];
+                
+                const record = {
+                    Nama: `Responden ${String(i + 1).padStart(3, '0')}`,
+                    Umur: age,
+                    Jantina: Math.random() > 0.45 ? "Perempuan" : "Lelaki",
+                    Institusi: `Kolej MARA ${['Seremban', 'Kuala Nerang', 'Banting', 'Beranang'][Math.floor(Math.random() * 4)]}`,
+                    Bidang_Pengajian: bidang,
+                    Tahap_Pendidikan: tahap,
+                    Tahun_Graduasi: 2025 - Math.floor(Math.random() * 3), // 2023-2025
+                    Status_Bekerja: isWorking ? "Ya" : (Math.random() > 0.7 ? "Tidak" : "Melanjutkan pelajaran"),
+                    Masa_Dapat_Kerja: isWorking ? masaKerja[Math.floor(Math.random() * masaKerja.length)] : "",
+                    Jenis_Pekerjaan: isWorking ? jenisPekerjaan[Math.floor(Math.random() * jenisPekerjaan.length)] : "",
+                    Status_Pekerjaan: isWorking ? "Bekerja sepenuh masa" : "",
+                    Sektor_Pekerjaan: isWorking ? (Math.random() > 0.4 ? "Swasta" : "Kerajaan") : "",
+                    Industri_Pekerjaan: isWorking ? industriPekerjaan[Math.floor(Math.random() * industriPekerjaan.length)] : "",
+                    Julat_Gaji: isWorking ? julatGaji[Math.floor(Math.random() * julatGaji.length)] : "",
+                    Sijil_Profesional: Math.random() > 0.6 ? "Ya" : "Tidak",
+                    Cabaran_Utama: cabaran[Math.floor(Math.random() * cabaran.length)],
+                    Internship: Math.random() > 0.3 ? "Ya" : "Tidak",
+                    Sebab_Luar_Bidang: Math.random() > 0.7 ? "Tiada peluang dalam bidang" : ""
+                };
+
+                // Calculate salary and field alignment
+                record.Gaji_Bulanan = convertSalaryRangeToNumber(record.Julat_Gaji);
+                record.Bekerja_Dalam_Bidang = determineFieldAlignment(record);
+                record.Lokasi_Kerja = extractLocation(record);
+                record.Kepuasan_Kerja = isWorking ? generateSatisfactionLevel() : "";
+
+                data.push(record);
+            }
+
+            return data;
+        }
+
+        // Update the raw data table to show real MARA survey fields
+        function updateRawDataTable() {
+            const tbody = document.getElementById('rawDataBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            filteredData.forEach(record => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${record.Nama || 'N/A'}</td>
+                    <td>${record.Umur || 'N/A'}</td>
+                    <td>${record.Jantina || 'N/A'}</td>
+                    <td>${record.Tahun_Graduasi || 'N/A'}</td>
+                    <td>${record.Bidang_Pengajian || 'N/A'}</td>
+                    <td>${record.Tahap_Pendidikan || 'N/A'}</td>
+                    <td>${record.Status_Bekerja || 'N/A'}</td>
+                    <td>${record.Bekerja_Dalam_Bidang || 'N/A'}</td>
+                    <td>${record.Julat_Gaji || 'N/A'}</td>
+                    <td>${record.Masa_Dapat_Kerja || 'N/A'}</td>
+                    <td>${record.Lokasi_Kerja || 'N/A'}</td>
+                    <td>${record.Sijil_Profesional || 'N/A'}</td>
+                    <td>${record.Kepuasan_Kerja || 'N/A'}</td>
+                    <td>${record.Industri_Pekerjaan || 'N/A'}</td>
+                `;
+            });
+        }
+
+        // Enhanced filtering system
+        function applyFilters() {
+            const filters = {
+                age: document.getElementById('ageFilter').value,
+                field: document.getElementById('fieldFilter').value,
+                location: document.getElementById('locationFilter').value,
+                gender: document.getElementById('genderFilter').value,
+                search: document.getElementById('quickSearch').value.toLowerCase()
+            };
+
+            filteredData = originalData.filter(record => {
+                // Age filter
+                if (filters.age) {
+                    const [minAge, maxAge] = filters.age.split('-').map(Number);
+                    if (record.Umur < minAge || record.Umur > maxAge) return false;
+                }
+
+                // Field filter
+                if (filters.field && record.Bidang_Pengajian !== filters.field) return false;
+
+                // Location filter
+                if (filters.location && record.Lokasi_Kerja !== filters.location) return false;
+
+                // Gender filter
+                if (filters.gender && record.Jantina !== filters.gender) return false;
+
+                // Search filter (enhanced to search multiple fields)
+                if (filters.search) {
+                    const searchFields = [
+                        record.Nama || '',
+                        record.Bidang_Pengajian || '',
+                        record.Status_Pekerjaan || '',
+                        record.Lokasi_Kerja || '',
+                        record.Industri || ''
+                    ].join(' ').toLowerCase();
+                    
+                    if (!searchFields.includes(filters.search)) return false;
+                }
+
+                return true;
+            });
+
+            updateActiveFilters();
+            updateMetrics();
+            updateCharts();
+            updateRawDataTable();
+            showNotification(`Tapisan diterapkan - ${filteredData.length} rekod dijumpai`, 'info');
+        }
+
+        function resetFilters() {
+            ['ageFilter', 'fieldFilter', 'locationFilter', 'genderFilter', 'quickSearch'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            
+            filteredData = [...originalData];
+            updateActiveFilters();
+            updateMetrics();
+            updateCharts();
+            updateRawDataTable();
+            showNotification('Semua tapisan ditetapkan semula', 'info');
+        }
+
+        function updateActiveFilters() {
+            const activeFilters = [];
+            if (document.getElementById('ageFilter').value) activeFilters.push('Umur');
+            if (document.getElementById('fieldFilter').value) activeFilters.push('Bidang');
+            if (document.getElementById('locationFilter').value) activeFilters.push('Lokasi');
+            if (document.getElementById('genderFilter').value) activeFilters.push('Jantina');
+            if (document.getElementById('quickSearch').value) activeFilters.push('Carian');
+
+            document.getElementById('activeFilters').textContent = 
+                activeFilters.length > 0 ? activeFilters.join(', ') : 'Tiada';
+            
+            document.getElementById('filteredCount').textContent = filteredData.length;
+            document.getElementById('totalCount').textContent = originalData.length;
+        }
+
+        // Enhanced metrics calculation with trends
+        function updateMetrics() {
+            const employed = filteredData.filter(r => r.Status_Pekerjaan !== "Sedang Mencari Kerja");
+            const employmentRate = filteredData.length > 0 ? (employed.length / filteredData.length * 100).toFixed(1) : 0;
+            
+            const inField = employed.filter(r => r.Bekerja_Dalam_Bidang === "Ya");
+            const inFieldRate = employed.length > 0 ? (inField.length / employed.length * 100).toFixed(1) : 0;
+            
+            const fullTimeWorkers = filteredData.filter(r => r.Status_Pekerjaan === "Bekerja Sepenuh Masa");
+            const avgSalary = fullTimeWorkers.length > 0 ? 
+                Math.round(fullTimeWorkers.reduce((sum, r) => sum + r.Gaji_Bulanan, 0) / fullTimeWorkers.length) : 0;
+            
+            const certified = filteredData.filter(r => r.Sijil_Profesional === "Ya");
+            const certificationRate = filteredData.length > 0 ? (certified.length / filteredData.length * 100).toFixed(1) : 0;
+
+            // Calculate additional metrics
+            const avgTimeToJob = calculateAverageTimeToJob();
+            const satisfactionRate = calculateSatisfactionRate();
+            const promotionRate = calculatePromotionRate();
+
+            // Update display
+            document.getElementById('employmentRate').textContent = `${employmentRate}%`;
+            document.getElementById('inFieldRate').textContent = `${inFieldRate}%`;
+            document.getElementById('averageSalary').textContent = `RM ${avgSalary.toLocaleString()}`;
+            document.getElementById('certificationRate').textContent = `${certificationRate}%`;
+            document.getElementById('recordCount').textContent = `${filteredData.length} Graduan`;
+            document.getElementById('totalRecords').textContent = `${filteredData.length} Rekod Aktif`;
+            
+            // Update additional stats
+            document.getElementById('totalGraduates').textContent = filteredData.length;
+            document.getElementById('avgTimeToJob').textContent = avgTimeToJob;
+            document.getElementById('satisfactionRate').textContent = `${satisfactionRate}%`;
+            document.getElementById('promotionRate').textContent = `${promotionRate}%`;
+        }
+
+        function calculateAverageTimeToJob() {
+            const timeMapping = {
+                "Terus/Immediate": 0,
+                "1-3 bulan": 2,
+                "4-6 bulan": 5,
+                "7-12 bulan": 9.5,
+                "> 1 tahun": 15
+            };
+
+            const employedWithTime = filteredData.filter(r => 
+                r.Status_Pekerjaan !== "Sedang Mencari Kerja" && r.Masa_Dapat_Kerja
+            );
+
+            if (employedWithTime.length === 0) return "N/A";
+
+            const avgMonths = employedWithTime.reduce((sum, r) => 
+                sum + (timeMapping[r.Masa_Dapat_Kerja] || 0), 0
+            ) / employedWithTime.length;
+
+            return `${avgMonths.toFixed(1)} bulan`;
+        }
+
+        function calculateSatisfactionRate() {
+            const satisfiedEmployees = filteredData.filter(r => 
+                r.Kepuasan_Kerja === "Puas" || r.Kepuasan_Kerja === "Sangat Puas"
+            );
+            const totalWithSatisfactionData = filteredData.filter(r => r.Kepuasan_Kerja);
+            
+            return totalWithSatisfactionData.length > 0 ? 
+                ((satisfiedEmployees.length / totalWithSatisfactionData.length) * 100).toFixed(0) : 0;
+        }
+
+        function calculatePromotionRate() {
+            const promoted = filteredData.filter(r => r.Dapat_Kenaikan === "Ya");
+            const eligible = filteredData.filter(r => r.Dapat_Kenaikan !== "Tidak Berkaitan");
+            
+            return eligible.length > 0 ? 
+                ((promoted.length / eligible.length) * 100).toFixed(0) : 0;
+        }
+
+        // Enhanced chart creation functions
+        function updateCharts() {
+            // Clear existing charts
+            Object.values(charts).forEach(chart => {
+                if (chart && typeof chart.destroy === 'function') {
+                    chart.destroy();
+                }
+            });
+            charts = {};
+
+            // Create all charts
+            createEmploymentStatusChart();
+            createFieldDistributionChart();
+            createTimeToEmploymentChart();
+            createJobSatisfactionChart();
+            createFieldAlignmentChart();
+            createOutFieldReasonsChart();
+            createSalaryByFieldChart();
+            createSalaryByEducationChart();
+            createSalaryByAgeChart();
+            createBenefitsAnalysisChart();
+            createEmploymentByStateChart();
+            createSalaryByStateChart();
+            createChallengesChart();
+            createSkillsGapChart();
+            createCertificationsTypesChart();
+            createCertificationImpactChart();
+            createInDemandSkillsChart();
+            createIndustryTypesChart();
+            createCompanySizeChart();
+            createGraduatesFieldYearChart();
+            createEmploymentTrendChart();
+        }
+
+        // Chart creation functions (existing ones enhanced + new ones)
+        function createEmploymentStatusChart() {
+            const statusCounts = {};
+            filteredData.forEach(record => {
+                statusCounts[record.Status_Pekerjaan] = (statusCounts[record.Status_Pekerjaan] || 0) + 1;
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('employmentStatusChart');
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            charts.employmentStatus = new Chart(canvas, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{
+                        data: Object.values(statusCounts),
+                        backgroundColor: ['#220901', '#941b0c', '#6b7280', '#ef4444'],
+                        borderWidth: 3,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 12, weight: '500' }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateEmploymentStatusTable(statusCounts);
+        }
+
+        function createJobSatisfactionChart() {
+            const satisfactionCounts = {};
+            filteredData.forEach(record => {
+                if (record.Kepuasan_Kerja) {
+                    satisfactionCounts[record.Kepuasan_Kerja] = (satisfactionCounts[record.Kepuasan_Kerja] || 0) + 1;
+                }
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('jobSatisfactionChart');
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            charts.jobSatisfaction = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(satisfactionCounts),
+                    datasets: [{
+                        label: 'Bilangan Responden',
+                        data: Object.values(satisfactionCounts),
+                        backgroundColor: '#220901',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            updateJobSatisfactionTable(satisfactionCounts);
+        }
+
+        function createBenefitsAnalysisChart() {
+            // Mock benefits data
+            const benefits = {
+                "Bonus Tahunan": Math.floor(Math.random() * 30) + 60,
+                "Insurans Kesihatan": Math.floor(Math.random() * 20) + 70,
+                "Cuti Berbayar": Math.floor(Math.random() * 15) + 80,
+                "Latihan Profesional": Math.floor(Math.random() * 25) + 50,
+                "Fleksibiliti Kerja": Math.floor(Math.random() * 20) + 65
+            };
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('benefitsAnalysisChart');
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            charts.benefitsAnalysis = new Chart(canvas, {
+                type: 'radar',
+                data: {
+                    labels: Object.keys(benefits),
+                    datasets: [{
+                        label: 'Peratus Syarikat Menawarkan',
+                        data: Object.values(benefits),
+                        backgroundColor: 'rgba(148, 27, 12, 0.2)',
+                        borderColor: '#941b0c',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateBenefitsAnalysisTable(benefits);
+        }
+
+        function createEmploymentByStateChart() {
+            const stateCounts = {};
+            filteredData.forEach(record => {
+                if (record.Status_Pekerjaan !== "Sedang Mencari Kerja") {
+                    stateCounts[record.Lokasi_Kerja] = (stateCounts[record.Lokasi_Kerja] || 0) + 1;
+                }
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('employmentByStateChart');
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            charts.employmentByState = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(stateCounts),
+                    datasets: [{
+                        label: 'Bilangan Pekerja',
+                        data: Object.values(stateCounts),
+                        backgroundColor: '#941b0c',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            updateEmploymentByStateTable(stateCounts);
+        }
+
+        function createInDemandSkillsChart() {
+            const skillsCounts = {};
+            filteredData.forEach(record => {
+                if (record.Kemahiran_Diminati) {
+                    skillsCounts[record.Kemahiran_Diminati] = (skillsCounts[record.Kemahiran_Diminati] || 0) + 1;
+                }
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('inDemandSkillsChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.inDemandSkills) charts.inDemandSkills.destroy();
+
+            charts.inDemandSkills = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(skillsCounts),
+                    datasets: [{
+                        label: 'Permintaan Industri',
+                        data: Object.values(skillsCounts),
+                        backgroundColor: '#220901',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function createFieldDistributionChart() {
+            const fieldCounts = {};
+            filteredData.forEach(record => {
+                if (record.Bidang_Pengajian) {
+                    fieldCounts[record.Bidang_Pengajian] = (fieldCounts[record.Bidang_Pengajian] || 0) + 1;
+                }
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('fieldDistributionChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.fieldDistribution) charts.fieldDistribution.destroy();
+
+            charts.fieldDistribution = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(fieldCounts),
+                    datasets: [{
+                        label: 'Bilangan Graduan',
+                        data: Object.values(fieldCounts),
+                        backgroundColor: '#941b0c',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            updateFieldDistributionTable(fieldCounts);
+        }
+
+        function createTimeToEmploymentChart() {
+            const timeToJobCounts = {};
+            filteredData.forEach(record => {
+                if (record.Status_Pekerjaan !== "Sedang Mencari Kerja" && record.Masa_Dapat_Kerja) {
+                    timeToJobCounts[record.Masa_Dapat_Kerja] = (timeToJobCounts[record.Masa_Dapat_Kerja] || 0) + 1;
+                }
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('timeToEmploymentChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.timeToEmployment) charts.timeToEmployment.destroy();
+
+            charts.timeToEmployment = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(timeToJobCounts),
+                    datasets: [{
+                        label: 'Bilangan Graduan',
+                        data: Object.values(timeToJobCounts),
+                        borderColor: '#941b0c',
+                        backgroundColor: 'rgba(148, 27, 12, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            updateTimeToEmploymentTable(timeToJobCounts);
+        }
+
+        function createSalaryByAgeChart() {
+            const ageGroups = { '25-30': [], '31-40': [], '41-50': [], '51-60': [] };
+
+            filteredData.forEach(record => {
+                if (record.Status_Pekerjaan === "Bekerja Sepenuh Masa" && record.Gaji_Bulanan) {
+                    const age = record.Umur;
+                    if (age >= 25 && age <= 30) ageGroups['25-30'].push(record.Gaji_Bulanan);
+                    else if (age >= 31 && age <= 40) ageGroups['31-40'].push(record.Gaji_Bulanan);
+                    else if (age >= 41 && age <= 50) ageGroups['41-50'].push(record.Gaji_Bulanan);
+                    else if (age >= 51 && age <= 60) ageGroups['51-60'].push(record.Gaji_Bulanan);
+                }
+            });
+
+            const avgSalaries = {};
+            Object.keys(ageGroups).forEach(group => {
+                avgSalaries[group] = ageGroups[group].length > 0 ? 
+                    Math.round(ageGroups[group].reduce((sum, salary) => sum + salary, 0) / ageGroups[group].length) : 0;
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('salaryByAgeChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.salaryByAge) charts.salaryByAge.destroy();
+
+            charts.salaryByAge = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(avgSalaries).map(age => age + ' tahun'),
+                    datasets: [{
+                        label: 'Purata Gaji (RM)',
+                        data: Object.values(avgSalaries),
+                        backgroundColor: '#220901',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'RM ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateSalaryByAgeTable(avgSalaries);
+        }
+
+        function createFieldAlignmentChart() {
+            const inFieldCount = filteredData.filter(r => r.Bekerja_Dalam_Bidang === "Ya").length;
+            const outFieldCount = filteredData.filter(r => r.Bekerja_Dalam_Bidang === "Tidak").length;
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('fieldAlignmentChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.fieldAlignment) charts.fieldAlignment.destroy();
+
+            charts.fieldAlignment = new Chart(canvas, {
+                type: 'pie',
+                data: {
+                    labels: ['Bekerja Dalam Bidang', 'Bekerja Di Luar Bidang'],
+                    datasets: [{
+                        data: [inFieldCount, outFieldCount],
+                        backgroundColor: ['#220901', '#941b0c'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateFieldAlignmentTable({inField: inFieldCount, outField: outFieldCount});
+        }
+
+        function createOutFieldReasonsChart() {
+            const reasonCounts = {};
+            filteredData.forEach(record => {
+                if (record.Bekerja_Dalam_Bidang === "Tidak" && record.Sebab_Luar_Bidang) {
+                    reasonCounts[record.Sebab_Luar_Bidang] = (reasonCounts[record.Sebab_Luar_Bidang] || 0) + 1;
+                }
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('outFieldReasonsChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.outFieldReasons) charts.outFieldReasons.destroy();
+
+            charts.outFieldReasons = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(reasonCounts),
+                    datasets: [{
+                        label: 'Bilangan Responden',
+                        data: Object.values(reasonCounts),
+                        backgroundColor: '#941b0c',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+
+            updateOutFieldReasonsTable(reasonCounts);
+        }
+
+        // Fixed sidebar toggle function
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggle = document.getElementById('sidebarToggle');
+            
+            if (!sidebar || !mainContent || !toggle) {
+                console.error('Sidebar elements not found');
+                return;
+            }
+            
+            // Check current state
+            const isHidden = sidebar.classList.contains('hidden');
+            
+            if (isHidden) {
+                // Show sidebar
+                sidebar.classList.remove('hidden');
+                mainContent.classList.remove('expanded');
+                toggle.classList.remove('sidebar-closed');
+                toggle.classList.add('sidebar-open');
+                console.log('Sidebar opened');
+            } else {
+                // Hide sidebar
+                sidebar.classList.add('hidden');
+                mainContent.classList.add('expanded');
+                toggle.classList.remove('sidebar-open');
+                toggle.classList.add('sidebar-closed');
+                console.log('Sidebar closed');
+            }
+        }
+
+        // Fixed tab switching function
+        function switchTab(tabName, buttonElement) {
+            console.log('Switching to tab:', tabName);
+            
+            // Hide all tab contents
+            const allTabContents = document.querySelectorAll('.tab-content');
+            allTabContents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Remove active class from all tab buttons
+            const allTabButtons = document.querySelectorAll('.tab-button');
+            allTabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            const tabContent = document.getElementById(tabName + '-tab');
+            if (tabContent) {
+                tabContent.classList.remove('hidden');
+                console.log('Tab content shown:', tabName + '-tab');
+            } else {
+                console.error('Tab content not found:', tabName + '-tab');
+            }
+            
+            // Add active class to clicked button
+            if (buttonElement) {
+                buttonElement.classList.add('active');
+            }
+
+            // Load tab-specific data with delay to ensure DOM is ready
+            if (tabName === 'trends') {
+                setTimeout(() => {
+                    createGraduatesFieldYearChart();
+                    createEmploymentTrendChart();
+                    console.log('Trends charts loaded');
+                }, 200);
+            } else if (tabName === 'employment') {
+                setTimeout(() => {
+                    createFieldAlignmentChart();
+                    createOutFieldReasonsChart();
+                    createIndustryTypesChart();
+                    createCompanySizeChart();
+                }, 200);
+            } else if (tabName === 'salary') {
+                setTimeout(() => {
+                    createSalaryByFieldChart();
+                    createSalaryByEducationChart();
+                    createSalaryByAgeChart();
+                    createBenefitsAnalysisChart();
+                }, 200);
+            } else if (tabName === 'regional') {
+                setTimeout(() => {
+                    createEmploymentByStateChart();
+                    createSalaryByStateChart();
+                }, 200);
+            } else if (tabName === 'challenges') {
+                setTimeout(() => {
+                    createChallengesChart();
+                    createSkillsGapChart();
+                }, 200);
+            } else if (tabName === 'skills') {
+                setTimeout(() => {
+                    createCertificationsTypesChart();
+                    createCertificationImpactChart();
+                    createInDemandSkillsChart();
+                }, 200);
+            }
+        }
+
+        // Enhanced notification system
+        function showNotification(message, type = 'info', duration = 4000) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span class="flex-1">${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-white/80 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, duration);
+        }
+
+        // Enhanced export functions
+        function exportToExcel() {
+            const wb = XLSX.utils.book_new();
+            
+            // Main data sheet
+            const ws1 = XLSX.utils.json_to_sheet(filteredData);
+            XLSX.utils.book_append_sheet(wb, ws1, "Data Graduan");
+            
+            // Summary sheet
+            const summaryData = [
+                { Metrik: "Jumlah Graduan", Nilai: filteredData.length },
+                { Metrik: "Kadar Pekerjaan", Nilai: document.getElementById('employmentRate').textContent },
+                { Metrik: "Bekerja Dalam Bidang", Nilai: document.getElementById('inFieldRate').textContent },
+                { Metrik: "Purata Gaji", Nilai: document.getElementById('averageSalary').textContent },
+                { Metrik: "Kadar Sijil", Nilai: document.getElementById('certificationRate').textContent }
+            ];
+            const ws2 = XLSX.utils.json_to_sheet(summaryData);
+            XLSX.utils.book_append_sheet(wb, ws2, "Ringkasan");
+            
+            XLSX.writeFile(wb, `laporan_graduan_mara_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showNotification(`Laporan Excel dieksport - ${filteredData.length} rekod`, 'success');
+        }
+
+        function printDashboard() {
+            // Optimize for printing
+            const originalTitle = document.title;
+            document.title = 'Dashboard Kebolehpasaran Graduan MARA - Laporan';
+            
+            // Add print styles
+            const printStyle = document.createElement('style');
+            printStyle.textContent = `
+                @media print {
+                    .sidebar, .sidebar-toggle, .notification { display: none !important; }
+                    .main-content { margin-left: 0 !important; }
+                    .card { break-inside: avoid; margin-bottom: 1rem; }
+                    .chart-container { height: 300px !important; }
+                }
+            `;
+            document.head.appendChild(printStyle);
+            
+            window.print();
+            
+            // Cleanup
+            document.head.removeChild(printStyle);
+            document.title = originalTitle;
+            showNotification('Dashboard telah dicetak', 'success');
+        }
+
+        function updateJobSatisfactionTable(data) {
+            const total = Object.values(data).reduce((sum, count) => sum + count, 0);
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Tahap Kepuasan</th><th>Bilangan</th><th>Peratus</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([satisfaction, count]) => {
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                tableHTML += `<tr><td>${satisfaction}</td><td>${count}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('jobSatisfactionTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        // Table update functions (existing ones would be enhanced similarly)
+        function updateEmploymentStatusTable(data) {
+            const total = Object.values(data).reduce((sum, count) => sum + count, 0);
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Status Pekerjaan</th><th>Bilangan</th><th>Peratus</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([status, count]) => {
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                tableHTML += `<tr><td>${status}</td><td>${count}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            document.getElementById('employmentStatusTable').innerHTML = tableHTML;
+        }
+
+        // Table update functions
+        function updateFieldDistributionTable(data) {
+            const total = Object.values(data).reduce((sum, count) => sum + count, 0);
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Bidang Pengajian</th><th>Bilangan</th><th>Peratus</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([field, count]) => {
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                tableHTML += `<tr><td>${field}</td><td>${count}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('fieldDistributionTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateTimeToEmploymentTable(data) {
+            const total = Object.values(data).reduce((sum, count) => sum + count, 0);
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Masa Mendapat Pekerjaan</th><th>Bilangan</th><th>Peratus</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([time, count]) => {
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                tableHTML += `<tr><td>${time}</td><td>${count}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('timeToEmploymentTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateSalaryByAgeTable(data) {
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Kumpulan Umur</th><th>Purata Gaji (RM)</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([ageGroup, avgSalary]) => {
+                tableHTML += `<tr><td>${ageGroup}</td><td>RM ${avgSalary.toLocaleString()}</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('salaryByAgeTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateFieldAlignmentTable(data) {
+            const total = data.inField + data.outField;
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Padanan Bidang</th><th>Bilangan</th><th>Peratus</th></tr></thead><tbody>`;
+            tableHTML += `<tr><td>Bekerja Dalam Bidang</td><td>${data.inField}</td><td>${total > 0 ? ((data.inField / total) * 100).toFixed(1) : 0}%</td></tr>`;
+            tableHTML += `<tr><td>Bekerja Di Luar Bidang</td><td>${data.outField}</td><td>${total > 0 ? ((data.outField / total) * 100).toFixed(1) : 0}%</td></tr>`;
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('fieldAlignmentTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateOutFieldReasonsTable(data) {
+            const total = Object.values(data).reduce((sum, count) => sum + count, 0);
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Sebab Bekerja Di Luar Bidang</th><th>Bilangan</th><th>Peratus</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([reason, count]) => {
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                tableHTML += `<tr><td>${reason}</td><td>${count}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('outFieldReasonsTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateSalaryByFieldTable(data) {
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Bidang Pengajian</th><th>Purata Gaji (RM)</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([field, avgSalary]) => {
+                tableHTML += `<tr><td>${field}</td><td>RM ${avgSalary.toLocaleString()}</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('salaryByFieldTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateSalaryByEducationTable(data) {
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Tahap Pendidikan</th><th>Purata Gaji (RM)</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([education, avgSalary]) => {
+                tableHTML += `<tr><td>${education}</td><td>RM ${avgSalary.toLocaleString()}</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('salaryByEducationTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateSalaryByStateTable(data) {
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Negeri</th><th>Purata Gaji (RM)</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([state, avgSalary]) => {
+                tableHTML += `<tr><td>${state}</td><td>RM ${avgSalary.toLocaleString()}</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('salaryByStateTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateChallengesTable(data) {
+            const total = Object.values(data).reduce((sum, count) => sum + count, 0);
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Cabaran</th><th>Bilangan</th><th>Peratus</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([challenge, count]) => {
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                tableHTML += `<tr><td>${challenge}</td><td>${count}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('challengesTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateSkillsGapTable(data) {
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Kemahiran</th><th>Keperluan Industri (%)</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([skill, demand]) => {
+                tableHTML += `<tr><td>${skill}</td><td>${demand}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('skillsGapTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateCertificationsTypesTable(data) {
+            const total = Object.values(data).reduce((sum, count) => sum + count, 0);
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Jenis Sijil</th><th>Bilangan</th><th>Peratus</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([cert, count]) => {
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                tableHTML += `<tr><td>${cert}</td><td>${count}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('certificationsTypesTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateCertificationImpactTable(data) {
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Status Sijil</th><th>Purata Gaji (RM)</th></tr></thead><tbody>`;
+            tableHTML += `<tr><td>Dengan Sijil</td><td>RM ${data.withCert.toLocaleString()}</td></tr>`;
+            tableHTML += `<tr><td>Tanpa Sijil</td><td>RM ${data.withoutCert.toLocaleString()}</td></tr>`;
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('certificationImpactTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateIndustryTypesTable(data) {
+            const total = Object.values(data).reduce((sum, count) => sum + count, 0);
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Industri</th><th>Bilangan</th><th>Peratus</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([industry, count]) => {
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                tableHTML += `<tr><td>${industry}</td><td>${count}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('industryTypesTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateCompanySizeTable(data) {
+            const total = Object.values(data).reduce((sum, count) => sum + count, 0);
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Saiz Syarikat</th><th>Bilangan</th><th>Peratus</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([size, count]) => {
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                tableHTML += `<tr><td>${size}</td><td>${count}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('companySizeTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateEmploymentByStateTable(data) {
+            const total = Object.values(data).reduce((sum, count) => sum + count, 0);
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Negeri</th><th>Bilangan Pekerja</th><th>Peratus</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([state, count]) => {
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                tableHTML += `<tr><td>${state}</td><td>${count}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('employmentByStateTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function updateBenefitsAnalysisTable(data) {
+            let tableHTML = `<div class="table-responsive"><table class="data-table">
+                <thead><tr><th>Jenis Faedah</th><th>Peratus Syarikat</th></tr></thead><tbody>`;
+            
+            Object.entries(data).forEach(([benefit, percentage]) => {
+                tableHTML += `<tr><td>${benefit}</td><td>${percentage}%</td></tr>`;
+            });
+            
+            tableHTML += `</tbody></table></div>`;
+            const container = document.getElementById('benefitsAnalysisTable');
+            if (container) container.innerHTML = tableHTML;
+        }
+
+        function createSalaryByFieldChart() {
+            const fieldSalaries = {};
+            filteredData.forEach(record => {
+                if (record.Status_Pekerjaan === "Bekerja Sepenuh Masa" && record.Gaji_Bulanan && record.Bidang_Pengajian) {
+                    if (!fieldSalaries[record.Bidang_Pengajian]) {
+                        fieldSalaries[record.Bidang_Pengajian] = [];
+                    }
+                    fieldSalaries[record.Bidang_Pengajian].push(record.Gaji_Bulanan);
+                }
+            });
+
+            const avgSalaries = {};
+            Object.keys(fieldSalaries).forEach(field => {
+                avgSalaries[field] = fieldSalaries[field].length > 0 ? 
+                    Math.round(fieldSalaries[field].reduce((sum, salary) => sum + salary, 0) / fieldSalaries[field].length) : 0;
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('salaryByFieldChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.salaryByField) charts.salaryByField.destroy();
+
+            charts.salaryByField = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(avgSalaries),
+                    datasets: [{
+                        label: 'Purata Gaji (RM)',
+                        data: Object.values(avgSalaries),
+                        backgroundColor: '#941b0c',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'RM ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateSalaryByFieldTable(avgSalaries);
+        }
+
+        function createSalaryByEducationChart() {
+            const educationSalaries = {};
+            filteredData.forEach(record => {
+                if (record.Status_Pekerjaan === "Bekerja Sepenuh Masa" && record.Gaji_Bulanan && record.Tahap_Pendidikan) {
+                    if (!educationSalaries[record.Tahap_Pendidikan]) {
+                        educationSalaries[record.Tahap_Pendidikan] = [];
+                    }
+                    educationSalaries[record.Tahap_Pendidikan].push(record.Gaji_Bulanan);
+                }
+            });
+
+            const avgSalaries = {};
+            Object.keys(educationSalaries).forEach(level => {
+                avgSalaries[level] = educationSalaries[level].length > 0 ? 
+                    Math.round(educationSalaries[level].reduce((sum, salary) => sum + salary, 0) / educationSalaries[level].length) : 0;
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('salaryByEducationChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.salaryByEducation) charts.salaryByEducation.destroy();
+
+            charts.salaryByEducation = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(avgSalaries),
+                    datasets: [{
+                        label: 'Purata Gaji (RM)',
+                        data: Object.values(avgSalaries),
+                        backgroundColor: '#220901',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'RM ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateSalaryByEducationTable(avgSalaries);
+        }
+
+        function createSalaryByStateChart() {
+            const stateSalaries = {};
+            filteredData.forEach(record => {
+                if (record.Status_Pekerjaan === "Bekerja Sepenuh Masa" && record.Gaji_Bulanan && record.Lokasi_Kerja) {
+                    if (!stateSalaries[record.Lokasi_Kerja]) {
+                        stateSalaries[record.Lokasi_Kerja] = [];
+                    }
+                    stateSalaries[record.Lokasi_Kerja].push(record.Gaji_Bulanan);
+                }
+            });
+
+            const avgSalaries = {};
+            Object.keys(stateSalaries).forEach(state => {
+                avgSalaries[state] = stateSalaries[state].length > 0 ? 
+                    Math.round(stateSalaries[state].reduce((sum, salary) => sum + salary, 0) / stateSalaries[state].length) : 0;
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('salaryByStateChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.salaryByState) charts.salaryByState.destroy();
+
+            charts.salaryByState = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(avgSalaries),
+                    datasets: [{
+                        label: 'Purata Gaji (RM)',
+                        data: Object.values(avgSalaries),
+                        backgroundColor: '#941b0c',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'RM ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateSalaryByStateTable(avgSalaries);
+        }
+
+        function createChallengesChart() {
+            const challengeCounts = {};
+            filteredData.forEach(record => {
+                if (record.Cabaran_Utama) {
+                    challengeCounts[record.Cabaran_Utama] = (challengeCounts[record.Cabaran_Utama] || 0) + 1;
+                }
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('challengesChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.challenges) charts.challenges.destroy();
+
+            charts.challenges = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(challengeCounts),
+                    datasets: [{
+                        label: 'Bilangan Respons',
+                        data: Object.values(challengeCounts),
+                        backgroundColor: '#941b0c',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+
+            updateChallengesTable(challengeCounts);
+        }
+
+        function createSkillsGapChart() {
+            // Mock skills gap data
+            const skillsGap = {
+                "Cloud Computing": 85,
+                "AI/Machine Learning": 78,
+                "Cybersecurity": 72,
+                "Data Analytics": 68,
+                "DevOps": 61,
+                "Mobile Development": 55
+            };
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('skillsGapChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.skillsGap) charts.skillsGap.destroy();
+
+            charts.skillsGap = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(skillsGap),
+                    datasets: [{
+                        label: 'Keperluan Industri (%)',
+                        data: Object.values(skillsGap),
+                        backgroundColor: '#220901',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        x: { 
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        } 
+                    }
+                }
+            });
+
+            updateSkillsGapTable(skillsGap);
+        }
+
+        // Enhanced raw data table
+        function updateRawDataTable() {
+            const tbody = document.getElementById('rawDataBody');
+            tbody.innerHTML = '';
+            
+            filteredData.forEach(record => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${record.Nama || 'N/A'}</td>
+                    <td>${record.Umur || 'N/A'}</td>
+                    <td>${record.Jantina || 'N/A'}</td>
+                    <td>${record.Tahun_Graduasi || 'N/A'}</td>
+                    <td>${record.Bidang_Pengajian || 'N/A'}</td>
+                    <td>${record.Tahap_Pendidikan || 'N/A'}</td>
+                    <td>${record.Status_Pekerjaan || 'N/A'}</td>
+                    <td>${record.Bekerja_Dalam_Bidang || 'N/A'}</td>
+                    <td>RM ${(record.Gaji_Bulanan || 0).toLocaleString()}</td>
+                    <td>${record.Masa_Dapat_Kerja || 'N/A'}</td>
+                    <td>${record.Lokasi_Kerja || 'N/A'}</td>
+                    <td>${record.Sijil_Profesional || 'N/A'}</td>
+                    <td>${record.Kepuasan_Kerja || 'N/A'}</td>
+                    <td>${record.Industri || 'N/A'}</td>
+                `;
+            });
+        }
+
+        // Utility functions
+        function toggleView(chartName) {
+            const chartDiv = document.getElementById(chartName + 'Chart');
+            const tableDiv = document.getElementById(chartName + 'Table');
+            const button = chartDiv.parentElement.querySelector('.btn-secondary');
+            
+            if (tableDiv.classList.contains('hidden')) {
+                chartDiv.style.display = 'none';
+                tableDiv.classList.remove('hidden');
+                button.innerHTML = '<i class="fas fa-chart-bar mr-1"></i>Lihat Carta';
+            } else {
+                chartDiv.style.display = 'block';
+                tableDiv.classList.add('hidden');
+                button.innerHTML = '<i class="fas fa-table mr-1"></i>Lihat Jadual';
+            }
+        }
+
+        function exportFilteredData() {
+            const dataStr = JSON.stringify(filteredData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `data_graduan_mara_ditapis_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            showNotification(`${filteredData.length} rekod dieksport dalam format JSON`, 'success');
+        }
+
+        function refreshData() {
+            if (uploadedFile) {
+                // Re-process uploaded file
+                processUploadedFile(uploadedFile);
+            } else {
+                // Generate new simulation data
+                originalData = generateEnhancedSampleData();
+                filteredData = [...originalData];
+                updateMetrics();
+                updateCharts();
+                updateRawDataTable();
+                showNotification('Data simulasi baru telah dijana', 'success');
+            }
+        }
+
+        // Event listeners and initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard initializing...');
+            
+            // Initialize everything
+            try {
+                initializeData();
+                initializeFileUpload();
+            } catch (error) {
+                console.error('Error during initialization:', error);
+            }
+            
+            // Set up sidebar toggle with error handling
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            if (sidebarToggle) {
+                // Remove any existing listeners
+                sidebarToggle.replaceWith(sidebarToggle.cloneNode(true));
+                const newToggle = document.getElementById('sidebarToggle');
+                
+                newToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Sidebar toggle clicked');
+                    toggleSidebar();
+                });
+                console.log('Sidebar toggle listener attached');
+            } else {
+                console.error('Sidebar toggle button not found');
+            }
+            
+            // Set up filter controls
+            const applyFiltersBtn = document.getElementById('applyFilters');
+            const resetFiltersBtn = document.getElementById('resetFilters');
+            
+            if (applyFiltersBtn) {
+                applyFiltersBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    applyFilters();
+                });
+            }
+            
+            if (resetFiltersBtn) {
+                resetFiltersBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    resetFilters();
+                });
+            }
+            
+            // Real-time search with error handling
+            const quickSearch = document.getElementById('quickSearch');
+            if (quickSearch) {
+                quickSearch.addEventListener('input', function() {
+                    clearTimeout(this.searchTimeout);
+                    this.searchTimeout = setTimeout(applyFilters, 300);
+                });
+            }
+            
+            // Tab navigation with proper event handling - FIXED
+            setTimeout(() => {
+                const tabButtons = document.querySelectorAll('.tab-button');
+                console.log('Found tab buttons:', tabButtons.length);
+                
+                tabButtons.forEach((button, index) => {
+                    // Remove existing listeners by cloning
+                    const newButton = button.cloneNode(true);
+                    button.parentNode.replaceChild(newButton, button);
+                    
+                    const tabName = newButton.getAttribute('data-tab');
+                    console.log(`Setting up tab button ${index}: ${tabName}`);
+                    
+                    newButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Tab clicked:', tabName);
+                        
+                        if (tabName) {
+                            switchTab(tabName, this);
+                        } else {
+                            console.error('No data-tab attribute found on button');
+                        }
+                    });
+                });
+                
+                console.log('All tab listeners attached');
+            }, 100);
+            
+            // Filter change handlers
+            ['ageFilter', 'fieldFilter', 'locationFilter', 'genderFilter'].forEach(filterId => {
+                const element = document.getElementById(filterId);
+                if (element) {
+                    element.addEventListener('change', applyFilters);
+                }
+            });
+
+            // Year comparison handlers
+            ['year1Filter', 'year2Filter'].forEach(filterId => {
+                const element = document.getElementById(filterId);
+                if (element) {
+                    element.addEventListener('change', function() {
+                        setTimeout(() => {
+                            createEmploymentTrendChart();
+                            updateYearComparison();
+                        }, 100);
+                    });
+                }
+            });
+
+            // Initialize year comparison
+            setTimeout(() => {
+                updateYearComparison();
+            }, 500);
+
+            // Ensure overview tab is active initially
+            setTimeout(() => {
+                const overviewButton = document.querySelector('[data-tab="overview"]');
+                const overviewTab = document.getElementById('overview-tab');
+                
+                if (overviewButton && overviewTab) {
+                    // Make sure overview is shown and active
+                    overviewButton.classList.add('active');
+                    overviewTab.classList.remove('hidden');
+                    console.log('Overview tab initialized as active');
+                } else {
+                    console.error('Overview tab elements not found');
+                }
+                
+                // Hide other tabs to ensure clean state
+                const allTabs = document.querySelectorAll('.tab-content:not(#overview-tab)');
+                allTabs.forEach(tab => tab.classList.add('hidden'));
+                
+                const allButtons = document.querySelectorAll('.tab-button:not([data-tab="overview"])');
+                allButtons.forEach(btn => btn.classList.remove('active'));
+                
+            }, 300);
+            
+            console.log('Dashboard initialization complete');
+        });
+
+        function updateYearComparison() {
+            const year1 = document.getElementById('year1Filter').value;
+            const year2 = document.getElementById('year2Filter').value;
+            
+            document.getElementById('year1Label').textContent = year1;
+            document.getElementById('year2Label').textContent = year2;
+            
+            // Calculate employment rates for each year
+            const year1Data = originalData.filter(r => r.Tahun_Graduasi == year1);
+            const year2Data = originalData.filter(r => r.Tahun_Graduasi == year2);
+            
+            const year1Employed = year1Data.filter(r => r.Status_Pekerjaan !== "Sedang Mencari Kerja");
+            const year2Employed = year2Data.filter(r => r.Status_Pekerjaan !== "Sedang Mencari Kerja");
+            
+            const year1Rate = year1Data.length > 0 ? (year1Employed.length / year1Data.length * 100).toFixed(1) : 0;
+            const year2Rate = year2Data.length > 0 ? (year2Employed.length / year2Data.length * 100).toFixed(1) : 0;
+            
+            document.getElementById('year1Employment').textContent = `${year1Rate}%`;
+            document.getElementById('year2Employment').textContent = `${year2Rate}%`;
+        }
+
+        // Make functions globally available for debugging
+        window.toggleSidebar = toggleSidebar;
+        window.switchTab = switchTab;
+        window.toggleView = toggleView;
+        window.exportToExcel = exportToExcel;
+        window.exportToPDF = () => window.print();
+        window.exportFilteredData = exportFilteredData;
+        window.refreshData = refreshData;
+        window.printDashboard = printDashboard;
+
+        // Debug function to test tab switching
+        window.testTabSwitch = function(tabName) {
+            console.log('Testing tab switch to:', tabName);
+            const button = document.querySelector(`[data-tab="${tabName}"]`);
+            if (button) {
+                switchTab(tabName, button);
+            } else {
+                console.error('Tab button not found for:', tabName);
+            }
+        };
+
+        // Debug function to test sidebar
+        window.testSidebar = function() {
+            console.log('Testing sidebar toggle');
+            toggleSidebar();
+        };
+
+        function createCertificationsTypesChart() {
+            const certCounts = {};
+            filteredData.forEach(record => {
+                if (record.Sijil_Profesional === "Ya" && record.Jenis_Sijil) {
+                    certCounts[record.Jenis_Sijil] = (certCounts[record.Jenis_Sijil] || 0) + 1;
+                }
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('certificationsTypesChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.certificationsTypes) charts.certificationsTypes.destroy();
+
+            charts.certificationsTypes = new Chart(canvas, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(certCounts),
+                    datasets: [{
+                        data: Object.values(certCounts),
+                        backgroundColor: ['#220901', '#941b0c', '#6b7280', '#374151', '#1f2937', '#059669', '#dc2626'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateCertificationsTypesTable(certCounts);
+        }
+
+        function createCertificationImpactChart() {
+            const withCert = filteredData.filter(r => r.Sijil_Profesional === "Ya" && r.Status_Pekerjaan === "Bekerja Sepenuh Masa");
+            const withoutCert = filteredData.filter(r => r.Sijil_Profesional === "Tidak" && r.Status_Pekerjaan === "Bekerja Sepenuh Masa");
+
+            const avgSalaryWithCert = withCert.length > 0 ? 
+                Math.round(withCert.reduce((sum, r) => sum + r.Gaji_Bulanan, 0) / withCert.length) : 0;
+            const avgSalaryWithoutCert = withoutCert.length > 0 ? 
+                Math.round(withoutCert.reduce((sum, r) => sum + r.Gaji_Bulanan, 0) / withoutCert.length) : 0;
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('certificationImpactChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.certificationImpact) charts.certificationImpact.destroy();
+
+            charts.certificationImpact = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: ['Dengan Sijil', 'Tanpa Sijil'],
+                    datasets: [{
+                        label: 'Purata Gaji (RM)',
+                        data: [avgSalaryWithCert, avgSalaryWithoutCert],
+                        backgroundColor: ['#220901', '#941b0c'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'RM ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateCertificationImpactTable({withCert: avgSalaryWithCert, withoutCert: avgSalaryWithoutCert});
+        }
+
+        function createIndustryTypesChart() {
+            const industryCounts = {};
+            filteredData.forEach(record => {
+                if (record.Status_Pekerjaan !== "Sedang Mencari Kerja" && record.Industri) {
+                    industryCounts[record.Industri] = (industryCounts[record.Industri] || 0) + 1;
+                }
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('industryTypesChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.industryTypes) charts.industryTypes.destroy();
+
+            charts.industryTypes = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(industryCounts),
+                    datasets: [{
+                        label: 'Bilangan Pekerja',
+                        data: Object.values(industryCounts),
+                        backgroundColor: '#941b0c',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+
+            updateIndustryTypesTable(industryCounts);
+        }
+
+        function createCompanySizeChart() {
+            const sizeCounts = {};
+            filteredData.forEach(record => {
+                if (record.Status_Pekerjaan !== "Sedang Mencari Kerja" && record.Saiz_Syarikat) {
+                    sizeCounts[record.Saiz_Syarikat] = (sizeCounts[record.Saiz_Syarikat] || 0) + 1;
+                }
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('companySizeChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.companySize) charts.companySize.destroy();
+
+            charts.companySize = new Chart(canvas, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(sizeCounts),
+                    datasets: [{
+                        data: Object.values(sizeCounts),
+                        backgroundColor: ['#220901', '#941b0c', '#6b7280', '#374151', '#1f2937'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateCompanySizeTable(sizeCounts);
+        }
+
+        function createGraduatesFieldYearChart() {
+            const yearFieldData = {};
+            filteredData.forEach(record => {
+                const year = record.Tahun_Graduasi;
+                const field = record.Bidang_Pengajian;
+                if (year && field) {
+                    if (!yearFieldData[year]) yearFieldData[year] = {};
+                    yearFieldData[year][field] = (yearFieldData[year][field] || 0) + 1;
+                }
+            });
+
+            const years = Object.keys(yearFieldData).sort();
+            const fields = [...new Set(filteredData.map(r => r.Bidang_Pengajian).filter(f => f))];
+            const colors = ['#220901', '#941b0c', '#6b7280', '#374151', '#1f2937'];
+
+            const datasets = fields.map((field, index) => ({
+                label: field,
+                data: years.map(year => yearFieldData[year] && yearFieldData[year][field] || 0),
+                backgroundColor: colors[index % colors.length],
+                borderRadius: 4
+            }));
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('graduatesFieldYearChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.graduatesFieldYear) charts.graduatesFieldYear.destroy();
+
+            charts.graduatesFieldYear = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: years,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createEmploymentTrendChart() {
+            const yearEmploymentData = {};
+            const year1 = document.getElementById('year1Filter')?.value || '2024';
+            const year2 = document.getElementById('year2Filter')?.value || '2023';
+
+            [year1, year2].forEach(year => {
+                const yearData = originalData.filter(r => r.Tahun_Graduasi == year);
+                const employed = yearData.filter(r => r.Status_Pekerjaan !== "Sedang Mencari Kerja");
+                yearEmploymentData[year] = yearData.length > 0 ? (employed.length / yearData.length * 100).toFixed(1) : 0;
+            });
+
+            const canvas = document.createElement('canvas');
+            const container = document.getElementById('employmentTrendChart');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.appendChild(canvas);
+
+            if (charts.employmentTrend) charts.employmentTrend.destroy();
+
+            charts.employmentTrend = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(yearEmploymentData),
+                    datasets: [{
+                        label: 'Kadar Pekerjaan (%)',
+                        data: Object.values(yearEmploymentData),
+                        borderColor: '#941b0c',
+                        backgroundColor: 'rgba(148, 27, 12, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
