@@ -11,33 +11,569 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/dashboard.css') }}">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'primary': '#1989AC',
-                        'secondary': '#283E56', 
-                        'accent': '#E4003A',
-                        'light': '#FEF4E8',
-                        'dark': '#283E56',
-                        'blue': '#1989AC'
+                        'primary': '#222831',
+                        'secondary': '#F05454',
+                        'accent': '#DDDDDD',
+                        'light': '#F8F9FA',
+                        'dark': '#1A1D23'
                     },
                     fontFamily: {
                         'inter': ['Inter', 'sans-serif']
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.8s ease-out',
-                        'slide-up': 'slideUp 0.6s ease-out',
-                        'scale-in': 'scaleIn 0.5s ease-out',
-                        'pulse-soft': 'pulseSoft 3s ease-in-out infinite'
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'scale-in': 'scaleIn 0.4s ease-out',
+                        'pulse-soft': 'pulseSoft 2s ease-in-out infinite'
                     }
                 }
             }
         }
     </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F8F9FA;
+            color: #222831;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes pulseSoft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Full width container */
+        .full-width-container {
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            padding-left: 0;
+            padding-right: 0;
+        }
+        
+        .main-container {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .content-padding {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        
+        /* Modern Card Design */
+        .modern-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(34, 40, 49, 0.08);
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .modern-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: #F05454;
+        }
+        
+        .modern-card:hover {
+            border-color:rgb(78, 79, 82);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(34, 40, 49, 0.15);
+        }
+        
+        /* Metric Cards */
+        .metric-card {
+            background: #222831;
+            color: white;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+             border: 2px solid #E5E7EB;
+              border-radius: 20px;
+        }
+        
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: #F05454;
+            opacity: 0.1;
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 50px rgba(34, 40, 49, 0.3);
+        }
+        
+        .metric-card:nth-child(even) {
+            background: #F05454;
+        }
+        
+        .metric-card:nth-child(even)::after {
+            background: #222831;
+        }
+        
+        /* Chart Containers */
+        .chart-container {
+            position: relative;
+            padding: 3rem;
+            background: white;
+        }
+        
+        .chart-container.large { height: 500px; }
+        .chart-container.extra-large { height: 600px; }
+        .chart-container.wide { height: 450px; }
+        
+        /* Buttons */
+        .btn {
+            padding: 1rem 2rem;
+            font-weight: 700;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: none;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: #222831;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1A1D23;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(34, 40, 49, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #F05454;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #E04040;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(240, 84, 84, 0.4);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #222831;
+            border: 3px solid #222831;
+        }
+        
+        .btn-outline:hover {
+            background: #222831;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Navigation Tabs */
+        .nav-tab {
+            background: white;
+            border-radius: 16px;
+            border: 2px solid #DDDDDD;
+            padding: 1rem 1.5rem;
+            color: #222831;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+        
+        .nav-tab:hover {
+            border-color: #F05454;
+            color: #F05454;
+            transform: translateY(-2px);
+        }
+        
+        .nav-tab.active {
+            background: #222831;
+            color: white;
+            border-color: #222831;
+            border-radius: 16px;
+        }
+        
+    
+        
+        /* Form Elements */
+        .input {
+            background: white;
+            border: 3px solid #DDDDDD;
+            padding: 1rem 1.25rem;
+            color: #222831;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .input:focus {
+            outline: none;
+            border-color: #F05454;
+            box-shadow: 0 0 0 4px rgba(240, 84, 84, 0.1);
+        }
+        
+        /* Filter Badge */
+        .filter-badge {
+            background: #F05454;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            margin: 0.25rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Chart Action Buttons */
+        .chart-action-btn {
+            background: #222831;
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .chart-action-btn:hover {
+            background: #F05454;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(240, 84, 84, 0.3);
+        }
+        
+        /* Floating Buttons */
+        .floating-btn {
+            background: #F05454;
+            color: white;
+            width: 70px;
+            height: 70px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(240, 84, 84, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .floating-btn:hover {
+            background: #222831;
+            transform: scale(1.15);
+            box-shadow: 0 15px 40px rgba(34, 40, 49, 0.5);
+        }
+        
+        /* Header Design */
+        .header-modern {
+            background: #222831;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: #F05454;
+            opacity: 0.1;
+            border-radius: 50%;
+            transform: translate(100px, -100px);
+        }
+        
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #F05454;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse-soft 2s ease-in-out infinite;
+        }
+        
+        /* Progress Bars */
+        .progress-container {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            background: #F05454;
+            height: 100%;
+            transition: width 2s ease-out;
+            position: relative;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            padding: 1.5rem 2rem;
+            font-weight: 700;
+            transition: all 0.5s ease;
+            transform: translateX(100%);
+            opacity: 0;
+            max-width: 400px;
+            border: 3px solid;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .notification.success {
+            background: white;
+            color: #222831;
+            border-color: #F05454;
+        }
+        
+        .notification.error {
+            background: #F05454;
+            color: white;
+            border-color: #222831;
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(34, 40, 49, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .loading-content {
+            background: white;
+            padding: 4rem;
+            text-align: center;
+            border: 4px solid #F05454;
+        }
+        
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 6px solid #DDDDDD;
+            border-radius: 50%;
+            border-top-color: #F05454;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(34, 40, 49, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+            padding: 2rem;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 4rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 60px rgba(34, 40, 49, 0.5);
+            border: 4px solid #F05454;
+        }
+        
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            background: white;
+            border: 3px solid #DDDDDD;
+        }
+        
+        .table-hover:hover {
+            background: rgba(240, 84, 84, 0.05);
+        }
+        
+        /* Analysis Section */
+        .analysis-card {
+            background: #222831;
+            color: white;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .analysis-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: #F05454;
+        }
+        
+        /* Logo */
+        .logo-container {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo-img {
+            width: 80px;
+            height: 80px;
+            transition: all 0.3s ease;
+            border: 4px solid #F05454;
+        }
+        
+        .logo-img:hover {
+            transform: scale(1.1);
+            border-color: white;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F8F9FA;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #F05454;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #222831;
+        }
+        
+        /* Animation delays */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+        
+        /* Chart improvements */
+        .chart-modern {
+            position: relative;
+        }
+        
+        .chart-modern canvas {
+            border-radius: 0 !important;
+        }
+        
+        /* Remove any unwanted spacing */
+        * {
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
@@ -56,70 +592,44 @@
     <!-- Main Container - Full Width -->
     <div class="main-container min-h-screen">
         <!-- Header - Full Width -->
-        <!-- Main Container - Full Width -->
-    <div class="main-container min-h-screen">
-        <!-- Header - Full Width -->
         <header class="header-modern full-width-container mb-0">
-            <div class="content-padding py-6">
+            <div class="content-padding py-12">
                 <div class="flex items-center justify-between">
-                    <div class="logo-container flex items-center gap-8">
-                        <div class="flex items-center gap-4">
-                            <div class="logo-wrapper bg-white  p-3 rounded-xl backdrop-blur-sm border border-white border-opacity-20">
-                                <img src="https://www.uptm.edu.my/images/logo/LOGO_UPTM_no_bg_baru1.png" alt="UPTM Logo" class="h-12 w-auto object-contain">
-                            </div>
-                            <div class="hidden sm:block w-px h-12 bg-white bg-opacity-30"></div>
-                            
-                        </div>
-                        <div class="header-text">
-                            <h1 class="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight leading-tight">DATA REPOSITORI KEBOLEHPASARAN GRADUAN</h1>
-                            <p class="text-blue-100 font-medium mt-1 text-xs md:text-sm opacity-90">analysis kebolehpasaran & Prestasi Kerjaya graduan</p>
+                    <div class="logo-container flex items-center gap-6">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='white'/%3E%3Ctext x='50' y='35' text-anchor='middle' fill='%23222831' font-family='Inter, sans-serif' font-size='14' font-weight='bold'%3EMARA%3C/text%3E%3Ctext x='50' y='50' text-anchor='middle' fill='%23F05454' font-family='Inter, sans-serif' font-size='8'%3EPROFESSIONAL%3C/text%3E%3Ctext x='50' y='75' text-anchor='middle' fill='%23222831' font-family='Inter, sans-serif' font-size='20'%3E📊%3C/text%3E%3C/svg%3E" alt="MARA Logo" class="logo-img">
+                        <div>
+                            <h1 class="text-5xl font-black text-white mb-2 tracking-tight">ANALISIS GRADUAN</h1>
+                            <h2 class="text-2xl font-bold text-red-200 tracking-wide">MARA PROFESSIONAL</h2>
+                            <p class="text-gray-300 font-medium mt-3 text-lg">Dashboard Kebolehpasaran & Prestasi Kerjaya</p>
                         </div>
                     </div>
-
-                    <div class="flex items-center space-x-8">
+                    
+                    <div class="flex items-center space-x-12">
                         <div class="text-center">
-                            <p class="text-sm text-white font-medium">Jumlah Graduan</p>
-                            <p id="headerTotalGraduates" class="text-2xl font-bold text-accent">-</p>
+                            <p class="text-gray-300 font-bold text-sm mb-2 uppercase tracking-wider font-medium">Jumlah Graduan</p>
+                            <p id="headerTotalGraduates" class="text-4xl font-black text-white">-</p>
                         </div>
                         <div class="text-center">
-                            <p class="text-sm text-white font-medium">Kadar Kebolehpasaran</p>
-                            <p id="headerEmploymentRate" class="text-2xl font-bold text-accent">-</p>
+                            <p class="text-gray-300 font-bold text-sm mb-2 uppercase tracking-wider font-medium">Kebolehpasaran</p>
+                            <p id="headerEmploymentRate" class="text-4xl font-black text-secondary">-</p>
                         </div>
-                        <div class="logout-container">
-                            <button onclick="logout()" class="logout-btn">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span class="hidden sm:inline">Log Keluar</span>
-                            </button>
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Data Langsung</span>
                         </div>
-                    <script>
-                    function logout() {
-                        // Optional: Show a confirmation dialog
-                        if (confirm('Adakah anda pasti mahu log keluar?')) {
-                            // Redirect to the login page (default route)
-                            window.location.href = '/';
-                        }
-                    }
-
-                    // Alternative without confirmation dialog:
-                    function logoutDirect() {
-                        window.location.href = '/';
-                    }
-                    </script>
                     </div>
-                    
-                    
                 </div>
             </div>
         </header>
 
         <!-- Main Content -->
-        <div class="content-padding py-16 space-y-16">
+        <div class="content-padding py-12 space-y-12">
             <!-- Filter Section -->
-            <div class="modern-card filter-section p-12 animate-fade-in">
+            <div class="modern-card p-12 animate-fade-in">
                 <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-12 gap-8">
                     <div>
                         <h2 class="text-4xl font-black text-primary mb-4 tracking-tight">PENAPISAN DATA</h2>
-                        <p class="text-secondary font-medium text-lg opacity-80">Tapis data untuk analisis yang tepat sasaran dan mendalam</p>
+                        <p class="text-gray-600 font-semibold text-lg">Tapis data untuk analisis yang tepat sasaran dan mendalam</p>
                     </div>
                     <div class="flex flex-wrap gap-6">
                         <button class="btn btn-primary" onclick="toggleComparison()">
@@ -140,7 +650,7 @@
                 <!-- Filter Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
                     <div>
-                        <label class="block text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Tahun Graduasi</label>
+                        <label class="block text-sm font-black text-primary mb-4 uppercase tracking-wider">Tahun Graduasi</label>
                         <select id="yearFilter" class="input" onchange="applyFilters()">
                             <option value="">Semua Tahun</option>
                             <option value="2020">2020</option>
@@ -151,7 +661,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Bidang Pengajian</label>
+                        <label class="block text-sm font-black text-primary mb-4 uppercase tracking-wider">Bidang Pengajian</label>
                         <select id="fieldFilter" class="input" onchange="applyFilters()">
                             <option value="">Semua Bidang</option>
                             <option value="Teknologi Maklumat">Teknologi Maklumat</option>
@@ -165,7 +675,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Status Pekerjaan</label>
+                        <label class="block text-sm font-black text-primary mb-4 uppercase tracking-wider">Status Pekerjaan</label>
                         <select id="employmentFilter" class="input" onchange="applyFilters()">
                             <option value="">Semua Status</option>
                             <option value="Ya, bekerja sepenuh masa">Sepenuh Masa</option>
@@ -174,7 +684,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Jantina</label>
+                        <label class="block text-sm font-black text-primary mb-4 uppercase tracking-wider">Jantina</label>
                         <select id="genderFilter" class="input" onchange="applyFilters()">
                             <option value="">Semua Jantina</option>
                             <option value="Lelaki">Lelaki</option>
@@ -182,7 +692,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Institusi</label>
+                        <label class="block text-sm font-black text-primary mb-4 uppercase tracking-wider">Institusi</label>
                         <select id="institutionFilter" class="input" onchange="applyFilters()">
                             <option value="">Semua Institusi</option>
                             <option value="MARA Professional College">Kolej Profesional MARA</option>
@@ -193,29 +703,28 @@
                 </div>
                 
                 <!-- Active Filters -->
-                <div class="section-card p-8 rounded-xl">
+                <div class="bg-gray-100 p-8 border-3 border-accent">
                     <div class="flex items-center justify-between mb-6">
-                        <span class="text-lg font-bold text-secondary uppercase tracking-wider">Pilihan Aktif</span>
-                        <span id="filterCount" class="bg-secondary text-white px-6 py-3 rounded-full font-bold text-sm uppercase tracking-wider">0 Aktif</span>
+                        <span class="text-lg font-black text-primary uppercase tracking-wider">Penapis Aktif</span>
+                        <span id="filterCount" class="bg-secondary text-white px-6 py-3 font-black text-sm uppercase tracking-wider">0 Aktif</span>
                     </div>
                     <div id="activeFilters" class="flex flex-wrap gap-4 min-h-[3rem] items-center">
-                        <span class="text-secondary italic font-medium opacity-70">Tiada kriteria digunakan</span>
+                        <span class="text-gray-600 italic font-semibold">Tiada penapis digunakan</span>
                     </div>
                 </div>
             </div>
 
             <!-- Comparison Mode Panel -->
-            <div id="comparisonPanel" class="comparison-panel p-8 mb-8 hidden rounded-2xl shadow-lg animate-slide-up">
-                <h3 class="text-2xl font-semibold text-white mb-8">Perbandingan</h3>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                    <!-- Year Comparison -->
-                    <div class="section-card rounded-xl shadow-sm p-6">
-                        <h4 class="font-semibold text-primary mb-6">Perbandingan Tahun</h4>
-                        <div class="grid grid-cols-2 gap-4">
+            <div id="comparisonPanel" class="minimal-card p-6 mb-8 hidden animate-slide-up">
+                <h3 class="text-xl font-semibold text-dark-gray mb-6">Perbandingan Lanjutan</h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="comparison-card">
+                        <h4 class="font-medium text-gray-800 mb-4">Perbandingan Tahun</h4>
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-sm text-secondary mb-2 font-medium">Tahun 1</label>
-                                <select id="compareYear1" class="input" onchange="updateComparison()">
+                                <label class="block text-sm text-gray-600 mb-2">Tahun 1</label>
+                                <select id="compareYear1" class="filter-input" onchange="updateComparison()">
                                     <option value="">Pilih Tahun</option>
                                     <option value="2020">2020</option>
                                     <option value="2021">2021</option>
@@ -225,8 +734,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm text-secondary mb-2 font-medium">Tahun 2</label>
-                                <select id="compareYear2" class="input" onchange="updateComparison()">
+                                <label class="block text-sm text-gray-600 mb-2">Tahun 2</label>
+                                <select id="compareYear2" class="filter-input" onchange="updateComparison()">
                                     <option value="">Pilih Tahun</option>
                                     <option value="2020">2020</option>
                                     <option value="2021">2021</option>
@@ -237,14 +746,13 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Field Comparison -->
-                    <div class="section-card rounded-xl shadow-sm p-6">
-                        <h4 class="font-semibold text-primary mb-6">Perbandingan Bidang</h4>
-                        <div class="grid grid-cols-2 gap-4">
+                    
+                    <div class="comparison-card">
+                        <h4 class="font-medium text-gray-800 mb-4">Perbandingan Bidang</h4>
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-sm text-secondary mb-2 font-medium">Bidang 1</label>
-                                <select id="compareField1" class="input" onchange="updateComparison()">
+                                <label class="block text-sm text-gray-600 mb-2">Bidang 1</label>
+                                <select id="compareField1" class="filter-input" onchange="updateComparison()">
                                     <option value="">Pilih Bidang</option>
                                     <option value="Teknologi Maklumat">Teknologi Maklumat</option>
                                     <option value="Perniagaan">Perniagaan</option>
@@ -253,8 +761,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm text-secondary mb-2 font-medium">Bidang 2</label>
-                                <select id="compareField2" class="input" onchange="updateComparison()">
+                                <label class="block text-sm text-gray-600 mb-2">Bidang 2</label>
+                                <select id="compareField2" class="filter-input" onchange="updateComparison()">
                                     <option value="">Pilih Bidang</option>
                                     <option value="Teknologi Maklumat">Teknologi Maklumat</option>
                                     <option value="Perniagaan">Perniagaan</option>
@@ -264,14 +772,13 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Institution Comparison -->
-                    <div class="section-card rounded-xl shadow-sm p-6">
-                        <h4 class="font-semibold text-primary mb-6">Perbandingan Institusi</h4>
-                        <div class="grid grid-cols-2 gap-4">
+                    
+                    <div class="comparison-card">
+                        <h4 class="font-medium text-gray-800 mb-4">Perbandingan Institusi</h4>
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-sm text-secondary mb-2 font-medium">Institusi 1</label>
-                                <select id="compareInst1" class="input" onchange="updateComparison()">
+                                <label class="block text-sm text-gray-600 mb-2">Institusi 1</label>
+                                <select id="compareInst1" class="filter-input" onchange="updateComparison()">
                                     <option value="">Pilih Institusi</option>
                                     <option value="MARA Professional College">Kolej Profesional MARA</option>
                                     <option value="MARA University of Technology">Universiti Teknologi MARA</option>
@@ -279,8 +786,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm text-secondary mb-2 font-medium">Institusi 2</label>
-                                <select id="compareInst2" class="input" onchange="updateComparison()">
+                                <label class="block text-sm text-gray-600 mb-2">Institusi 2</label>
+                                <select id="compareInst2" class="filter-input" onchange="updateComparison()">
                                     <option value="">Pilih Institusi</option>
                                     <option value="MARA Professional College">Kolej Profesional MARA</option>
                                     <option value="MARA University of Technology">Universiti Teknologi MARA</option>
@@ -290,42 +797,44 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Comparison Results -->
                 <div id="comparisonResults" class="hidden">
-                    <h4 class="text-xl font-semibold text-white mb-8">Hasil Perbandingan</h4>
-
-                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
-                        <div class="section-card rounded-xl shadow p-6">
-                            <h5 class="font-medium text-primary mb-6">Perbandingan Kadar Kebolehpasaran</h5>
-                            <div class="chart-container chart-modern">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-6">Hasil Perbandingan</h4>
+                    
+                    <!-- Comparison Charts -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+                        <div class="minimal-card p-4">
+                            <h5 class="font-medium text-gray-800 mb-4">Perbandingan Kadar Kebolehpasaran</h5>
+                            <div class="chart-container">
                                 <canvas id="comparisonChart"></canvas>
                             </div>
                         </div>
-                        <div class="section-card rounded-xl shadow p-6">
-                            <h5 class="font-medium text-primary mb-6">Radar Prestasi</h5>
-                            <div class="chart-container chart-modern">
+                        
+                        <div class="minimal-card p-4">
+                            <h5 class="font-medium text-gray-800 mb-4">Radar Prestasi</h5>
+                            <div class="chart-container">
                                 <canvas id="comparisonRadarChart"></canvas>
                             </div>
                         </div>
                     </div>
-
+                    
                     <!-- Comparison Summary -->
-                    <div id="comparisonContent" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div id="comparisonContent" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Dynamic comparison results -->
                     </div>
                 </div>
             </div>
 
             <!-- Summary Metrics -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
                 <div class="metric-card p-8 animate-scale-in">
                     <div class="flex items-center justify-between relative z-10">
                         <div>
-                            <p class="text-blue-100 mb-3 font-bold text-sm uppercase tracking-wider opacity-80">Jumlah Graduan</p>
+                            <p class="text-gray-300 mb-3 font-bold text-sm uppercase tracking-wider">Jumlah Graduan</p>
                             <p id="totalGraduates" class="text-5xl font-black">-</p>
                         </div>
-                        <div class="w-20 h-20 bg-white bg-opacity-15 rounded-xl flex items-center justify-center text-3xl backdrop-filter backdrop-blur-sm">
+                        <div class="w-20 h-20 bg-white bg-opacity-20 flex items-center justify-center text-3xl">
                             <i class="fas fa-users"></i>
                         </div>
                     </div>
@@ -339,10 +848,10 @@
                 <div class="metric-card p-8 animate-scale-in delay-100">
                     <div class="flex items-center justify-between relative z-10">
                         <div>
-                            <p class="text-blue-100 mb-3 font-bold text-sm uppercase tracking-wider opacity-80">Kebolehpasaran</p>
+                            <p class="text-gray-300 mb-3 font-bold text-sm uppercase tracking-wider">Kebolehpasaran</p>
                             <p id="employmentRate" class="text-5xl font-black">-</p>
                         </div>
-                        <div class="w-20 h-20 bg-white bg-opacity-15 rounded-xl flex items-center justify-center text-3xl backdrop-filter backdrop-blur-sm">
+                        <div class="w-20 h-20 bg-white bg-opacity-20 flex items-center justify-center text-3xl">
                             <i class="fas fa-briefcase"></i>
                         </div>
                     </div>
@@ -356,10 +865,10 @@
                 <div class="metric-card p-8 animate-scale-in delay-200">
                     <div class="flex items-center justify-between relative z-10">
                         <div>
-                            <p class="text-blue-100 mb-3 font-bold text-sm uppercase tracking-wider opacity-80">Bidang Pengajian</p>
+                            <p class="text-gray-300 mb-3 font-bold text-sm uppercase tracking-wider">Bidang Pengajian</p>
                             <p id="fieldsCount" class="text-5xl font-black">-</p>
                         </div>
-                        <div class="w-20 h-20 bg-white bg-opacity-15 rounded-xl flex items-center justify-center text-3xl backdrop-filter backdrop-blur-sm">
+                        <div class="w-20 h-20 bg-white bg-opacity-20 flex items-center justify-center text-3xl">
                             <i class="fas fa-book"></i>
                         </div>
                     </div>
@@ -373,10 +882,10 @@
                 <div class="metric-card p-8 animate-scale-in delay-300">
                     <div class="flex items-center justify-between relative z-10">
                         <div>
-                            <p class="text-blue-100 mb-3 font-bold text-sm uppercase tracking-wider opacity-80">Tahun Diliputi</p>
+                            <p class="text-gray-300 mb-3 font-bold text-sm uppercase tracking-wider">Tahun Diliputi</p>
                             <p id="yearRange" class="text-5xl font-black">-</p>
                         </div>
-                        <div class="w-20 h-20 bg-white bg-opacity-15 rounded-xl flex items-center justify-center text-3xl backdrop-filter backdrop-blur-sm">
+                        <div class="w-20 h-20 bg-white bg-opacity-20 flex items-center justify-center text-3xl">
                             <i class="fas fa-calendar"></i>
                         </div>
                     </div>
@@ -391,43 +900,43 @@
             <!-- Navigation Tabs -->
             <div class="flex flex-wrap gap-4 mb-10">
                 <button class="nav-tab active" data-tab="overview" onclick="switchTab('overview')">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span class="hidden sm:inline">Gambaran Keseluruhan</span>
+                    <i class="fas fa-tachometer-alt text-xl"></i>
+                    <span>Gambaran Keseluruhan</span>
                 </button>
                 <button class="nav-tab" data-tab="employment" onclick="switchTab('employment')">
-                    <i class="fas fa-briefcase"></i>
-                    <span class="hidden sm:inline">Pekerjaan</span>
+                    <i class="fas fa-briefcase text-xl"></i>
+                    <span>Pekerjaan</span>
                 </button>
                 <button class="nav-tab" data-tab="salary" onclick="switchTab('salary')">
-                    <i class="fas fa-dollar-sign"></i>
-                    <span class="hidden sm:inline">Gaji</span>
+                    <i class="fas fa-dollar-sign text-xl"></i>
+                    <span>Gaji</span>
                 </button>
                 <button class="nav-tab" data-tab="outfield" onclick="switchTab('outfield')">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span class="hidden sm:inline">Luar Bidang</span>
+                    <i class="fas fa-exchange-alt text-xl"></i>
+                    <span>Luar Bidang</span>
                 </button>
                 <button class="nav-tab" data-tab="challenges" onclick="switchTab('challenges')">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span class="hidden sm:inline">Cabaran</span>
+                    <i class="fas fa-exclamation-triangle text-xl"></i>
+                    <span>Cabaran</span>
                 </button>
             </div>
 
             <!-- Tab Content -->
             <div class="tab-content-container">
                 <!-- Overview Tab -->
-                <div id="overview" class="tab-content space-y-10">
-                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                <div id="overview" class="tab-content space-y-8">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         <!-- Employment Status Chart -->
                         <div class="modern-card">
-                            <div class="p-8 border-b border-gray-100">
+                            <div class="p-8 border-b-3 border-accent">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Status Pekerjaan</h3>
-                                        <p class="text-secondary font-medium opacity-80">Taburan status pekerjaan semasa graduan</p>
+                                        <p class="text-gray-600 font-semibold">Taburan status pekerjaan semasa graduan</p>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                        <div id="employmentStatusTotal" class="text-3xl font-black text-accent">-</div>
+                                        <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                        <div id="employmentStatusTotal" class="text-3xl font-black text-secondary">-</div>
                                     </div>
                                 </div>
                             </div>
@@ -454,15 +963,15 @@
 
                         <!-- Job Types Chart -->
                         <div class="modern-card">
-                            <div class="p-8 border-b border-gray-100">
+                            <div class="p-8 border-b-3 border-accent">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Jenis Pekerjaan</h3>
-                                        <p class="text-secondary font-medium opacity-80">Taburan jenis pekerjaan graduan</p>
+                                        <p class="text-gray-600 font-semibold">Taburan jenis pekerjaan graduan</p>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                        <div id="jobTypesTotal" class="text-3xl font-black text-accent">-</div>
+                                        <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                        <div id="jobTypesTotal" class="text-3xl font-black text-secondary">-</div>
                                     </div>
                                 </div>
                             </div>
@@ -490,15 +999,15 @@
 
                     <!-- Time to Employment Chart -->
                     <div class="modern-card">
-                        <div class="p-8 border-b border-gray-100">
+                        <div class="p-8 border-b-3 border-accent">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Tempoh Mendapat Kerja</h3>
-                                    <p class="text-secondary font-medium opacity-80">Tempoh untuk mendapat kerja pertama selepas graduasi</p>
+                                    <p class="text-gray-600 font-semibold">Tempoh untuk mendapat kerja pertama selepas graduasi</p>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Graduan Bekerja</span>
-                                    <div id="timeToEmploymentTotal" class="text-3xl font-black text-accent">-</div>
+                                    <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Graduan Bekerja</span>
+                                    <div id="timeToEmploymentTotal" class="text-3xl font-black text-secondary">-</div>
                                 </div>
                             </div>
                         </div>
@@ -525,15 +1034,15 @@
 
                     <!-- Field and Year Chart -->
                     <div class="modern-card">
-                        <div class="p-8 border-b border-gray-100">
+                        <div class="p-8 border-b-3 border-accent">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Graduan Mengikut Bidang dan Tahun</h3>
-                                    <p class="text-secondary font-medium opacity-80">Trend merentasi bidang pengajian berlainan mengikut masa</p>
+                                    <p class="text-gray-600 font-semibold">Trend merentasi bidang pengajian berlainan mengikut masa</p>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Jumlah Graduan</span>
-                                    <div id="fieldYearTotal" class="text-3xl font-black text-accent">-</div>
+                                    <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Jumlah Graduan</span>
+                                    <div id="fieldYearTotal" class="text-3xl font-black text-secondary">-</div>
                                 </div>
                             </div>
                         </div>
@@ -560,19 +1069,19 @@
                 </div>
 
                 <!-- Employment Tab -->
-                <div id="employment" class="tab-content hidden space-y-10">
-                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                <div id="employment" class="tab-content hidden space-y-8">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         <!-- Success Factors -->
                         <div class="modern-card">
-                            <div class="p-8 border-b border-gray-100">
+                            <div class="p-8 border-b-3 border-accent">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Faktor Kejayaan</h3>
-                                        <p class="text-secondary font-medium opacity-80">Faktor utama yang membawa kepada kejayaan pekerjaan</p>
+                                        <p class="text-gray-600 font-semibold">Faktor utama yang membawa kepada kejayaan pekerjaan</p>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                        <div id="successFactorsTotal" class="text-3xl font-black text-accent">-</div>
+                                        <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                        <div id="successFactorsTotal" class="text-3xl font-black text-secondary">-</div>
                                     </div>
                                 </div>
                             </div>
@@ -599,15 +1108,15 @@
 
                         <!-- Employment Sectors -->
                         <div class="modern-card">
-                            <div class="p-8 border-b border-gray-100">
+                            <div class="p-8 border-b-3 border-accent">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Sektor Pekerjaan</h3>
-                                        <p class="text-secondary font-medium opacity-80">Taburan industri dan analisis sektor</p>
+                                        <p class="text-gray-600 font-semibold">Taburan industri dan analisis sektor</p>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                        <div id="employmentSectorsTotal" class="text-3xl font-black text-accent">-</div>
+                                        <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                        <div id="employmentSectorsTotal" class="text-3xl font-black text-secondary">-</div>
                                     </div>
                                 </div>
                             </div>
@@ -635,19 +1144,19 @@
                 </div>
 
                 <!-- Salary Tab -->
-                <div id="salary" class="tab-content hidden space-y-10">
-                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                <div id="salary" class="tab-content hidden space-y-8">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         <!-- Current Salary by Field -->
                         <div class="modern-card">
-                            <div class="p-8 border-b border-gray-100">
+                            <div class="p-8 border-b-3 border-accent">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Julat Gaji Mengikut Bidang</h3>
-                                        <p class="text-secondary font-medium opacity-80">Taburan gaji semasa merentasi bidang</p>
+                                        <p class="text-gray-600 font-semibold">Taburan gaji semasa merentasi bidang</p>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                        <div id="salaryByFieldTotal" class="text-3xl font-black text-accent">-</div>
+                                        <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                        <div id="salaryByFieldTotal" class="text-3xl font-black text-secondary">-</div>
                                     </div>
                                 </div>
                             </div>
@@ -674,15 +1183,15 @@
 
                         <!-- Salary Expectations vs Reality -->
                         <div class="modern-card">
-                            <div class="p-8 border-b border-gray-100">
+                            <div class="p-8 border-b-3 border-accent">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Jangkaan vs Realiti Gaji</h3>
-                                        <p class="text-secondary font-medium opacity-80">Perbandingan gaji jangkaan dengan sebenar</p>
+                                        <p class="text-gray-600 font-semibold">Perbandingan gaji jangkaan dengan sebenar</p>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                        <div id="salaryComparisonTotal" class="text-3xl font-black text-accent">-</div>
+                                        <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                        <div id="salaryComparisonTotal" class="text-3xl font-black text-secondary">-</div>
                                     </div>
                                 </div>
                             </div>
@@ -710,19 +1219,19 @@
                 </div>
 
                 <!-- Out-of-Field Tab -->
-                <div id="outfield" class="tab-content hidden space-y-10">
-                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                <div id="outfield" class="tab-content hidden space-y-8">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         <!-- Out-of-Field Job Types -->
                         <div class="modern-card">
-                            <div class="p-8 border-b border-gray-100">
+                            <div class="p-8 border-b-3 border-accent">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Jenis Pekerjaan Luar Bidang</h3>
-                                        <p class="text-secondary font-medium opacity-80">Jenis pekerjaan untuk graduan yang bekerja di luar bidang</p>
+                                        <p class="text-gray-600 font-semibold">Jenis pekerjaan untuk graduan yang bekerja di luar bidang</p>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                        <div id="outOfFieldJobsTotal" class="text-3xl font-black text-accent">-</div>
+                                        <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                        <div id="outOfFieldJobsTotal" class="text-3xl font-black text-secondary">-</div>
                                     </div>
                                 </div>
                             </div>
@@ -749,15 +1258,15 @@
 
                         <!-- Out-of-Field Reasons -->
                         <div class="modern-card">
-                            <div class="p-8 border-b border-gray-100">
+                            <div class="p-8 border-b-3 border-accent">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Sebab Bekerja Luar Bidang</h3>
-                                        <p class="text-secondary font-medium opacity-80">Sebab graduan bekerja di luar bidang mereka</p>
+                                        <p class="text-gray-600 font-semibold">Sebab graduan bekerja di luar bidang mereka</p>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                        <div id="outOfFieldReasonsTotal" class="text-3xl font-black text-accent">-</div>
+                                        <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                        <div id="outOfFieldReasonsTotal" class="text-3xl font-black text-secondary">-</div>
                                     </div>
                                 </div>
                             </div>
@@ -785,15 +1294,15 @@
 
                     <!-- Academic Skills Requirement -->
                     <div class="modern-card">
-                        <div class="p-8 border-b border-gray-100">
+                        <div class="p-8 border-b-3 border-accent">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Keperluan Kemahiran Akademik</h3>
-                                    <p class="text-secondary font-medium opacity-80">Sama ada pekerjaan di luar bidang masih memerlukan kemahiran akademik</p>
+                                    <p class="text-gray-600 font-semibold">Sama ada pekerjaan di luar bidang masih memerlukan kemahiran akademik</p>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                    <div id="academicSkillsTotal" class="text-3xl font-black text-accent">-</div>
+                                    <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                    <div id="academicSkillsTotal" class="text-3xl font-black text-secondary">-</div>
                                 </div>
                             </div>
                         </div>
@@ -820,18 +1329,18 @@
                 </div>
 
                 <!-- Challenges Tab -->
-                <div id="challenges" class="tab-content hidden space-y-10">
+                <div id="challenges" class="tab-content hidden space-y-8">
                     <!-- Job Search Challenges -->
                     <div class="modern-card">
-                        <div class="p-8 border-b border-gray-100">
+                        <div class="p-8 border-b-3 border-accent">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Cabaran Utama Mendapat Kerja</h3>
-                                    <p class="text-secondary font-medium opacity-80">Halangan utama yang dihadapi oleh graduan</p>
+                                    <p class="text-gray-600 font-semibold">Halangan utama yang dihadapi oleh graduan</p>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                    <div id="jobChallengesTotal" class="text-3xl font-black text-accent">-</div>
+                                    <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                    <div id="jobChallengesTotal" class="text-3xl font-black text-secondary">-</div>
                                 </div>
                             </div>
                         </div>
@@ -858,15 +1367,15 @@
 
                     <!-- Support Needed -->
                     <div class="modern-card">
-                        <div class="p-8 border-b border-gray-100">
+                        <div class="p-8 border-b-3 border-accent">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Sokongan Diperlukan</h3>
-                                    <p class="text-secondary font-medium opacity-80">Jenis sokongan yang diperlukan graduan untuk kejayaan</p>
+                                    <p class="text-gray-600 font-semibold">Jenis sokongan yang diperlukan graduan untuk kejayaan</p>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
-                                    <div id="supportNeededTotal" class="text-3xl font-black text-accent">-</div>
+                                    <span class="text-xs text-gray-600 font-bold uppercase tracking-wider">Respons</span>
+                                    <div id="supportNeededTotal" class="text-3xl font-black text-secondary">-</div>
                                 </div>
                             </div>
                         </div>
@@ -920,6 +1429,21 @@
             </div>
         </div>
     </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-8 right-8 flex flex-col gap-6 z-40">
+        <button class="floating-btn" title="Segar Semula Data" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+        <button class="floating-btn" title="Eksport Laporan" onclick="exportReport()">
+            <i class="fas fa-file-export"></i>
+        </button>
+        <button class="floating-btn" title="Tetapan" onclick="showSettings()">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+  
 
     <script src="{{ url_for('static', filename='JS/dashboard.js') }}"></script>
 </body>
