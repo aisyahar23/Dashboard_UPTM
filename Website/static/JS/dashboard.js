@@ -137,7 +137,7 @@ async function apiCall(endpoint) {
         
         const url = urlParams.toString() ? `${endpoint}?${urlParams.toString()}` : endpoint;
         
-        const response = await fetch(`http://localhost:5000${url}`);
+        const response = await fetch(`${url}`);
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
