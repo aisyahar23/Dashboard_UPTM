@@ -380,6 +380,10 @@ def process_checkbox_data(responses, predefined_options=None):
     
     return list(labels), list(data), valid_responses
 
+def createApp():
+    """Factory function that returns the existing app instance"""
+    return app
+
 @app.route('/')
 def index():
     return render_template('login.html')  # This page

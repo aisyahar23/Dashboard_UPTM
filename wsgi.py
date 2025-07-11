@@ -1,2 +1,4 @@
-from Website import createApp
-app = createApp()
+from app import app
+
+if __name__ == "__main__":
+    app.run()
