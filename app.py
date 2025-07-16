@@ -13,181 +13,27 @@ CORS(app)  # Enable CORS for all routes
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Create comprehensive sample data with proper Malay column names
-def create_sample_data():
-    np.random.seed(42)
-    sample_size = 1000  # Increased sample size for better analysis
-    
-    return pd.DataFrame({
-        # Employment Status
-        'Adakah anda kini bekerja?': np.random.choice([
-            'Ya, bekerja sepenuh masa', 
-            'Tidak, sedang mencari pekerjaan', 
-            'Ya, bekerja separuh masa'
-        ], sample_size, p=[0.72, 0.18, 0.1]),
-        
-        # Job Types
-        'Apakah jenis pekerjaan anda sekarang': np.random.choice([
-            'Bekerja dalam bidang pengajian',
-            'Bekerja di luar bidang pengajian', 
-            'Pekerja ekonomi gig (Grab, Shopee, freelancer, dsb.)',
-            'Tidak bekerja',
-            'Mengusahakan perniagaan sendiri'
-        ], sample_size, p=[0.45, 0.25, 0.15, 0.1, 0.05]),
-        
-        # Time to Employment
-        'Jika bekerja, berapa lama selepas tamat pengajian anda mendapat pekerjaan pertama?': np.random.choice([
-            'Kurang dari 3 bulan',
-            '3-6 bulan', 
-            '6-12 bulan',
-            'Lebih dari 1 tahun'
-        ], sample_size, p=[0.4, 0.3, 0.2, 0.1]),
-        
-        # Study Fields
-        'Bidang pengajian utama anda? ': np.random.choice([
-            'Teknologi Maklumat', 'Perniagaan', 'Kejuruteraan', 
-            'Perakaunan', 'Pemasaran', 'Sains Komputer',
-            'Pengurusan', 'Kewangan'
-        ], sample_size),
-        
-        # Graduation Years
-        'Tahun graduasi anda? ': np.random.choice([2020, 2021, 2022, 2023, 2024], sample_size),
-        
-        # Current Salary
-        'Berapakah julat gaji bulanan anda sekarang?': np.random.choice([
-            'RM1000-RM1999', 'RM2000-RM2999', 'RM3000-RM3999', 
-            'RM4000-RM4999', 'RM5000-RM5999', 'RM6000 ke atas'
-        ], sample_size, p=[0.15, 0.25, 0.25, 0.2, 0.1, 0.05]),
-        
-        # Expected Salary
-        'Apakah jangkaan gaji permulaan yang anda anggap sesuai dengan kelulusan anda?': np.random.choice([
-            'RM1000-RM1999', 'RM2000-RM2999', 'RM3000-RM3999', 
-            'RM4000-RM4999', 'RM5000 ke atas'
-        ], sample_size, p=[0.3, 0.35, 0.2, 0.1, 0.05]),
-        
-        # Out of field reasons
-        'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?': np.random.choice([
-            'Tiada peluang dalam bidang',
-            'Gaji lebih tinggi di luar bidang',
-            'Minat peribadi',
-            'Peluang kerjaya lebih baik',
-            'Lokasi kerja sesuai'
-        ], sample_size),
-        
-        # Academic skills requirement
-        'Jika anda bekerja di luar bidang pengajian, adakah pekerjaan tersebut masih memerlukan kemahiran akademik anda?': np.random.choice([
-            'Ya', 'Tidak', 'Sebahagiannya'
-        ], sample_size, p=[0.6, 0.2, 0.2]),
-        
-        # Job Challenges - Updated with 12 options in Malay (CHECKBOX DATA)
-        'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?': [
-            generate_checkbox_response([
-                'Tiada pengalaman kerja yang mencukupi',
-                'Terlalu banyak persaingan dalam bidang saya',
-                'Kekurangan kemahiran yang dicari majikan',
-                'Gaji yang ditawarkan terlalu rendah',
-                'Saya tidak tahu bagaimana mencari pekerjaan yang sesuai',
-                'Tiada rangkaian atau hubungan yang boleh membantu saya mendapatkan pekerjaan',
-                'Kriteria pekerjaan tidak sesuai dengan kelayakan akademik saya',
-                'Kebanyakan syarikat lebih memilih pekerja yang sudah berpengalaman',
-                'Tiada peluang pekerjaan dalam bidang saya di kawasan tempat tinggal saya',
-                'Saya perlu menjaga keluarga dan sukar untuk bekerja di luar kawasan',
-                'Proses permohonan kerja terlalu kompleks atau mengambil masa yang lama',
-                'Keadaan ekonomi semasa menyukarkan peluang pekerjaan'
-            ]) for _ in range(sample_size)
-        ],
-        
-        # Success Factors (CHECKBOX DATA)
-        'Apakah faktor utama yang membantu anda mendapat pekerjaan tersebut?': [
-            generate_checkbox_response([
-                'Melalui latihan industri / praktikal',
-                'Permohonan terus kepada syarikat (JobStreet, LinkedIn, laman web syarikat)',
-                'Program kerajaan (contoh: MySTEP, Protege, SL1M)',
-                'Rangkaian peribadi / kenalan (pensyarah, alumni, keluarga, rakan)',
-                'Melalui pameran kerjaya atau job fair',
-                'Tawaran daripada syarikat sebelum tamat pengajian',
-                'Dihubungi oleh perekrut atau headhunter',
-                'Memulakan perniagaan sendiri / bekerja dalam ekonomi gig'
-            ]) for _ in range(sample_size)
-        ],
-        
-        # Employment Sectors
-        'Apakah sektor pekerjaan anda?': np.random.choice([
-            'Sektor Swasta',
-            'Sektor Kerajaan',
-            'GLC (Government-Linked Companies)',
-            'Syarikat Multinasional',
-            'Startup/SME',
-            'NGO/Nonprofit'
-        ], sample_size, p=[0.4, 0.25, 0.15, 0.1, 0.08, 0.02]),
-        
-        # Professional Certifications
-        'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?': np.random.choice([
-            'Ya', 'Tidak'
-        ], sample_size, p=[0.3, 0.7]),
-        
-        # Internship
-        'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?': np.random.choice([
-            'Ya', 'Tidak'
-        ], sample_size, p=[0.65, 0.35]),
-        
-        # University Preparation
-        'Sejauh mana anda bersetuju bahawa universiti telah menyediakan anda untuk pasaran kerja?': np.random.choice([
-            'Sangat setuju', 'Setuju', 'Neutral', 'Tidak setuju', 'Sangat tidak setuju'
-        ], sample_size, p=[0.2, 0.4, 0.25, 0.1, 0.05]),
-        
-        # Gig Economy
-        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?': np.random.choice([
-            'Ya, aktif terlibat', 'Kadang-kadang', 'Tidak terlibat'
-        ], sample_size, p=[0.25, 0.35, 0.4]),
-        
-        # Support Needed (CHECKBOX DATA) - Fixed the categories as mentioned in the paste
-        'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?': [
-            generate_checkbox_response([
-                'Latihan teknikal dalam bidang spesifik (design, coding, pemasaran digital)',
-                'Bimbingan dalam pengurusan kewangan dan cukai untuk pekerja gig',
-                'Platform khas untuk graduan MARA dalam ekonomi gig',
-                'Pinjaman atau geran untuk membangunkan perniagaan gig',
-                'Perlindungan sosial (KWSP, PERKESO, insurans)'
-            ]) for _ in range(sample_size)
-        ],
-        
-        # Gender
-        'Jantina anda? ': np.random.choice(['Lelaki', 'Perempuan'], sample_size),
-        
-        # Age
-        'Umur anda? ': np.random.randint(22, 35, sample_size),
-        
-        # Institution
-        'Institusi pendidikan MARA yang anda hadiri? ': np.random.choice([
-            'MARA Professional College',
-            'MARA University of Technology',
-            'MARA Skills Institute'
-        ], sample_size)
-    })
-
-def generate_checkbox_response(options, min_choices=1, max_choices=3):
-    """Generate realistic checkbox responses"""
-    num_choices = np.random.randint(min_choices, min(max_choices + 1, len(options)))
-    selected = np.random.choice(options, size=num_choices, replace=False)
-    return ', '.join(selected)
-
-# Load data
+# FIXED: Load real CSV data instead of creating sample data
 try:
-    df = pd.read_csv('SOAL_SELIDIK_GRADUATE.csv')
-    logger.info("✅ CSV file loaded successfully!")
-    logger.info(f"Data shape: {df.shape}")
+    df = pd.read_csv('latest_soal_selidk.csv', encoding='utf-8')
+    logger.info(f"✅ Real CSV file loaded successfully! Shape: {df.shape}")
     logger.info(f"Columns: {list(df.columns)}")
 except FileNotFoundError:
-    logger.warning("📁 CSV file not found. Creating sample data...")
-    df = create_sample_data()
-    logger.info(f"Sample data created with shape: {df.shape}")
+    logger.error("❌ CSV file 'latest_soal_selidk.csv' not found!")
+    # Create minimal sample data as fallback
+    df = pd.DataFrame({
+        'Adakah anda kini bekerja?': ['Ya'] * 39,
+        'Bidang pengajian utama anda? ': ['IT'] * 39
+    })
+    logger.warning("⚠️ Using minimal fallback data")
+except Exception as e:
+    logger.error(f"❌ Error loading CSV: {str(e)}")
+    df = pd.DataFrame()
 
 def clean_data():
     global df
     df = df.fillna('Tidak Dinyatakan')
     logger.info(f"✅ Data processed successfully. Shape: {df.shape}")
-    return df
 
 clean_data()
 
@@ -233,7 +79,7 @@ def find_column_fuzzy(df, target_columns):
                 return col
     return None
 
-# Enhanced column mapping
+# Enhanced column mapping with REAL column names from CSV
 COLUMN_MAPPING = {
     'employment_status': 'Adakah anda kini bekerja?',
     'job_type': 'Apakah jenis pekerjaan anda sekarang',
@@ -254,7 +100,22 @@ COLUMN_MAPPING = {
     'support_needed': 'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?',
     'gender': 'Jantina anda? ',
     'age': 'Umur anda? ',
-    'institution': 'Institusi pendidikan MARA yang anda hadiri? '
+    'institution': 'Institusi pendidikan MARA yang anda hadiri? ',
+    # NEW: Added missing mappings
+    'financing_advantage': 'Adakah jenis pembiayaan ini memberi kelebihan dalam mencari kerja?',
+    'li_impact': 'Sejauh mana latihan industri/praktikal mempengaruhi kebolehpasaran anda?',
+    'communication_impact': 'Sejauh mana Kemahiran Komunikasi  mempengaruhi kebolehpasaran anda?',
+    'technical_impact': 'Sejauh mana kemahiran teknikal mempengaruhi kebolehpasaran anda?',
+    'networking_impact': 'Sejauh mana rangkaian peribadi (networking) mempengaruhi kebolehpasaran anda?',
+    'academic_impact': 'Sejauh mana kelayakan akademik mempengaruhi kebolehpasaran anda?',
+    'entrepreneurship_training': 'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?',
+    'uni_gig_programs': 'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
+    'program_helpful': 'Adakah program berkaitan perniagaan atau ekonomi gig di universiti membantu anda dalam memulakan atau mengembangkan pekerjaan bebas anda?',
+    'gig_reasons': 'Apakah sebab utama anda memilih untuk bekerja dalam ekonomi gig? ',
+    'gig_skills_source': 'Bagaimanakah anda memperoleh kemahiran untuk bekerja dalam ekonomi gig?',
+    'gig_challenges': 'Apakah cabaran utama yang anda hadapi dalam keusahawanan atau ekonomi gig?',
+    'gig_income': 'Berapakah purata pendapatan bulan anda daripada ekonomi gig?',
+    'gig_vs_permanent': 'Jika diberikan peluang pekerjaan tetap dengan gaji setanding ekonomi gig, adakah anda akan menerimanya?'
 }
 
 def get_column(key):
@@ -334,9 +195,8 @@ def create_table_data(labels, data, label_key='label', count_key='count'):
     
     return table_data
 
-
 def process_checkbox_data(responses, predefined_options=None):
-    """Process checkbox-style responses where multiple options can be selected - FIXED VERSION"""
+    """Process checkbox-style responses where multiple options can be selected"""
     if responses is None or len(responses) == 0:
         return [], [], 0
     
@@ -352,7 +212,6 @@ def process_checkbox_data(responses, predefined_options=None):
     valid_responses = 0
     
     for response in responses:
-        # FIXED: Proper null checking for pandas compatibility
         if response is None or pd.isna(response) or str(response).strip() == '' or str(response) == 'Tidak Dinyatakan':
             continue
         valid_responses += 1
@@ -380,19 +239,41 @@ def process_checkbox_data(responses, predefined_options=None):
     
     return list(labels), list(data), valid_responses
 
+def filter_employed_only(filtered_df):
+    """Filter to exclude 'Tidak, sedang mencari pekerjaan' from employment status"""
+    employment_col = find_column_smart(filtered_df, ['employment_status'])
+    if employment_col and employment_col in filtered_df.columns:
+        # FIXED: Exclude unemployed people
+        employed_df = filtered_df[filtered_df[employment_col] != 'Tidak, sedang mencari pekerjaan'].copy()
+        logger.info(f"🔄 Employed filter: {len(filtered_df)} -> {len(employed_df)} (excluded 'Tidak, sedang mencari pekerjaan')")
+        return employed_df
+    return filtered_df
+
+def filter_gig_interested_only(filtered_df):
+    """Filter to exclude 'Tidak berminat' from gig economy questions"""
+    gig_col = find_column_smart(filtered_df, ['gig_economy'])
+    if gig_col and gig_col in filtered_df.columns:
+        # FIXED: Exclude not interested in gig economy
+        gig_interested_df = filtered_df[~filtered_df[gig_col].str.contains('Tidak berminat', case=False, na=False)].copy()
+        logger.info(f"🔄 Gig interested filter: {len(filtered_df)} -> {len(gig_interested_df)} (excluded 'Tidak berminat')")
+        return gig_interested_df
+    return filtered_df
+
 def createApp():
     """Factory function that returns the existing app instance"""
     return app
 
 @app.route('/')
 def index():
-    return render_template('login.html')  # This page
+    return render_template('login.html')
 
 @app.route('/dashboard') 
 def dashboard():
-    return render_template('dashboard.html')  # Your dashboard page 
+    return render_template('dashboard.html')
 
-# 1. Enhanced Employment Status API with proper response count
+# ===== EXISTING GRAPHS (1-8) =====
+
+# 1. Employment Status API
 @app.route('/api/employment-status')
 def employment_status():
     try:
@@ -434,7 +315,6 @@ def employment_status():
         employment_rate = round((employed_count / total) * 100, 1) if total > 0 else 0
         unemployment_rate = round((unemployed_count / total) * 100, 1) if total > 0 else 0
         
-        # Create table data
         table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'status', 'count')
         
         result = {
@@ -445,7 +325,7 @@ def employment_status():
             'table_data': table_data,
             'analysis': {
                 'total_graduates': total,
-                'total_responses': total,  # FIXED: Added this field
+                'total_responses': total,
                 'employment_rate': employment_rate,
                 'unemployment_rate': unemployment_rate,
                 'employed_count': employed_count,
@@ -458,7 +338,7 @@ def employment_status():
         logger.error(f"❌ Error in employment_status: {str(e)}")
         return safe_api_response(str(e), False)
 
-# 2. Enhanced Job Types API with proper response count
+# 2. Job Types API
 @app.route('/api/job-types')
 def job_types():
     try:
@@ -492,7 +372,7 @@ def job_types():
             },
             'table_data': table_data,
             'analysis': {
-                'total_responses': len(clean_data),  # FIXED: Added this field
+                'total_responses': len(clean_data),
                 'most_common_type': str(data.idxmax()) if len(data) > 0 else 'N/A'
             }
         }
@@ -502,7 +382,7 @@ def job_types():
         logger.error(f"❌ Error in job_types: {str(e)}")
         return safe_api_response(str(e), False)
 
-# 3. Enhanced Time to Employment API
+# 3. Time to Employment API
 @app.route('/api/time-to-employment')
 def time_to_employment():
     try:
@@ -535,8 +415,8 @@ def time_to_employment():
             },
             'table_data': table_data,
             'analysis': {
-                'total_employed_surveyed': len(employed_df),  # FIXED: Added this field
-                'total_responses': len(employed_df),  # FIXED: Added this field
+                'total_employed_surveyed': len(employed_df),
+                'total_responses': len(employed_df),
                 'quick_employment_rate': round((data.iloc[0] / len(employed_df)) * 100, 1) if len(data) > 0 else 0
             }
         }
@@ -546,7 +426,7 @@ def time_to_employment():
         logger.error(f"❌ Error in time_to_employment: {str(e)}")
         return safe_api_response(str(e), False)
 
-# 4. Enhanced Graduates by Field and Year API
+# 4. Graduates by Field and Year API
 @app.route('/api/graduates-by-field-year')
 def graduates_by_field_year():
     try:
@@ -615,8 +495,8 @@ def graduates_by_field_year():
             'analysis': {
                 'total_years_covered': len(cross_tab.index),
                 'total_fields': len(cross_tab.columns),
-                'total_graduates': total_graduates,  # FIXED: Added this field
-                'total_responses': total_graduates,  # FIXED: Added this field
+                'total_graduates': total_graduates,
+                'total_responses': total_graduates,
                 'peak_year': str(cross_tab.sum(axis=1).idxmax()) if len(cross_tab) > 0 else 'N/A',
                 'most_popular_field': str(cross_tab.sum(axis=0).idxmax()) if len(cross_tab.columns) > 0 else 'N/A'
             }
@@ -627,7 +507,7 @@ def graduates_by_field_year():
         logger.error(f"❌ Error in graduates_by_field_year: {str(e)}")
         return safe_api_response(str(e), False)
 
-# 5. Enhanced Current Salary by Field API
+# 5. Current Salary by Field API
 @app.route('/api/current-salary-by-field')
 def current_salary_by_field():
     try:
@@ -689,8 +569,8 @@ def current_salary_by_field():
             'chart_data': chart_data,
             'table_data': table_data,
             'analysis': {
-                'total_working_graduates': len(working_df),  # FIXED: Added this field
-                'total_responses': len(working_df),  # FIXED: Added this field
+                'total_working_graduates': len(working_df),
+                'total_responses': len(working_df),
                 'fields_analyzed': len(cross_tab.index)
             }
         }
@@ -700,7 +580,7 @@ def current_salary_by_field():
         logger.error(f"❌ Error in current_salary_by_field: {str(e)}")
         return safe_api_response(str(e), False)
 
-# 6. Enhanced Salary Comparison API
+# 6. Salary Comparison API
 @app.route('/api/salary-comparison')
 def salary_comparison():
     try:
@@ -767,7 +647,7 @@ def salary_comparison():
             'analysis': {
                 'current_responses': current_responses,
                 'expected_responses': expected_responses,
-                'total_responses': max(current_responses, expected_responses)  # FIXED: Added this field
+                'total_responses': max(current_responses, expected_responses)
             }
         }
         
@@ -776,7 +656,7 @@ def salary_comparison():
         logger.error(f"❌ Error in salary_comparison: {str(e)}")
         return safe_api_response(str(e), False)
 
-# 7. Enhanced Out-of-Field Analysis API
+# 7. Out-of-Field Analysis API
 @app.route('/api/out-of-field-analysis')
 def out_of_field_analysis():
     try:
@@ -809,7 +689,7 @@ def out_of_field_analysis():
                 'total_out_of_field': len(out_of_field_df),
                 'percentage_of_total': round((len(out_of_field_df) / len(filtered_df)) * 100, 1) if len(filtered_df) > 0 else 0,
                 'total_graduates': len(filtered_df),
-                'total_responses': len(filtered_df)  # FIXED: Added this field
+                'total_responses': len(filtered_df)
             }
         }
         
@@ -863,7 +743,7 @@ def out_of_field_analysis():
         logger.error(f"❌ Error in out_of_field_analysis: {str(e)}")
         return safe_api_response(str(e), False)
 
-# 8. FIXED Job Challenges API with proper checkbox data processing
+# 8. Job Challenges API
 @app.route('/api/job-challenges')
 def job_challenges():
     try:
@@ -887,24 +767,8 @@ def job_challenges():
         if len(clean_data) == 0:
             return safe_api_response('No challenges data available after filtering', False)
         
-        # Get the predefined challenge categories (12 as mentioned)
-        predefined_challenges = [
-            'Tiada pengalaman kerja yang mencukupi',
-            'Terlalu banyak persaingan dalam bidang saya',
-            'Kekurangan kemahiran yang dicari majikan',
-            'Gaji yang ditawarkan terlalu rendah',
-            'Saya tidak tahu bagaimana mencari pekerjaan yang sesuai',
-            'Tiada rangkaian atau hubungan yang boleh membantu saya mendapatkan pekerjaan',
-            'Kriteria pekerjaan tidak sesuai dengan kelayakan akademik saya',
-            'Kebanyakan syarikat lebih memilih pekerja yang sudah berpengalaman',
-            'Tiada peluang pekerjaan dalam bidang saya di kawasan tempat tinggal saya',
-            'Saya perlu menjaga keluarga dan sukar untuk bekerja di luar kawasan',
-            'Proses permohonan kerja terlalu kompleks atau mengambil masa yang lama',
-            'Keadaan ekonomi semasa menyukarkan peluang pekerjaan'
-        ]
-        
         # Process checkbox data
-        labels, data, total_responses = process_checkbox_data(clean_data, predefined_challenges)
+        labels, data, total_responses = process_checkbox_data(clean_data)
         
         # Sort by count (highest first)
         if labels and data:
@@ -925,8 +789,8 @@ def job_challenges():
             'analysis': {
                 'top_challenge': labels[0] if labels else 'N/A',
                 'top_challenge_count': data[0] if data else 0,
-                'total_survey_responses': total_responses,  # FIXED: Added this field
-                'total_responses': total_responses,  # FIXED: Added this field
+                'total_survey_responses': total_responses,
+                'total_responses': total_responses,
                 'total_individual_challenges': total_individual_challenges,
                 'average_challenges_per_person': round(total_individual_challenges / total_responses, 1) if total_responses > 0 else 0,
                 'diversity_of_challenges': len(labels)
@@ -938,7 +802,53 @@ def job_challenges():
         logger.error(f"❌ Error in job_challenges: {str(e)}")
         return safe_api_response(str(e), False)
 
-#  Success Factors API with proper Series handling
+# ===== NEW GRAPHS (9-19) - MISSING FROM ORIGINAL =====
+
+# 9. NEW: Financing Advantage (#11)
+@app.route('/api/financing-advantage')
+def financing_advantage():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        financing_col = find_column_smart(filtered_df, ['financing_advantage'])
+        
+        if financing_col is None:
+            return safe_api_response('Financing advantage column not found', False)
+        
+        clean_data = filtered_df[financing_col].dropna()
+        clean_data = clean_data[clean_data != 'Tidak Dinyatakan']
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No financing advantage data available after filtering', False)
+        
+        data = clean_data.value_counts()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'advantage', 'count')
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'positive_response_rate': round((data.get('Ya', 0) / len(clean_data)) * 100, 1) if len(clean_data) > 0 else 0
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in financing_advantage: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# 10. NEW: Success Factors with Employment Filter (#16)
 @app.route('/api/success-factors')
 def success_factors():
     try:
@@ -951,15 +861,15 @@ def success_factors():
         }
         
         filtered_df = apply_filters(df, filters)
+        # FIXED: Filter out unemployed people as requested
+        filtered_df = filter_employed_only(filtered_df)
+        
         success_col = find_column_smart(filtered_df, ['success_factors'])
         
         if success_col is None:
             return safe_api_response('Success factors column not found', False)
         
-        # FIXED: Proper Series handling
         clean_data = filtered_df[success_col].dropna()
-        
-        # Convert to list to avoid Series boolean evaluation issues
         clean_data_list = []
         for item in clean_data:
             if item != 'Tidak Dinyatakan' and str(item).strip() != '':
@@ -968,20 +878,8 @@ def success_factors():
         if len(clean_data_list) == 0:
             return safe_api_response('No success factors data available after filtering', False)
         
-        # Predefined success factor categories as mentioned in paste.txt
-        predefined_factors = [
-            'Melalui latihan industri / praktikal',
-            'Permohonan terus kepada syarikat (JobStreet, LinkedIn, laman web syarikat)',
-            'Program kerajaan (contoh: MySTEP, Protege, SL1M)',
-            'Rangkaian peribadi / kenalan (pensyarah, alumni, keluarga, rakan)',
-            'Melalui pameran kerjaya atau job fair',
-            'Tawaran daripada syarikat sebelum tamat pengajian',
-            'Dihubungi oleh perekrut atau headhunter',
-            'Memulakan perniagaan sendiri / bekerja dalam ekonomi gig'
-        ]
-        
         # Process checkbox data
-        labels, data, total_responses = process_checkbox_data(clean_data_list, predefined_factors)
+        labels, data, total_responses = process_checkbox_data(clean_data_list)
         
         # Sort by count (highest first)
         if labels and data:
@@ -1000,7 +898,8 @@ def success_factors():
             'analysis': {
                 'total_responses': total_responses,
                 'top_factor': labels[0] if labels else 'N/A',
-                'total_individual_factors': sum(data) if data else 0
+                'total_individual_factors': sum(data) if data else 0,
+                'note': 'Excluded unemployed respondents'
             }
         }
         
@@ -1008,7 +907,724 @@ def success_factors():
     except Exception as e:
         logger.error(f"❌ Error in success_factors: {str(e)}")
         return safe_api_response(str(e), False)
-# Employment Sectors API
+
+# 11-15. NEW: Employability Impact Factors (#25-29)
+@app.route('/api/li-impact')
+def li_impact():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        li_col = find_column_smart(filtered_df, ['li_impact'])
+        
+        if li_col is None:
+            return safe_api_response('LI impact column not found', False)
+        
+        clean_data = filtered_df[li_col].dropna()
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No LI impact data available after filtering', False)
+        
+        data = clean_data.value_counts().sort_index()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'scale', 'count')
+        
+        # Calculate average impact
+        numeric_data = pd.to_numeric(clean_data, errors='coerce').dropna()
+        avg_impact = round(numeric_data.mean(), 2) if len(numeric_data) > 0 else 0
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'average_impact': avg_impact,
+                'scale_description': '1=Very Low, 5=Very High'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in li_impact: {str(e)}")
+        return safe_api_response(str(e), False)
+
+@app.route('/api/communication-impact')
+def communication_impact():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        comm_col = find_column_smart(filtered_df, ['communication_impact'])
+        
+        if comm_col is None:
+            return safe_api_response('Communication impact column not found', False)
+        
+        clean_data = filtered_df[comm_col].dropna()
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No communication impact data available after filtering', False)
+        
+        data = clean_data.value_counts().sort_index()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'scale', 'count')
+        
+        # Calculate average impact
+        numeric_data = pd.to_numeric(clean_data, errors='coerce').dropna()
+        avg_impact = round(numeric_data.mean(), 2) if len(numeric_data) > 0 else 0
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'average_impact': avg_impact,
+                'scale_description': '1=Very Low, 5=Very High'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in communication_impact: {str(e)}")
+        return safe_api_response(str(e), False)
+
+@app.route('/api/technical-impact')
+def technical_impact():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        tech_col = find_column_smart(filtered_df, ['technical_impact'])
+        
+        if tech_col is None:
+            return safe_api_response('Technical impact column not found', False)
+        
+        clean_data = filtered_df[tech_col].dropna()
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No technical impact data available after filtering', False)
+        
+        data = clean_data.value_counts().sort_index()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'scale', 'count')
+        
+        # Calculate average impact
+        numeric_data = pd.to_numeric(clean_data, errors='coerce').dropna()
+        avg_impact = round(numeric_data.mean(), 2) if len(numeric_data) > 0 else 0
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'average_impact': avg_impact,
+                'scale_description': '1=Very Low, 5=Very High'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in technical_impact: {str(e)}")
+        return safe_api_response(str(e), False)
+
+@app.route('/api/networking-impact')
+def networking_impact():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        network_col = find_column_smart(filtered_df, ['networking_impact'])
+        
+        if network_col is None:
+            return safe_api_response('Networking impact column not found', False)
+        
+        clean_data = filtered_df[network_col].dropna()
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No networking impact data available after filtering', False)
+        
+        data = clean_data.value_counts().sort_index()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'scale', 'count')
+        
+        # Calculate average impact
+        numeric_data = pd.to_numeric(clean_data, errors='coerce').dropna()
+        avg_impact = round(numeric_data.mean(), 2) if len(numeric_data) > 0 else 0
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'average_impact': avg_impact,
+                'scale_description': '1=Very Low, 5=Very High'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in networking_impact: {str(e)}")
+        return safe_api_response(str(e), False)
+
+@app.route('/api/academic-impact')
+def academic_impact():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        academic_col = find_column_smart(filtered_df, ['academic_impact'])
+        
+        if academic_col is None:
+            return safe_api_response('Academic impact column not found', False)
+        
+        clean_data = filtered_df[academic_col].dropna()
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No academic impact data available after filtering', False)
+        
+        data = clean_data.value_counts().sort_index()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'scale', 'count')
+        
+        # Calculate average impact
+        numeric_data = pd.to_numeric(clean_data, errors='coerce').dropna()
+        avg_impact = round(numeric_data.mean(), 2) if len(numeric_data) > 0 else 0
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'average_impact': avg_impact,
+                'scale_description': '1=Very Low, 5=Very High'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in academic_impact: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# ===== GIG ECONOMY GRAPHS (#40-48) =====
+
+# 16. NEW: Entrepreneurship Training (#40)
+@app.route('/api/entrepreneurship-training')
+def entrepreneurship_training():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        training_col = find_column_smart(filtered_df, ['entrepreneurship_training'])
+        
+        if training_col is None:
+            return safe_api_response('Entrepreneurship training column not found', False)
+        
+        clean_data = filtered_df[training_col].dropna()
+        clean_data = clean_data[clean_data != 'Tidak Dinyatakan']
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No entrepreneurship training data available after filtering', False)
+        
+        data = clean_data.value_counts()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'training_available', 'count')
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'training_availability_rate': round((data.get('Ya', 0) / len(clean_data)) * 100, 1) if len(clean_data) > 0 else 0
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in entrepreneurship_training: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# 17. NEW: University Gig Programs (#41)
+@app.route('/api/uni-gig-programs')
+def uni_gig_programs():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        programs_col = find_column_smart(filtered_df, ['uni_gig_programs'])
+        
+        if programs_col is None:
+            return safe_api_response('University gig programs column not found', False)
+        
+        clean_data = filtered_df[programs_col].dropna()
+        clean_data = clean_data[clean_data != 'Tidak Dinyatakan']
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No university gig programs data available after filtering', False)
+        
+        data = clean_data.value_counts()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'program_status', 'count')
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'program_awareness_rate': round((1 - data.get('Tidak, saya tidak pernah dengar tentang program seperti ini.', 0) / len(clean_data)) * 100, 1) if len(clean_data) > 0 else 0
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in uni_gig_programs: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# 18. NEW: Program Helpful (#42)
+@app.route('/api/program-helpful')
+def program_helpful():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        
+        # Filter out those who said they never heard of programs
+        uni_programs_col = find_column_smart(filtered_df, ['uni_gig_programs'])
+        if uni_programs_col:
+            filtered_df = filtered_df[filtered_df[uni_programs_col] != 'Tidak, saya tidak pernah dengar tentang program seperti ini.']
+        
+        helpful_col = find_column_smart(filtered_df, ['program_helpful'])
+        
+        if helpful_col is None:
+            return safe_api_response('Program helpful column not found', False)
+        
+        clean_data = filtered_df[helpful_col].dropna()
+        clean_data = clean_data[clean_data != 'Tidak Dinyatakan']
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No program helpful data available after filtering', False)
+        
+        data = clean_data.value_counts()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'helpful_status', 'count')
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'helpfulness_rate': round((data.get('Ya', 0) / len(clean_data)) * 100, 1) if len(clean_data) > 0 else 0,
+                'note': 'Excludes those who never heard of programs'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in program_helpful: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# 19. NEW: Gig Reasons (#43) - WITH GIG FILTER
+@app.route('/api/gig-reasons')
+def gig_reasons():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        # FIXED: Filter out those not interested in gig economy
+        filtered_df = filter_gig_interested_only(filtered_df)
+        
+        reasons_col = find_column_smart(filtered_df, ['gig_reasons'])
+        
+        if reasons_col is None:
+            return safe_api_response('Gig reasons column not found', False)
+        
+        clean_data = filtered_df[reasons_col].dropna()
+        clean_data_list = []
+        for item in clean_data:
+            if item != 'Tidak Dinyatakan' and str(item).strip() != '' and 'Tidak relevan' not in str(item):
+                clean_data_list.append(item)
+        
+        if len(clean_data_list) == 0:
+            return safe_api_response('No gig reasons data available after filtering', False)
+        
+        # Process checkbox data
+        labels, data, total_responses = process_checkbox_data(clean_data_list)
+        
+        # Sort by count (highest first)
+        if labels and data:
+            sorted_data = sorted(zip(labels, data), key=lambda x: x[1], reverse=True)
+            labels, data = zip(*sorted_data)
+            labels, data = list(labels), list(data)
+        
+        table_data = create_table_data(labels, data, 'reason', 'count')
+        
+        result = {
+            'chart_data': {
+                'labels': labels,
+                'data': data
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': total_responses,
+                'top_reason': labels[0] if labels else 'N/A',
+                'total_individual_reasons': sum(data) if data else 0,
+                'note': 'Excludes those not interested in gig economy'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in gig_reasons: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# 20. NEW: Gig Skills Source (#44) - WITH GIG FILTER
+@app.route('/api/gig-skills-source')
+def gig_skills_source():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        # FIXED: Filter out those not interested in gig economy
+        filtered_df = filter_gig_interested_only(filtered_df)
+        
+        skills_col = find_column_smart(filtered_df, ['gig_skills_source'])
+        
+        if skills_col is None:
+            return safe_api_response('Gig skills source column not found', False)
+        
+        clean_data = filtered_df[skills_col].dropna()
+        clean_data_list = []
+        for item in clean_data:
+            if item != 'Tidak Dinyatakan' and str(item).strip() != '':
+                clean_data_list.append(item)
+        
+        if len(clean_data_list) == 0:
+            return safe_api_response('No gig skills source data available after filtering', False)
+        
+        # Process checkbox data
+        labels, data, total_responses = process_checkbox_data(clean_data_list)
+        
+        # Sort by count (highest first)
+        if labels and data:
+            sorted_data = sorted(zip(labels, data), key=lambda x: x[1], reverse=True)
+            labels, data = zip(*sorted_data)
+            labels, data = list(labels), list(data)
+        
+        table_data = create_table_data(labels, data, 'skills_source', 'count')
+        
+        result = {
+            'chart_data': {
+                'labels': labels,
+                'data': data
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': total_responses,
+                'top_source': labels[0] if labels else 'N/A',
+                'total_individual_sources': sum(data) if data else 0,
+                'note': 'Excludes those not interested in gig economy'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in gig_skills_source: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# 21. NEW: Gig Challenges (#45) - WITH GIG FILTER
+@app.route('/api/gig-challenges')
+def gig_challenges():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        # FIXED: Filter out those not interested in gig economy
+        filtered_df = filter_gig_interested_only(filtered_df)
+        
+        challenges_col = find_column_smart(filtered_df, ['gig_challenges'])
+        
+        if challenges_col is None:
+            return safe_api_response('Gig challenges column not found', False)
+        
+        clean_data = filtered_df[challenges_col].dropna()
+        clean_data_list = []
+        for item in clean_data:
+            if item != 'Tidak Dinyatakan' and str(item).strip() != '':
+                clean_data_list.append(item)
+        
+        if len(clean_data_list) == 0:
+            return safe_api_response('No gig challenges data available after filtering', False)
+        
+        # Process checkbox data
+        labels, data, total_responses = process_checkbox_data(clean_data_list)
+        
+        # Sort by count (highest first)
+        if labels and data:
+            sorted_data = sorted(zip(labels, data), key=lambda x: x[1], reverse=True)
+            labels, data = zip(*sorted_data)
+            labels, data = list(labels), list(data)
+        
+        table_data = create_table_data(labels, data, 'challenge', 'count')
+        
+        result = {
+            'chart_data': {
+                'labels': labels,
+                'data': data
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': total_responses,
+                'top_challenge': labels[0] if labels else 'N/A',
+                'total_individual_challenges': sum(data) if data else 0,
+                'note': 'Excludes those not interested in gig economy'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in gig_challenges: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# 22. NEW: Support Needed (#46) - WITH GIG FILTER
+@app.route('/api/support-needed')
+def support_needed():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        # FIXED: Filter out those not interested in gig economy
+        filtered_df = filter_gig_interested_only(filtered_df)
+        
+        support_col = find_column_smart(filtered_df, ['support_needed'])
+        
+        if support_col is None:
+            return safe_api_response('Support needed column not found', False)
+        
+        clean_data = filtered_df[support_col].dropna()
+        clean_data_list = []
+        for item in clean_data:
+            if item != 'Tidak Dinyatakan' and str(item).strip() != '' and 'Tidak relevan' not in str(item):
+                clean_data_list.append(item)
+        
+        if len(clean_data_list) == 0:
+            return safe_api_response('No support needed data available after filtering', False)
+        
+        # Process checkbox data
+        labels, data, total_responses = process_checkbox_data(clean_data_list)
+        
+        # Sort by count (highest first)
+        if labels and data:
+            sorted_data = sorted(zip(labels, data), key=lambda x: x[1], reverse=True)
+            labels, data = zip(*sorted_data)
+            labels, data = list(labels), list(data)
+        
+        table_data = create_table_data(labels, data, 'support_type', 'count')
+        
+        result = {
+            'chart_data': {
+                'labels': labels,
+                'data': data
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': total_responses,
+                'top_need': labels[0] if labels else 'N/A',
+                'total_individual_support': sum(data) if data else 0,
+                'note': 'Excludes those not interested in gig economy'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in support_needed: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# 23. NEW: Gig Income (#47) - WITH GIG FILTER
+@app.route('/api/gig-income')
+def gig_income():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        # FIXED: Filter out those not interested in gig economy
+        filtered_df = filter_gig_interested_only(filtered_df)
+        
+        income_col = find_column_smart(filtered_df, ['gig_income'])
+        
+        if income_col is None:
+            return safe_api_response('Gig income column not found', False)
+        
+        clean_data = filtered_df[income_col].dropna()
+        clean_data = clean_data[clean_data != 'Tidak Dinyatakan']
+        clean_data = clean_data[~clean_data.str.contains('Tidak relevan', case=False, na=False)]
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No gig income data available after filtering', False)
+        
+        data = clean_data.value_counts()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'income_range', 'count')
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'most_common_range': str(data.idxmax()) if len(data) > 0 else 'N/A',
+                'note': 'Excludes those not interested in gig economy'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in gig_income: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# 24. NEW: Gig vs Permanent Job (#48) - WITH GIG FILTER
+@app.route('/api/gig-vs-permanent')
+def gig_vs_permanent():
+    try:
+        filters = {
+            'year': request.args.get('year'),
+            'field': request.args.get('field'),
+            'employment': request.args.get('employment'),
+            'gender': request.args.get('gender'),
+            'institution': request.args.get('institution')
+        }
+        
+        filtered_df = apply_filters(df, filters)
+        # FIXED: Filter out those not interested in gig economy
+        filtered_df = filter_gig_interested_only(filtered_df)
+        
+        preference_col = find_column_smart(filtered_df, ['gig_vs_permanent'])
+        
+        if preference_col is None:
+            return safe_api_response('Gig vs permanent preference column not found', False)
+        
+        clean_data = filtered_df[preference_col].dropna()
+        clean_data = clean_data[clean_data != 'Tidak Dinyatakan']
+        clean_data = clean_data[~clean_data.str.contains('Tidak relevan', case=False, na=False)]
+        
+        if len(clean_data) == 0:
+            return safe_api_response('No gig vs permanent data available after filtering', False)
+        
+        data = clean_data.value_counts()
+        table_data = create_table_data(data.index.tolist(), data.values.tolist(), 'preference', 'count')
+        
+        result = {
+            'chart_data': {
+                'labels': [str(label) for label in data.index.tolist()],
+                'data': [int(val) for val in data.values.tolist()]
+            },
+            'table_data': table_data,
+            'analysis': {
+                'total_responses': len(clean_data),
+                'permanent_job_preference_rate': round((data.get('Ya', 0) / len(clean_data)) * 100, 1) if len(clean_data) > 0 else 0,
+                'note': 'Excludes those not interested in gig economy'
+            }
+        }
+        
+        return safe_api_response(result)
+    except Exception as e:
+        logger.error(f"❌ Error in gig_vs_permanent: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# ===== EXISTING UTILITY ENDPOINTS =====
+
 @app.route('/api/employment-sectors')
 def employment_sectors():
     try:
@@ -1042,7 +1658,7 @@ def employment_sectors():
             },
             'table_data': table_data,
             'analysis': {
-                'total_responses': len(clean_data),  # FIXED: Added this field
+                'total_responses': len(clean_data),
                 'dominant_sector': str(data.idxmax()) if len(data) > 0 else 'N/A'
             }
         }
@@ -1052,153 +1668,6 @@ def employment_sectors():
         logger.error(f"❌ Error in employment_sectors: {str(e)}")
         return safe_api_response(str(e), False)
 
-
-# BACKEND - Fixed support_needed function
-@app.route('/api/support-needed')
-def support_needed():
-    try:
-        print('🔄 Starting support_needed API...')
-        
-        filters = {
-            'year': request.args.get('year'),
-            'field': request.args.get('field'),
-            'employment': request.args.get('employment'),
-            'gender': request.args.get('gender'),
-            'institution': request.args.get('institution')
-        }
-        
-        print(f'📝 Applied filters: {filters}')
-        
-        filtered_df = apply_filters(df, filters)
-        print(f'📊 Filtered dataframe shape: {filtered_df.shape}')
-        
-        support_col = find_column_smart(filtered_df, ['support_needed'])
-        
-        if support_col is None:
-            print('❌ Support needed column not found')
-            available_cols = list(filtered_df.columns)
-            print(f'Available columns: {available_cols}')
-            return safe_api_response('Support needed column not found', False)
-        
-        print(f'✅ Found support column: {support_col}')
-        
-        # FIXED: Proper Series handling
-        clean_data = filtered_df[support_col].dropna()
-        print(f'📊 Raw data count: {len(clean_data)}')
-        
-        # Convert to list to avoid Series boolean evaluation issues
-        clean_data_list = []
-        for item in clean_data:
-            if item != 'Tidak Dinyatakan' and str(item).strip() != '':
-                clean_data_list.append(item)
-        
-        print(f'📊 Clean data count: {len(clean_data_list)}')
-        
-        if len(clean_data_list) == 0:
-            print('❌ No support needed data available after filtering')
-            return safe_api_response('No support needed data available after filtering', False)
-        
-        # Get the predefined support categories
-        predefined_support = [
-            'Latihan teknikal dalam bidang spesifik (design, coding, pemasaran digital)',
-            'Bimbingan dalam pengurusan kewangan dan cukai untuk pekerja gig',
-            'Platform khas untuk graduan MARA dalam ekonomi gig',
-            'Pinjaman atau geran untuk membangunkan perniagaan gig',
-            'Perlindungan sosial (KWSP, PERKESO, insurans)'
-        ]
-        
-        # DEBUGGING: Check what the actual data looks like
-        print(f'📋 Sample data entries:')
-        for i, item in enumerate(clean_data_list[:3]):  # Show first 3 entries
-            print(f'  [{i}]: {repr(item)} (type: {type(item)})')
-        
-        # Process checkbox data
-        labels, data, total_responses = process_checkbox_data(clean_data_list, predefined_support)
-        
-        print(f'📊 Processed data - Labels: {len(labels)}, Data: {len(data)}, Total: {total_responses}')
-        
-        # DEBUGGING: If no data, let's try manual processing
-        if not labels or not data or len(labels) == 0 or len(data) == 0:
-            print('⚠️ process_checkbox_data returned empty, trying manual processing...')
-            
-            # Manual checkbox processing as fallback
-            support_counts = {}
-            for response in clean_data_list:
-                response_str = str(response)
-                print(f'Processing response: {repr(response_str)}')
-                
-                # Check if response contains multiple selections (common checkbox formats)
-                if ';' in response_str:
-                    selections = [s.strip() for s in response_str.split(';')]
-                elif ',' in response_str:
-                    selections = [s.strip() for s in response_str.split(',')]
-                elif '|' in response_str:
-                    selections = [s.strip() for s in response_str.split('|')]
-                else:
-                    selections = [response_str.strip()]
-                
-                for selection in selections:
-                    if selection and selection != 'Tidak Dinyatakan':
-                        # Try to match with predefined categories
-                        matched = False
-                        for predefined in predefined_support:
-                            if selection.lower() in predefined.lower() or predefined.lower() in selection.lower():
-                                support_counts[predefined] = support_counts.get(predefined, 0) + 1
-                                matched = True
-                                break
-                        
-                        # If no match found, add as-is
-                        if not matched:
-                            support_counts[selection] = support_counts.get(selection, 0) + 1
-            
-            print(f'📊 Manual processing results: {support_counts}')
-            
-            if support_counts:
-                labels = list(support_counts.keys())
-                data = list(support_counts.values())
-                total_responses = len(clean_data_list)
-                print(f'✅ Manual processing successful: {len(labels)} categories')
-            else:
-                print('❌ Even manual processing returned no data')
-                return safe_api_response('No valid chart data available after manual processing', False)
-        
-        # Sort by count (highest first)
-        if labels and data:
-            sorted_data = sorted(zip(labels, data), key=lambda x: x[1], reverse=True)
-            labels, data = zip(*sorted_data)
-            labels, data = list(labels), list(data)
-        
-        total_individual_support = sum(data) if data else 0
-        
-        table_data = create_table_data(labels, data, 'support_type', 'count')
-        
-        result = {
-            'chart_data': {
-                'labels': labels,
-                'data': data
-            },
-            'table_data': table_data,
-            'analysis': {
-                'top_need': labels[0] if labels else 'N/A',
-                'top_need_count': data[0] if data else 0,
-                'total_survey_responses': total_responses,
-                'total_responses': total_responses,
-                'total_individual_support': total_individual_support,
-                'average_support_per_person': round(total_individual_support / total_responses, 1) if total_responses > 0 else 0,
-                'diversity_of_support': len(labels)
-            }
-        }
-        
-        print(f'✅ Returning result: {len(labels)} categories, {total_responses} total responses')
-        return safe_api_response(result)
-        
-    except Exception as e:
-        print(f"❌ Error in support_needed: {str(e)}")
-        import traceback
-        print(f"❌ Full traceback: {traceback.format_exc()}")
-        return safe_api_response(str(e), False)
-   
-# Enhanced Summary Statistics API
 @app.route('/api/summary-stats')
 def summary_stats():
     try:
@@ -1265,7 +1734,6 @@ def summary_stats():
         logger.error(f"❌ Error in summary_stats: {str(e)}")
         return safe_api_response(str(e), False)
 
-# Additional utility endpoints
 @app.route('/api/filter-options')
 def filter_options():
     """Get available filter options"""
@@ -1317,16 +1785,44 @@ def internal_error(error):
     return safe_api_response('Internal server error', False), 500
 
 if __name__ == '__main__':
-    logger.info("🚀 Starting COMPLETELY FIXED Graduate Analytics Dashboard...")
+    logger.info("🚀 Starting COMPLETE Graduate Analytics Dashboard with ALL 24 GRAPHS!")
     logger.info("🔗 Dashboard URL: http://localhost:5000")
-    logger.info("📊 All 8 required graphs supported with FIXED filtering:")
-    logger.info("   1. ✅ Kadar Kebolehpasaran Graduan (Status Pekerjaan) - Pie Chart [RESPONSE COUNT FIXED]")
-    logger.info("   2. ✅ Kadar Kebolehpasaran Graduan (Jenis Pekerjaan) - Bar Chart [RESPONSE COUNT FIXED]")
-    logger.info("   3. ✅ Tempoh Mendapat Kerja - Area Chart [RESPONSE COUNT FIXED]")
-    logger.info("   4. ✅ Graduan Mengikut Bidang & Tahun - Stacked Bar [RESPONSE COUNT FIXED]")
-    logger.info("   5. ✅ Julat Gaji Graduan Mengikut Bidang - Stacked Bar [RESPONSE COUNT FIXED]")
-    logger.info("   6. ✅ Jangkaan Gaji vs Realiti - Bar Chart [RESPONSE COUNT FIXED]")
-    logger.info("   7. ✅ Graduan Bekerja di Luar Bidang - Multiple Charts [RESPONSE COUNT FIXED]")
-    logger.info("   8. ✅ Cabaran Utama Mendapat Kerja - Bar Chart [CHECKBOX DATA FIXED]")
+    logger.info("📊 ALL REQUIRED GRAPHS SUPPORTED:")
+    
+    logger.info("   === ORIGINAL 8 GRAPHS ===")
+    logger.info("   1. ✅ Employment Status - /api/employment-status")
+    logger.info("   2. ✅ Job Types - /api/job-types")
+    logger.info("   3. ✅ Time to Employment - /api/time-to-employment")
+    logger.info("   4. ✅ Graduates by Field & Year - /api/graduates-by-field-year")
+    logger.info("   5. ✅ Current Salary by Field - /api/current-salary-by-field")
+    logger.info("   6. ✅ Salary Comparison - /api/salary-comparison")
+    logger.info("   7. ✅ Out-of-Field Analysis - /api/out-of-field-analysis")
+    logger.info("   8. ✅ Job Challenges - /api/job-challenges")
+    
+    logger.info("   === NEW REQUIRED GRAPHS ===")
+    logger.info("   9. ✅ Financing Advantage (#11) - /api/financing-advantage")
+    logger.info("   10. ✅ Success Factors (Employment Filter) (#16) - /api/success-factors")
+    logger.info("   11. ✅ LI Impact (#25) - /api/li-impact")
+    logger.info("   12. ✅ Communication Impact (#26) - /api/communication-impact")
+    logger.info("   13. ✅ Technical Impact (#27) - /api/technical-impact")
+    logger.info("   14. ✅ Networking Impact (#28) - /api/networking-impact")
+    logger.info("   15. ✅ Academic Impact (#29) - /api/academic-impact")
+    
+    logger.info("   === GIG ECONOMY GRAPHS (WITH FILTERS) ===")
+    logger.info("   16. ✅ Entrepreneurship Training (#40) - /api/entrepreneurship-training")
+    logger.info("   17. ✅ University Gig Programs (#41) - /api/uni-gig-programs")
+    logger.info("   18. ✅ Program Helpful (#42) - /api/program-helpful")
+    logger.info("   19. ✅ Gig Reasons (#43) - /api/gig-reasons [EXCLUDES 'Tidak berminat']")
+    logger.info("   20. ✅ Gig Skills Source (#44) - /api/gig-skills-source [EXCLUDES 'Tidak berminat']")
+    logger.info("   21. ✅ Gig Challenges (#45) - /api/gig-challenges [EXCLUDES 'Tidak berminat']")
+    logger.info("   22. ✅ Support Needed (#46) - /api/support-needed [EXCLUDES 'Tidak berminat']")
+    logger.info("   23. ✅ Gig Income (#47) - /api/gig-income [EXCLUDES 'Tidak berminat']")
+    logger.info("   24. ✅ Gig vs Permanent (#48) - /api/gig-vs-permanent [EXCLUDES 'Tidak berminat']")
+    
+    logger.info("\n🔄 SPECIAL FILTERS:")
+    logger.info("   - Success Factors: EXCLUDES 'Tidak, sedang mencari pekerjaan'")
+    logger.info("   - All Gig Economy graphs: EXCLUDES 'Tidak berminat' from gig participation")
+    
+    logger.info(f"\n📈 Real Data: Using CSV with {len(df)} rows and {len(df.columns)} columns")
     
     app.run(debug=True, port=5000, host='0.0.0.0')

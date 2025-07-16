@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papan Pemuka Analisis Graduan | MARA Professional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/dashboard.css') }}">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#1989AC',
+                        'secondary': '#283E56', 
+                        'accent': '#E4003A',
+                        'light': '#FEF4E8',
+                        'dark': '#283E56',
+                        'blue': '#1989AC'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                        'pulse-soft': 'pulseSoft 3s ease-in-out infinite'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-light">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3 class="text-2xl font-bold text-primary mb-4">Memproses Analisis</h3>
+            <p class="text-gray-600 font-semibold">Menganalisis data graduan dengan teknologi terkini</p>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-4"></div>
+
+    <!-- Main Container - Full Width -->
+    <div class="main-container min-h-screen">
+        <!-- Header - Full Width -->
+        <header class="header-modern full-width-container mb-0">
+            <div class="content-padding py-6">
+                <div class="flex items-center justify-between">
+                    <div class="logo-container flex items-center gap-8">
+                        <div class="flex items-center gap-4">
+                            <div class="logo-wrapper bg-white  p-3 rounded-xl backdrop-blur-sm border border-white border-opacity-20">
+                                <img src="https://www.uptm.edu.my/images/logo/LOGO_UPTM_no_bg_baru1.png" alt="UPTM Logo" class="h-12 w-auto object-contain">
+                            </div>
+                            <div class="hidden sm:block w-px h-12 bg-white bg-opacity-30"></div>
+                            
+                        </div>
+                        <div class="header-text">
+                            <h1 class="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight leading-tight">DATA REPOSITORI KEBOLEHPASARAN GRADUAN</h1>
+                            <p class="text-blue-100 font-medium mt-1 text-xs md:text-sm opacity-90">analysis kebolehpasaran & Prestasi Kerjaya graduan</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-8">
+                        <div class="text-center">
+                            <p class="text-sm text-white font-medium">Jumlah Graduan</p>
+                            <p id="headerTotalGraduates" class="text-2xl font-bold text-accent">-</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-white font-medium">Kadar Kebolehpasaran</p>
+                            <p id="headerEmploymentRate" class="text-2xl font-bold text-accent">-</p>
+                        </div>
+                        <div class="logout-container">
+                            <button onclick="logout()" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span class="hidden sm:inline">Log Keluar</span>
+                            </button>
+                        </div>
+                    <script>
+                    function logout() {
+                        // Optional: Show a confirmation dialog
+                        if (confirm('Adakah anda pasti mahu log keluar?')) {
+                            // Redirect to the login page (default route)
+                            window.location.href = '/';
+                        }
+                    }
+
+                    // Alternative without confirmation dialog:
+                    function logoutDirect() {
+                        window.location.href = '/';
+                    }
+                    </script>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="content-padding py-16 space-y-16">
+            <!-- Filter Section -->
+            <div class="modern-card filter-section p-12 animate-fade-in">
+                <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-12 gap-8">
+                    <div>
+                        <h2 class="text-4xl font-black text-primary mb-4 tracking-tight">PENAPISAN DATA</h2>
+                        <p class="text-secondary font-medium text-lg opacity-80">Tapis data untuk analisis yang tepat sasaran dan mendalam</p>
+                    </div>
+                    <div class="flex flex-wrap gap-6">
+                        <button class="btn btn-primary" onclick="toggleComparison()">
+                            <i class="fas fa-chart-line"></i>
+                            Perbandingan
+                        </button>
+                        <button class="btn btn-outline" onclick="exportAllData()">
+                            <i class="fas fa-download"></i>
+                            Eksport
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetFilters()">
+                            <i class="fas fa-undo"></i>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Filter Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+                    <div>
+                        <label class="block text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Tahun Graduasi</label>
+                        <select id="yearFilter" class="input" onchange="applyFilters()">
+                            <option value="">Semua Tahun</option>
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Bidang Pengajian</label>
+                        <select id="fieldFilter" class="input" onchange="applyFilters()">
+                            <option value="">Semua Bidang</option>
+                            <option value="Teknologi Maklumat">Teknologi Maklumat</option>
+                            <option value="Perniagaan">Perniagaan</option>
+                            <option value="Kejuruteraan">Kejuruteraan</option>
+                            <option value="Perakaunan">Perakaunan</option>
+                            <option value="Pemasaran">Pemasaran</option>
+                            <option value="Sains Komputer">Sains Komputer</option>
+                            <option value="Pengurusan">Pengurusan</option>
+                            <option value="Kewangan">Kewangan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Status Pekerjaan</label>
+                        <select id="employmentFilter" class="input" onchange="applyFilters()">
+                            <option value="">Semua Status</option>
+                            <option value="Ya, bekerja sepenuh masa">Sepenuh Masa</option>
+                            <option value="Ya, bekerja separuh masa">Separuh Masa</option>
+                            <option value="Tidak, sedang mencari pekerjaan">Mencari Kerja</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Jantina</label>
+                        <select id="genderFilter" class="input" onchange="applyFilters()">
+                            <option value="">Semua Jantina</option>
+                            <option value="Lelaki">Lelaki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-secondary mb-4 uppercase tracking-wider">Institusi</label>
+                        <select id="institutionFilter" class="input" onchange="applyFilters()">
+                            <option value="">Semua Institusi</option>
+                            <option value="MARA Professional College">Kolej Profesional MARA</option>
+                            <option value="MARA University of Technology">Universiti Teknologi MARA</option>
+                            <option value="MARA Skills Institute">Institut Kemahiran MARA</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Active Filters -->
+                <div class="section-card p-8 rounded-xl">
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-lg font-bold text-secondary uppercase tracking-wider">Pilihan Aktif</span>
+                        <span id="filterCount" class="bg-secondary text-white px-6 py-3 rounded-full font-bold text-sm uppercase tracking-wider">0 Aktif</span>
+                    </div>
+                    <div id="activeFilters" class="flex flex-wrap gap-4 min-h-[3rem] items-center">
+                        <span class="text-secondary italic font-medium opacity-70">Tiada kriteria digunakan</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Mode Panel -->
+            <div id="comparisonPanel" class="comparison-panel p-8 mb-8 hidden rounded-2xl shadow-lg animate-slide-up">
+                <h3 class="text-2xl font-semibold text-white mb-8">Perbandingan</h3>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                    <!-- Year Comparison -->
+                    <div class="section-card rounded-xl shadow-sm p-6">
+                        <h4 class="font-semibold text-primary mb-6">Perbandingan Tahun</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-secondary mb-2 font-medium">Tahun 1</label>
+                                <select id="compareYear1" class="input" onchange="updateComparison()">
+                                    <option value="">Pilih Tahun</option>
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-secondary mb-2 font-medium">Tahun 2</label>
+                                <select id="compareYear2" class="input" onchange="updateComparison()">
+                                    <option value="">Pilih Tahun</option>
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Field Comparison -->
+                    <div class="section-card rounded-xl shadow-sm p-6">
+                        <h4 class="font-semibold text-primary mb-6">Perbandingan Bidang</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-secondary mb-2 font-medium">Bidang 1</label>
+                                <select id="compareField1" class="input" onchange="updateComparison()">
+                                    <option value="">Pilih Bidang</option>
+                                    <option value="Teknologi Maklumat">Teknologi Maklumat</option>
+                                    <option value="Perniagaan">Perniagaan</option>
+                                    <option value="Kejuruteraan">Kejuruteraan</option>
+                                    <option value="Perakaunan">Perakaunan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-secondary mb-2 font-medium">Bidang 2</label>
+                                <select id="compareField2" class="input" onchange="updateComparison()">
+                                    <option value="">Pilih Bidang</option>
+                                    <option value="Teknologi Maklumat">Teknologi Maklumat</option>
+                                    <option value="Perniagaan">Perniagaan</option>
+                                    <option value="Kejuruteraan">Kejuruteraan</option>
+                                    <option value="Perakaunan">Perakaunan</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Institution Comparison -->
+                    <div class="section-card rounded-xl shadow-sm p-6">
+                        <h4 class="font-semibold text-primary mb-6">Perbandingan Institusi</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-secondary mb-2 font-medium">Institusi 1</label>
+                                <select id="compareInst1" class="input" onchange="updateComparison()">
+                                    <option value="">Pilih Institusi</option>
+                                    <option value="MARA Professional College">Kolej Profesional MARA</option>
+                                    <option value="MARA University of Technology">Universiti Teknologi MARA</option>
+                                    <option value="MARA Skills Institute">Institut Kemahiran MARA</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-secondary mb-2 font-medium">Institusi 2</label>
+                                <select id="compareInst2" class="input" onchange="updateComparison()">
+                                    <option value="">Pilih Institusi</option>
+                                    <option value="MARA Professional College">Kolej Profesional MARA</option>
+                                    <option value="MARA University of Technology">Universiti Teknologi MARA</option>
+                                    <option value="MARA Skills Institute">Institut Kemahiran MARA</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Results -->
+                <div id="comparisonResults" class="hidden">
+                    <h4 class="text-xl font-semibold text-white mb-8">Hasil Perbandingan</h4>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+                        <div class="section-card rounded-xl shadow p-6">
+                            <h5 class="font-medium text-primary mb-6">Perbandingan Kadar Kebolehpasaran</h5>
+                            <div class="chart-container chart-modern">
+                                <canvas id="comparisonChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="section-card rounded-xl shadow p-6">
+                            <h5 class="font-medium text-primary mb-6">Radar Prestasi</h5>
+                            <div class="chart-container chart-modern">
+                                <canvas id="comparisonRadarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Summary -->
+                    <div id="comparisonContent" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Dynamic comparison results -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div class="metric-card p-8 animate-scale-in">
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p class="text-blue-100 mb-3 font-bold text-sm uppercase tracking-wider opacity-80">Jumlah Graduan</p>
+                            <p id="totalGraduates" class="text-5xl font-black">-</p>
+                        </div>
+                        <div class="w-20 h-20 bg-white bg-opacity-15 rounded-xl flex items-center justify-center text-3xl backdrop-filter backdrop-blur-sm">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="mt-8 relative z-10">
+                        <div class="progress-container">
+                            <div id="graduatesProgress" class="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card p-8 animate-scale-in delay-100">
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p class="text-blue-100 mb-3 font-bold text-sm uppercase tracking-wider opacity-80">Kebolehpasaran</p>
+                            <p id="employmentRate" class="text-5xl font-black">-</p>
+                        </div>
+                        <div class="w-20 h-20 bg-white bg-opacity-15 rounded-xl flex items-center justify-center text-3xl backdrop-filter backdrop-blur-sm">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                    </div>
+                    <div class="mt-8 relative z-10">
+                        <div class="progress-container">
+                            <div id="employmentProgress" class="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card p-8 animate-scale-in delay-200">
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p class="text-blue-100 mb-3 font-bold text-sm uppercase tracking-wider opacity-80">Bidang Pengajian</p>
+                            <p id="fieldsCount" class="text-5xl font-black">-</p>
+                        </div>
+                        <div class="w-20 h-20 bg-white bg-opacity-15 rounded-xl flex items-center justify-center text-3xl backdrop-filter backdrop-blur-sm">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    </div>
+                    <div class="mt-8 relative z-10">
+                        <div class="progress-container">
+                            <div id="fieldsProgress" class="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card p-8 animate-scale-in delay-300">
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p class="text-blue-100 mb-3 font-bold text-sm uppercase tracking-wider opacity-80">Tahun Diliputi</p>
+                            <p id="yearRange" class="text-5xl font-black">-</p>
+                        </div>
+                        <div class="w-20 h-20 bg-white bg-opacity-15 rounded-xl flex items-center justify-center text-3xl backdrop-filter backdrop-blur-sm">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                    </div>
+                    <div class="mt-8 relative z-10">
+                        <div class="progress-container">
+                            <div id="yearsProgress" class="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="flex flex-wrap gap-4 mb-10">
+                <button class="nav-tab active" data-tab="overview" onclick="switchTab('overview')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="hidden sm:inline">Gambaran Keseluruhan</span>
+                </button>
+                <button class="nav-tab" data-tab="employment" onclick="switchTab('employment')">
+                    <i class="fas fa-briefcase"></i>
+                    <span class="hidden sm:inline">Pekerjaan</span>
+                </button>
+                <button class="nav-tab" data-tab="salary" onclick="switchTab('salary')">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span class="hidden sm:inline">Gaji</span>
+                </button>
+                <button class="nav-tab" data-tab="factors" onclick="switchTab('factors')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="hidden sm:inline">Faktor Kebolehpasaran</span>
+                </button>
+                <button class="nav-tab" data-tab="outfield" onclick="switchTab('outfield')">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span class="hidden sm:inline">Luar Bidang</span>
+                </button>
+                <button class="nav-tab" data-tab="challenges" onclick="switchTab('challenges')">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span class="hidden sm:inline">Cabaran</span>
+                </button>
+                <button class="nav-tab" data-tab="gig" onclick="switchTab('gig')">
+                    <i class="fas fa-laptop-code"></i>
+                    <span class="hidden sm:inline">Ekonomi Gig</span>
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content-container">
+                <!-- Overview Tab -->
+                <div id="overview" class="tab-content space-y-10">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                        <!-- Employment Status Chart -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Status Pekerjaan</h3>
+                                        <p class="text-secondary font-medium opacity-80">Taburan status pekerjaan semasa graduan</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="employmentStatusTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('employmentStatus')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('employmentStatus')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('employmentStatus')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="employmentStatusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Job Types Chart -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Jenis Pekerjaan</h3>
+                                        <p class="text-secondary font-medium opacity-80">Taburan jenis pekerjaan graduan</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="jobTypesTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('jobTypes')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('jobTypes')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('jobTypes')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="jobTypesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time to Employment Chart -->
+                    <div class="modern-card">
+                        <div class="p-8 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Tempoh Mendapat Kerja</h3>
+                                    <p class="text-secondary font-medium opacity-80">Tempoh untuk mendapat kerja pertama selepas graduasi</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Graduan Bekerja</span>
+                                    <div id="timeToEmploymentTotal" class="text-3xl font-black text-accent">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                <button class="chart-action-btn" onclick="showAnalysis('timeToEmployment')">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Analisis
+                                </button>
+                                <button class="chart-action-btn" onclick="showTableModal('timeToEmployment')">
+                                    <i class="fas fa-table"></i>
+                                    Jadual
+                                </button>
+                                <button class="chart-action-btn" onclick="exportChartData('timeToEmployment')">
+                                    <i class="fas fa-download"></i>
+                                    Eksport
+                                </button>
+                            </div>
+                            <div class="chart-container large chart-modern">
+                                <canvas id="timeToEmploymentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Field and Year Chart -->
+                    <div class="modern-card">
+                        <div class="p-8 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Graduan Mengikut Bidang dan Tahun</h3>
+                                    <p class="text-secondary font-medium opacity-80">Trend merentasi bidang pengajian berlainan mengikut masa</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Jumlah Graduan</span>
+                                    <div id="fieldYearTotal" class="text-3xl font-black text-accent">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                <button class="chart-action-btn" onclick="showAnalysis('fieldYear')">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Analisis
+                                </button>
+                                <button class="chart-action-btn" onclick="showTableModal('fieldYear')">
+                                    <i class="fas fa-table"></i>
+                                    Jadual
+                                </button>
+                                <button class="chart-action-btn" onclick="exportChartData('fieldYear')">
+                                    <i class="fas fa-download"></i>
+                                    Eksport
+                                </button>
+                            </div>
+                            <div class="chart-container extra-large chart-modern">
+                                <canvas id="fieldYearChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employment Tab -->
+                <div id="employment" class="tab-content hidden space-y-10">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                        <!-- Success Factors -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Faktor Kejayaan</h3>
+                                        <p class="text-secondary font-medium opacity-80">Faktor utama yang membawa kepada kejayaan pekerjaan</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="successFactorsTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('successFactors')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('successFactors')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('successFactors')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="successFactorsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Employment Sectors -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Sektor Pekerjaan</h3>
+                                        <p class="text-secondary font-medium opacity-80">Taburan industri dan analisis sektor</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="employmentSectorsTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('employmentSectors')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('employmentSectors')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('employmentSectors')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="employmentSectorsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Salary Tab -->
+                <div id="salary" class="tab-content hidden space-y-10">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                        <!-- Current Salary by Field -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Julat Gaji Mengikut Bidang</h3>
+                                        <p class="text-secondary font-medium opacity-80">Taburan gaji semasa merentasi bidang</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="salaryByFieldTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('salaryByField')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('salaryByField')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('salaryByField')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="salaryByFieldChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Salary Expectations vs Reality -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Jangkaan vs Realiti Gaji</h3>
+                                        <p class="text-secondary font-medium opacity-80">Perbandingan gaji jangkaan dengan sebenar</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="salaryComparisonTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('salaryComparison')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('salaryComparison')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('salaryComparison')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="salaryComparisonChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Factors Tab -->
+                <div id="factors" class="tab-content hidden space-y-10">
+                    <!-- Financing Advantage -->
+                    <div class="modern-card">
+                        <div class="p-8 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Kelebihan Pembiayaan dalam Mencari Kerja</h3>
+                                    <p class="text-secondary font-medium opacity-80">Adakah jenis pembiayaan memberi kelebihan dalam mencari kerja</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                    <div id="financingAdvantageTotal" class="text-3xl font-black text-accent">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                <button class="chart-action-btn" onclick="showAnalysis('financingAdvantage')">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Analisis
+                                </button>
+                                <button class="chart-action-btn" onclick="showTableModal('financingAdvantage')">
+                                    <i class="fas fa-table"></i>
+                                    Jadual
+                                </button>
+                                <button class="chart-action-btn" onclick="exportChartData('financingAdvantage')">
+                                    <i class="fas fa-download"></i>
+                                    Eksport
+                                </button>
+                            </div>
+                            <div class="chart-container large chart-modern">
+                                <canvas id="financingAdvantageChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Employability Impact Factors -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                        <!-- LI Impact -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Impak Latihan Industri</h3>
+                                        <p class="text-secondary font-medium opacity-80">Sejauh mana latihan industri mempengaruhi kebolehpasaran (Skala 1-5)</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="liImpactTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('liImpact')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('liImpact')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('liImpact')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="liImpactChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Communication Impact -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Impak Kemahiran Komunikasi</h3>
+                                        <p class="text-secondary font-medium opacity-80">Sejauh mana kemahiran komunikasi mempengaruhi kebolehpasaran (Skala 1-5)</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="communicationImpactTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('communicationImpact')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('communicationImpact')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('communicationImpact')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="communicationImpactChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
+                        <!-- Technical Impact -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-black text-primary mb-2 uppercase tracking-wide">Impak Kemahiran Teknikal</h3>
+                                        <p class="text-secondary font-medium opacity-80 text-sm">Pengaruh kemahiran teknikal (Skala 1-5)</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="technicalImpactTotal" class="text-2xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-4 right-4 flex gap-2 z-10">
+                                    <button class="chart-action-btn text-xs" onclick="showAnalysis('technicalImpact')">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </button>
+                                    <button class="chart-action-btn text-xs" onclick="showTableModal('technicalImpact')">
+                                        <i class="fas fa-table"></i>
+                                    </button>
+                                </div>
+                                <div class="chart-container medium chart-modern">
+                                    <canvas id="technicalImpactChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Networking Impact -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-black text-primary mb-2 uppercase tracking-wide">Impak Rangkaian</h3>
+                                        <p class="text-secondary font-medium opacity-80 text-sm">Pengaruh networking (Skala 1-5)</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="networkingImpactTotal" class="text-2xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-4 right-4 flex gap-2 z-10">
+                                    <button class="chart-action-btn text-xs" onclick="showAnalysis('networkingImpact')">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </button>
+                                    <button class="chart-action-btn text-xs" onclick="showTableModal('networkingImpact')">
+                                        <i class="fas fa-table"></i>
+                                    </button>
+                                </div>
+                                <div class="chart-container medium chart-modern">
+                                    <canvas id="networkingImpactChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Academic Impact -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-black text-primary mb-2 uppercase tracking-wide">Impak Kelayakan Akademik</h3>
+                                        <p class="text-secondary font-medium opacity-80 text-sm">Pengaruh kelayakan akademik (Skala 1-5)</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="academicImpactTotal" class="text-2xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-4 right-4 flex gap-2 z-10">
+                                    <button class="chart-action-btn text-xs" onclick="showAnalysis('academicImpact')">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </button>
+                                    <button class="chart-action-btn text-xs" onclick="showTableModal('academicImpact')">
+                                        <i class="fas fa-table"></i>
+                                    </button>
+                                </div>
+                                <div class="chart-container medium chart-modern">
+                                    <canvas id="academicImpactChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Out-of-Field Tab -->
+                <div id="outfield" class="tab-content hidden space-y-10">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                        <!-- Out-of-Field Job Types -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Jenis Pekerjaan Luar Bidang</h3>
+                                        <p class="text-secondary font-medium opacity-80">Jenis pekerjaan untuk graduan yang bekerja di luar bidang</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="outOfFieldJobsTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('outOfFieldJobs')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('outOfFieldJobs')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('outOfFieldJobs')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="outOfFieldJobsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Out-of-Field Reasons -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Sebab Bekerja Luar Bidang</h3>
+                                        <p class="text-secondary font-medium opacity-80">Sebab graduan bekerja di luar bidang mereka</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="outOfFieldReasonsTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('outOfFieldReasons')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('outOfFieldReasons')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('outOfFieldReasons')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container wide chart-modern">
+                                    <canvas id="outOfFieldReasonsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Academic Skills Requirement -->
+                    <div class="modern-card">
+                        <div class="p-8 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Keperluan Kemahiran Akademik</h3>
+                                    <p class="text-secondary font-medium opacity-80">Sama ada pekerjaan di luar bidang masih memerlukan kemahiran akademik</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                    <div id="academicSkillsTotal" class="text-3xl font-black text-accent">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                <button class="chart-action-btn" onclick="showAnalysis('academicSkills')">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Analisis
+                                </button>
+                                <button class="chart-action-btn" onclick="showTableModal('academicSkills')">
+                                    <i class="fas fa-table"></i>
+                                    Jadual
+                                </button>
+                                <button class="chart-action-btn" onclick="exportChartData('academicSkills')">
+                                    <i class="fas fa-download"></i>
+                                    Eksport
+                                </button>
+                            </div>
+                            <div class="chart-container large chart-modern">
+                                <canvas id="academicSkillsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Challenges Tab -->
+                <div id="challenges" class="tab-content hidden space-y-10">
+                    <!-- Job Search Challenges -->
+                    <div class="modern-card">
+                        <div class="p-8 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Cabaran Utama Mendapat Kerja</h3>
+                                    <p class="text-secondary font-medium opacity-80">Halangan utama yang dihadapi oleh graduan</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                    <div id="jobChallengesTotal" class="text-3xl font-black text-accent">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                <button class="chart-action-btn" onclick="showAnalysis('jobChallenges')">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Analisis
+                                </button>
+                                <button class="chart-action-btn" onclick="showTableModal('jobChallenges')">
+                                    <i class="fas fa-table"></i>
+                                    Jadual
+                                </button>
+                                <button class="chart-action-btn" onclick="exportChartData('jobChallenges')">
+                                    <i class="fas fa-download"></i>
+                                    Eksport
+                                </button>
+                            </div>
+                            <div class="chart-container extra-large chart-modern">
+                                <canvas id="jobChallengesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Support Needed -->
+                    <div class="modern-card">
+                        <div class="p-8 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Sokongan Diperlukan</h3>
+                                    <p class="text-secondary font-medium opacity-80">Jenis sokongan yang diperlukan graduan untuk kejayaan</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                    <div id="supportNeededTotal" class="text-3xl font-black text-accent">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                <button class="chart-action-btn" onclick="showAnalysis('supportNeeded')">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Analisis
+                                </button>
+                                <button class="chart-action-btn" onclick="showTableModal('supportNeeded')">
+                                    <i class="fas fa-table"></i>
+                                    Jadual
+                                </button>
+                                <button class="chart-action-btn" onclick="exportChartData('supportNeeded')">
+                                    <i class="fas fa-download"></i>
+                                    Eksport
+                                </button>
+                            </div>
+                            <div class="chart-container large chart-modern">
+                                <canvas id="supportNeededChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Gig Economy Tab -->
+                <div id="gig" class="tab-content hidden space-y-10">
+                    <!-- University Support for Entrepreneurship -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                        <!-- Entrepreneurship Training -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Latihan Keusahawanan</h3>
+                                        <p class="text-secondary font-medium opacity-80">Adakah universiti menawarkan kursus keusahawanan</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="entrepreneurshipTrainingTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('entrepreneurshipTraining')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('entrepreneurshipTraining')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('entrepreneurshipTraining')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="entrepreneurshipTrainingChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- University Gig Programs -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Program Ekonomi Gig</h3>
+                                        <p class="text-secondary font-medium opacity-80">Program universiti berkaitan ekonomi gig</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="uniGigProgramsTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('uniGigPrograms')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('uniGigPrograms')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('uniGigPrograms')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="uniGigProgramsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Program Helpfulness -->
+                    <div class="modern-card">
+                        <div class="p-8 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Keberkesanan Program</h3>
+                                    <p class="text-secondary font-medium opacity-80">Adakah program universiti membantu dalam ekonomi gig</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                    <div id="programHelpfulTotal" class="text-3xl font-black text-accent">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                <button class="chart-action-btn" onclick="showAnalysis('programHelpful')">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Analisis
+                                </button>
+                                <button class="chart-action-btn" onclick="showTableModal('programHelpful')">
+                                    <i class="fas fa-table"></i>
+                                    Jadual
+                                </button>
+                                <button class="chart-action-btn" onclick="exportChartData('programHelpful')">
+                                    <i class="fas fa-download"></i>
+                                    Eksport
+                                </button>
+                            </div>
+                            <div class="chart-container large chart-modern">
+                                <canvas id="programHelpfulChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gig Economy Participation -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                        <!-- Gig Reasons -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Sebab Pilih Ekonomi Gig</h3>
+                                        <p class="text-secondary font-medium opacity-80">Sebab utama memilih ekonomi gig</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="gigReasonsTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('gigReasons')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('gigReasons')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('gigReasons')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="gigReasonsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gig Skills Source -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Sumber Kemahiran Gig</h3>
+                                        <p class="text-secondary font-medium opacity-80">Bagaimana memperoleh kemahiran ekonomi gig</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="gigSkillsSourceTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('gigSkillsSource')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('gigSkillsSource')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('gigSkillsSource')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="gigSkillsSourceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gig Challenges -->
+                    <div class="modern-card">
+                        <div class="p-8 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Cabaran Ekonomi Gig</h3>
+                                    <p class="text-secondary font-medium opacity-80">Cabaran utama dalam keusahawanan dan ekonomi gig</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                    <div id="gigChallengesTotal" class="text-3xl font-black text-accent">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                <button class="chart-action-btn" onclick="showAnalysis('gigChallenges')">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Analisis
+                                </button>
+                                <button class="chart-action-btn" onclick="showTableModal('gigChallenges')">
+                                    <i class="fas fa-table"></i>
+                                    Jadual
+                                </button>
+                                <button class="chart-action-btn" onclick="exportChartData('gigChallenges')">
+                                    <i class="fas fa-download"></i>
+                                    Eksport
+                                </button>
+                            </div>
+                            <div class="chart-container large chart-modern">
+                                <canvas id="gigChallengesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gig Income and Preference -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                        <!-- Gig Income -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Pendapatan Ekonomi Gig</h3>
+                                        <p class="text-secondary font-medium opacity-80">Purata pendapatan bulanan dari ekonomi gig</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="gigIncomeTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('gigIncome')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('gigIncome')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('gigIncome')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="gigIncomeChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gig vs Permanent -->
+                        <div class="modern-card">
+                            <div class="p-8 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-primary mb-2 uppercase tracking-wide">Gig vs Kerja Tetap</h3>
+                                        <p class="text-secondary font-medium opacity-80">Keutamaan: ekonomi gig atau pekerjaan tetap</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-secondary font-bold uppercase tracking-wider opacity-60">Respons</span>
+                                        <div id="gigVsPermanentTotal" class="text-3xl font-black text-accent">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute top-6 right-6 flex gap-3 z-10">
+                                    <button class="chart-action-btn" onclick="showAnalysis('gigVsPermanent')">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Analisis
+                                    </button>
+                                    <button class="chart-action-btn" onclick="showTableModal('gigVsPermanent')">
+                                        <i class="fas fa-table"></i>
+                                        Jadual
+                                    </button>
+                                    <button class="chart-action-btn" onclick="exportChartData('gigVsPermanent')">
+                                        <i class="fas fa-download"></i>
+                                        Eksport
+                                    </button>
+                                </div>
+                                <div class="chart-container large chart-modern">
+                                    <canvas id="gigVsPermanentChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Table View and Analysis -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content w-full max-w-7xl">
+            <div class="flex items-center justify-between mb-12">
+                <h3 id="modalTitle" class="text-4xl font-black text-primary uppercase tracking-wide">Analisis</h3>
+                <button onclick="closeModal()" class="text-gray-600 hover:text-primary transition-colors text-3xl font-bold">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="modalContent" class="max-h-[70vh] overflow-y-auto">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+            
+            <div class="mt-12 flex justify-end space-x-6">
+                <button onclick="exportModalData()" class="btn btn-primary">
+                    <i class="fas fa-download"></i>
+                    Eksport Data
+                </button>
+                <button onclick="closeModal()" class="btn btn-outline">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='JS/dashboard.js') }}"></script>
+</body>
+</html>
