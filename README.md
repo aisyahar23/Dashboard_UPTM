@@ -92,14 +92,5 @@ python3 app.py
 
 This project is licensed under the [MIT License](LICENSE).
 
----
 
-```
-
-Let me know if:
-- You want to fill in the actual tech stack (`streamlit`, `plotly`, etc.)
-- You want to include a screenshot
-- The app runs in the browser (e.g., Streamlit or Flask), so we can add `localhost` instructions.
-
-I can customize the README further!
 ```
