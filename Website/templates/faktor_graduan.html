@@ -1,0 +1,855 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div x-data="faktorGraduanDashboard()" x-init="init()" class="min-h-screen bg-gray-50">
+    <!-- Professional Header -->
+    <div class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+                <!-- Title Section -->
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-900">Graduate Employability Factors</h1>
+                        <p class="text-slate-600 mt-1">Comprehensive analysis of factors influencing graduate employability</p>
+                        <div class="flex items-center mt-2 space-x-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span class="text-sm font-medium text-green-600">Live Analytics</span>
+                            </div>
+                            <div class="text-sm text-slate-500">
+                                <span x-show="dataLoaded">
+                                    <i class="fas fa-database mr-1"></i>
+                                    <span x-text="kpis.total_records || 0"></span> Records
+                                </span>
+                                <span x-show="loading">
+                                    <i class="fas fa-spinner fa-spin mr-1"></i>
+                                    Loading...
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Controls -->
+                <div class="flex items-center space-x-3">
+                    <!-- Filters -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" 
+                                class="flex items-center space-x-2 bg-white border border-gray-300 hover:border-gray-400 px-4 py-2.5 rounded-lg transition-colors shadow-sm">
+                            <i class="fas fa-filter text-slate-600"></i>
+                            <span class="text-sm font-medium text-slate-700">Filters</span>
+                            <div x-show="activeFiltersCount > 0" 
+                                 class="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                                 x-text="activeFiltersCount"></div>
+                        </button>
+                        
+                        <!-- Filter Dropdown -->
+                        <div x-show="open" 
+                             @click.away="open = false"
+                             x-transition
+                             class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-semibold text-slate-900">Filter Data</h3>
+                                    <button @click="clearAllFilters()" 
+                                            class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                                        Clear All
+                                    </button>
+                                </div>
+                                
+                                <!-- Filter Options -->
+                                <div class="space-y-4">
+                                    <!-- Graduation Year -->
+                                    <div>
+                                        <label class="text-sm font-medium text-slate-700 mb-2 block">Graduation Year</label>
+                                        <div class="grid grid-cols-3 gap-2">
+                                            <template x-for="year in availableFilters.graduation_years || []">
+                                                <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer">
+                                                    <input type="checkbox" 
+                                                           :value="year" 
+                                                           x-model="filters.graduation_year"
+                                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2">
+                                                    <span class="ml-2 text-sm text-slate-700" x-text="year"></span>
+                                                </label>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Gender -->
+                                    <div>
+                                        <label class="text-sm font-medium text-slate-700 mb-2 block">Gender</label>
+                                        <div class="space-y-1">
+                                            <template x-for="gender in availableFilters.genders || []">
+                                                <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer">
+                                                    <input type="checkbox" 
+                                                           :value="gender" 
+                                                           x-model="filters.gender"
+                                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2">
+                                                    <span class="ml-2 text-sm text-slate-700" x-text="gender"></span>
+                                                </label>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Employment Status -->
+                                    <div>
+                                        <label class="text-sm font-medium text-slate-700 mb-2 block">Employment Status</label>
+                                        <div class="space-y-1">
+                                            <template x-for="status in availableFilters.employment_status || []">
+                                                <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer">
+                                                    <input type="checkbox" 
+                                                           :value="status" 
+                                                           x-model="filters.employment_status"
+                                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2">
+                                                    <span class="ml-2 text-sm text-slate-700" x-text="status"></span>
+                                                </label>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-6 pt-4 border-t border-gray-200">
+                                    <button @click="applyFilters(); open = false" 
+                                            class="w-full bg-blue-600 text-white font-medium py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                                        Apply Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Export -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" 
+                                class="flex items-center space-x-2 bg-slate-900 text-white px-4 py-2.5 rounded-lg hover:bg-slate-800 transition-colors shadow-sm">
+                            <i class="fas fa-download"></i>
+                            <span class="text-sm font-medium">Export</span>
+                        </button>
+                        
+                        <div x-show="open" 
+                             @click.away="open = false"
+                             x-transition
+                             class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                            <div class="py-2">
+                                <button @click="exportData('csv'); open = false" 
+                                        class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center space-x-3">
+                                    <i class="fas fa-file-csv text-green-600"></i>
+                                    <span>CSV Format</span>
+                                </button>
+                                <button @click="exportData('excel'); open = false" 
+                                        class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center space-x-3">
+                                    <i class="fas fa-file-excel text-blue-600"></i>
+                                    <span>Excel Format</span>
+                                </button>
+                                <button @click="exportData('json'); open = false" 
+                                        class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center space-x-3">
+                                    <i class="fas fa-file-code text-purple-600"></i>
+                                    <span>JSON Format</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Refresh -->
+                    <button @click="refreshData()" 
+                            class="flex items-center space-x-2 bg-white border border-gray-300 hover:border-gray-400 px-4 py-2.5 rounded-lg transition-colors shadow-sm"
+                            :disabled="loading">
+                        <i class="fas fa-sync-alt text-slate-600" :class="{ 'animate-spin': loading }"></i>
+                        <span class="text-sm font-medium text-slate-700">Refresh</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Dashboard Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- KPI Cards - Corporate Style -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <!-- Total Records -->
+            <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">Total Records</p>
+                        <p class="text-2xl font-bold text-slate-900" x-text="kpis.total_records || '0'"></p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-users text-blue-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Industrial Training Impact -->
+            <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">Industrial Training</p>
+                        <p class="text-2xl font-bold text-slate-900" x-text="(kpis.industrial_training_avg || 0).toFixed(1)"></p>
+                        <p class="text-xs text-slate-500">Avg. Impact Score</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-industry text-green-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Communication Skills -->
+            <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">Communication</p>
+                        <p class="text-2xl font-bold text-slate-900" x-text="(kpis.communication_skills_avg || 0).toFixed(1)"></p>
+                        <p class="text-xs text-slate-500">Avg. Impact Score</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-comments text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Technical Skills -->
+            <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">Technical Skills</p>
+                        <p class="text-2xl font-bold text-slate-900" x-text="(kpis.technical_skills_avg || 0).toFixed(1)"></p>
+                        <p class="text-xs text-slate-500">Avg. Impact Score</p>
+                    </div>
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-cogs text-orange-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- University Preparation -->
+            <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-600">Well Prepared</p>
+                        <p class="text-2xl font-bold text-slate-900" x-text="(kpis.well_prepared_rate || 0) + '%'"></p>
+                        <p class="text-xs text-slate-500">By University</p>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-indigo-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bento Grid Layout for Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Main Employability Factors Chart - Large -->
+            <div class="lg:col-span-8 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900">Employability Factors Impact</h3>
+                            <p class="text-sm text-slate-600">Scale distribution for each factor (1-5 scale)</p>
+                        </div>
+                        <button @click="refreshChart('employability')" 
+                                class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-50">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="h-80 relative">
+                        <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+                                <div class="text-slate-600 text-sm">Loading chart...</div>
+                            </div>
+                        </div>
+                        <canvas id="employabilityFactorsChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Professional Certificates Impact - Medium -->
+            <div class="lg:col-span-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900">Professional Certificates</h3>
+                            <p class="text-sm text-slate-600">Impact on employment</p>
+                        </div>
+                        <button @click="refreshChart('certificates')" 
+                                class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-50">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="h-80 relative">
+                        <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+                                <div class="text-slate-600 text-sm">Loading chart...</div>
+                            </div>
+                        </div>
+                        <canvas id="professionalCertificatesChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Employer Requirements - Medium -->
+            <div class="lg:col-span-6 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900">Employer Requirements</h3>
+                            <p class="text-sm text-slate-600">Additional qualifications requested</p>
+                        </div>
+                        <button @click="refreshChart('requirements')" 
+                                class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-50">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="h-80 relative">
+                        <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+                                <div class="text-slate-600 text-sm">Loading chart...</div>
+                            </div>
+                        </div>
+                        <canvas id="employerRequirementsChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- University Preparation - Medium -->
+            <div class="lg:col-span-6 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900">University Preparation</h3>
+                            <p class="text-sm text-slate-600">Job market readiness assessment</p>
+                        </div>
+                        <button @click="refreshChart('preparation')" 
+                                class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-50">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="h-80 relative">
+                        <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+                                <div class="text-slate-600 text-sm">Loading chart...</div>
+                            </div>
+                        </div>
+                        <canvas id="universityPreparationChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Skills Demand - Full Width -->
+            <div class="lg:col-span-12 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900">Skills in Demand</h3>
+                            <p class="text-sm text-slate-600">Most requested additional skills by employers</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button @click="openTableModal('Skills Demand Analysis')" 
+                                    class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-50">
+                                <i class="fas fa-table"></i>
+                            </button>
+                            <button @click="refreshChart('skills')" 
+                                    class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-50">
+                                <i class="fas fa-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="h-96 relative">
+                        <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+                                <div class="text-slate-600 text-sm">Loading chart...</div>
+                            </div>
+                        </div>
+                        <canvas id="additionalSkillsChart" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function faktorGraduanDashboard() {
+        return {
+            loading: false,
+            dataLoaded: false,
+            kpis: {},
+            isInitialized: false,
+            filters: {
+                graduation_year: [],
+                gender: [],
+                employment_status: []
+            },
+            availableFilters: {},
+            activeFiltersCount: 0,
+            
+            init() {
+                console.log('Initializing faktor graduan dashboard...');
+                if (this.isInitialized) return;
+                this.isInitialized = true;
+                this.waitForChart();
+                this.loadAvailableFilters();
+            },
+            
+            waitForChart() {
+                if (typeof Chart === 'undefined' || typeof ChartFactory === 'undefined') {
+                    setTimeout(() => this.waitForChart(), 100);
+                    return;
+                }
+                
+                // Initialize global charts object
+                window.globalCharts = window.globalCharts || {};
+                
+                // Ensure safeDestroyChart function exists
+                if (typeof window.safeDestroyChart === 'undefined') {
+                    window.safeDestroyChart = function(chartKey) {
+                        if (window.globalCharts && window.globalCharts[chartKey]) {
+                            try {
+                                window.globalCharts[chartKey].destroy();
+                                delete window.globalCharts[chartKey];
+                                console.log(`Chart ${chartKey} destroyed successfully`);
+                            } catch (error) {
+                                console.error(`Error destroying chart ${chartKey}:`, error);
+                                delete window.globalCharts[chartKey];
+                            }
+                        }
+                    };
+                }
+                
+                // Ensure showToast function exists
+                if (typeof window.showToast === 'undefined') {
+                    window.showToast = function(message, type = 'info') {
+                        console.log(`Toast [${type}]: ${message}`);
+                        const toast = document.createElement('div');
+                        toast.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white z-50 ${
+                            type === 'error' ? 'bg-red-500' : 
+                            type === 'success' ? 'bg-green-500' : 
+                            type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                        }`;
+                        toast.textContent = message;
+                        document.body.appendChild(toast);
+                        
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 3000);
+                    };
+                }
+                
+                console.log('Chart dependencies loaded, starting data load...');
+                this.loadData();
+            },
+            
+            async loadAvailableFilters() {
+                try {
+                    const response = await fetch('/faktor-graduan/api/filters/available');
+                    const data = await response.json();
+                    
+                    this.availableFilters = {
+                        graduation_years: data['Tahun graduasi anda?'] || [],
+                        genders: data['Jantina anda?'] || [],
+                        employment_status: data['Status pekerjaan semasa'] || []
+                    };
+                } catch (error) {
+                    console.error('Error loading filters:', error);
+                }
+            },
+            
+            async loadData() {
+                if (this.loading) return;
+                
+                this.loading = true;
+                
+                try {
+                    await this.loadSummary();
+                    await this.delay(200);
+                    await this.loadEmployabilityFactors();
+                    await this.delay(200);
+                    await this.loadProfessionalCertificates();
+                    await this.delay(200);
+                    await this.loadEmployerRequirements();
+                    await this.delay(200);
+                    await this.loadUniversityPreparation();
+                    await this.delay(200);
+                    await this.loadAdditionalSkills();
+                    
+                    this.dataLoaded = true;
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    showToast('Error loading data: ' + error.message, 'error');
+                } finally {
+                    this.loading = false;
+                }
+            },
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            },
+            
+            async loadSummary() {
+                try {
+                    const params = this.buildFilterParams();
+                    console.log('Loading summary with params:', params);
+                    const response = await fetch(`/faktor-graduan/api/summary?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Summary data received:', data);
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    this.kpis = data;
+                } catch (error) {
+                    console.error('Error loading summary:', error);
+                    showToast('Error loading summary: ' + error.message, 'error');
+                    this.kpis = { 
+                        total_records: 0, 
+                        industrial_training_avg: 0, 
+                        communication_skills_avg: 0, 
+                        technical_skills_avg: 0,
+                        networking_avg: 0,
+                        academic_qualifications_avg: 0,
+                        well_prepared_rate: 0
+                    };
+                }
+            },
+            
+            async loadEmployabilityFactors() {
+                try {
+                    const params = this.buildFilterParams();
+                    console.log('Loading employability factors with params:', params);
+                    const response = await fetch(`/faktor-graduan/api/employability-factors?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Employability factors data:', data);
+                    
+                    safeDestroyChart('employabilityFactors');
+                    
+                    const canvas = document.getElementById('employabilityFactorsChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx && typeof ChartFactory !== 'undefined') {
+                            window.globalCharts = window.globalCharts || {};
+                            // Now use the extended createMultipleBarChart method
+                            window.globalCharts.employabilityFactors = ChartFactory.createMultipleBarChart(ctx, data, {
+                                plugins: {
+                                    title: {
+                                        display: false
+                                    },
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Number of Respondents'
+                                        }
+                                    },
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Impact Scale (1-5)'
+                                        }
+                                    }
+                                }
+                            });
+                            console.log('Employability factors chart created successfully');
+                        } else {
+                            console.error('Canvas context or ChartFactory not available');
+                        }
+                    } else {
+                        console.error('Canvas element not found: employabilityFactorsChart');
+                    }
+                } catch (error) {
+                    console.error('Error loading employability factors:', error);
+                    showToast('Error loading employability factors: ' + error.message, 'error');
+                }
+            },
+            
+            async loadProfessionalCertificates() {
+                try {
+                    const params = this.buildFilterParams();
+                    console.log('Loading professional certificates with params:', params);
+                    const response = await fetch(`/faktor-graduan/api/professional-certificates-impact?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Professional certificates data:', data);
+                    
+                    safeDestroyChart('professionalCertificates');
+                    
+                    const canvas = document.getElementById('professionalCertificatesChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx && typeof ChartFactory !== 'undefined') {
+                            window.globalCharts = window.globalCharts || {};
+                            window.globalCharts.professionalCertificates = ChartFactory.createPieChart(ctx, data);
+                            console.log('Professional certificates chart created successfully');
+                        } else {
+                            console.error('Canvas context or ChartFactory not available');
+                        }
+                    } else {
+                        console.error('Canvas element not found: professionalCertificatesChart');
+                    }
+                } catch (error) {
+                    console.error('Error loading professional certificates:', error);
+                    showToast('Error loading professional certificates: ' + error.message, 'error');
+                }
+            },
+            
+            async loadEmployerRequirements() {
+                try {
+                    const params = this.buildFilterParams();
+                    console.log('Loading employer requirements with params:', params);
+                    const response = await fetch(`/faktor-graduan/api/employer-requirements?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Employer requirements data:', data);
+                    
+                    safeDestroyChart('employerRequirements');
+                    
+                    const canvas = document.getElementById('employerRequirementsChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx && typeof ChartFactory !== 'undefined') {
+                            window.globalCharts = window.globalCharts || {};
+                            window.globalCharts.employerRequirements = ChartFactory.createBarChart(ctx, data);
+                            console.log('Employer requirements chart created successfully');
+                        } else {
+                            console.error('Canvas context or ChartFactory not available');
+                        }
+                    } else {
+                        console.error('Canvas element not found: employerRequirementsChart');
+                    }
+                } catch (error) {
+                    console.error('Error loading employer requirements:', error);
+                    showToast('Error loading employer requirements: ' + error.message, 'error');
+                }
+            },
+            
+            async loadUniversityPreparation() {
+                try {
+                    const params = this.buildFilterParams();
+                    console.log('Loading university preparation with params:', params);
+                    const response = await fetch(`/faktor-graduan/api/university-preparation?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('University preparation data:', data);
+                    
+                    safeDestroyChart('universityPreparation');
+                    
+                    const canvas = document.getElementById('universityPreparationChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx && typeof ChartFactory !== 'undefined') {
+                            window.globalCharts = window.globalCharts || {};
+                            window.globalCharts.universityPreparation = ChartFactory.createAreaChart(ctx, data, {
+                                plugins: {
+                                    title: { display: false },
+                                    legend: { display: false }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Number of Respondents'
+                                        }
+                                    },
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Agreement Scale (1-5)'
+                                        }
+                                    }
+                                }
+                            });
+                            console.log('University preparation chart created successfully');
+                        } else {
+                            console.error('Canvas context or ChartFactory not available');
+                        }
+                    } else {
+                        console.error('Canvas element not found: universityPreparationChart');
+                    }
+                } catch (error) {
+                    console.error('Error loading university preparation:', error);
+                    showToast('Error loading university preparation: ' + error.message, 'error');
+                }
+            },
+            
+            async loadAdditionalSkills() {
+                try {
+                    const params = this.buildFilterParams();
+                    console.log('Loading additional skills with params:', params);
+                    const response = await fetch(`/faktor-graduan/api/additional-skills-demand?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Additional skills data:', data);
+                    
+                    safeDestroyChart('additionalSkills');
+                    
+                    const canvas = document.getElementById('additionalSkillsChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx && typeof ChartFactory !== 'undefined') {
+                            window.globalCharts = window.globalCharts || {};
+                            window.globalCharts.additionalSkills = ChartFactory.createBarChart(ctx, data, {
+                                indexAxis: 'y',  // Horizontal bar chart
+                                plugins: {
+                                    legend: { display: false },
+                                    title: { display: false }
+                                },
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Number of Mentions'
+                                        }
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: 'Skill Categories'
+                                        }
+                                    }
+                                }
+                            });
+                            console.log('Additional skills chart created successfully');
+                        } else {
+                            console.error('Canvas context or ChartFactory not available');
+                        }
+                    } else {
+                        console.error('Canvas element not found: additionalSkillsChart');
+                    }
+                } catch (error) {
+                    console.error('Error loading additional skills:', error);
+                    showToast('Error loading additional skills: ' + error.message, 'error');
+                }
+            },
+            
+            buildFilterParams() {
+                const params = new URLSearchParams();
+                Object.entries(this.filters).forEach(([key, values]) => {
+                    if (Array.isArray(values) && values.length > 0) {
+                        const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
+                                       key === 'gender' ? 'Jantina anda?' :
+                                       key === 'employment_status' ? 'Status pekerjaan semasa' : key;
+                        values.forEach(value => params.append(paramKey, value));
+                    }
+                });
+                return params.toString();
+            },
+            
+            applyFilters() {
+                this.updateActiveFiltersCount();
+                this.dataLoaded = false;
+                this.loadData();
+                showToast('Filters applied successfully', 'success');
+            },
+            
+            clearAllFilters() {
+                this.filters = {
+                    graduation_year: [],
+                    gender: [],
+                    employment_status: []
+                };
+                this.updateActiveFiltersCount();
+                this.dataLoaded = false;
+                this.loadData();
+                showToast('All filters cleared', 'info');
+            },
+            
+            updateActiveFiltersCount() {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
+                    return count + (Array.isArray(filter) ? filter.length : 0);
+                }, 0);
+            },
+            
+            async refreshData() {
+                this.dataLoaded = false;
+                await this.loadData();
+                showToast('Data refreshed successfully', 'success');
+            },
+            
+            async refreshChart(chartType) {
+                if (chartType === 'employability') {
+                    await this.loadEmployabilityFactors();
+                } else if (chartType === 'certificates') {
+                    await this.loadProfessionalCertificates();
+                } else if (chartType === 'requirements') {
+                    await this.loadEmployerRequirements();
+                } else if (chartType === 'preparation') {
+                    await this.loadUniversityPreparation();
+                } else if (chartType === 'skills') {
+                    await this.loadAdditionalSkills();
+                }
+                showToast(`${chartType} chart refreshed`, 'success');
+            },
+            
+            async exportData(format) {
+                try {
+                    const params = this.buildFilterParams();
+                    const url = `/faktor-graduan/api/export?format=${format}&${params}`;
+                    window.open(url, '_blank');
+                    showToast(`Exporting data as ${format.toUpperCase()}...`, 'info');
+                } catch (error) {
+                    console.error('Export error:', error);
+                    showToast('Export failed', 'error');
+                }
+            },
+            
+            openTableModal(title) {
+                const params = this.buildFilterParams();
+                openModal(title, `/faktor-graduan/api/table-data?${params}`);
+            }
+        }
+    }
+</script>
+{% endblock %}

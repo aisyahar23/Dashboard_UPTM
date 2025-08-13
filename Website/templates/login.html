@@ -3,518 +3,650 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPTM Student Job Dashboard - Login</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <title>Graduate Analytics Platform - UPTM</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/login.css') }}">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'primary': '#1989AC',
-                        'secondary': '#283E56',
-                        'accent': '#970747',
-                        'light': '#FEF4E8',
-                        'dark': '#283E56',
-                        'blue': '#1989AC'
-                    },
-                    fontFamily: {
-                        'inter': ['Inter', 'sans-serif']
+                        'primary': '#074e7e',
+                        'secondary': '#c92427',
+                        'success': '#16a34a',
+                        'primary-light': '#0f6ba8',
+                        'primary-dark': '#053a5f',
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.8s ease-out',
-                        'slide-up': 'slideUp 0.6s ease-out',
-                        'scale-in': 'scaleIn 0.5s ease-out',
-                        'pulse-soft': 'pulseSoft 3s ease-in-out infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'bounce-soft': 'bounceSoft 2s ease-in-out infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate'
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                        'fade-in-right': 'fadeInRight 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                        'scale-in': 'scaleIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                        'float': 'float 8s ease-in-out infinite',
+                        'pulse-ring': 'pulseRing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite',
+                        'data-stream': 'dataStream 4s linear infinite',
+                        'chart-bar-1': 'chartBar1 4s ease-in-out infinite',
+                        'chart-bar-2': 'chartBar2 4s ease-in-out infinite',
+                        'chart-bar-3': 'chartBar3 4s ease-in-out infinite',
+                        'chart-bar-4': 'chartBar4 4s ease-in-out infinite',
+                        'chart-bar-5': 'chartBar5 4s ease-in-out infinite',
+                        'chart-bar-6': 'chartBar6 4s ease-in-out infinite',
+                        'line-draw': 'lineDraw 3s ease-in-out infinite',
+                        'dot-pulse': 'dotPulse 2s ease-in-out infinite',
+                        'glow': 'glow 3s ease-in-out infinite alternate',
+                        'slide-in-left': 'slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                        'bounce-soft': 'bounceSoft 4s ease-in-out infinite',
+                        'rotate-slow': 'rotateSlow 20s linear infinite',
+                        'wave': 'wave 6s ease-in-out infinite',
+                        'morph': 'morph 8s ease-in-out infinite',
+                        'color-shift': 'colorShift 10s ease-in-out infinite',
+                        'orbit': 'orbit 15s linear infinite',
+                        'progress-fill': 'progressFill 3s ease-in-out infinite',
+                        'sparkle': 'sparkle 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        fadeInRight: {
+                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.9)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '25%': { transform: 'translateY(-15px) rotate(5deg)' },
+                            '50%': { transform: 'translateY(-25px) rotate(0deg)' },
+                            '75%': { transform: 'translateY(-10px) rotate(-5deg)' }
+                        },
+                        pulseRing: {
+                            '0%': { transform: 'scale(1)', opacity: '1' },
+                            '100%': { transform: 'scale(1.5)', opacity: '0' }
+                        },
+                        dataStream: {
+                            '0%': { transform: 'translateX(-100px)', opacity: '0' },
+                            '25%': { opacity: '1' },
+                            '75%': { opacity: '1' },
+                            '100%': { transform: 'translateX(300px)', opacity: '0' }
+                        },
+                        chartBar1: {
+                            '0%, 100%': { transform: 'scaleY(0.6)', backgroundColor: '#074e7e' },
+                            '25%': { transform: 'scaleY(0.9)', backgroundColor: '#0f6ba8' },
+                            '50%': { transform: 'scaleY(0.7)', backgroundColor: '#c92427' },
+                            '75%': { transform: 'scaleY(1)', backgroundColor: '#074e7e' }
+                        },
+                        chartBar2: {
+                            '0%, 100%': { transform: 'scaleY(0.8)', backgroundColor: '#c92427' },
+                            '25%': { transform: 'scaleY(0.6)', backgroundColor: '#074e7e' },
+                            '50%': { transform: 'scaleY(1)', backgroundColor: '#16a34a' },
+                            '75%': { transform: 'scaleY(0.9)', backgroundColor: '#c92427' }
+                        },
+                        chartBar3: {
+                            '0%, 100%': { transform: 'scaleY(1)', backgroundColor: '#16a34a' },
+                            '25%': { transform: 'scaleY(0.7)', backgroundColor: '#c92427' },
+                            '50%': { transform: 'scaleY(0.8)', backgroundColor: '#074e7e' },
+                            '75%': { transform: 'scaleY(0.6)', backgroundColor: '#16a34a' }
+                        },
+                        chartBar4: {
+                            '0%, 100%': { transform: 'scaleY(0.7)', backgroundColor: '#074e7e' },
+                            '25%': { transform: 'scaleY(1)', backgroundColor: '#16a34a' },
+                            '50%': { transform: 'scaleY(0.9)', backgroundColor: '#c92427' },
+                            '75%': { transform: 'scaleY(0.8)', backgroundColor: '#074e7e' }
+                        },
+                        chartBar5: {
+                            '0%, 100%': { transform: 'scaleY(0.9)', backgroundColor: '#c92427' },
+                            '25%': { transform: 'scaleY(0.8)', backgroundColor: '#074e7e' },
+                            '50%': { transform: 'scaleY(0.6)', backgroundColor: '#16a34a' },
+                            '75%': { transform: 'scaleY(1)', backgroundColor: '#c92427' }
+                        },
+                        chartBar6: {
+                            '0%, 100%': { transform: 'scaleY(0.8)', backgroundColor: '#16a34a' },
+                            '25%': { transform: 'scaleY(0.9)', backgroundColor: '#c92427' },
+                            '50%': { transform: 'scaleY(1)', backgroundColor: '#074e7e' },
+                            '75%': { transform: 'scaleY(0.7)', backgroundColor: '#16a34a' }
+                        },
+                        lineDraw: {
+                            '0%': { strokeDashoffset: '100' },
+                            '100%': { strokeDashoffset: '0' }
+                        },
+                        dotPulse: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+                            '50%': { transform: 'scale(1.2)', opacity: '0.7' }
+                        },
+                        glow: {
+                            '0%': { 
+                                boxShadow: '0 0 20px rgba(7, 78, 126, 0.3), 0 0 40px rgba(201, 36, 39, 0.1)' 
+                            },
+                            '100%': { 
+                                boxShadow: '0 0 40px rgba(7, 78, 126, 0.5), 0 0 80px rgba(201, 36, 39, 0.2)' 
+                            }
+                        },
+                        slideInLeft: {
+                            '0%': { opacity: '0', transform: 'translateX(-50px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        },
+                        bounceSoft: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-15px)' }
+                        },
+                        rotateSlow: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        },
+                        wave: {
+                            '0%, 100%': { transform: 'rotate(0deg)' },
+                            '25%': { transform: 'rotate(20deg)' },
+                            '75%': { transform: 'rotate(-20deg)' }
+                        },
+                        morph: {
+                            '0%, 100%': { 
+                                borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%',
+                                transform: 'rotate(0deg)'
+                            },
+                            '25%': { 
+                                borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
+                                transform: 'rotate(90deg)'
+                            },
+                            '50%': { 
+                                borderRadius: '70% 30% 70% 30% / 70% 70% 30% 30%',
+                                transform: 'rotate(180deg)'
+                            },
+                            '75%': { 
+                                borderRadius: '40% 60% 70% 30% / 40% 70% 30% 60%',
+                                transform: 'rotate(270deg)'
+                            }
+                        },
+                        colorShift: {
+                            '0%, 100%': { backgroundColor: 'rgba(7, 78, 126, 0.1)' },
+                            '50%': { backgroundColor: 'rgba(201, 36, 39, 0.1)' }
+                        },
+                        orbit: {
+                            '0%': { transform: 'rotate(0deg) translateX(80px) rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg) translateX(80px) rotate(-360deg)' }
+                        },
+                        progressFill: {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' }
+                        },
+                        sparkle: {
+                            '0%, 100%': { opacity: '0', transform: 'scale(0)' },
+                            '50%': { opacity: '1', transform: 'scale(1)' }
+                        }
                     }
                 }
             }
         }
     </script>
+    <style>
+         .glass-premium {
+            background: rgba(171, 165, 165, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        
+        .gradient-primary {
+            background: linear-gradient(135deg, #074e7e 0%, #0f6ba8 100%);
+        }
+        
+        .gradient-secondary {
+            background: linear-gradient(135deg, #c92427 0%, #e63946 100%);
+        }
+        
+        .gradient-dual {
+            background: linear-gradient(45deg, #074e7e 0%, #c92427 50%, #074e7e 100%);
+            background-size: 200% 200%;
+            animation: gradientFlow 8s ease-in-out infinite;
+        }
+        
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #074e7e 0%, #c92427 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .btn-premium {
+            background: linear-gradient(135deg, #074e7e 0%, #0f6ba8 100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #c92427 0%, #074e7e 100%);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+        
+        .btn-premium:hover::before {
+            left: 0;
+        }
+        
+        .btn-premium:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 25px 50px rgba(7, 78, 126, 0.3);
+        }
+        
+        .corporate-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            position: relative;
+        }
+        
+        .corporate-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(7, 78, 126, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(201, 36, 39, 0.02) 0%, transparent 50%);
+        }
+        
+        .input-focus:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 4px rgba(7, 78, 126, 0.1);
+            border-color: #074e7e;
+        }
+        
+        .logo-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .logo-hover:hover {
+            transform: scale(1.1) translateY(-2px);
+            filter: brightness(1.1);
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, 
+                rgba(7, 78, 126, 0.95) 0%, 
+                rgba(7, 78, 126, 0.8) 65%,
+                rgba(201, 36, 39, 0.8)35%,
+                rgba(201, 36, 39, 0.95) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .shape-morph {
+            background: linear-gradient(45deg, rgba(7, 78, 126, 0.2), rgba(201, 36, 39, 0.2));
+            animation: morph 12s ease-in-out infinite;
+        }
+        
+        .data-orb {
+            background: radial-gradient(circle, rgba(7, 78, 126, 0.3) 0%, rgba(201, 36, 39, 0.1) 100%);
+            animation: float 6s ease-in-out infinite, colorShift 8s ease-in-out infinite;
+        }
+        
+        .chart-container {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .line-chart-path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: lineDraw 3s ease-in-out infinite;
+        }
+        
+        .sparkle-dot {
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+    </style>
 </head>
-<body class="font-inter">
-    <!-- Floating Background Icons -->
+<body class="corporate-bg">
     
+    
+    
+    <!-- Main Content -->
+    <div class="z-10 relative bg-white/50 backdrop-blur-lg">
+        <div class="grid lg:grid-cols-2 h-full">
+            
+            <!-- Left Side - Enhanced Hero Section -->
+            <div class="relative hero-bg flex items-center justify-center overflow-hidden ">
+                
+                <!-- Enhanced Animated Background Elements -->
+                <div class="absolute inset-0">
+                    <!-- Large Morphing Shapes -->
+                    <div class="absolute top-20 left-20 w-32 h-32 shape-morph opacity-50"></div>
+                    <div class="absolute bottom-20 right-20 w-40 h-40 shape-morph opacity-30" style="animation-delay: 4s;"></div>
+                    <div class="absolute top-1/2 left-10 w-24 h-24 shape-morph opacity-40" style="animation-delay: 8s;"></div>
+                    
+                    <!-- Enhanced Floating Data Orbs -->
+                    <div class="absolute top-32 right-32 w-16 h-16 rounded-full data-orb"></div>
+                    <div class="absolute bottom-32 left-32 w-12 h-12 rounded-full data-orb" style="animation-delay: 3s;"></div>
+                    <div class="absolute top-1/2 right-1/4 w-8 h-8 rounded-full data-orb" style="animation-delay: 6s;"></div>
+                    
+                    <!-- Sparkle Effects -->
+                    <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full sparkle-dot"></div>
+                    <div class="absolute top-3/4 right-1/3 w-2 h-2 bg-white rounded-full sparkle-dot" style="animation-delay: 1s;"></div>
+                    <div class="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white rounded-full sparkle-dot" style="animation-delay: 2s;"></div>
+                    
+                    <!-- Enhanced Orbiting Elements -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div class="w-6 h-6 bg-white/30 rounded-full animate-orbit"></div>
+                    </div>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div class="w-4 h-4 bg-white/20 rounded-full animate-orbit" style="animation-delay: 5s; animation-duration: 20s;"></div>
+                    </div>
+                    
+                    <!-- Enhanced Data Streams -->
+                    <div class="absolute top-1/4 left-0 w-full h-1">
+                        <div class="w-20 h-1 bg-gradient-to-r from-transparent via-white/50 to-transparent rounded-full animate-data-stream"></div>
+                    </div>
+                    <div class="absolute top-3/4 left-0 w-full h-1">
+                        <div class="w-16 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full animate-data-stream" style="animation-delay: 2s;"></div>
+                    </div>
+                    <div class="absolute top-1/2 left-0 w-full h-1">
+                        <div class="w-12 h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent rounded-full animate-data-stream" style="animation-delay: 4s;"></div>
+                    </div>
+                </div>
 
-    <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="w-full max-w-7xl grid lg:grid-cols-5 gap-8 items-center">
-            <!-- Enhanced Left Side - Bigger Animation -->
-            <div class="lg:col-span-3 relative" id="animationContainer">
-                <div class="relative w-full h-[600px] flex items-center justify-center">
-                    <!-- Main Illustration - Much Bigger -->
-                    <svg class="w-full h-full mt-[-300px]" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" id="mainIllustration">
-                        <!-- Background Elements -->
-                        <defs>
-                            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#1989AC;stop-opacity:0.1" />
-                                <stop offset="50%" style="stop-color:#FEF4E8;stop-opacity:0.3" />
-                                <stop offset="100%" style="stop-color:#970747;stop-opacity:0.1" />
-                            </linearGradient>
-                            <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95" />
-                                <stop offset="100%" style="stop-color:#FEF4E8;stop-opacity:0.9" />
-                            </linearGradient>
-                            <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#1989AC;stop-opacity:0.8" />
-                                <stop offset="100%" style="stop-color:#970747;stop-opacity:0.6" />
-                            </linearGradient>
-                            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#1989AC" flood-opacity="0.2"/>
-                            </filter>
-                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                                <feMerge> 
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
+                <!-- Main Content -->
+                <div class="relative z-10 text-center text-white px-8 max-w-2xl animate-fade-in-up mt-10">
 
-                        <!-- Animated Background Circles - Perfectly centered at SVG center -->
-                        <circle cx="400" cy="300" r="200" fill="url(#bgGradient)" opacity="0.2">
-                            <animateTransform attributeName="transform" type="rotate" values="0 400 300;360 400 300" dur="30s" repeatCount="indefinite"/>
-                        </circle>
-                        <circle cx="400" cy="300" r="150" fill="none" stroke="#1989AC" stroke-width="3" opacity="0.3">
-                            <animateTransform attributeName="transform" type="rotate" values="360 400 300;0 400 300" dur="25s" repeatCount="indefinite"/>
-                        </circle>
-                        <circle cx="400" cy="300" r="100" fill="none" stroke="#970747" stroke-width="2" opacity="0.25">
-                            <animateTransform attributeName="transform" type="rotate" values="0 400 300;360 400 300" dur="20s" repeatCount="indefinite"/>
-                        </circle>
-                        <circle cx="400" cy="300" r="60" fill="none" stroke="#1989AC" stroke-width="1" opacity="0.2">
-                            <animateTransform attributeName="transform" type="rotate" values="360 400 300;0 400 300" dur="15s" repeatCount="indefinite"/>
-                        </circle>
-
-                        <!-- Enhanced Admin Character - Absolutely Centered at (400,300) -->
-                        <g id="admin" transform="translate(400, 300)">
-                            <!-- Head -->
-                            <circle cx="0" cy="-40" r="45" fill="#FDBCB4" filter="url(#shadow)" />
-                            <!-- Hair -->
-                            <path d="M-35 -52 Q0 -70 35 -52 Q28 -62 0 -62 Q-28 -62 -35 -52" fill="#283E56" />
-                            <!-- Glasses -->
-                            <rect x="-18" y="-48" width="15" height="10" rx="5" fill="none" stroke="#283E56" stroke-width="2"/>
-                            <rect x="3" y="-48" width="15" height="10" rx="5" fill="none" stroke="#283E56" stroke-width="2"/>
-                            <line x1="-3" y1="-43" x2="3" y2="-43" stroke="#283E56" stroke-width="2"/>
-                            <!-- Eyes -->
-                            <circle cx="-10" cy="-43" r="2.5" fill="#283E56" />
-                            <circle cx="10" cy="-43" r="2.5" fill="#283E56" />
-                            <!-- Smile -->
-                            <path d="M-15 -25 Q0 -15 15 -25" fill="none" stroke="#283E56" stroke-width="3" stroke-linecap="round"/>
-                            
-                            <!-- Body -->
-                            <rect x="-30" y="10" width="60" height="80" rx="30" fill="#1989AC" filter="url(#shadow)" />
-                            <!-- Arms -->
-                            <rect x="-50" y="20" width="18" height="60" rx="9" fill="#FDBCB4" />
-                            <rect x="32" y="20" width="18" height="60" rx="9" fill="#FDBCB4" />
-                            
-                            <!-- Laptop -->
-                            <g transform="translate(-40, 90)">
-                                <rect x="0" y="0" width="80" height="50" rx="4" fill="#283E56" filter="url(#shadow)" />
-                                <rect x="4" y="4" width="72" height="42" rx="3" fill="#FEF4E8" />
-                                <!-- Screen content - animated charts -->
-                                <rect x="12" y="12" width="8" height="20" fill="#1989AC">
-                                    <animate attributeName="height" values="20;28;20;24;20" dur="2s" repeatCount="indefinite"/>
-                                </rect>
-                                <rect x="22" y="15" width="8" height="17" fill="#970747">
-                                    <animate attributeName="height" values="17;25;17;21;17" dur="2.3s" repeatCount="indefinite"/>
-                                </rect>
-                                <rect x="32" y="10" width="8" height="22" fill="#1989AC">
-                                    <animate attributeName="height" values="22;30;22;26;22" dur="1.8s" repeatCount="indefinite"/>
-                                </rect>
-                                <rect x="42" y="14" width="8" height="18" fill="#970747">
-                                    <animate attributeName="height" values="18;26;18;22;18" dur="2.1s" repeatCount="indefinite"/>
-                                </rect>
-                                <rect x="52" y="11" width="8" height="21" fill="#1989AC">
-                                    <animate attributeName="height" values="21;29;21;25;21" dur="1.9s" repeatCount="indefinite"/>
-                                </rect>
-                                
-                                <!-- Keyboard -->
-                                <rect x="8" y="50" width="64" height="12" rx="2" fill="#283E56" />
-                                <rect x="12" y="53" width="56" height="6" rx="1" fill="#FEF4E8" />
-                            </g>
-                        </g>
-
-                        <!-- ALL CARDS - Fixed Position with Up/Down Float Motion -->
-                        
-                        <!-- Card 1 - Top Right Position -->
-                        <g id="dataCard1">
-                            <g transform="translate(520, 120)">
-                                <rect x="0" y="0" width="160" height="100" rx="15" fill="url(#cardGradient)" filter="url(#shadow)" />
-                                <text x="15" y="25" fill="#283E56" font-size="14" font-weight="bold">Pekerjaan Graduan</text>
-                                <circle cx="35" cy="55" r="15" fill="none" stroke="#1989AC" stroke-width="3">
-                                    <circle cx="35" cy="55" r="12" fill="#1989AC" opacity="0.3">
-                                        <animate attributeName="r" values="12;15;12" dur="2s" repeatCount="indefinite"/>
-                                    </circle>
-                                </circle>
-                                <text x="60" y="50" fill="#283E56" font-size="18" font-weight="bold">84%</text>
-                                <text x="60" y="65" fill="#283E56" font-size="10">Kadar Kejayaan</text>
-                                <rect x="110" y="75" width="40" height="15" rx="7" fill="#1989AC" />
-                            </g>
-                            
-                            <!-- Up and down floating motion -->
-                            <animateTransform 
-                                attributeName="transform" 
-                                type="translate" 
-                                values="0,0; 0,-15; 0,0; 0,12; 0,0" 
-                                dur="5.5s" 
-                                repeatCount="indefinite"/>
-                        </g>
-
-                        <!-- Card 2 - Bottom Right Position -->
-                       
-
-                        <!-- Card 3 - Left Side Position - Moved Up Higher -->
-                        <g id="dataCard3">
-                            <g transform="translate(80, 120)">
-                                <rect x="0" y="0" width="180" height="120" rx="15" fill="url(#cardGradient)" filter="url(#shadow)" />
-                                <text x="15" y="25" fill="#283E56" font-size="14" font-weight="bold">Tinjauan Analitik</text>
-                                <!-- Enhanced Line chart -->
-                                <polyline points="20,70 35,65 50,55 65,45 80,40 95,50 110,35 125,45 140,30" 
-                                          fill="none" stroke="#1989AC" stroke-width="3" filter="url(#glow)">
-                                    <animate attributeName="points" 
-                                        values="20,70 35,65 50,55 65,45 80,40 95,50 110,35 125,45 140,30;
-                                                20,75 35,70 50,60 65,50 80,45 95,55 110,40 125,50 140,35;
-                                                20,70 35,65 50,55 65,45 80,40 95,50 110,35 125,45 140,30" 
-                                        dur="4s" repeatCount="indefinite"/>
-                                </polyline>
-                                <!-- Data points -->
-                                <circle cx="50" cy="55" r="3" fill="#970747">
-                                    <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite"/>
-                                </circle>
-                                <circle cx="80" cy="40" r="3" fill="#1989AC">
-                                    <animate attributeName="r" values="3;5;3" dur="2.2s" repeatCount="indefinite"/>
-                                </circle>
-                                <circle cx="110" cy="35" r="3" fill="#970747">
-                                    <animate attributeName="r" values="3;5;3" dur="1.8s" repeatCount="indefinite"/>
-                                </circle>
-                                
-                                <text x="15" y="95" fill="#283E56" font-size="10">Trend Perkembangan Kerjaya</text>
-                                <text x="15" y="108" fill="#283E56" font-size="8">Analitik Masa Nyata</text>
-                            </g>
-                            
-                            <!-- Up and down floating motion -->
-                            <animateTransform 
-                                attributeName="transform" 
-                                type="translate" 
-                                values="0,0; 0,-12; 0,0; 0,20; 0,0" 
-                                dur="6.2s" 
-                                repeatCount="indefinite"/>
-                        </g>
-
-                        <!-- FLOATING CARDS - All Up and Down Motion (Like Prestasi Industri & Kemahiran Teknikal) -->
-                        
-                        <!-- Floating Card 4 - Left side, up-down motion - Moved Up Higher -->
-                        <g id="floatingCard1">
-                            <g transform="translate(60, 350)">
-                                <rect x="0" y="0" width="140" height="90" rx="12" fill="url(#cardGradient)" filter="url(#shadow)" />
-                                <text x="12" y="20" fill="#283E56" font-size="12" font-weight="bold">Kemahiran Teknikal</text>
-                                <!-- Progress bars -->
-                                <rect x="12" y="30" width="110" height="6" rx="3" fill="#FEF4E8" />
-                                <rect x="12" y="30" width="85" height="6" rx="3" fill="#1989AC">
-                                    <animate attributeName="width" values="85;100;85" dur="3s" repeatCount="indefinite"/>
-                                </rect>
-                                <text x="12" y="50" fill="#283E56" font-size="8">Programming: 85%</text>
-                                
-                                <rect x="12" y="55" width="110" height="6" rx="3" fill="#FEF4E8" />
-                                <rect x="12" y="55" width="70" height="6" rx="3" fill="#970747">
-                                    <animate attributeName="width" values="70;90;70" dur="2.5s" repeatCount="indefinite"/>
-                                </rect>
-                                <text x="12" y="75" fill="#283E56" font-size="8">Design: 78%</text>
-                            </g>
-                            
-                            <!-- Up and down floating motion -->
-                            <animateTransform 
-                                attributeName="transform" 
-                                type="translate" 
-                                values="0,0; 0,-20; 0,0; 0,15; 0,0" 
-                                dur="6s" 
-                                repeatCount="indefinite"/>
-                        </g>
-
-                        <!-- Floating Card 5 - Right side, up-down motion -->
-                        <g id="floatingCard2">
-                            <g transform="translate(520, 350)">
-                                <rect x="0" y="0" width="140" height="80" rx="12" fill="url(#cardGradient)" filter="url(#shadow)" />
-                                <text x="12" y="20" fill="#283E56" font-size="12" font-weight="bold">Gaji Graduan</text>
-                                <!-- Salary items -->
-                                <circle cx="20" cy="35" r="4" fill="#1989AC" opacity="0.8">
-                                    <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" repeatCount="indefinite"/>
-                                </circle>
-                                <text x="30" y="38" fill="#283E56" font-size="8">RM 3,200 - RM 4,500</text>
-                                
-                                <circle cx="20" cy="50" r="4" fill="#970747" opacity="0.8">
-                                    <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
-                                </circle>
-                                <text x="30" y="53" fill="#283E56" font-size="8">Purata: RM 3,850</text>
-                                
-                                <circle cx="20" cy="65" r="4" fill="#1989AC" opacity="0.8">
-                                    <animate attributeName="opacity" values="0.8;1;0.8" dur="1.8s" repeatCount="indefinite"/>
-                                </circle>
-                                <text x="30" y="68" fill="#283E56" font-size="8">78% Gaji Bersaing</text>
-                            </g>
-                            
-                            <!-- Up and down floating motion with different timing -->
-                            <animateTransform 
-                                attributeName="transform" 
-                                type="translate" 
-                                values="0,0; 0,18; 0,0; 0,-12; 0,0" 
-                                dur="4.5s" 
-                                repeatCount="indefinite"/>
-                        </g>
-
-                        <!-- Floating Card 6 - Top area, up-down motion -->
-                        <g id="floatingCard3">
-                            <g transform="translate(250, 50)">
-                                <rect x="0" y="0" width="160" height="80" rx="12" fill="url(#cardGradient)" filter="url(#shadow)" />
-                                <text x="12" y="20" fill="#283E56" font-size="12" font-weight="bold">Prestasi Industri</text>
-                                <!-- Industry performance -->
-                                <rect x="12" y="30" width="20" height="30" fill="#1989AC" opacity="0.7">
-                                    <animate attributeName="height" values="30;25;35;30" dur="2s" repeatCount="indefinite"/>
-                                </rect>
-                                <rect x="40" y="35" width="20" height="25" fill="#970747" opacity="0.7">
-                                    <animate attributeName="height" values="25;30;20;25" dur="2.3s" repeatCount="indefinite"/>
-                                </rect>
-                                <rect x="68" y="32" width="20" height="28" fill="#1989AC" opacity="0.7">
-                                    <animate attributeName="height" values="28;33;23;28" dur="1.8s" repeatCount="indefinite"/>
-                                </rect>
-                                <text x="96" y="40" fill="#283E56" font-size="14" font-weight="bold">↗ 23%</text>
-                                <text x="96" y="55" fill="#283E56" font-size="8">Peningkatan</text>
-                            </g>
-                            
-                            <!-- Slow floating motion -->
-                            <animateTransform 
-                                attributeName="transform" 
-                                type="translate" 
-                                values="0,0; 0,-15; 0,0; 0,10; 0,0" 
-                                dur="8s" 
-                                repeatCount="indefinite"/>
-                        </g>
-
-                        <!-- Enhanced Notification Icons - Also floating - Moved Up Higher -->
-                        <g id="notification1">
-                            
-                            
-                            <!-- Gentle floating -->
-                            <animateTransform 
-                                attributeName="transform" 
-                                type="translate" 
-                                values="0,0; 0,-8; 0,0; 0,5; 0,0" 
-                                dur="5s" 
-                                repeatCount="indefinite"/>
-                        </g>
-
-                        <g id="notification2">
-                            
-                            
-                            <!-- Different floating pattern -->
-                            <animateTransform 
-                                attributeName="transform" 
-                                type="translate" 
-                                values="0,0; 0,12; 0,0; 0,-7; 0,0" 
-                                dur="7s" 
-                                repeatCount="indefinite"/>
-                        </g>
-
-                        <!-- Enhanced Data Flow Lines - Connecting to admin -->
-                        <path d="M400 250 Q550 180 600 200" stroke="#1989AC" stroke-width="3" fill="none" opacity="0.6" stroke-dasharray="10,5">
-                            <animate attributeName="stroke-dashoffset" values="0;15" dur="2s" repeatCount="indefinite"/>
-                        </path>
-                        
-                        <path d="M400 350 Q250 400 200 380" stroke="#970747" stroke-width="3" fill="none" opacity="0.6" stroke-dasharray="8,4">
-                            <animate attributeName="stroke-dashoffset" values="0;12" dur="1.5s" repeatCount="indefinite"/>
-                        </path>
-
-                        <path d="M350 300 Q250 200 220 220" stroke="#1989AC" stroke-width="2" fill="none" opacity="0.5" stroke-dasharray="6,6">
-                            <animate attributeName="stroke-dashoffset" values="0;12" dur="2.5s" repeatCount="indefinite"/>
-                        </path>
-
-                        <path d="M450 300 Q550 400 580 380" stroke="#970747" stroke-width="2" fill="none" opacity="0.5" stroke-dasharray="6,6">
-                            <animate attributeName="stroke-dashoffset" values="0;12" dur="2.8s" repeatCount="indefinite"/>
-                        </path>
-
-                        <!-- Enhanced Data Particles - Simple floating motion instead of orbiting - Moved Up Higher -->
-                        <g id="dataParticles">
-                            <circle cx="150" cy="220" r="3" fill="#1989AC" opacity="0.8">
-                                <!-- Simple up-down float -->
-                                <animateTransform attributeName="transform" type="translate" 
-                                    values="0,0; 0,-8; 0,0; 0,5; 0,0" dur="4s" repeatCount="indefinite"/>
-                                <animate attributeName="opacity" values="0.8;0.3;0.8" dur="4s" repeatCount="indefinite"/>
-                            </circle>
-                            
-                            <rect x="600" y="250" width="4" height="4" fill="#970747" opacity="0.7">
-                                <!-- Simple up-down float with different timing -->
-                                <animateTransform attributeName="transform" type="translate" 
-                                    values="0,0; 0,12; 0,0; 0,-6; 0,0" dur="5s" repeatCount="indefinite"/>
-                                <animate attributeName="opacity" values="0.7;0.2;0.7" dur="5s" repeatCount="indefinite"/>
-                            </rect>
-                            
-                            <polygon points="350,80 353,87 350,94 347,87" fill="#1989AC" opacity="0.6">
-                                <!-- Simple up-down float -->
-                                <animateTransform attributeName="transform" type="translate" 
-                                    values="0,0; 0,-10; 0,0; 0,7; 0,0" dur="6s" repeatCount="indefinite"/>
-                                <animate attributeName="opacity" values="0.6;0.1;0.6" dur="6s" repeatCount="indefinite"/>
-                            </polygon>
-                        </g>
-                    </svg>
-
-                    <!-- Enhanced Text Content -->
-                    <div class="absolute bottom-[10px] left-0 right-0 text-center space-y-6" id="illustrationText">
-                        <h2 class="text-4xl font-bold text-gradient animate-fade-in">DATA REPOSITORI KEBOLEHPASARAN GRADUAN</h2>
-                        <p class="text-secondary max-w-2xl mx-auto text-lg animate-slide-up">
-                            Sistem kebolehpasaran graduan yang menyeluruh membolehkan pelbagai pihak termasuk agensi dan institusi pendidikan membuat keputusan yang lebih tepat, berasaskan bukti, dan selari dengan keperluan pasaran semasa.
-                        </p>
-                        <div class="flex justify-center space-x-12 mt-8 animate-scale-in">
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-primary animate-bounce-soft" id="graduatesCount">0</div>
-                                <div class="text-sm text-secondary">Graduan Dijejaki</div>
+                    
+                    <!-- Hero Title -->
+                    <h1 class="text-5xl lg:text-5xl font-bold mb-1 leading-tight">
+                        <span class="block animate-fade-in-up">DATA REPOSITORI</span>
+                        <span class="block text-white/90 animate-fade-in-up" style="animation-delay: 0.2s;"> KEBOLEHPASARAN GRADUAN</span>
+                    </h1>
+                    
+                    <!-- Hero Subtitle -->
+                    <p class="text-lg text-white/80 font-medium mb-12 leading-relaxed animate-fade-in-up" style="animation-delay: 0.4s;">
+                        Advanced employment tracking with real-time analytics
+                        <br>and institutional performance insights
+                    </p>
+                    
+                     <!-- Dashboard Visualization -->
+                    <div class="relative mt-6 animate-fade-in" style="animation-delay: 0.3s;">
+                        <!-- Main Dashboard Frame -->
+                        <div class="relative bg-white rounded-2xl shadow-2xl p-8 border border-gray-200">
+                            <!-- Dashboard Header -->
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-800">Analytics Overview</h3>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <div class="w-3 h-3 bg-secondary rounded-full animate-pulse"></div>
+                                    <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style="animation-delay: 0.3s;"></div>
+                                    <div class="w-3 h-3 bg-success rounded-full animate-pulse" style="animation-delay: 0.6s;"></div>
+                                </div>
                             </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-accent animate-bounce-soft" id="reportsCount" style="animation-delay: 0.2s;">0</div>
-                                <div class="text-sm text-secondary">Laporan Analitik</div>
+
+                            <!-- Stats Row -->
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <div class="text-center p-4 bg-primary/5 rounded-xl">
+                                    <div class="text-2xl font-bold text-primary">87%</div>
+                                    <div class="text-xs text-gray-600">Employment Rate</div>
+                                </div>
+                                <div class="text-center p-4 bg-success/5 rounded-xl">
+                                    <div class="text-2xl font-bold text-success">2,341</div>
+                                    <div class="text-xs text-gray-600">Graduates</div>
+                                </div>
+                                <div class="text-center p-4 bg-secondary/5 rounded-xl">
+                                    <div class="text-2xl font-bold text-secondary">$52K</div>
+                                    <div class="text-xs text-gray-600">Avg Salary</div>
+                                </div>
                             </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-primary animate-bounce-soft" id="employmentRate" style="animation-delay: 0.4s;">0</div>
-                                <div class="text-sm text-secondary">Kadar Pekerjaan</div>
+
+                            <!-- Chart Visualization -->
+                            <div class="relative h-32 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 overflow-hidden">
+                                <!-- Animated Chart Bars -->
+                                <div class="flex items-end justify-between h-full">
+                                    <div class="w-8 bg-primary rounded-sm animate-pulse" style="height: 60%; animation-delay: 0s;"></div>
+                                    <div class="w-8 bg-secondary rounded-sm animate-pulse" style="height: 80%; animation-delay: 0.2s;"></div>
+                                    <div class="w-8 bg-success rounded-sm animate-pulse" style="height: 90%; animation-delay: 0.4s;"></div>
+                                    <div class="w-8 bg-primary rounded-sm animate-pulse" style="height: 70%; animation-delay: 0.6s;"></div>
+                                    <div class="w-8 bg-secondary rounded-sm animate-pulse" style="height: 85%; animation-delay: 0.8s;"></div>
+                                    <div class="w-8 bg-success rounded-sm animate-pulse" style="height: 75%; animation-delay: 1s;"></div>
+                                </div>
+                                
+                                <!-- Data Flow Animation -->
+                                <div class="absolute top-2 left-0 w-full">
+                                    <div class="w-4 h-1 bg-primary/40 rounded-full animate-data-flow"></div>
+                                </div>
+                            </div>
+
+                            <!-- Status Indicators -->
+                            <div class="flex justify-between items-center mt-6">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-success rounded-full"></div>
+                                    <span class="text-xs text-gray-600">Real-time sync</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-primary rounded-full"></div>
+                                    <span class="text-xs text-gray-600">Data processing</span>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Floating Elements -->
+                        <div class="absolute -top-4 -right-4 w-16 h-16 gradient-primary rounded-full flex items-center justify-center animate-float shadow-lg">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+
+                        <div class="absolute -bottom-6 -left-6 w-20 h-20 bg-white rounded-full shadow-xl flex items-center justify-center animate-rotate-slow border-4 border-primary/10">
+                            <div class="w-8 h-8 gradient-primary rounded-full"></div>
+                        </div>
                     </div>
+                    
                 </div>
             </div>
 
-            <!-- Enhanced Right Side - Login Form -->
-            <div class="lg:col-span-2" id="loginContainer">
-                <div class="glass-morphism rounded-3xl p-8 lg:p-12 card-hover" id="loginForm">
-                    <!-- Logo and Header -->
-                    <!-- Logo and Header -->
-                    <div class="text-center mb-8 animate-fade-in">
-                        <!-- Main Logo - Standing Out -->
-                        <div class="mb-8">
-                            <img src="https://www.uptm.edu.my/images/logo/LOGO_UPTM_no_bg_baru1.png" 
-                                alt="UPTM Logo" 
-                                class="h-24 w-auto max-w-[150px] mx-auto object-contain logo-glow animate-pulse-soft ">
-                            <div class="mt-3 text-sm font-semibold text-blue-600 uppercase tracking-wider">
-                                Universiti Poly-Tech Malaysia
+            <!-- Right Side - Enhanced Login Form -->
+            <div class="relative flex items-center justify-center bg-white/50 min-h-screen">
+                <div class="w-full max-w-lg  mt-10">
+                    <div class="glass-card rounded-3xl shadow-2xl p-12 relative overflow-hidden">
+                        
+                        <!-- Decorative Elements -->
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/5 to-transparent rounded-full -mr-16 -mt-16"></div>
+                        <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-secondary/5 to-transparent rounded-full -ml-12 -mb-12"></div>
+                        
+                        <!-- Form Header -->
+                        <div class="relative text-center mb-10">
+                            <div class="w-20 h-20 gradient-primary rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-xl animate-scale-in relative">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                <div class="absolute inset-0 rounded-3xl border-4 border-primary/30 animate-pulse-ring"></div>
                             </div>
+                            <h2 class="text-3xl font-bold gradient-text mb-3">Welcome Back</h2>
+                            <p class="text-gray-600">Access your analytics dashboard</p>
                         </div>
-                        
-                        <!-- Supporting Logos - Smaller and in a row -->
-                        <div class="flex justify-center items-center gap-6 mb-6 px-2 opacity-70">
-                            <img src="https://www.unikl.edu.my/wp-content/uploads/2021/09/Types_Mara-MaraCorp-Logo-Color.png" 
-                                alt="MARA Logo" 
-                                class="h-10 w-auto max-w-[120px] object-contain transition-opacity hover:opacity-100 mr-[-50px]">
 
-                            <img src="https://www.rurallink.gov.my/wp-content/uploads/2021/07/logo-KKDW.png" 
-                                alt="KKDW Logo" 
-                                class="h-10 w-auto max-w-[50px] object-contain transition-opacity hover:opacity-100">
-                            
-                            <img src="https://iconape.com/wp-content/png_logo_vector/majlis-amanah-rakyat-mara-logo.png" 
-                                alt="MARA Logo" 
-                                class="h-10 w-auto max-w-[50px] object-contain transition-opacity hover:opacity-100">
-
-                            <img src="https://vectorseek.com/wp-content/uploads/2023/10/Kolej-Poly-Tech-Mara-Logo-Vector.svg-.png" 
-                                alt="Kolej Poly-Tech MARA Logo" 
-                                class="h-10 w-auto max-w-[50px] object-contain transition-opacity hover:opacity-100">
-                        </div>
-                        
-                        <h1 class="text-4xl font-bold text-gradient mb-3">LOG IN</h1>
-                        <p class="text-secondary text-lg font-medium">in collabaration of UPTM, IKEB dan AIBIG</p>
-                        <div class="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto mt-4 rounded-full"></div>
-                    </div>
-
-                    <form class="space-y-6 animate-slide-up" id="loginFormElement">
-                        <div class="space-y-6">
+                        <!-- Login Form -->
+                        <form class="space-y-6" id="loginForm">
                             <!-- Email Field -->
-                            <div class="relative group">
-                                <label for="email" class="block text-sm font-semibold text-secondary mb-3 transition-colors group-focus-within:text-primary">
-                                    Alamat E-mel
-                                </label>
-                                <div class="relative">
-                                    <input type="email" 
-                                           class="w-full px-6 py-4 pl-14 rounded-2xl border-2 border-gray-200 bg-white/90 focus:outline-none focus:ring-0 input-glow transition-all duration-300 text-secondary placeholder-gray-400 font-medium"
-                                           placeholder="test1@gmail.com"
-                                           id="email"
-                                           autocomplete="email"
-                                           required>
-                                    <div class="absolute left-4 top-4 text-gray-400 transition-colors group-focus-within:text-primary">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                            <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                                <label class="block text-sm font-bold text-gray-700 mb-3">Email Address</label>
+                                <div class="relative group">
+                                    <input 
+                                        type="email" 
+                                        class="w-full px-6 py-4 bg-white/80 border-2 border-gray-200 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none input-focus transition-all duration-300"
+                                        placeholder="Enter your email"
+                                        required>
+                                    <div class="absolute inset-y-0 right-0 pr-6 flex items-center">
+                                        <svg class="h-5 w-5 text-gray-400 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
                                         </svg>
                                     </div>
-                                    <div class="absolute right-4 top-4 opacity-0 transition-opacity duration-300" id="emailCheck">
-                                        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="text-xs text-gray-500 mt-2 opacity-0 transition-opacity duration-300" id="emailHint">
-                                    Gunakan alamat e-mel institusi anda
                                 </div>
                             </div>
 
                             <!-- Password Field -->
-                            <div class="relative group">
-                                <label for="password" class="block text-sm font-semibold text-secondary mb-3 transition-colors group-focus-within:text-primary">
-                                    Kata Laluan
-                                </label>
-                                <div class="relative">
-                                    <input type="password" 
-                                           class="w-full px-6 py-4 pl-14 pr-14 rounded-2xl border-2 border-gray-200 bg-white/90 focus:outline-none focus:ring-0 input-glow transition-all duration-300 text-secondary placeholder-gray-400 font-medium"
-                                           placeholder="Masukkan kata laluan selamat anda"
-                                           id="password"
-                                           autocomplete="current-password"
-                                           required>
-                                    <div class="absolute left-4 top-4 text-gray-400 transition-colors group-focus-within:text-primary">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                        </svg>
-                                    </div>
-                                    <button type="button" class="absolute right-4 top-4 text-gray-400 hover:text-primary transition-colors" id="togglePassword">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="eyeIcon">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            <div class="animate-fade-in-up" style="animation-delay: 0.4s;">
+                                <label class="block text-sm font-bold text-gray-700 mb-3">Password</label>
+                                <div class="relative group">
+                                    <input 
+                                        type="password" 
+                                        id="password"
+                                        class="w-full px-6 py-4 bg-white/80 border-2 border-gray-200 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none input-focus transition-all duration-300"
+                                        placeholder="Enter your password"
+                                        required>
+                                    <button type="button" class="absolute inset-y-0 right-0 pr-6 flex items-center hover:scale-110 transition-transform" id="togglePassword">
+                                        <svg class="h-5 w-5 text-gray-400 hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                         </svg>
                                     </button>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Additional Options -->
-                        <div class="flex items-center justify-between pt-2">
-                            <label class="flex items-center space-x-3 cursor-pointer group">
-                                <div class="relative">
-                                    <input type="checkbox" class="sr-only" id="rememberMe">
-                                    <div class="w-6 h-6 bg-gray-200 rounded-lg border-2 border-gray-300 transition-all duration-300 group-hover:border-primary" id="checkboxBg"></div>
-                                    <svg class="w-4 h-4 text-white absolute top-1 left-1 opacity-0 transition-opacity duration-300" id="checkIcon" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            <!-- Options -->
+                            <div class="flex items-center justify-between animate-fade-in-up" style="animation-delay: 0.6s;">
+                                <label class="flex items-center cursor-pointer group">
+                                    <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4">
+                                    <span class="ml-3 text-sm text-gray-600 font-medium">Remember me</span>
+                                </label>
+                                <a href="#" class="text-sm font-semibold text-primary hover:text-primary-light transition-colors">
+                                    Need help?
+                                </a>
+                            </div>
+
+                            <!-- Login Button -->
+                            <button 
+                                type="submit" 
+                                class="w-full btn-premium text-white font-bold py-4 px-8 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 shadow-xl animate-scale-in"
+                                style="animation-delay: 0.8s;"
+                                id="loginButton">
+                                <div class="flex items-center justify-center space-x-3">
+                                    <span>Access Dashboard</span>
+                                    <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                                     </svg>
                                 </div>
-                                <span class="text-secondary select-none font-medium">Kekalkan log masuk saya</span>
-                            </label>
-                            <a href="#" class="text-primary hover:text-accent transition-colors font-semibold">
-                                Lupa kata laluan?
-                            </a>
-                        </div>
+                            </button>
 
-                        <!-- Login Button -->
-                        <button type="submit" 
-                                class="btn-primary w-full py-4 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 relative overflow-hidden mt-8"
-                                id="loginBtn">
-                            <div class="relative z-10 flex items-center justify-center space-x-3">
-                                <span id="btnText" class="text-lg">Akses Panel</span>
-                                <svg class="w-6 h-6 transition-transform duration-300" id="btnIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                </svg>
-                            </div>
-                        </button>
-                    </form>
-
+                            
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
- <script src="{{ url_for('static', filename='JS/login.js') }}"></script>
+
+    <script>
+        // Password toggle functionality
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('svg');
+            
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => { this.style.transform = 'scale(1)'; }, 100);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464m1.414 1.414l-1.414-1.414m7.071 7.071l1.414-1.414M15.121 15.121L9.878 9.878"/>`;
+            } else {
+                passwordInput.type = 'password';
+                icon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+            }
+        });
+
+        // Enhanced form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const button = document.getElementById('loginButton');
+            const originalContent = button.innerHTML;
+            
+            button.innerHTML = `
+                <div class="flex items-center justify-center space-x-3">
+                    <div class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Authenticating...</span>
+                </div>
+            `;
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = `
+                    <div class="flex items-center justify-center space-x-3">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span>Welcome!</span>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.disabled = false;
+                }, 2000);
+            }, 2000);
+        });
+
+        // Enhanced input interactions
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.classList.add('shadow-xl');
+                this.parentElement.classList.add('transform', 'scale-[1.02]');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.classList.remove('shadow-xl');
+                this.parentElement.classList.remove('transform', 'scale-[1.02]');
+            });
+        });
+
+        // Smooth scroll for mobile navigation
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('backdrop-blur-xl');
+            } else {
+                header.classList.remove('backdrop-blur-xl');
+            }
+        });
+    </script>
 </body>
 </html>

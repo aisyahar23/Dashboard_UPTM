@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Data Kebolehpasaran Graduan MARA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#074e7e',
+                        'primary-dark': '#063d64',
+                        'primary-light': '#0a5d96',
+                        'accent': '#c92427',
+                        'accent-dark': '#a01d20',
+                        'accent-light': '#e03437'
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 1s ease-out forwards',
+                        'fade-in-left': 'fadeInLeft 1s ease-out forwards',
+                        'fade-in-right': 'fadeInRight 1s ease-out forwards',
+                        'slide-in-up': 'slideInUp 0.8s ease-out forwards',
+                        'float': 'float 8s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s ease-in-out infinite',
+                        'bounce-gentle': 'bounceGentle 3s ease-in-out infinite',
+                        'scale-in': 'scaleIn 0.6s ease-out forwards',
+                        'rotate-slow': 'rotateSlow 20s linear infinite',
+                        'wave': 'wave 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'morph': 'morph 8s ease-in-out infinite',
+                        'typing': 'typing 3s steps(20) 1s forwards',
+                        'slide-infinite': 'slideInfinite 15s linear infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(60px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(5deg); }
+            50% { transform: translateY(-15px) rotate(0deg); }
+            75% { transform: translateY(-25px) rotate(-5deg); }
+        }
+        @keyframes bounceGentle {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.05); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8) rotate(-5deg); }
+            to { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        @keyframes rotateSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes wave {
+            0%, 100% { clip-path: polygon(0 45%, 15% 44%, 32% 50%, 54% 60%, 70% 61%, 84% 59%, 100% 52%, 100% 100%, 0 100%); }
+            50% { clip-path: polygon(0 60%, 16% 65%, 34% 66%, 51% 62%, 67% 50%, 84% 45%, 100% 46%, 100% 100%, 0 100%); }
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(201, 36, 39, 0.3); }
+            to { box-shadow: 0 0 40px rgba(201, 36, 39, 0.6), 0 0 60px rgba(201, 36, 39, 0.3); }
+        }
+        @keyframes morph {
+            0%, 100% { border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%; }
+            25% { border-radius: 60% 40% 30% 70% / 40% 60% 40% 60%; }
+            50% { border-radius: 30% 70% 70% 30% / 50% 60% 40% 50%; }
+            75% { border-radius: 70% 30% 40% 60% / 60% 40% 60% 40%; }
+        }
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        @keyframes slideInfinite {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .text-shadow {
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #c92427, #074e7e, #c92427);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 4s ease-in-out infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .morphing-blob {
+            background: linear-gradient(45deg, #074e7e, #c92427, #0a5d96);
+            background-size: 400% 400%;
+            animation: morph 8s ease-in-out infinite, gradientShift 6s ease-in-out infinite;
+        }
+        
+        .data-visualization {
+            background: linear-gradient(135deg, 
+                rgba(7, 78, 126, 0.1) 0%, 
+                rgba(201, 36, 39, 0.1) 25%, 
+                rgba(10, 93, 150, 0.1) 50%, 
+                rgba(201, 36, 39, 0.1) 75%, 
+                rgba(7, 78, 126, 0.1) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease-in-out infinite;
+        }
+        
+        .typing-effect {
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid #c92427;
+            width: 0;
+            animation: typing 3s steps(30) 1s forwards;
+        }
+        
+        .hover-lift {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-20px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .floating-elements::before,
+        .floating-elements::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-elements::before {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(201, 36, 39, 0.2), rgba(7, 78, 126, 0.2));
+            top: 10%;
+            left: 80%;
+            animation-delay: -2s;
+        }
+        
+        .floating-elements::after {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(7, 78, 126, 0.3), rgba(201, 36, 39, 0.3));
+            bottom: 20%;
+            left: 10%;
+            animation-delay: -4s;
+        }
+        
+        html { scroll-behavior: smooth; }
+        
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #c92427, #074e7e);
+            transform-origin: left;
+            transform: scaleX(0);
+            z-index: 9999;
+        }
+        
+        .intersection-observer {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .intersection-observer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased overflow-x-hidden">
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator" id="scrollProgress"></div>
+
+    <!-- Floating Background Elements -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute top-20 left-10 w-32 h-32 morphing-blob rounded-full opacity-10 animate-float"></div>
+        <div class="absolute top-1/3 right-20 w-24 h-24 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full animate-bounce-gentle"></div>
+        <div class="absolute bottom-1/4 left-1/4 w-40 h-40 morphing-blob rounded-full opacity-5 animate-rotate-slow"></div>
+        <div class="absolute top-1/2 right-1/3 w-16 h-16 bg-gradient-to-tr from-primary/30 to-accent/30 rounded-full animate-pulse-slow"></div>
+    </div>
+
+    <!-- Header with Enhanced Navigation -->
+    <header class="relative bg-gradient-to-br from-primary via-primary-dark to-primary-light overflow-hidden min-h-screen flex flex-col">
+        <!-- Animated Background -->
+        <div class="absolute inset-0">
+            <div class="absolute inset-0 bg-gradient-to-r from-primary/50 via-transparent to-accent/50 animate-wave"></div>
+            <div class="absolute inset-0 opacity-20">
+                <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent via-white/10 to-transparent animate-slide-infinite"></div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="relative z-20 px-6 py-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="glass-effect rounded-2xl px-8 py-4">
+                    <div class="flex items-center justify-between">
+                       <!-- Main Logo with Animation -->
+    <div class="flex items-center space-x-4 group">
+       <!-- Logo 1 -->
+        <!-- Logo 4 -->
+        <div class=" group relative inline-flex overflow-hidden px-2 py-1  transition-transform duration-300 hover:scale-105">
+            <div class="flex items-center justify-center hover:scale-110 transition-transform duration-300 hover-lift overflow-hidden rounded-2xl w-[120px] h-[80px]">
+                <img src="https://www.uptm.edu.my/images/logo/LOGO_UPTM_no_bg_baru1.png" 
+                    alt="MARA Logo" 
+                    class="h-[80px] w-auto object-contain">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-80 transition-opacity"></div>
+        </div>
+        <div class="text-white">
+            <h1 class="text-2xl font-bold gradient-text">MARA</h1>
+            <p class="text-sm opacity-80 typing-effect">Data Repository</p>
+        </div>
+    </div>
+
+                   <!-- Collaboration Logos with Tight Fit -->
+<div class="hidden lg:flex items-center space-x-8">
+    <span class="text-white/80 text-sm font-medium">Kerjasama strategik:</span>
+    <div class="flex items-center space-x-6">
+
+        <!-- Logo 1 -->
+        <div class="group relative inline-flex overflow-hidden ">
+            <div class=" flex items-center justify-center hover:scale-110 transition-transform duration-300 hover-lift overflow-hidden rounded-2xl">
+                <img src="https://www.unikl.edu.my/wp-content/uploads/2021/09/Types_Mara-MaraCorp-Logo-Color.png" 
+                     alt="MARA Logo" 
+                     class="h-[80px] max-w-[190px] object-cover scale-[1.4]">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-80 transition-opacity"></div>
+        </div>
+
+        <!-- Logo 2 -->
+        <div class="group relative inline-flex overflow-hidden  h-[80px] w-auto">
+            <div class=" shadow-xl flex items-center justify-center h-full w-full hover:scale-110 transition-transform duration-300 hover-lift overflow-hidden rounded-2xl p-2">
+                <img src="https://www.rurallink.gov.my/wp-content/uploads/2021/07/logo-KKDW.png" 
+                    alt="MARA Logo" 
+                    class="h-full w-auto object-contain">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-80 transition-opacity"></div>
+        </div>
+
+
+        <!-- Logo 3 -->
+        <div class="group relative inline-flex overflow-hidden  h-[80px]">
+            <div class=" flex items-center justify-center hover:scale-110 transition-transform duration-300 hover-lift overflow-hidden rounded-2xl h-full w-full">
+                <img src="https://iconape.com/wp-content/png_logo_vector/majlis-amanah-rakyat-mara-logo.png" 
+                    alt="MARA Logo" 
+                    class="h-full w-auto object-contain">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-80 transition-opacity"></div>
+        </div>
+
+       <!-- Logo 4 -->
+        <div class="group relative inline-flex overflow-hidden">
+            <div class="flex items-center justify-center hover:scale-110 transition-transform duration-300 hover-lift overflow-hidden rounded-2xl w-[120px] h-[80px]">
+                <img src="https://vectorseek.com/wp-content/uploads/2023/10/Kolej-Poly-Tech-Mara-Logo-Vector.svg-.png" 
+                    alt="MARA Logo" 
+                    class="h-[80px] w-auto object-contain">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-80 transition-opacity"></div>
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+    </div>
+</div>
+
+
+                        <!-- Mobile Menu Button -->
+                        <button class="lg:hidden glass-effect p-3 rounded-xl text-white hover:bg-white/20 transition-all">
+                            <div class="w-6 h-6 flex flex-col justify-center space-y-1">
+                                <div class="w-full h-0.5 bg-white transform transition-all"></div>
+                                <div class="w-full h-0.5 bg-white transform transition-all"></div>
+                                <div class="w-full h-0.5 bg-white transform transition-all"></div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Enhanced Hero Section -->
+        <div class="relative z-10 flex-1 flex items-center px-6 py-12">
+            <div class="max-w-7xl mx-auto w-full">
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <!-- Hero Content with Advanced Typography -->
+                    <div class="text-white space-y-8">
+                        <div class="space-y-6 intersection-observer">
+                            <div class="inline-block">
+                                <span class="px-4 py-2 glass-effect rounded-full text-sm font-medium animate-pulse-slow">
+                                    🚀 Inovasi Data Pendidikan
+                                </span>
+                            </div>
+                            
+                            <h1 class="text-5xl lg:text-7xl font-bold leading-tight">
+                                <span class="block text-shadow">Sistem Data</span>
+                                <span class="block gradient-text text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-300 to-red-300">
+                                    Kebolehpasaran
+                                </span>
+                                <span class="block text-shadow">Graduan</span>
+                            </h1>
+                            
+                            <div class="space-y-4">
+                                <p class="text-xl lg:text-2xl opacity-90 leading-relaxed max-w-2xl">
+                                    Revolusi digital dalam pemantauan dan analisis kebolehpasaran graduan MARA
+                                </p>
+                                <p class="text-lg opacity-75 max-w-xl">
+                                    Dengan teknologi   visualisasi data yang canggih untuk membentuk masa depan pendidikan tinggi Malaysia
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Enhanced Call-to-Action -->
+                        <div class="flex flex-col sm:flex-row gap-6 intersection-observer">
+                            <button class="group relative bg-gradient-to-r from-accent to-accent-light text-white px-10 py-5 rounded-2xl font-bold text-lg overflow-hidden hover-lift">
+                                <span class="relative z-10 flex items-center justify-center space-x-3">
+                                    <span>Mulakan Transformasi</span>
+                                    <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center group-hover:translate-x-2 transition-transform">
+                                        <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                                    </div>
+                                </span>
+                                <div class="absolute inset-0 bg-gradient-to-r from-accent-light to-accent translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+                            </button>
+                            
+                            <button class="glass-effect border-2 border-white/30 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-white/20 transition-all duration-500 hover-lift">
+                                <span class="flex items-center justify-center space-x-3">
+                                    <span>Terokai Dashboard</span>
+                                    <div class="w-2 h-2 bg-white rounded-full animate-bounce-gentle"></div>
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Enhanced Stats with Animation -->
+                        <div class="grid grid-cols-3 gap-8 pt-8 intersection-observer">
+                            <div class="text-center space-y-3 group">
+                                <div class="text-4xl lg:text-5xl font-bold gradient-text animate-bounce-gentle">1,250+</div>
+                                <div class="text-sm opacity-80 group-hover:opacity-100 transition-opacity">Graduan Dianalisis</div>
+                                <div class="h-1 bg-gradient-to-r from-transparent via-yellow-300 to-transparent rounded-full"></div>
+                            </div>
+                            <div class="text-center space-y-3 group">
+                                <div class="text-4xl lg:text-5xl font-bold gradient-text animate-pulse-slow">85%</div>
+                                <div class="text-sm opacity-80 group-hover:opacity-100 transition-opacity">Kadar Kejayaan</div>
+                                <div class="h-1 bg-gradient-to-r from-transparent via-green-300 to-transparent rounded-full"></div>
+                            </div>
+                            <div class="text-center space-y-3 group">
+                                <div class="text-4xl lg:text-5xl font-bold gradient-text animate-glow">3.2</div>
+                                <div class="text-sm opacity-80 group-hover:opacity-100 transition-opacity">Bulan Purata</div>
+                                <div class="h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revolutionary Dashboard Preview -->
+                    <div class="relative intersection-observer">
+                        <div class="relative floating-elements">
+                            <!-- Main Dashboard with 3D Effect -->
+                            <div class="relative transform rotate-6 hover:rotate-3 transition-all duration-700 hover-lift">
+                                <div class="bg-white rounded-3xl shadow-2xl p-8 backdrop-blur-xl">
+                                    <!-- Dashboard Header -->
+                                    <div class="flex items-center justify-between pb-6 border-b border-gray-100">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 morphing-blob"></div>
+                                            <h3 class="text-xl font-bold text-gray-800">Analytics Dashboard</h3>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <div class="w-3 h-3 bg-red-400 rounded-full animate-pulse"></div>
+                                            <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse-slow"></div>
+                                            <div class="w-3 h-3 bg-green-400 rounded-full animate-bounce-gentle"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Interactive Chart Area -->
+                                    <div class="mt-6 space-y-6">
+                                        <div class="h-48 data-visualization rounded-2xl relative overflow-hidden">
+                                            <!-- Animated Chart Elements -->
+                                            <div class="absolute inset-0 flex items-end justify-around p-4">
+                                                <div class="w-8 bg-primary rounded-t-lg animate-bounce-gentle h-20"></div>
+                                                <div class="w-8 bg-accent rounded-t-lg animate-pulse-slow h-32" style="animation-delay: 0.5s"></div>
+                                                <div class="w-8 bg-primary-light rounded-t-lg animate-bounce-gentle h-24" style="animation-delay: 1s"></div>
+                                                <div class="w-8 bg-accent-light rounded-t-lg animate-pulse-slow h-40" style="animation-delay: 1.5s"></div>
+                                                <div class="w-8 bg-primary rounded-t-lg animate-bounce-gentle h-28" style="animation-delay: 2s"></div>
+                                            </div>
+                                            
+                                            <!-- Floating Data Points -->
+                                            <div class="absolute top-4 right-4 space-y-2">
+                                                <div class="w-3 h-3 bg-accent rounded-full animate-pulse animate-float"></div>
+                                                <div class="w-2 h-2 bg-primary rounded-full animate-bounce-gentle"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Live Metrics Grid -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl hover-lift">
+                                                <div class="text-3xl font-bold text-primary animate-glow">72%</div>
+                                                <div class="text-sm text-gray-600">Dalam Bidang</div>
+                                                <div class="mt-2 w-full bg-blue-200 rounded-full h-2">
+                                                    <div class="bg-primary h-2 rounded-full w-3/4 animate-pulse"></div>
+                                                </div>
+                                            </div>
+                                            <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl hover-lift">
+                                                <div class="text-3xl font-bold text-green-600 animate-bounce-gentle">RM 3.2K</div>
+                                                <div class="text-sm text-gray-600">Gaji Purata</div>
+                                                <div class="mt-2 w-full bg-green-200 rounded-full h-2">
+                                                    <div class="bg-green-600 h-2 rounded-full w-4/5 animate-pulse-slow"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Interactive Elements -->
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex space-x-2">
+                                                <div class="w-8 h-2 bg-primary rounded-full animate-pulse"></div>
+                                                <div class="w-6 h-2 bg-gray-200 rounded-full"></div>
+                                                <div class="w-4 h-2 bg-gray-200 rounded-full"></div>
+                                            </div>
+                                            <div class="text-xs text-gray-500 animate-pulse">Live Update</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Floating UI Elements -->
+                            <div class="absolute -top-8 -left-8 w-16 h-16 glass-effect rounded-2xl flex items-center justify-center animate-float">
+                                <div class="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg animate-rotate-slow"></div>
+                            </div>
+                            
+                            <div class="absolute -bottom-6 -right-6 w-20 h-20 glass-effect rounded-full flex items-center justify-center animate-bounce-gentle">
+                                <div class="w-10 h-10 morphing-blob"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Advanced Features Section -->
+    <section class="relative py-32 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+        <!-- Background Animation -->
+        <div class="absolute inset-0 opacity-30">
+            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/5 via-transparent to-accent/5 animate-wave"></div>
+        </div>
+        
+        <div class="relative max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20 intersection-observer">
+                <div class="inline-block mb-6">
+                    <span class="px-6 py-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full text-sm font-bold text-primary">
+                        KEUPAYAAN CANGGIH SISTEM
+                    </span>
+                </div>
+                <h2 class="text-5xl lg:text-6xl font-bold text-gray-900 mb-8">
+                    Teknologi <span class="gradient-text">Terdepan</span> untuk
+                    <br>Analisis Data Graduan
+                </h2>
+                <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                    Menggabungkan kecerdasan buatan, visualisasi data interaktif, dan analitik mendalam 
+                    untuk memberikan insights yang tidak pernah ada sebelumnya
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-4 gap-8">
+                <!-- Feature 1: Data Centralization -->
+                <div class="group relative intersection-observer hover-lift" style="animation-delay: 0.1s">
+                    <div class="relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div class="relative">
+                            <div class="w-20 h-20 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform morphing-blob">
+                                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                    <div class="w-8 h-8 bg-white rounded-lg animate-pulse"></div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
+                                Pangkalan Data Berpusat
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed mb-6">
+                                Sistem pengumpulan data yang mengintegrasikan semua maklumat graduan MARA dari pelbagai sumber secara real-time dengan keselamatan tinggi
+                            </p>
+                            
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                                    <span class="text-sm text-gray-500">Integrasi Multi-Platform</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                                    <span class="text-sm text-gray-500">Keselamatan Enterprise</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2: AI Analytics -->
+                <div class="group relative intersection-observer hover-lift" style="animation-delay: 0.2s">
+                    <div class="relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-br from-accent/5 to-primary/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div class="relative">
+                            <div class="w-20 h-20 bg-gradient-to-br from-accent to-accent-dark rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform morphing-blob">
+                                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center animate-rotate-slow">
+                                    <div class="w-8 h-8 bg-white rounded-lg"></div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-accent transition-colors">
+                                Analitik Pintar
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed mb-6">
+                                Algoritma pembelajaran mesin yang memberikan prediksi akurat tentang trend kebolehpasaran dan rekomendasi strategik automatik
+                            </p>
+                            
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-bounce-gentle"></div>
+                                    <span class="text-sm text-gray-500">Prediksi Trend</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse-slow"></div>
+                                    <span class="text-sm text-gray-500">Machine Learning</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3: Interactive Visualization -->
+                <div class="group relative intersection-observer hover-lift" style="animation-delay: 0.3s">
+                    <div class="relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-blue-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div class="relative">
+                            <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                    <div class="w-8 h-8 data-visualization rounded-lg"></div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-green-600 transition-colors">
+                                Visualisasi Interaktif
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed mb-6">
+                                Dashboard dinamik dengan graf 3D, heatmap interaktif, dan visualisasi real-time yang memudahkan pemahaman data kompleks
+                            </p>
+                            
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-purple-500 rounded-full animate-glow"></div>
+                                    <span class="text-sm text-gray-500">Graf 3D Interaktif</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-orange-500 rounded-full animate-float"></div>
+                                    <span class="text-sm text-gray-500">Real-time Updates</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 4: Automated Insights -->
+                <div class="group relative intersection-observer hover-lift" style="animation-delay: 0.4s">
+                    <div class="relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div class="relative">
+                            <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform morphing-blob">
+                                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center animate-bounce-gentle">
+                                    <div class="w-8 h-8 bg-white rounded-lg animate-glow"></div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors">
+                                Insights Automatik
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed mb-6">
+                                Sistem yang menghasilkan laporan cerdas, rekomendasi strategik, dan alert automatik berdasarkan pattern data yang dikesan
+                            </p>
+                            
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm text-gray-500">Smart Reports</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full animate-bounce-gentle"></div>
+                                    <span class="text-sm text-gray-500">Alert System</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Revolutionary Objectives Section -->
+    <section class="relative py-32 bg-gradient-to-br from-primary via-primary-dark to-accent overflow-hidden">
+        <!-- Animated Background -->
+        <div class="absolute inset-0">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-slide-infinite"></div>
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-white/5 to-transparent rounded-full animate-float"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-accent/20 to-transparent rounded-full animate-bounce-gentle"></div>
+        </div>
+        
+        <div class="relative max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20 intersection-observer">
+                <div class="inline-block mb-6">
+                    <span class="px-6 py-3 glass-effect rounded-full text-sm font-bold text-white">
+                        ROADMAP STRATEGIK
+                    </span>
+                </div>
+                <h2 class="text-5xl lg:text-6xl font-bold text-white mb-8 text-shadow">
+                    Lima <span class="gradient-text">Objektif</span> Utama
+                </h2>
+                <p class="text-xl text-white/90 max-w-4xl mx-auto leading-relaxed">
+                    Pelan tindakan komprehensif untuk memastikan kejayaan pembangunan dan implementasi 
+                    sistem data kebolehpasaran graduan yang revolusioner
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-5 gap-8">
+                <!-- Objective 1 -->
+                <div class="intersection-observer hover-lift group" style="animation-delay: 0.1s">
+                    <div class="relative glass-effect rounded-3xl p-8 h-full">
+                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div class="relative">
+                            <div class="flex items-center justify-center mb-6">
+                                <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-2xl morphing-blob animate-glow">
+                                    1
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-white mb-4 text-center">
+                                Analisis Keperluan
+                            </h3>
+                            <p class="text-white/80 text-sm leading-relaxed text-center">
+                                Kajian mendalam tentang keperluan sistem data yang komprehensif dan user-friendly untuk ekosistem MARA
+                            </p>
+                            
+                            <div class="mt-6 flex justify-center">
+                                <div class="w-12 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Objective 2 -->
+                <div class="intersection-observer hover-lift group" style="animation-delay: 0.2s">
+                    <div class="relative glass-effect rounded-3xl p-8 h-full">
+                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div class="relative">
+                            <div class="flex items-center justify-center mb-6">
+                                <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-2xl morphing-blob animate-pulse-slow">
+                                    2
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-white mb-4 text-center">
+                                Spesifikasi Fungsi
+                            </h3>
+                            <p class="text-white/80 text-sm leading-relaxed text-center">
+                                Definisi terperinci tentang fungsi sistem dan output yang dijangka untuk memenuhi objektif strategik
+                            </p>
+                            
+                            <div class="mt-6 flex justify-center">
+                                <div class="w-12 h-1 bg-gradient-to-r from-green-400 to-blue-500 rounded-full animate-bounce-gentle"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Objective 3 -->
+                <div class="intersection-observer hover-lift group" style="animation-delay: 0.3s">
+                    <div class="relative glass-effect rounded-3xl p-8 h-full">
+                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div class="relative">
+                            <div class="flex items-center justify-center mb-6">
+                                <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-2xl morphing-blob animate-glow">
+                                    3
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-white mb-4 text-center">
+                                Kolaborasi Teknikal
+                            </h3>
+                            <p class="text-white/80 text-sm leading-relaxed text-center">
+                                Pembinaan partnership strategik dengan UMK untuk memperoleh kepakaran teknikal dan sumber akademik
+                            </p>
+                            
+                            <div class="mt-6 flex justify-center">
+                                <div class="w-12 h-1 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full animate-float"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Objective 4 -->
+                <div class="intersection-observer hover-lift group" style="animation-delay: 0.4s">
+                    <div class="relative glass-effect rounded-3xl p-8 h-full">
+                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div class="relative">
+                            <div class="flex items-center justify-center mb-6">
+                                <div class="w-16 h-16 bg-gradient-to-br from-red-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-2xl morphing-blob animate-pulse">
+                                    4
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-white mb-4 text-center">
+                                Framework Pelaksanaan
+                            </h3>
+                            <p class="text-white/80 text-sm leading-relaxed text-center">
+                                Penentuan struktur organisasi, peranan stakeholder, dan metodologi pembangunan sistem yang optimum
+                            </p>
+                            
+                            <div class="mt-6 flex justify-center">
+                                <div class="w-12 h-1 bg-gradient-to-r from-red-400 to-orange-500 rounded-full animate-pulse-slow"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Objective 5 -->
+                <div class="intersection-observer hover-lift group" style="animation-delay: 0.5s">
+                    <div class="relative glass-effect rounded-3xl p-8 h-full">
+                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div class="relative">
+                            <div class="flex items-center justify-center mb-6">
+                                <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-2xl morphing-blob animate-bounce-gentle">
+                                    5
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-white mb-4 text-center">
+                                Timeline Strategik
+                            </h3>
+                            <p class="text-white/80 text-sm leading-relaxed text-center">
+                                Penjadwalan milestone kritikal dan deliverable dengan timeline yang realistik dan terukur
+                            </p>
+                            
+                            <div class="mt-6 flex justify-center">
+                                <div class="w-12 h-1 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full animate-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Immersive Dashboard Showcase -->
+    <section class="relative py-32 bg-gradient-to-br from-white via-gray-50 to-blue-50 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20 intersection-observer">
+                <div class="inline-block mb-6">
+                    <span class="px-6 py-3 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full text-sm font-bold text-primary">
+                        DASHBOARD PREVIEW
+                    </span>
+                </div>
+                <h2 class="text-5xl lg:text-6xl font-bold text-gray-900 mb-8">
+                    Interface <span class="gradient-text">Futuristik</span> yang
+                    <br>Mengubah Cara Anda Berfikir
+                </h2>
+                <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                    Dashboard yang direka dengan teknologi terkini untuk memberikan pengalaman analisis data 
+                    yang tidak pernah anda alami sebelum ini
+                </p>
+            </div>
+
+            <!-- Dashboard Grid Showcase -->
+            <div class="grid lg:grid-cols-4 gap-8 intersection-observer">
+                <!-- Real-time Analytics -->
+                <div class="lg:col-span-2 bg-gradient-to-br from-primary to-primary-dark rounded-3xl p-8 text-white relative overflow-hidden hover-lift group">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-slide-infinite"></div>
+                    
+                    <div class="relative">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold">Analitik Real-time</h3>
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                <span class="text-sm opacity-80">Live</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-white/80">Kadar Kebolehpasaran</span>
+                                <span class="text-2xl font-bold gradient-text">87.3%</span>
+                            </div>
+                            <div class="w-full bg-white/20 rounded-full h-3">
+                                <div class="bg-gradient-to-r from-green-400 to-blue-400 h-3 rounded-full animate-pulse" style="width: 87.3%"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mt-6">
+                                <div class="glass-effect p-4 rounded-xl">
+                                    <div class="text-3xl font-bold animate-glow">1,247</div>
+                                    <div class="text-sm opacity-80">Graduan Aktif</div>
+                                </div>
+                                <div class="glass-effect p-4 rounded-xl">
+                                    <div class="text-3xl font-bold animate-pulse-slow">3.1</div>
+                                    <div class="text-sm opacity-80">Bulan Purata</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trend Analysis -->
+                <div class="bg-white rounded-3xl p-6 shadow-xl hover-lift group">
+                    <h4 class="text-lg font-bold text-gray-900 mb-4">Analisis Trend</h4>
+                    <div class="h-32 data-visualization rounded-xl mb-4 relative overflow-hidden">
+                        <div class="absolute inset-0 flex items-end justify-around p-2">
+                            <div class="w-4 bg-primary rounded-t animate-bounce-gentle h-16"></div>
+                            <div class="w-4 bg-accent rounded-t animate-pulse-slow h-20" style="animation-delay: 0.2s"></div>
+                            <div class="w-4 bg-green-500 rounded-t animate-bounce-gentle h-24" style="animation-delay: 0.4s"></div>
+                            <div class="w-4 bg-blue-500 rounded-t animate-pulse-slow h-18" style="animation-delay: 0.6s"></div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span>Trend Menaik</span>
+                            <span class="text-green-600 font-bold">+12.5%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Geographic Distribution -->
+                <div class="bg-gradient-to-br from-accent to-accent-dark rounded-3xl p-6 text-white relative overflow-hidden hover-lift">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-6 translate-x-6 animate-float"></div>
+                    
+                    <div class="relative">
+                        <h4 class="text-lg font-bold mb-4">Taburan Geografi</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span className="text-sm">Selangor</span>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-16 h-2 bg-white/30 rounded-full">
+                                        <div className="w-3/4 h-2 bg-white rounded-full animate-pulse"></div>
+                                    </div>
+                                    <span className="text-xs">42%</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm">KL</span>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-16 h-2 bg-white/30 rounded-full">
+                                        <div className="w-2/3 h-2 bg-white rounded-full animate-pulse-slow"></div>
+                                    </div>
+                                    <span className="text-xs">31%</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm">Johor</span>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-16 h-2 bg-white/30 rounded-full">
+                                        <div className="w-1/2 h-2 bg-white rounded-full animate-bounce-gentle"></div>
+                                    </div>
+                                    <span className="text-xs">19%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Revolutionary CTA Section -->
+    <section class="relative py-32 bg-gradient-to-br from-gray-900 via-primary-dark to-accent overflow-hidden">
+        <!-- Background Effects -->
+        <div class="absolute inset-0">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-accent/20 to-transparent rounded-full animate-float blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-primary/30 to-transparent rounded-full animate-bounce-gentle blur-2xl"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/2 to-transparent animate-slide-infinite"></div>
+        </div>
+        
+        <div class="relative max-w-5xl mx-auto px-6 text-center">
+            <div class="intersection-observer">
+                <div class="inline-block mb-8">
+                    <span class="px-8 py-4 glass-effect rounded-full text-sm font-bold text-white">
+                        🚀 MASA DEPAN BERMULA SEKARANG
+                    </span>
+                </div>
+                
+                <h2 class="text-5xl lg:text-7xl font-bold text-white mb-8 text-shadow leading-tight">
+                    Bergabunglah dalam
+                    <br><span class="gradient-text">Revolusi Digital</span>
+                    <br>Pendidikan Malaysia
+                </h2>
+                
+                <p class="text-xl lg:text-2xl text-white/90 mb-12 leading-relaxed max-w-4xl mx-auto">
+                    Bersama-sama kita akan mentransformasi cara graduan MARA mempersiapkan diri untuk industri 4.0. 
+                    Sistem ini bukan sekadar alat analisis - ia adalah gateway kepada masa depan yang lebih cerah.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-8 justify-center items-center mb-16">
+                    <button class="group relative bg-gradient-to-r from-accent to-accent-light text-white px-12 py-6 rounded-2xl font-bold text-xl overflow-hidden hover-lift">
+                        <span class="relative z-10 flex items-center justify-center space-x-4">
+                            <span>Mulakan Transformasi</span>
+                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center group-hover:translate-x-3 transition-transform">
+                                <div class="w-4 h-4 bg-white rounded-full animate-pulse"></div>
+                            </div>
+                        </span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-accent-light to-red-500 translate-x-full group-hover:translate-x-0 transition-transform duration-700"></div>
+                        <div class="absolute inset-0 bg-white/10 animate-pulse"></div>
+                    </button>
+                    
+                    <button class="glass-effect border-2 border-white/30 text-white px-12 py-6 rounded-2xl font-bold text-xl hover:bg-white/20 transition-all duration-500 hover-lift">
+                        <span className="flex items-center justify-center space-x-4">
+                            <span>Jadual Demonstrasi</span>
+                            <div className="w-3 h-3 bg-white rounded-full animate-bounce-gentle"></div>
+                        </span>
+                    </button>
+                </div>
+                
+                <!-- Trust Indicators -->
+                <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <div className="text-center space-y-2">
+                        <div className="text-4xl font-bold gradient-text animate-glow">100%</div>
+                        <div className="text-white/80">Data Security</div>
+                    </div>
+                    <div className="text-center space-y-2">
+                        <div className="text-4xl font-bold gradient-text animate-pulse-slow">24/7</div>
+                        <div className="text-white/80">System Uptime</div>
+                    </div>
+                    <div className="text-center space-y-2">
+                        <div className="text-4xl font-bold gradient-text animate-bounce-gentle">AI-Powered</div>
+                        <div className="text-white/80">Smart Analytics</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Footer -->
+    <footer class="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-4 gap-12">
+                <!-- Brand Section -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center morphing-blob p-3">
+                            <img src="https://via.placeholder.com/64x64/074e7e/FFFFFF?text=MARA" 
+                                 alt="MARA Logo" 
+                                 class="w-full h-full object-contain animate-glow">
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-bold gradient-text">MARA Data Repository</h3>
+                            <p class="text-gray-400 text-lg">Sistem Kebolehpasaran Graduan Generasi Baharu</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4 text-gray-300 leading-relaxed">
+                        <p className="text-lg">
+                            <strong>Institut Kecerdasan Buatan & Data Raya (AIBIG)</strong><br>
+                            Universiti Malaysia Kelantan
+                        </p>
+                        <p>
+                            Membangun ekosistem data yang revolusioner untuk mengoptimumkan kebolehpasaran 
+                            graduan MARA melalui teknologi AI dan analitik canggih.
+                        </p>
+                        <div className="flex items-center space-x-4 pt-4">
+                            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                            <span className="text-sm">Sistem Aktif & Berjalan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div className="space-y-6">
+                    <h4 className="text-xl font-bold">Maklumat Projek</h4>
+                                            <div className="space-y-4 text-gray-300">
+                        <div className="space-y-2">
+                            <p className="font-semibold text-white">Dr Muhammad Akmal Remli</p>
+                            <p>Pengarah AIBIG</p>
+                            <p>Bilik Mutiara Level 1</p>
+                        </div>
+                        <div className="space-y-2">
+                            <p className="text-sm opacity-80">Mesyuarat: 21 April 2025</p>
+                            <p className="text-sm opacity-80">Status: Pembangunan Aktif</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div className="space-y-6">
+                    <h4 className="text-xl font-bold">Navigasi Pantas</h4>
+                    <div className="space-y-3">
+                        <a href="#" className="block text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-300 group">
+                            <span className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-primary rounded-full group-hover:bg-accent transition-colors"></div>
+                                <span>Objektif Sistem</span>
+                            </span>
+                        </a>
+                        <a href="#" className="block text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-300 group">
+                            <span className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-primary rounded-full group-hover:bg-accent transition-colors"></div>
+                                <span>Dashboard Features</span>
+                            </span>
+                        </a>
+                        <a href="#" className="block text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-300 group">
+                            <span className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-primary rounded-full group-hover:bg-accent transition-colors"></div>
+                                <span>Dokumentasi Teknikal</span>
+                            </span>
+                        </a>
+                        <a href="#" className="block text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-300 group">
+                            <span className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-primary rounded-full group-hover:bg-accent transition-colors"></div>
+                                <span>Sokongan & Bantuan</span>
+                            </span>
+                        </a>
+                        <a href="#" className="block text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-300 group">
+                            <span className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-primary rounded-full group-hover:bg-accent transition-colors"></div>
+                                <span>API Documentation</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Footer Bottom -->
+            <div className="border-t border-gray-700 pt-8 mt-12">
+                <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
+                    <div className="text-gray-400 text-center lg:text-left">
+                        <p>&copy; 2025 Institut Kecerdasan Buatan & Data Raya (AIBIG) - Universiti Malaysia Kelantan</p>
+                        <p className="text-sm mt-1">Sistem Data Kebolehpasaran Graduan MARA - Hak Cipta Terpelihara</p>
+                    </div>
+                    
+                    <div className="flex items-center space-x-6">
+                        <div className="flex items-center space-x-2">
+                            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                            <span className="text-sm text-gray-400">Sistem Operasional</span>
+                        </div>
+                        <div className="text-sm text-gray-400">
+                            Version 2.0.1 Beta
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Animated Progress Bar -->
+                <div className="mt-6 w-full h-1 bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-primary via-accent to-primary-light animate-slide-infinite"></div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Enhanced JavaScript -->
+    <script>
+        // Advanced Intersection Observer with Staggered Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const intersectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 100);
+                }
+            });
+        }, observerOptions);
+
+        // Scroll Progress Indicator
+        function updateScrollProgress() {
+            const scrollProgress = document.getElementById('scrollProgress');
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = scrollTop / scrollHeight;
+            
+            scrollProgress.style.transform = `scaleX(${progress})`;
+        }
+
+        // Parallax Effect for Floating Elements
+        function updateParallax() {
+            const scrolled = window.pageYOffset;
+            const floatingElements = document.querySelectorAll('.floating-elements');
+            
+            floatingElements.forEach((element, index) => {
+                const speed = 0.5 + (index * 0.1);
+                element.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        }
+
+        // Mouse Tracking for Interactive Elements
+        function addMouseTracking() {
+            const cards = document.querySelectorAll('.hover-lift');
+            
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = (y - centerY) / 10;
+                    const rotateY = (centerX - x) / 10;
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+                });
+            });
+        }
+
+        // Smooth Scroll Enhancement
+        function enhanceSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        const offsetTop = target.offsetTop - 80;
+                        window.scrollTo({
+                            top: offsetTop,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Typing Animation for Hero Text
+        function initTypingAnimation() {
+            const typingElements = document.querySelectorAll('.typing-effect');
+            
+            typingElements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.style.animationPlayState = 'running';
+                }, index * 1000);
+            });
+        }
+
+        // Dynamic Color Shifting
+        function initColorShifting() {
+            const morphingElements = document.querySelectorAll('.morphing-blob');
+            
+            setInterval(() => {
+                morphingElements.forEach(element => {
+                    const hue = Math.random() * 60 + 200; // Blue to purple range
+                    element.style.filter = `hue-rotate(${hue}deg)`;
+                });
+            }, 3000);
+        }
+
+        // Performance Monitoring
+        function initPerformanceMonitoring() {
+            // Reduce animations on slower devices
+            if (navigator.hardwareConcurrency < 4) {
+                document.documentElement.style.setProperty('--animation-duration', '0.3s');
+            }
+            
+            // Pause animations when page is not visible
+            document.addEventListener('visibilitychange', () => {
+                const animations = document.querySelectorAll('[class*="animate-"]');
+                animations.forEach(element => {
+                    element.style.animationPlayState = document.hidden ? 'paused' : 'running';
+                });
+            });
+        }
+
+        // Mobile Optimizations
+        function initMobileOptimizations() {
+            if (window.innerWidth < 768) {
+                // Reduce floating elements on mobile
+                const floatingElements = document.querySelectorAll('.floating-elements::before, .floating-elements::after');
+                floatingElements.forEach(element => {
+                    element.style.display = 'none';
+                });
+                
+                // Simplify animations
+                document.documentElement.style.setProperty('--animation-complexity', 'reduced');
+            }
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Observe all animated elements
+            document.querySelectorAll('.intersection-observer').forEach(el => {
+                intersectionObserver.observe(el);
+            });
+            
+            // Initialize all enhancements
+            enhanceSmoothScroll();
+            addMouseTracking();
+            initTypingAnimation();
+            initColorShifting();
+            initPerformanceMonitoring();
+            initMobileOptimizations();
+            
+            // Add scroll listeners
+            window.addEventListener('scroll', () => {
+                updateScrollProgress();
+                updateParallax();
+            }, { passive: true });
+            
+            // Add resize listener
+            window.addEventListener('resize', initMobileOptimizations);
+            
+            // Preload critical animations
+            setTimeout(() => {
+                document.body.classList.add('animations-loaded');
+            }, 100);
+        });
+
+        // Progressive Enhancement
+        if ('IntersectionObserver' in window) {
+            // Modern browser - full experience
+            document.documentElement.classList.add('enhanced');
+        } else {
+            // Fallback for older browsers
+            document.querySelectorAll('.intersection-observer').forEach(el => {
+                el.classList.add('visible');
+            });
+        }
+
+        // Service Worker Registration (Future Enhancement)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Register service worker for offline functionality
+                console.log('Service Worker support detected');
+            });
+        }
+    </script>
+</body>
+</html>
