@@ -275,6 +275,23 @@ function safeDestroyChart(chartId) {
     }
 }
 
+// Highlight active navigation item based on current URL
+document.addEventListener('DOMContentLoaded', function() {
+  const navItems = document.querySelectorAll('.nav-item');
+  const currentPath = window.location.pathname; // Gets current URL path 
+
+  navItems.forEach(item => {
+    const itemPath = item.getAttribute('href') + '/';
+    
+    console.log(`Checking nav item: ${itemPath} against current path: ${currentPath}`);
+    // Check if current URL matches the nav item's href
+    if (currentPath === itemPath) {
+      item.classList.add('bg-white'); // Active state (same as hover)
+      item.classList.add('text-primary-700');  
+    }
+  });
+});
+
 // Make functions globally available
 window.showToast = showToast;
 window.openModal = openModal;
