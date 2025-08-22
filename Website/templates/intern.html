@@ -2,50 +2,35 @@
 
 {% block content %}
 <div x-data="internDashboard()" x-init="init()"
-    class="p-6 space-y-8 bg-gradient-to-br from-gray-50 to-slate-100 min-h-screen">
-    <!-- Corporate Header Section with Brand Colors -->
-    <div class="bg-gradient-to-r from-[#074e7e] to-[#0369a1] rounded-2xl p-8 shadow-2xl border border-blue-800/20">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
-            <div class="flex items-center space-x-6">
-                <div
-                    class="w-16 h-16 bg-gradient-to-br from-[#c92427] to-red-600 rounded-xl flex items-center justify-center shadow-lg ring-4 ring-red-500/20">
-                    <i class="fas fa-user-graduate text-white text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-3xl font-bold text-white mb-1">
-                        Latihan Industri dan Cabaran Mendapat Kerja
-                    </h1>
-                    <p class="text-blue-100 text-base">Analisis menyeluruh mengenai penyertaan latihan industri dan
-                        cabaran pencarian kerja</p>
-                    <div class="flex items-center mt-3 space-x-6">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                            <span class="text-xs font-medium text-green-300">MAKLUMAT LANGSUNG</span>
-                        </div>
-                        <div class="text-xs text-blue-200">
-                            <span x-show="dataLoaded">
-                                <i class="fas fa-database mr-1"></i>
-                                <span x-text="kpis.total_records || 0"></span> Rekod
-                            </span>
-                            <span x-show="loading">
-                                <i class="fas fa-spinner fa-spin mr-1"></i>
-                                Memuatkan...
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    class="px-6 space-y-6 bg-gradient-to-br from-gray-50 to-slate-100 min-h-screen">
+    <!-- Header Section -->
 
-            <!-- Minimal Action Panel -->
-            <div class="flex items-center space-x-3">
+    <div class="relative">
+        <div class="flex flex-row border-b border-gray-300 justify-between py-4 -mx-6">
+
+            <!-- Logo -->
+            <div class="px-4 space-x-4 flex flex-row items-center">
+                <img src="{{ url_for('static', filename='img/1. UPTM.png') }}" alt="Logo UPTM"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/2.MARA 2.png') }}" alt="Logo MARA"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/3.KKWK.png') }}" alt="Logo KKWK"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/4.KPTM.png') }}" alt="Logo KPTM"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/5.IKEB.jpg') }}" alt="Logo IKEB"
+                    style="width: auto; height: 27px;">
+            </div>
+            <!-- Button Section -->
+            <div class="flex flex-row space-x-4 px-6">
                 <!-- Filters -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open"
-                        class="flex items-center space-x-2 bg-white/15 backdrop-blur border border-white/30 hover:bg-white/25 px-4 py-2 rounded-lg transition-all duration-200 text-white text-sm">
-                        <i class="fas fa-filter text-xs"></i>
-                        <span>Penapisan</span>
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-secondary-700">
+                        <i class="fas fa-filter text-secondary-900 text-[10px]"></i>
+                        <span class="font-semibold  text-secondary-900 text-[10px]">Penapisan</span>
                         <div x-show="activeFiltersCount > 0"
-                            class="bg-[#c92427] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold text-xs"
+                            class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
                             x-text="activeFiltersCount"></div>
                     </button>
 
@@ -128,141 +113,196 @@
                     </div>
                 </div>
 
-                <!-- Export -->
+                <!-- Export Button -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open"
-                        class="flex items-center space-x-2 bg-[#c92427] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm">
-                        <i class="fas fa-download text-xs"></i>
-                        <span>Eksport</span>
+                        class="button-style-fulll-red flex items-center bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-3 py-1 rounded-md hover:from-secondary-500 hover:to-secondary-900 transition-all duration-200 shadow-lg shadow-secondary-700/30">
+                        <i class="fas fa-download text-[10px]"></i>
+                        <span class="font-semibold text-[10px] ml-1">Eksport</span>
                     </button>
 
                     <div x-show="open" @click.away="open = false" x-transition
-                        class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                        <div class="py-2">
+                        class="absolute right-0 mt-3 w-56 bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 z-50">
+                        <div class="py-3">
                             <button @click="exportData('csv'); open = false"
-                                class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center space-x-2">
-                                <i class="fas fa-file-csv text-green-600"></i>
-                                <span class="text-gray-700">CSV Format</span>
+                                class="w-full text-left px-6 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors">
+                                <i class="fas fa-file-csv text-emerald-600 text-lg"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900">CSV Format</div>
+                                    <div class="text-xs text-gray-500">Comma-separated values</div>
+                                </div>
                             </button>
                             <button @click="exportData('excel'); open = false"
-                                class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center space-x-2">
-                                <i class="fas fa-file-excel text-blue-600"></i>
-                                <span class="text-gray-700">Excel Format</span>
+                                class="w-full text-left px-6 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors">
+                                <i class="fas fa-file-excel text-blue-600 text-lg"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900">Excel Format</div>
+                                    <div class="text-xs text-gray-500">Microsoft Excel file</div>
+                                </div>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Refresh -->
-                <button @click="refreshData()"
-                    class="flex items-center space-x-2 bg-white/15 backdrop-blur border border-white/30 hover:bg-white/25 px-4 py-2 rounded-lg transition-colors text-white text-sm"
-                    :disabled="loading">
-                    <i class="fas fa-sync-alt text-xs" :class="{ 'animate-spin': loading }"></i>
-                    <span>Muat Semula</span>
-                </button>
+                <!-- Refresh Button -->
+                <div>
+                    <button @click="refreshData()"
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-secondary-700"
+                        :disabled="loading">
+                        <i class="fas fa-sync-alt text-secondary-900 text-[10px]"
+                            :class="{ 'animate-spin': loading }"></i>
+                        <span class="text-[10px] text-secondary-900 font-semibold">Muat Semula</span>
+                    </button>
+                </div>
+
             </div>
+
         </div>
     </div>
 
-    <!-- Corporate KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Total Respondents -->
-        <div
-            class="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-users text-slate-600 text-lg"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-gray-800" x-text="kpis.total_records || '0'"></div>
-                        <div class="text-sm text-gray-500">Jumlah Responden</div>
-                    </div>
+    <!-- Corporate Header Section with Brand Colors -->
+    <div
+        class="bg-gradient-to-r from-secondary-900 via-secondary-700 to-secondary-500 rounded-2xl p-8 shadow-xl border border-secondary-700/20">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+            <div class="flex items-center space-x-6">
+                <div
+                    class="w-16 h-16 bg-gradient-to-br from-secondary-400 via-secondary-700 to-red-800 rounded-full flex items-center justify-center shadow-lg ring-4 ring-red-400/20">
+                    <i class="fas fa-user-graduate text-white text-2xl"></i>
                 </div>
-            </div>
-        </div>
-
-        <!-- Internship Rate -->
-        <div
-            class="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-graduation-cap text-[#074e7e] text-lg"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-gray-800" x-text="(kpis.internship_rate || 0) + '%'"></div>
-                        <div class="text-sm text-gray-500">Kadar Latihan Industri</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- No Experience Challenge -->
-        <div
-            class="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-exclamation-triangle text-[#c92427] text-lg"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-gray-800" x-text="(kpis.no_experience_rate || 0) + '%'">
+                <div>
+                    <h1 class="text-3xl font-bold text-white mb-1">
+                        Latihan Industri dan Cabaran Mendapat Kerja
+                    </h1>
+                    <p class="text-white text-base">Analisis menyeluruh mengenai penyertaan latihan industri dan
+                        cabaran pencarian kerja</p>
+                    <div class="flex items-center mt-3 space-x-6">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs font-medium text-green-300">MAKLUMAT LANGSUNG</span>
                         </div>
-                        <div class="text-sm text-gray-500">Kekurangan Pengalaman</div>
+                        <div class="text-xs text-white">
+                            <span x-show="dataLoaded">
+                                <i class="fas fa-database mr-1"></i>
+                                <span x-text="kpis.total_records || 0"></span> Rekod
+                            </span>
+                            <span x-show="loading">
+                                <i class="fas fa-spinner fa-spin mr-1"></i>
+                                Memuatkan...
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Market Competition -->
-        <div
-            class="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-chart-line text-orange-600 text-lg"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-gray-800"
-                            x-text="(kpis.market_competition_rate || 0) + '%'"></div>
-                        <div class="text-sm text-gray-500">Isu Pasaran</div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
-    <!-- Professional Charts Grid -->
-    <div class="grid grid-cols-12 gap-6">
+    <!-- Main Content -->
+    <div class="grid grid-cols-12 gap-6 auto-rows-auto">
+        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+            <!-- Total Respondents -->
+            <div
+                class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
+                <div class="flex flex-row justify-start">
+                    <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-users text-lg text-slate-600"></i>
+                    </div>
+                    <div class="text-left ml-4">
+                        <div class="text-sm text-gray-500">Jumlah Responden</div>
+                        <div class="text-2xl font-bold" x-text="kpis.total_records || '0'"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Internship Rate -->
+            <div
+                class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
+                <div class="flex flex-row justify-start">
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-graduation-cap text-lg text-[#074e7e]"></i>
+                    </div>
+                    <div class="text-left ml-4">
+                        <div class="text-sm text-gray-500">Kadar Latihan Industri</div>
+                        <div class="text-2xl font-bold" x-text="(kpis.internship_rate || 0) + '%'"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Experience Challenge -->
+            <div
+                class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
+                <div class="flex flex-row justify-start">
+                    <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-lg text-[#c92427]"></i>
+                    </div>
+                    <div class="text-left ml-4">
+                        <div class="text-sm text-gray-500">Kekurangan Pengalaman</div>
+                        <div class="text-2xl font-bold" x-text="(kpis.no_experience_rate || 0) + '%'"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Competition -->
+            <div
+                class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
+                <div class="flex flex-row justify-start">
+                    <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-chart-line text-lg text-orange-600"></i>
+                    </div>
+                    <div class="text-left ml-4">
+                        <div class="text-sm text-gray-500">Isu Pasaran</div>
+                        <div class="text-2xl font-bold" x-text="(kpis.market_competition_rate || 0) + '%'"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Main Content -->
+
         <!-- Internship Participation - 6 cols -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-xl shadow-lg border border-gray-200">
-            <div class="border-b border-gray-100 px-6 py-4">
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden h-fit">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800">Penyertaan Latihan Industri</h3>
-                        <p class="text-sm text-gray-500 mt-1">Adakah anda menamatkan latihan industri sebelum graduasi?
-                        </p>
+                        <h3 class="text-md font-bold">Penyertaan Latihan Industri</h3>
+                        <p class="text-gray-500 text-[10px]">Adakah anda menamatkan latihan industri sebelum
+                            graduasi?</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button @click="openTableModal('Internship Data')"
-                            class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
-                            <i class="fas fa-table text-sm"></i>
-                        </button>
-                        <button @click="refreshChart('internship')"
-                            class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
-                            <i class="fas fa-refresh text-sm"></i>
-                        </button>
+                    <div class="flex space-x-3">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="openTableModal('Internship Data')"
+                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="refreshChart('internship')"
+                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="p-6">
-                <div class="h-80 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+            <div class="px-6 py-10">
+                <div class="h-48 relative">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto mb-3">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-slate-600 mx-auto mb-4">
                             </div>
-                            <div class="text-gray-500 text-sm">Memuatkan...</div>
+                            <div class="text-gray-600 font-medium">Memuatkan...</div>
                         </div>
                     </div>
                     <canvas id="internshipChart" class="w-full h-full"></canvas>
@@ -271,32 +311,50 @@
         </div>
 
         <!-- How Internship Helped - 6 cols -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-xl shadow-lg border border-gray-200">
-            <div class="border-b border-gray-100 px-6 py-4">
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden h-fit">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800">Manfaat Latihan Industri</h3>
-                        <p class="text-sm text-gray-500 mt-1">Bagaimana latihan industri membantu dalam pencarian kerja</p>
+                        <h3 class="text-md font-bold">Manfaat Latihan Industri</h3>
+                        <p class="text-gray-500 text-[10px]">Bagaimana latihan industri membantu dalam pencarian
+                            kerja</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button @click="openTableModal('Benefits Data')"
-                            class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
-                            <i class="fas fa-table text-sm"></i>
-                        </button>
-                        <button @click="refreshChart('benefits')"
-                            class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
-                            <i class="fas fa-refresh text-sm"></i>
-                        </button>
+                    <div class="flex space-x-3">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="openTableModal('Benefits Data')"
+                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="refreshChart('benefits')"
+                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="p-6">
-                <div class="h-80 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+            <div class="px-6 py-10">
+                <div class="h-48 relative">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto mb-3">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-slate-600 mx-auto mb-4">
                             </div>
-                            <div class="text-gray-500 text-sm">Memuatkan...</div>
+                            <div class="text-gray-600 font-medium">Memuatkan...</div>
                         </div>
                     </div>
                     <canvas id="benefitsChart" class="w-full h-full"></canvas>
@@ -305,32 +363,49 @@
         </div>
 
         <!-- Reasons for No Internship - 6 cols -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-xl shadow-lg border border-gray-200">
-            <div class="border-b border-gray-100 px-6 py-4">
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden h-fit">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800">Sebab Tiada Latihan Industri</h3>
-                        <p class="text-sm text-gray-500 mt-1">Mengapa pelajar tidak menamatkan latihan industri</p>
+                        <h3 class="text-md font-bold">Sebab Tiada Latihan Industri</h3>
+                        <p class="text-gray-500 text-[10px]">Mengapa pelajar tidak menamatkan latihan industri</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button @click="openTableModal('No Internship Data')"
-                            class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
-                            <i class="fas fa-table text-sm"></i>
-                        </button>
-                        <button @click="refreshChart('reasons')"
-                            class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
-                            <i class="fas fa-refresh text-sm"></i>
-                        </button>
+                    <div class="flex space-x-3">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="openTableModal('No Internship Data')"
+                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="refreshChart('reasons')"
+                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="p-6">
-                <div class="h-80 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+            <div class="px-6 py-10">
+                <div class="h-48 relative">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto mb-3">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-slate-600 mx-auto mb-4">
                             </div>
-                            <div class="text-gray-500 text-sm">Memuatkan...</div>
+                            <div class="text-gray-600 font-medium">Memuatkan...</div>
                         </div>
                     </div>
                     <canvas id="reasonsChart" class="w-full h-full"></canvas>
@@ -339,32 +414,49 @@
         </div>
 
         <!-- Employment Challenges - 6 cols -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-xl shadow-lg border border-gray-200">
-            <div class="border-b border-gray-100 px-6 py-4">
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden h-fit">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800">Cabaran Pekerjaan</h3>
-                        <p class="text-sm text-gray-500 mt-1">Cabaran utama dalam pencarian kerja</p>
+                        <h3 class="text-md font-bold">Cabaran Pekerjaan</h3>
+                        <p class="text-gray-500 text-[10px]">Cabaran utama dalam pencarian kerja</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button @click="openTableModal('Challenges Data')"
-                            class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
-                            <i class="fas fa-table text-sm"></i>
-                        </button>
-                        <button @click="refreshChart('challenges')"
-                            class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
-                            <i class="fas fa-refresh text-sm"></i>
-                        </button>
+                    <div class="flex space-x-3">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="openTableModal('Challenges Data')"
+                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="refreshChart('challenges')"
+                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="p-6">
-                <div class="h-80 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+            <div class="px-6 py-10">
+                <div class="h-48 relative">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto mb-3">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-slate-600 mx-auto mb-4">
                             </div>
-                            <div class="text-gray-500 text-sm">Memuatkan...</div>
+                            <div class="text-gray-600 font-medium">Memuatkan...</div>
                         </div>
                     </div>
                     <canvas id="challengesChart" class="w-full h-full"></canvas>
@@ -373,394 +465,411 @@
         </div>
 
         <!-- Grouped Challenges Analysis - Full width -->
-        <div class="col-span-12 bg-white rounded-xl shadow-lg border border-gray-200">
-            <div class="border-b border-gray-100 px-6 py-4">
+        <div class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden h-fit">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800">Analisis Kategori Cabaran</h3>
-                        <p class="text-sm text-gray-500 mt-1">Cabaran pekerjaan dikumpulkan mengikut kategori</p>
+                        <h3 class="text-md font-bold">Analisis Kategori Cabaran</h3>
+                        <p class="text-gray-500 text-[10px]">Cabaran pekerjaan dikumpulkan mengikut kategori</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button @click="openTableModal('Grouped Challenges')"
-                            class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
-                            <i class="fas fa-table text-sm"></i>
-                        </button>
-                        <a href="/intern/table" target="_blank"
-                            class="px-3 py-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-50 text-sm font-medium">
-                            <i class="fas fa-external-link-alt mr-1"></i>Paparan Penuh
-                        </a>
+                    <div class="flex space-x-3">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="openTableModal('Grouped Challenges')"
+                                class="w-10 h-10 p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-row items-center relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-secondary-600 transition-all duration-200">
+                            <div>
+                                <a href="/intern/table" target="_blank"
+                                    class="px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-semibold">
+                                    <i class="fas fa-external-link-alt mr-2"></i>Paparan Penuh
+                                </a>
+                            </div>
+                            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Buka Halaman
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="p-8">
+            <div class="px-40 py-4">
                 <div class="h-96 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto mb-3">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4">
                             </div>
-                            <div class="text-gray-500 text-sm">Memuatkan...</div>
+                            <div class="text-gray-600 font-medium">Memuatkan...</div>
                         </div>
                     </div>
-                    <canvas id="groupedChallengesChart" class="w-full h-full"></canvas>
+                    <canvas id="groupedChallengesChart" class="max-w-100 h-full"></canvas>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}
 
-{% block scripts %}
-<script>
-    function internDashboard()
-    {
-        return {
-            loading: false,
-            dataLoaded: false,
-            kpis: {},
-            isInitialized: false,
-            filters: {
-                graduation_year: [],
-                gender: [],
-                institution: []
-            },
-            availableFilters: {},
-            activeFiltersCount: 0,
-
-            init()
-            {
-                console.log('Initializing intern dashboard...');
-                if (this.isInitialized) return;
-                this.isInitialized = true;
-                this.waitForChart();
-                this.loadAvailableFilters();
-            },
-
-            waitForChart()
-            {
-                if (typeof Chart === 'undefined' || typeof ChartFactory === 'undefined')
-                {
-                    setTimeout(() => this.waitForChart(), 100);
-                    return;
-                }
-                this.loadData();
-            },
-
-            async loadAvailableFilters()
-            {
-                try
-                {
-                    const response = await fetch('/intern/api/filters/available');
-                    const data = await response.json();
-
-                    this.availableFilters = {
-                        graduation_years: data[ 'Tahun graduasi anda?' ] || [],
-                        genders: data[ 'Jantina anda?' ] || [],
-                        institutions: data[ 'Institusi pendidikan MARA yang anda hadiri?' ] || []
-                    };
-                } catch (error)
-                {
-                    console.error('Error loading filters:', error);
-                }
-            },
-
-            async loadData()
-            {
-                if (this.loading) return;
-
-                this.loading = true;
-
-                try
-                {
-                    await this.loadSummary();
-                    await this.delay(150);
-                    await this.loadInternshipChart();
-                    await this.delay(150);
-                    await this.loadBenefitsChart();
-                    await this.delay(150);
-                    await this.loadReasonsChart();
-                    await this.delay(150);
-                    await this.loadChallengesChart();
-                    await this.delay(150);
-                    await this.loadGroupedChallengesChart();
-
-                    this.dataLoaded = true;
-                } catch (error)
-                {
-                    console.error('Error loading data:', error);
-                    showToast('Error loading data: ' + error.message, 'error');
-                } finally
-                {
-                    this.loading = false;
-                }
-            },
-
-            delay(ms)
-            {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            },
-
-            async loadSummary()
-            {
-                try
-                {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/intern/api/summary?${params}`);
-                    if (!response.ok) throw new Error('Failed to load summary');
-                    this.kpis = await response.json();
-                } catch (error)
-                {
-                    console.error('Error loading summary:', error);
-                    this.kpis = {
-                        total_records: 0,
-                        internship_rate: 0,
-                        no_experience_rate: 0,
-                        market_competition_rate: 0
-                    };
-                }
-            },
-
-            async loadInternshipChart()
-            {
-                try
-                {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/intern/api/internship-participation?${params}`);
-                    const data = await response.json();
-
-                    safeDestroyChart('internship');
-
-                    const canvas = document.getElementById('internshipChart');
-                    if (canvas)
-                    {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx)
-                        {
-                            window.globalCharts.internship = ChartFactory.createPieChart(ctx, data, {
-                                plugins: {
-                                    legend: { display: true, position: 'bottom' }
-                                }
-                            });
-                        }
-                    }
-                } catch (error)
-                {
-                    console.error('Error loading internship chart:', error);
-                }
-            },
-
-            async loadBenefitsChart()
-            {
-                try
-                {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/intern/api/internship-benefits?${params}`);
-                    const data = await response.json();
-
-                    safeDestroyChart('benefits');
-
-                    const canvas = document.getElementById('benefitsChart');
-                    if (canvas)
-                    {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx)
-                        {
-                            window.globalCharts.benefits = ChartFactory.createBarChart(ctx, data, {
-                                indexAxis: 'y',
-                                scales: {
-                                    y: { ticks: { font: { size: 10 } } }
-                                }
-                            });
-                        }
-                    }
-                } catch (error)
-                {
-                    console.error('Error loading benefits chart:', error);
-                }
-            },
-
-            async loadReasonsChart()
-            {
-                try
-                {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/intern/api/no-internship-reasons?${params}`);
-                    const data = await response.json();
-
-                    safeDestroyChart('reasons');
-
-                    const canvas = document.getElementById('reasonsChart');
-                    if (canvas)
-                    {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx)
-                        {
-                            window.globalCharts.reasons = ChartFactory.createBarChart(ctx, data, {
-                                indexAxis: 'y',
-                                scales: {
-                                    y: { ticks: { font: { size: 10 } } }
-                                }
-                            });
-                        }
-                    }
-                } catch (error)
-                {
-                    console.error('Error loading reasons chart:', error);
-                }
-            },
-
-            async loadChallengesChart()
-            {
-                try
-                {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/intern/api/employment-challenges?${params}`);
-                    const data = await response.json();
-
-                    safeDestroyChart('challenges');
-
-                    const canvas = document.getElementById('challengesChart');
-                    if (canvas)
-                    {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx)
-                        {
-                            window.globalCharts.challenges = ChartFactory.createBarChart(ctx, data, {
-                                indexAxis: 'y',
-                                scales: {
-                                    y: { ticks: { font: { size: 9 } } }
-                                }
-                            });
-                        }
-                    }
-                } catch (error)
-                {
-                    console.error('Error loading challenges chart:', error);
-                }
-            },
-
-            async loadGroupedChallengesChart()
-            {
-                try
-                {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/intern/api/grouped-challenges?${params}`);
-                    const data = await response.json();
-
-                    safeDestroyChart('groupedChallenges');
-
-                    const canvas = document.getElementById('groupedChallengesChart');
-                    if (canvas)
-                    {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx)
-                        {
-                            window.globalCharts.groupedChallenges = ChartFactory.createBarChart(ctx, data, {
-                                scales: {
-                                    x: { ticks: { font: { size: 11 } } }
-                                }
-                            });
-                        }
-                    }
-                } catch (error)
-                {
-                    console.error('Error loading grouped challenges chart:', error);
-                }
-            },
-
-            buildFilterParams()
-            {
-                const params = new URLSearchParams();
-                Object.entries(this.filters).forEach(([ key, values ]) =>
-                {
-                    if (Array.isArray(values) && values.length > 0)
-                    {
-                        const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
-                            key === 'gender' ? 'Jantina anda?' :
-                                key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' : key;
-                        values.forEach(value => params.append(paramKey, value));
-                    }
-                });
-                return params.toString();
-            },
-
-            applyFilters()
-            {
-                this.updateActiveFiltersCount();
-                this.dataLoaded = false;
-                this.loadData();
-                showToast('Filters applied', 'success');
-            },
-
-            clearAllFilters()
-            {
-                this.filters = {
+    {% block scripts %}
+    <script>
+        function internDashboard()
+        {
+            return {
+                loading: false,
+                dataLoaded: false,
+                kpis: {},
+                isInitialized: false,
+                filters: {
                     graduation_year: [],
                     gender: [],
                     institution: []
-                };
-                this.updateActiveFiltersCount();
-                this.dataLoaded = false;
-                this.loadData();
-                showToast('Filters cleared', 'info');
-            },
+                },
+                availableFilters: {},
+                activeFiltersCount: 0,
 
-            updateActiveFiltersCount()
-            {
-                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
+                init()
                 {
-                    return count + (Array.isArray(filter) ? filter.length : 0);
-                }, 0);
-            },
+                    console.log('Initializing intern dashboard...');
+                    if (this.isInitialized) return;
+                    this.isInitialized = true;
+                    this.waitForChart();
+                    this.loadAvailableFilters();
+                },
 
-            async refreshData()
-            {
-                this.dataLoaded = false;
-                await this.loadData();
-                showToast('Data refreshed', 'success');
-            },
+                waitForChart()
+                {
+                    if (typeof Chart === 'undefined' || typeof ChartFactory === 'undefined')
+                    {
+                        setTimeout(() => this.waitForChart(), 100);
+                        return;
+                    }
+                    this.loadData();
+                },
 
-            async refreshChart(chartType)
-            {
-                if (chartType === 'internship')
+                async loadAvailableFilters()
                 {
-                    await this.loadInternshipChart();
-                } else if (chartType === 'benefits')
-                {
-                    await this.loadBenefitsChart();
-                } else if (chartType === 'reasons')
-                {
-                    await this.loadReasonsChart();
-                } else if (chartType === 'challenges')
-                {
-                    await this.loadChallengesChart();
-                } else if (chartType === 'grouped')
-                {
-                    await this.loadGroupedChallengesChart();
-                }
-                showToast('Chart refreshed', 'success');
-            },
+                    try
+                    {
+                        const response = await fetch('/intern/api/filters/available');
+                        const data = await response.json();
 
-            async exportData(format)
-            {
-                try
+                        this.availableFilters = {
+                            graduation_years: data[ 'Tahun graduasi anda?' ] || [],
+                            genders: data[ 'Jantina anda?' ] || [],
+                            institutions: data[ 'Institusi pendidikan MARA yang anda hadiri?' ] || []
+                        };
+                    } catch (error)
+                    {
+                        console.error('Error loading filters:', error);
+                    }
+                },
+
+                async loadData()
+                {
+                    if (this.loading) return;
+
+                    this.loading = true;
+
+                    try
+                    {
+                        await this.loadSummary();
+                        await this.delay(150);
+                        await this.loadInternshipChart();
+                        await this.delay(150);
+                        await this.loadBenefitsChart();
+                        await this.delay(150);
+                        await this.loadReasonsChart();
+                        await this.delay(150);
+                        await this.loadChallengesChart();
+                        await this.delay(150);
+                        await this.loadGroupedChallengesChart();
+
+                        this.dataLoaded = true;
+                    } catch (error)
+                    {
+                        console.error('Error loading data:', error);
+                        showToast('Error loading data: ' + error.message, 'error');
+                    } finally
+                    {
+                        this.loading = false;
+                    }
+                },
+
+                delay(ms)
+                {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                },
+
+                async loadSummary()
+                {
+                    try
+                    {
+                        const params = this.buildFilterParams();
+                        const response = await fetch(`/intern/api/summary?${params}`);
+                        if (!response.ok) throw new Error('Failed to load summary');
+                        this.kpis = await response.json();
+                    } catch (error)
+                    {
+                        console.error('Error loading summary:', error);
+                        this.kpis = {
+                            total_records: 0,
+                            internship_rate: 0,
+                            no_experience_rate: 0,
+                            market_competition_rate: 0
+                        };
+                    }
+                },
+
+                async loadInternshipChart()
+                {
+                    try
+                    {
+                        const params = this.buildFilterParams();
+                        const response = await fetch(`/intern/api/internship-participation?${params}`);
+                        const data = await response.json();
+
+                        safeDestroyChart('internship');
+
+                        const canvas = document.getElementById('internshipChart');
+                        if (canvas)
+                        {
+                            const ctx = canvas.getContext('2d');
+                            if (ctx)
+                            {
+                                window.globalCharts.internship = ChartFactory.createPieChart(ctx, data, {
+                                    plugins: {
+                                        legend: { display: true, position: 'bottom' }
+                                    }
+                                });
+                            }
+                        }
+                    } catch (error)
+                    {
+                        console.error('Error loading internship chart:', error);
+                    }
+                },
+
+                async loadBenefitsChart()
+                {
+                    try
+                    {
+                        const params = this.buildFilterParams();
+                        const response = await fetch(`/intern/api/internship-benefits?${params}`);
+                        const data = await response.json();
+
+                        safeDestroyChart('benefits');
+
+                        const canvas = document.getElementById('benefitsChart');
+                        if (canvas)
+                        {
+                            const ctx = canvas.getContext('2d');
+                            if (ctx)
+                            {
+                                window.globalCharts.benefits = ChartFactory.createBarChart(ctx, data, {
+                                    indexAxis: 'y',
+                                    scales: {
+                                        y: { ticks: { font: { size: 10 } } }
+                                    }
+                                });
+                            }
+                        }
+                    } catch (error)
+                    {
+                        console.error('Error loading benefits chart:', error);
+                    }
+                },
+
+                async loadReasonsChart()
+                {
+                    try
+                    {
+                        const params = this.buildFilterParams();
+                        const response = await fetch(`/intern/api/no-internship-reasons?${params}`);
+                        const data = await response.json();
+
+                        safeDestroyChart('reasons');
+
+                        const canvas = document.getElementById('reasonsChart');
+                        if (canvas)
+                        {
+                            const ctx = canvas.getContext('2d');
+                            if (ctx)
+                            {
+                                window.globalCharts.reasons = ChartFactory.createBarChart(ctx, data, {
+                                    indexAxis: 'y',
+                                    scales: {
+                                        y: { ticks: { font: { size: 10 } } }
+                                    }
+                                });
+                            }
+                        }
+                    } catch (error)
+                    {
+                        console.error('Error loading reasons chart:', error);
+                    }
+                },
+
+                async loadChallengesChart()
+                {
+                    try
+                    {
+                        const params = this.buildFilterParams();
+                        const response = await fetch(`/intern/api/employment-challenges?${params}`);
+                        const data = await response.json();
+
+                        safeDestroyChart('challenges');
+
+                        const canvas = document.getElementById('challengesChart');
+                        if (canvas)
+                        {
+                            const ctx = canvas.getContext('2d');
+                            if (ctx)
+                            {
+                                window.globalCharts.challenges = ChartFactory.createBarChart(ctx, data, {
+                                    indexAxis: 'y',
+                                    scales: {
+                                        y: { ticks: { font: { size: 9 } } }
+                                    }
+                                });
+                            }
+                        }
+                    } catch (error)
+                    {
+                        console.error('Error loading challenges chart:', error);
+                    }
+                },
+
+                async loadGroupedChallengesChart()
+                {
+                    try
+                    {
+                        const params = this.buildFilterParams();
+                        const response = await fetch(`/intern/api/grouped-challenges?${params}`);
+                        const data = await response.json();
+
+                        safeDestroyChart('groupedChallenges');
+
+                        const canvas = document.getElementById('groupedChallengesChart');
+                        if (canvas)
+                        {
+                            const ctx = canvas.getContext('2d');
+                            if (ctx)
+                            {
+                                window.globalCharts.groupedChallenges = ChartFactory.createBarChart(ctx, data, {
+                                    scales: {
+                                        x: { ticks: { font: { size: 11 } } }
+                                    }
+                                });
+                            }
+                        }
+                    } catch (error)
+                    {
+                        console.error('Error loading grouped challenges chart:', error);
+                    }
+                },
+
+                buildFilterParams()
+                {
+                    const params = new URLSearchParams();
+                    Object.entries(this.filters).forEach(([ key, values ]) =>
+                    {
+                        if (Array.isArray(values) && values.length > 0)
+                        {
+                            const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
+                                key === 'gender' ? 'Jantina anda?' :
+                                    key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' : key;
+                            values.forEach(value => params.append(paramKey, value));
+                        }
+                    });
+                    return params.toString();
+                },
+
+                applyFilters()
+                {
+                    this.updateActiveFiltersCount();
+                    this.dataLoaded = false;
+                    this.loadData();
+                    showToast('Filters applied', 'success');
+                },
+
+                clearAllFilters()
+                {
+                    this.filters = {
+                        graduation_year: [],
+                        gender: [],
+                        institution: []
+                    };
+                    this.updateActiveFiltersCount();
+                    this.dataLoaded = false;
+                    this.loadData();
+                    showToast('Filters cleared', 'info');
+                },
+
+                updateActiveFiltersCount()
+                {
+                    this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
+                    {
+                        return count + (Array.isArray(filter) ? filter.length : 0);
+                    }, 0);
+                },
+
+                async refreshData()
+                {
+                    this.dataLoaded = false;
+                    await this.loadData();
+                    showToast('Data refreshed', 'success');
+                },
+
+                async refreshChart(chartType)
+                {
+                    if (chartType === 'internship')
+                    {
+                        await this.loadInternshipChart();
+                    } else if (chartType === 'benefits')
+                    {
+                        await this.loadBenefitsChart();
+                    } else if (chartType === 'reasons')
+                    {
+                        await this.loadReasonsChart();
+                    } else if (chartType === 'challenges')
+                    {
+                        await this.loadChallengesChart();
+                    } else if (chartType === 'grouped')
+                    {
+                        await this.loadGroupedChallengesChart();
+                    }
+                    showToast('Chart refreshed', 'success');
+                },
+
+                async exportData(format)
+                {
+                    try
+                    {
+                        const params = this.buildFilterParams();
+                        const url = `/intern/api/export?format=${format}&${params}`;
+                        window.open(url, '_blank');
+                        showToast(`Exporting ${format.toUpperCase()}...`, 'info');
+                    } catch (error)
+                    {
+                        console.error('Export error:', error);
+                        showToast('Export failed', 'error');
+                    }
+                },
+
+                openTableModal(title)
                 {
                     const params = this.buildFilterParams();
-                    const url = `/intern/api/export?format=${format}&${params}`;
-                    window.open(url, '_blank');
-                    showToast(`Exporting ${format.toUpperCase()}...`, 'info');
-                } catch (error)
-                {
-                    console.error('Export error:', error);
-                    showToast('Export failed', 'error');
+                    openModal(title, `/intern/api/table-data?${params}`);
                 }
-            },
-
-            openTableModal(title)
-            {
-                const params = this.buildFilterParams();
-                openModal(title, `/intern/api/table-data?${params}`);
             }
         }
-    }
-</script>
-{% endblock %}
+    </script>
+    {% endblock %}
