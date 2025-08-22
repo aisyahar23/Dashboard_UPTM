@@ -1,225 +1,235 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div x-data="gigEconomyDashboard()" x-init="init()" class="p-4 lg:p-6 space-y-6 bg-gradient-to-br from-gray-50 to-blue-50/30 min-h-screen">
+<div x-data="gigEconomyDashboard()" x-init="init()"
+    class="p-4 lg:p-6 space-y-6 bg-gradient-to-br from-gray-50 to-blue-50/30 min-h-screen">
     <!-- Minimal Corporate Header -->
-    <div class="bg-gradient-to-r from-[#074e7e] via-[#0369a1] to-[#0284c7] rounded-2xl p-6 lg:p-8 shadow-xl border border-blue-800/10">
+    <div
+        class="bg-gradient-to-r from-[#074e7e] via-[#0369a1] to-[#0284c7] rounded-2xl p-6 lg:p-8 shadow-xl border border-blue-800/10">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             <div class="flex items-center space-x-4">
-                <div class="w-14 h-14 bg-gradient-to-br from-[#c92427] to-red-600 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white/20">
+                <div
+                    class="w-14 h-14 bg-gradient-to-br from-[#c92427] to-red-600 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white/20">
                     <i class="fas fa-chart-line text-white text-lg"></i>
                 </div>
                 <div>
                     <h1 class="text-2xl lg:text-3xl font-bold text-white mb-1">
-                        Gig Economy & Entrepreneurship Trends
+                        Trend Ekonomi Gig & Keusahawanan
                     </h1>
-                    <p class="text-blue-100 text-sm lg:text-base">Comprehensive analysis of freelance work preferences and entrepreneurial activities</p>
+                    <p class="text-blue-100 text-sm lg:text-base">Analisis menyeluruh mengenai pilihan kerja bebas dan aktiviti keusahawanan</p>
                     <div class="flex items-center mt-2 space-x-4 text-xs">
                         <div class="flex items-center space-x-1">
                             <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                            <span class="text-emerald-200 font-medium">REAL-TIME</span>
+                            <span class="text-emerald-200 font-medium">Analisis Langsung</span>
                         </div>
                         <div class="text-blue-200">
                             <span x-show="dataLoaded">
                                 <i class="fas fa-users mr-1"></i>
-                                <span x-text="kpis.total_records || 0"></span> Respondents
+                                <span x-text="kpis.total_records || 0"></span> Responden
                             </span>
                             <span x-show="loading">
                                 <i class="fas fa-spinner fa-spin mr-1"></i>
-                                Analyzing...
+                                Menganalisis...
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Compact Action Panel -->
             <div class="flex items-center space-x-2 lg:space-x-3">
                 <!-- Filters -->
                 <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" 
-                            class="flex items-center space-x-2 bg-white/15 backdrop-blur border border-white/30 hover:bg-white/25 px-3 py-2 rounded-lg transition-all duration-200 text-white text-sm">
+                    <button @click="open = !open"
+                        class="flex items-center space-x-2 bg-white/15 backdrop-blur border border-white/30 hover:bg-white/25 px-3 py-2 rounded-lg transition-all duration-200 text-white text-sm">
                         <i class="fas fa-sliders-h text-xs"></i>
-                        <span class="hidden sm:inline">Filters</span>
-                        <div x-show="activeFiltersCount > 0" 
-                             class="bg-[#c92427] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold"
-                             x-text="activeFiltersCount"></div>
+                        <span class="hidden sm:inline">Penapisan</span>
+                        <div x-show="activeFiltersCount > 0"
+                            class="bg-[#c92427] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold"
+                            x-text="activeFiltersCount"></div>
                     </button>
-                    
+
                     <!-- Compact Filter Dropdown -->
-                    <div x-show="open" 
-                         @click.away="open = false"
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 scale-95"
-                         x-transition:enter-end="opacity-100 scale-100"
-                         class="absolute right-0 mt-2 w-72 bg-white/96 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 z-50">
+                    <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                        class="absolute right-0 mt-2 w-72 bg-white/96 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 z-50">
                         <div class="p-4">
                             <div class="flex items-center justify-between mb-3">
-                                <h3 class="text-base font-semibold text-gray-800">Filter Options</h3>
-                                <button @click="clearAllFilters()" 
-                                        class="text-[#c92427] hover:text-red-700 text-sm font-medium">
-                                    <i class="fas fa-times mr-1"></i>Clear
+                                <h3 class="text-base font-semibold text-gray-800">Pilihan Penapis</h3>
+                                <button @click="clearAllFilters()"
+                                    class="text-[#c92427] hover:text-red-700 text-sm font-medium">
+                                    <i class="fas fa-times mr-1"></i>Kosongkan
                                 </button>
                             </div>
-                            
+
                             <!-- Compact Filter Sections -->
                             <div class="space-y-3">
                                 <!-- Year Filter -->
                                 <div>
                                     <label class="text-xs font-medium text-gray-700 mb-1 block">
-                                        <i class="fas fa-calendar mr-1 text-[#074e7e]"></i>Graduation Year
+                                        <i class="fas fa-calendar mr-1 text-[#074e7e]"></i>Tahun Graduasi
                                     </label>
                                     <div class="grid grid-cols-4 gap-1 text-xs">
                                         <template x-for="year in availableFilters.graduation_years || []">
-                                            <label class="flex items-center p-1 rounded cursor-pointer hover:bg-blue-50">
-                                                <input type="checkbox" 
-                                                       :value="year" 
-                                                       x-model="filters.graduation_year"
-                                                       class="rounded border-gray-300 text-[#074e7e] focus:ring-[#074e7e] text-xs mr-1">
+                                            <label
+                                                class="flex items-center p-1 rounded cursor-pointer hover:bg-blue-50">
+                                                <input type="checkbox" :value="year" x-model="filters.graduation_year"
+                                                    class="rounded border-gray-300 text-[#074e7e] focus:ring-[#074e7e] text-xs mr-1">
                                                 <span class="text-gray-700" x-text="year"></span>
                                             </label>
                                         </template>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Gender Filter -->
                                 <div>
                                     <label class="text-xs font-medium text-gray-700 mb-1 block">
-                                        <i class="fas fa-users mr-1 text-[#c92427]"></i>Gender
+                                        <i class="fas fa-users mr-1 text-[#c92427]"></i>Jantina
                                     </label>
                                     <div class="grid grid-cols-2 gap-1 text-xs">
                                         <template x-for="gender in availableFilters.genders || []">
                                             <label class="flex items-center p-1 rounded cursor-pointer hover:bg-red-50">
-                                                <input type="checkbox" 
-                                                       :value="gender" 
-                                                       x-model="filters.gender"
-                                                       class="rounded border-gray-300 text-[#c92427] focus:ring-[#c92427] text-xs mr-1">
+                                                <input type="checkbox" :value="gender" x-model="filters.gender"
+                                                    class="rounded border-gray-300 text-[#c92427] focus:ring-[#c92427] text-xs mr-1">
                                                 <span class="text-gray-700" x-text="gender"></span>
                                             </label>
                                         </template>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="mt-4 pt-3 border-t border-gray-200">
-                                <button @click="applyFilters(); open = false" 
-                                        class="w-full bg-[#074e7e] text-white font-medium py-2 px-3 rounded-lg hover:bg-[#063a5f] transition-colors text-sm">
-                                    Apply Filters
+                                <button @click="applyFilters(); open = false"
+                                    class="w-full bg-[#074e7e] text-white font-medium py-2 px-3 rounded-lg hover:bg-[#063a5f] transition-colors text-sm">
+                                    Tapis
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Export -->
-                <button @click="exportData('csv')" 
-                        class="flex items-center space-x-1 bg-[#c92427] text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm">
+                <button @click="exportData('csv')"
+                    class="flex items-center space-x-1 bg-[#c92427] text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm">
                     <i class="fas fa-download text-xs"></i>
-                    <span class="hidden sm:inline">Export</span>
+                    <span class="hidden sm:inline">Eksport</span>
                 </button>
-                
+
                 <!-- Refresh -->
-                <button @click="refreshData()" 
-                        class="flex items-center space-x-1 bg-white/15 backdrop-blur border border-white/30 hover:bg-white/25 px-3 py-2 rounded-lg transition-colors text-white text-sm"
-                        :disabled="loading">
+                <button @click="refreshData()"
+                    class="flex items-center space-x-1 bg-white/15 backdrop-blur border border-white/30 hover:bg-white/25 px-3 py-2 rounded-lg transition-colors text-white text-sm"
+                    :disabled="loading">
                     <i class="fas fa-sync-alt text-xs" :class="{ 'animate-spin': loading }"></i>
-                    <span class="hidden sm:inline">Refresh</span>
+                    <span class="hidden sm:inline">Muat Semula</span>
                 </button>
             </div>
         </div>
     </div>
-    
+
     <!-- Minimal KPI Strip -->
     <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 lg:gap-4">
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
+        <div
+            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
             <div class="flex items-center space-x-2">
                 <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-users text-[#074e7e] text-sm"></i>
                 </div>
                 <div>
                     <div class="text-lg lg:text-xl font-bold text-gray-800" x-text="kpis.total_records || '0'"></div>
-                    <div class="text-xs text-gray-500">Total</div>
+                    <div class="text-xs text-gray-500">Jumlah</div>
                 </div>
             </div>
         </div>
-        
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
+
+        <div
+            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
             <div class="flex items-center space-x-2">
                 <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-briefcase text-[#c92427] text-sm"></i>
                 </div>
                 <div>
-                    <div class="text-lg lg:text-xl font-bold text-gray-800" x-text="(kpis.gig_participation_rate || 0) + '%'"></div>
-                    <div class="text-xs text-gray-500">Gig Work</div>
+                    <div class="text-lg lg:text-xl font-bold text-gray-800"
+                        x-text="(kpis.gig_participation_rate || 0) + '%'"></div>
+                    <div class="text-xs text-gray-500">Kerja Gig</div>
                 </div>
             </div>
         </div>
-        
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
+
+        <div
+            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
             <div class="flex items-center space-x-2">
                 <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-rocket text-green-600 text-sm"></i>
                 </div>
                 <div>
-                    <div class="text-lg lg:text-xl font-bold text-gray-800" x-text="(kpis.entrepreneurship_rate || 0) + '%'"></div>
-                    <div class="text-xs text-gray-500">Entrepreneurs</div>
+                    <div class="text-lg lg:text-xl font-bold text-gray-800"
+                        x-text="(kpis.entrepreneurship_rate || 0) + '%'"></div>
+                    <div class="text-xs text-gray-500">Usahawan</div>
                 </div>
             </div>
         </div>
-        
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
+
+        <div
+            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
             <div class="flex items-center space-x-2">
                 <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-graduation-cap text-purple-600 text-sm"></i>
                 </div>
                 <div>
-                    <div class="text-lg lg:text-xl font-bold text-gray-800" x-text="(kpis.university_support_rate || 0) + '%'"></div>
-                    <div class="text-xs text-gray-500">Uni Support</div>
+                    <div class="text-lg lg:text-xl font-bold text-gray-800"
+                        x-text="(kpis.university_support_rate || 0) + '%'"></div>
+                    <div class="text-xs text-gray-500">Sokongan Uni</div>
                 </div>
             </div>
         </div>
-        
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
+
+        <div
+            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
             <div class="flex items-center space-x-2">
                 <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-dollar-sign text-amber-600 text-sm"></i>
                 </div>
                 <div>
                     <div class="text-lg lg:text-xl font-bold text-gray-800" x-text="kpis.avg_income || 'RM0'"></div>
-                    <div class="text-xs text-gray-500">Avg Income</div>
+                    <div class="text-xs text-gray-500">Purata Pendapatan</div>
                 </div>
             </div>
         </div>
-        
-        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
+
+        <div
+            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
             <div class="flex items-center space-x-2">
                 <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-chart-line text-indigo-600 text-sm"></i>
                 </div>
                 <div>
-                    <div class="text-lg lg:text-xl font-bold text-gray-800" x-text="(kpis.job_preference_rate || 0) + '%'"></div>
-                    <div class="text-xs text-gray-500">Prefer Permanent</div>
+                    <div class="text-lg lg:text-xl font-bold text-gray-800"
+                        x-text="(kpis.job_preference_rate || 0) + '%'"></div>
+                    <div class="text-xs text-gray-500">Pilih Kerja Tetap</div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Professional Bento Grid Layout for Charts -->
     <div class="grid grid-cols-12 gap-4 lg:gap-6">
         <!-- Row 1: Hero Charts -->
         <!-- Gig Economy Types (Large Feature - 8 cols) -->
-        <div class="col-span-12 lg:col-span-8 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
+        <div
+            class="col-span-12 lg:col-span-8 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
             <div class="bg-gradient-to-r from-[#074e7e] to-[#0369a1] px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-white">Gig Economy Work Types</h3>
-                        <p class="text-blue-100 text-sm mt-1">Current and planned freelance activities (excluding non-participants)</p>
+                        <h3 class="text-xl font-bold text-white">Jenis Kerja Ekonomi Gig</h3>
+                        <p class="text-blue-100 text-sm mt-1">Aktiviti kerja bebas semasa dan yang dirancang (tidak termasuk bukan peserta)</p>
                     </div>
                     <div class="flex space-x-2">
-                        <button @click="openTableModal('Gig Types')" class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                        <button @click="openTableModal('Gig Types')"
+                            class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                             <i class="fas fa-table text-white text-sm"></i>
                         </button>
-                        <button @click="refreshChart('gigTypes')" class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                        <button @click="refreshChart('gigTypes')"
+                            class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                             <i class="fas fa-refresh text-white text-sm"></i>
                         </button>
                     </div>
@@ -227,26 +237,30 @@
             </div>
             <div class="p-6 lg:p-8">
                 <div class="h-80 lg:h-96 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-3 border-[#074e7e] mx-auto mb-3"></div>
-                            <div class="text-gray-600 font-medium">Loading work types...</div>
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-3 border-[#074e7e] mx-auto mb-3">
+                            </div>
+                            <div class="text-gray-600 font-medium">Memuatkan jenis kerja...</div>
                         </div>
                     </div>
                     <canvas id="gigTypesChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
-        
+
         <!-- University Support Overview (4 cols) -->
-        <div class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
+        <div
+            class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
             <div class="bg-gradient-to-r from-[#c92427] to-red-600 px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-bold text-white">University Support</h3>
-                        <p class="text-red-100 text-sm mt-1">Entrepreneurship courses</p>
+                        <h3 class="text-lg font-bold text-white">Sokongan Universiti</h3>
+                        <p class="text-red-100 text-sm mt-1">Kursus Keusahawanan</p>
                     </div>
-                    <button @click="refreshChart('universitySupport')" class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                    <button @click="refreshChart('universitySupport')"
+                        class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                         <i class="fas fa-refresh text-white text-sm"></i>
                     </button>
                 </div>
@@ -260,17 +274,19 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Row 2: University Programs Analysis -->
         <!-- University Programs (6 cols) -->
-        <div class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+        <div
+            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
             <div class="bg-gradient-to-r from-slate-700 to-slate-800 px-5 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-white">University Programs</h3>
-                        <p class="text-slate-300 text-sm mt-1">Business & gig economy initiatives</p>
+                        <h3 class="text-lg font-semibold text-white">Program Universiti</h3>
+                        <p class="text-slate-300 text-sm mt-1">Inisiatif perniagaan & ekonomi gig</p>
                     </div>
-                    <button @click="openTableModal('Programs')" class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                    <button @click="openTableModal('Programs')"
+                        class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
                         <i class="fas fa-external-link-alt text-white text-xs"></i>
                     </button>
                 </div>
@@ -284,16 +300,18 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Program Effectiveness (6 cols) -->
-        <div class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+        <div
+            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
             <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 px-5 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-white">Program Impact</h3>
-                        <p class="text-emerald-100 text-sm mt-1">How programs helped students</p>
+                        <h3 class="text-lg font-semibold text-white">Impak Program</h3>
+                        <p class="text-emerald-100 text-sm mt-1">Bagaimana program membantu pelajar</p>
                     </div>
-                    <button @click="refreshChart('programEffectiveness')" class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                    <button @click="refreshChart('programEffectiveness')"
+                        class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
                         <i class="fas fa-refresh text-white text-xs"></i>
                     </button>
                 </div>
@@ -307,32 +325,33 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Row 3: Motivations Analysis (Full Width Feature) -->
-        <div class="col-span-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
+        <div
+            class="col-span-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
             <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-6 lg:px-8 py-5">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl lg:text-2xl font-bold text-white">Gig Economy Motivations</h3>
-                        <p class="text-purple-100 text-sm lg:text-base mt-2">Primary reasons for choosing freelance work (excluding non-relevant responses)</p>
+                        <h3 class="text-xl lg:text-2xl font-bold text-white">Motivasi Ekonomi Gig</h3>
+                        <p class="text-purple-100 text-sm lg:text-base mt-2">Sebab utama memilih kerja bebas (tidak termasuk jawapan yang tidak berkaitan)</p>
                         <div class="flex items-center space-x-4 mt-2">
                             <div class="flex items-center space-x-1">
                                 <div class="w-2 h-2 bg-yellow-300 rounded-full"></div>
-                                <span class="text-xs text-purple-200">Multi-response analysis</span>
+                                <span class="text-xs text-purple-200">Analisis pelbagai jawapan</span>
                             </div>
                             <div class="flex items-center space-x-1">
                                 <div class="w-2 h-2 bg-green-300 rounded-full"></div>
-                                <span class="text-xs text-purple-200">Comma-separated processing</span>
+                                <span class="text-xs text-purple-200">Pemprosesan dipisahkan koma</span>
                             </div>
                         </div>
                     </div>
                     <div class="flex space-x-2">
-                        <button @click="openTableModal('Motivations Analysis')" 
-                                class="px-3 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-white text-sm font-medium">
-                            <i class="fas fa-table mr-1"></i>View Data
+                        <button @click="openTableModal('Motivations Analysis')"
+                            class="px-3 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-white text-sm font-medium">
+                            <i class="fas fa-table mr-1"></i>Lihat Data
                         </button>
-                        <button @click="refreshChart('gigMotivations')" 
-                                class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                        <button @click="refreshChart('gigMotivations')"
+                            class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                             <i class="fas fa-refresh text-white"></i>
                         </button>
                     </div>
@@ -340,27 +359,31 @@
             </div>
             <div class="p-6 lg:p-8">
                 <div class="h-80 lg:h-96 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-3 border-indigo-600 mx-auto mb-3"></div>
-                            <div class="text-gray-600 font-medium">Analyzing motivations...</div>
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-3 border-indigo-600 mx-auto mb-3">
+                            </div>
+                            <div class="text-gray-600 font-medium">Menganalisis motivasi...</div>
                         </div>
                     </div>
                     <canvas id="gigMotivationsChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
-        
+
         <!-- Row 4: Skills & Challenges Row -->
         <!-- Skill Acquisition (7 cols) -->
-        <div class="col-span-12 lg:col-span-7 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+        <div
+            class="col-span-12 lg:col-span-7 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
             <div class="bg-gradient-to-r from-cyan-600 to-blue-600 px-5 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-white">Skill Acquisition Methods</h3>
-                        <p class="text-cyan-100 text-sm mt-1">How gig workers learn their skills</p>
+                        <h3 class="text-lg font-semibold text-white">Kaedah Pemerolehan Kemahiran</h3>
+                        <p class="text-cyan-100 text-sm mt-1">Bagaimana pekerja gig mempelajari kemahiran mereka</p>
                     </div>
-                    <button @click="refreshChart('skillAcquisition')" class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                    <button @click="refreshChart('skillAcquisition')"
+                        class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
                         <i class="fas fa-refresh text-white text-xs"></i>
                     </button>
                 </div>
@@ -374,16 +397,18 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Gig Challenges (5 cols) -->
-        <div class="col-span-12 lg:col-span-5 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+        <div
+            class="col-span-12 lg:col-span-5 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
             <div class="bg-gradient-to-r from-red-500 to-red-600 px-5 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-white">Main Challenges</h3>
-                        <p class="text-red-100 text-sm mt-1">Obstacles in gig economy</p>
+                        <h3 class="text-lg font-semibold text-white">Cabaran Utama</h3>
+                        <p class="text-red-100 text-sm mt-1">Halangan dalam ekonomi gig</p>
                     </div>
-                    <button @click="openTableModal('Challenges')" class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                    <button @click="openTableModal('Challenges')"
+                        class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
                         <i class="fas fa-table text-white text-xs"></i>
                     </button>
                 </div>
@@ -397,19 +422,20 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Row 5: Support & Financial Analysis -->
         <!-- Support Needed (8 cols) -->
-         <div class="col-span-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
+        <div
+            class="col-span-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
             <div class="bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg lg:text-xl font-semibold text-white">Support & Assistance Needed</h3>
-                        <p class="text-amber-100 text-sm lg:text-base mt-1">What entrepreneurs need to succeed in gig economy</p>
+                        <h3 class="text-lg lg:text-xl font-semibold text-white">Sokongan & Bantuan Diperlukan</h3>
+                        <p class="text-amber-100 text-sm lg:text-base mt-1">Apa yang usahawan perlukan untuk berjaya dalam ekonomi gig</p>
                     </div>
-                    <button @click="openTableModal('Support Analysis')" 
-                            class="px-3 py-1 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-white text-sm">
-                        <i class="fas fa-external-link-alt mr-1"></i>Details
+                    <button @click="openTableModal('Support Analysis')"
+                        class="px-3 py-1 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-white text-sm">
+                        <i class="fas fa-external-link-alt mr-1"></i>Butiran
                     </button>
                 </div>
             </div>
@@ -422,21 +448,23 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Monthly Income (4 cols) -->
-         <div class="col-span-12 lg:col-span-7 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+        <div
+            class="col-span-12 lg:col-span-7 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
             <div class="bg-gradient-to-r from-green-600 to-emerald-600 px-5 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-bold text-white">Monthly Income</h3>
-                        <p class="text-green-100 text-sm mt-1">Gig economy earnings</p>
+                        <h3 class="text-lg font-bold text-white">Pendapatan Bulanan</h3>
+                        <p class="text-green-100 text-sm mt-1">Pendapatan ekonomi gig</p>
                         <div class="mt-2 px-2 py-1 bg-white/20 rounded-full inline-block">
                             <span class="text-xs text-green-100 font-medium">
-                                <i class="fas fa-chart-bar mr-1"></i>Income ranges
+                                <i class="fas fa-chart-bar mr-1"></i>Julat pendapatan
                             </span>
                         </div>
                     </div>
-                    <button @click="refreshChart('monthlyIncome')" class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                    <button @click="refreshChart('monthlyIncome')"
+                        class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                         <i class="fas fa-refresh text-white text-sm"></i>
                     </button>
                 </div>
@@ -445,26 +473,28 @@
                 <div class="h-72 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mx-auto mb-2"></div>
-                            <div class="text-gray-600 text-sm">Loading income data...</div>
+                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mx-auto mb-2">
+                            </div>
+                            <div class="text-gray-600 text-sm">Memuatkan data pendapatan...</div>
                         </div>
                     </div>
                     <canvas id="monthlyIncomeChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
-        
+
         <!-- Row 6: Job Preference Analysis (Centered) -->
-        <div class="col-span-12 lg:col-span-5 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+        <div
+            class="col-span-12 lg:col-span-5 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
             <div class="bg-gradient-to-r from-violet-600 to-purple-600 px-5 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold text-white">Career Preference</h3>
-                        <p class="text-violet-100 text-sm mt-1">Permanent job vs gig economy choice</p>
+                        <h3 class="text-lg font-semibold text-white">Pilihan Kerjaya</h3>
+                        <p class="text-violet-100 text-sm mt-1">Pilihan kerja tetap vs ekonomi gig</p>
                     </div>
-                    <a href="/gig-economy/table" target="_blank" 
-                       class="px-3 py-1 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-white text-sm font-medium">
-                        <i class="fas fa-external-link-alt mr-1"></i>Full Data
+                    <a href="/gig-economy/table" target="_blank"
+                        class="px-3 py-1 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-white text-sm font-medium">
+                        <i class="fas fa-external-link-alt mr-1"></i>Data Penuh
                     </a>
                 </div>
             </div>
@@ -483,7 +513,8 @@
 
 {% block scripts %}
 <script>
-    function gigEconomyDashboard() {
+    function gigEconomyDashboard()
+    {
         return {
             loading: false,
             dataLoaded: false,
@@ -495,43 +526,51 @@
             },
             availableFilters: {},
             activeFiltersCount: 0,
-            
-            init() {
+
+            init()
+            {
                 console.log('Initializing gig economy dashboard...');
                 if (this.isInitialized) return;
                 this.isInitialized = true;
                 this.waitForChart();
                 this.loadAvailableFilters();
             },
-            
-            waitForChart() {
-                if (typeof Chart === 'undefined' || typeof ChartFactory === 'undefined') {
+
+            waitForChart()
+            {
+                if (typeof Chart === 'undefined' || typeof ChartFactory === 'undefined')
+                {
                     setTimeout(() => this.waitForChart(), 100);
                     return;
                 }
                 this.loadData();
             },
-            
-            async loadAvailableFilters() {
-                try {
+
+            async loadAvailableFilters()
+            {
+                try
+                {
                     const response = await fetch('/gig-economy/api/filters/available');
                     const data = await response.json();
-                    
+
                     this.availableFilters = {
-                        graduation_years: data['Tahun graduasi anda?'] || [],
-                        genders: data['Jantina anda?'] || []
+                        graduation_years: data[ 'Tahun graduasi anda?' ] || [],
+                        genders: data[ 'Jantina anda?' ] || []
                     };
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading filters:', error);
                 }
             },
-            
-            async loadData() {
+
+            async loadData()
+            {
                 if (this.loading) return;
-                
+
                 this.loading = true;
-                
-                try {
+
+                try
+                {
                     await this.loadSummary();
                     await this.delay(100);
                     await this.loadGigTypesChart();
@@ -553,58 +592,69 @@
                     await this.loadMonthlyIncomeChart();
                     await this.delay(100);
                     await this.loadJobPreferenceChart();
-                    
+
                     this.dataLoaded = true;
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading data:', error);
                     showToast('Error loading data: ' + error.message, 'error');
-                } finally {
+                } finally
+                {
                     this.loading = false;
                 }
             },
-            
-            delay(ms) {
+
+            delay(ms)
+            {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
-            
-            async loadSummary() {
-                try {
+
+            async loadSummary()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/summary?${params}`);
                     if (!response.ok) throw new Error('Failed to load summary');
                     this.kpis = await response.json();
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading summary:', error);
-                    this.kpis = { 
-                        total_records: 0, 
-                        gig_participation_rate: 0, 
-                        entrepreneurship_rate: 0, 
+                    this.kpis = {
+                        total_records: 0,
+                        gig_participation_rate: 0,
+                        entrepreneurship_rate: 0,
                         university_support_rate: 0,
                         avg_income: 'RM0',
                         job_preference_rate: 0
                     };
                 }
             },
-            
-            async loadGigTypesChart() {
-                try {
+
+            async loadGigTypesChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/gig-types?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('gigTypes');
-                    
+
                     const canvas = document.getElementById('gigTypesChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.gigTypes = ChartFactory.createBarChart(ctx, data, {
                                 indexAxis: 'y',
                                 theme: 'brand',
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `${context.label}: ${context.parsed.x} responses`;
                                             }
                                         }
@@ -613,186 +663,227 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading gig types chart:', error);
                 }
             },
-            
-            async loadUniversitySupportChart() {
-                try {
+
+            async loadUniversitySupportChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/university-support?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('universitySupport');
-                    
+
                     const canvas = document.getElementById('universitySupportChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.universitySupport = ChartFactory.createPieChart(ctx, data, {
                                 theme: 'brand'
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading university support chart:', error);
                 }
             },
-            
-            async loadUniversityProgramsChart() {
-                try {
+
+            async loadUniversityProgramsChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/university-programs?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('universityPrograms');
-                    
+
                     const canvas = document.getElementById('universityProgramsChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.universityPrograms = ChartFactory.createPieChart(ctx, data, {
                                 theme: 'brand'
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading university programs chart:', error);
                 }
             },
-            
-            async loadProgramEffectivenessChart() {
-                try {
+
+            async loadProgramEffectivenessChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/program-effectiveness?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('programEffectiveness');
-                    
+
                     const canvas = document.getElementById('programEffectivenessChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.programEffectiveness = ChartFactory.createPieChart(ctx, data, {
                                 theme: 'brand'
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading program effectiveness chart:', error);
                 }
             },
-            
-            async loadGigMotivationsChart() {
-                try {
+
+            async loadGigMotivationsChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/gig-motivations?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('gigMotivations');
-                    
+
                     const canvas = document.getElementById('gigMotivationsChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.gigMotivations = ChartFactory.createBarChart(ctx, data, {
                                 indexAxis: 'y',
                                 theme: 'brand'
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading gig motivations chart:', error);
                 }
             },
-            
-            async loadSkillAcquisitionChart() {
-                try {
+
+            async loadSkillAcquisitionChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/skill-acquisition?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('skillAcquisition');
-                    
+
                     const canvas = document.getElementById('skillAcquisitionChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.skillAcquisition = ChartFactory.createBarChart(ctx, data, {
                                 theme: 'brand'
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading skill acquisition chart:', error);
                 }
             },
-            
-            async loadGigChallengesChart() {
-                try {
+
+            async loadGigChallengesChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/gig-challenges?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('gigChallenges');
-                    
+
                     const canvas = document.getElementById('gigChallengesChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.gigChallenges = ChartFactory.createBarChart(ctx, data, {
                                 indexAxis: 'y',
                                 theme: 'brand'
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading gig challenges chart:', error);
                 }
             },
-            
-            async loadSupportNeededChart() {
-                try {
+
+            async loadSupportNeededChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/support-needed?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('supportNeeded');
-                    
+
                     const canvas = document.getElementById('supportNeededChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.supportNeeded = ChartFactory.createBarChart(ctx, data, {
                                 indexAxis: 'y',
                                 theme: 'brand'
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading support needed chart:', error);
                 }
             },
-            
-            async loadMonthlyIncomeChart() {
-                try {
+
+            async loadMonthlyIncomeChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/monthly-income?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('monthlyIncome');
-                    
+
                     const canvas = document.getElementById('monthlyIncomeChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.monthlyIncome = ChartFactory.createBarChart(ctx, data, {
                                 theme: 'brand',
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `${context.label}: ${context.parsed.y} respondents`;
                                             }
                                         }
@@ -818,53 +909,64 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading monthly income chart:', error);
                 }
             },
-            
-            async loadJobPreferenceChart() {
-                try {
+
+            async loadJobPreferenceChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/gig-economy/api/job-preference?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('jobPreference');
-                    
+
                     const canvas = document.getElementById('jobPreferenceChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.jobPreference = ChartFactory.createPieChart(ctx, data, {
                                 theme: 'brand'
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading job preference chart:', error);
                 }
             },
-            
-            buildFilterParams() {
+
+            buildFilterParams()
+            {
                 const params = new URLSearchParams();
-                Object.entries(this.filters).forEach(([key, values]) => {
-                    if (Array.isArray(values) && values.length > 0) {
+                Object.entries(this.filters).forEach(([ key, values ]) =>
+                {
+                    if (Array.isArray(values) && values.length > 0)
+                    {
                         const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
-                                       key === 'gender' ? 'Jantina anda?' : key;
+                            key === 'gender' ? 'Jantina anda?' : key;
                         values.forEach(value => params.append(paramKey, value));
                     }
                 });
                 return params.toString();
             },
-            
-            applyFilters() {
+
+            applyFilters()
+            {
                 this.updateActiveFiltersCount();
                 this.dataLoaded = false;
                 this.loadData();
                 showToast('Filters applied', 'success');
             },
-            
-            clearAllFilters() {
+
+            clearAllFilters()
+            {
                 this.filters = {
                     graduation_year: [],
                     gender: []
@@ -874,41 +976,51 @@
                 this.loadData();
                 showToast('Filters cleared', 'info');
             },
-            
-            updateActiveFiltersCount() {
-                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
+
+            updateActiveFiltersCount()
+            {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
+                {
                     return count + (Array.isArray(filter) ? filter.length : 0);
                 }, 0);
             },
-            
-            async refreshData() {
+
+            async refreshData()
+            {
                 this.dataLoaded = false;
                 await this.loadData();
                 showToast('Data refreshed', 'success');
             },
-            
-            async refreshChart(chartType) {
-                if (chartType === 'gigTypes') {
+
+            async refreshChart(chartType)
+            {
+                if (chartType === 'gigTypes')
+                {
                     await this.loadGigTypesChart();
-                } else if (chartType === 'universitySupport') {
+                } else if (chartType === 'universitySupport')
+                {
                     await this.loadUniversitySupportChart();
                 }
                 showToast('Chart refreshed', 'success');
             },
-            
-            async exportData(format) {
-                try {
+
+            async exportData(format)
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const url = `/gig-economy/api/export?format=${format}&${params}`;
                     window.open(url, '_blank');
                     showToast(`Exporting ${format.toUpperCase()}...`, 'info');
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Export error:', error);
                     showToast('Export failed', 'error');
                 }
             },
-            
-            openTableModal(title) {
+
+            openTableModal(title)
+            {
                 const params = this.buildFilterParams();
                 openModal(title, `/gig-economy/api/table-data?${params}`);
             }
