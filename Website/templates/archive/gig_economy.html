@@ -2,41 +2,57 @@
 
 {% block content %}
 <div x-data="gigEconomyDashboard()" x-init="init()"
-    class="px-6 space-y-6 pb-6 bg-gradient-to-br from-gray-50 to-blue-50/30 min-h-screen">
-
-    <div class="relative">
-        <div class="flex flex-row border-b border-gray-300 justify-between py-4 -mx-6">
-
-            <!-- Logo -->
-            <div class="px-4 space-x-4 flex flex-row items-center">
-                <img src="{{ url_for('static', filename='img/1. UPTM.png') }}" alt="Logo UPTM"
-                    style="width: auto; height: 30px;">
-                <img src="{{ url_for('static', filename='img/2.MARA 2.png') }}" alt="Logo MARA"
-                    style="width: auto; height: 30px;">
-                <img src="{{ url_for('static', filename='img/3.KKWK.png') }}" alt="Logo KKWK"
-                    style="width: auto; height: 30px;">
-                <img src="{{ url_for('static', filename='img/4.KPTM.png') }}" alt="Logo KPTM"
-                    style="width: auto; height: 30px;">
-                <img src="{{ url_for('static', filename='img/5.IKEB.jpg') }}" alt="Logo IKEB"
-                    style="width: auto; height: 27px;">
+    class="p-4 lg:p-6 space-y-6 bg-gradient-to-br from-gray-50 to-blue-50/30 min-h-screen">
+    <!-- Minimal Corporate Header -->
+    <div
+        class="bg-gradient-to-r from-[#074e7e] via-[#0369a1] to-[#0284c7] rounded-2xl p-6 lg:p-8 shadow-xl border border-blue-800/10">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <div class="flex items-center space-x-4">
+                <div
+                    class="w-14 h-14 bg-gradient-to-br from-[#c92427] to-red-600 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white/20">
+                    <i class="fas fa-chart-line text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl lg:text-3xl font-bold text-white mb-1">
+                        Trend Ekonomi Gig & Keusahawanan
+                    </h1>
+                    <p class="text-blue-100 text-sm lg:text-base">Analisis menyeluruh mengenai pilihan kerja bebas dan aktiviti keusahawanan</p>
+                    <div class="flex items-center mt-2 space-x-4 text-xs">
+                        <div class="flex items-center space-x-1">
+                            <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                            <span class="text-emerald-200 font-medium">Analisis Langsung</span>
+                        </div>
+                        <div class="text-blue-200">
+                            <span x-show="dataLoaded">
+                                <i class="fas fa-users mr-1"></i>
+                                <span x-text="kpis.total_records || 0"></span> Responden
+                            </span>
+                            <span x-show="loading">
+                                <i class="fas fa-spinner fa-spin mr-1"></i>
+                                Menganalisis...
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- Button Section -->
-            <div class="flex flex-row space-x-4 px-6">
+
+            <!-- Compact Action Panel -->
+            <div class="flex items-center space-x-2 lg:space-x-3">
                 <!-- Filters -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open"
-                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-primary-200 hover:border-primary-400">
-                        <i class="fas fa-filter  text-primary-700 text-[10px]"></i>
-                        <span class="font-semibold  text-primary-700 text-[10px]">Penapisan</span>
+                        class="flex items-center space-x-2 bg-white/15 backdrop-blur border border-white/30 hover:bg-white/25 px-3 py-2 rounded-lg transition-all duration-200 text-white text-sm">
+                        <i class="fas fa-sliders-h text-xs"></i>
+                        <span class="hidden sm:inline">Penapisan</span>
                         <div x-show="activeFiltersCount > 0"
-                            class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
+                            class="bg-[#c92427] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold"
                             x-text="activeFiltersCount"></div>
                     </button>
 
-                    <!-- Filter Dropdown -->
+                    <!-- Compact Filter Dropdown -->
                     <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                        class="absolute right-0 mt-2 w-72 bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 z-50">
+                        class="absolute right-0 mt-2 w-72 bg-white/96 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 z-50">
                         <div class="p-4">
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="text-base font-semibold text-gray-800">Pilihan Penapis</h3>
@@ -92,85 +108,20 @@
                     </div>
                 </div>
 
-                <!-- Export Button -->
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open"
-                        class="button-style-fulll-blue flex items-center bg-gradient-to-r from-primary-400 to-primary-500 text-white px-3 py-1 rounded-md hover:from-primary-500 hover:to-primary-700 transition-all duration-200 shadow-lg shadow-primary-500/30">
-                        <i class="fas fa-download text-[10px]"></i>
-                        <span class="font-semibold text-[10px] ml-1">Eksport</span>
-                    </button>
+                <!-- Export -->
+                <button @click="exportData('csv')"
+                    class="flex items-center space-x-1 bg-[#c92427] text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm">
+                    <i class="fas fa-download text-xs"></i>
+                    <span class="hidden sm:inline">Eksport</span>
+                </button>
 
-                    <div x-show="open" @click.away="open = false" x-transition
-                        class="absolute right-0 mt-3 w-56 bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 z-50">
-                        <div class="py-3">
-                            <button @click="exportData('csv'); open = false"
-                                class="w-full text-left px-6 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors">
-                                <i class="fas fa-file-csv text-emerald-600 text-lg"></i>
-                                <div>
-                                    <div class="font-semibold text-gray-900">CSV Format</div>
-                                    <div class="text-xs text-gray-500">Comma-separated values</div>
-                                </div>
-                            </button>
-                            <button @click="exportData('excel'); open = false"
-                                class="w-full text-left px-6 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors">
-                                <i class="fas fa-file-excel text-blue-600 text-lg"></i>
-                                <div>
-                                    <div class="font-semibold text-gray-900">Excel Format</div>
-                                    <div class="text-xs text-gray-500">Microsoft Excel file</div>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Refresh Button -->
-                <div>
-                    <button @click="refreshData()"
-                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-primary-200 hover:border-primary-400"
-                        :disabled="loading">
-                        <i class="fas fa-sync-alt text-primary-700 text-[10px]"
-                            :class="{ 'animate-spin': loading }"></i>
-                        <span class="text-[10px] text-primary-700 font-semibold">Muat Semula</span>
-                    </button>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Minimal Corporate Header -->
-    <div
-        class="bg-gradient-to-r from-[#074e7e] via-[#0369a1] to-[#0284c7] rounded-2xl p-6 lg:p-8 shadow-xl border border-blue-800/10">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-            <div class="flex items-center space-x-4">
-                <div
-                    class="w-16 h-16 bg-gradient-to-br from-secondary-400 via-secondary-500 to-secondary-600 rounded-full flex items-center justify-center shadow-lg ring-4 ring-white/20">
-                    <i class="fas fa-chart-line text-white text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl lg:text-3xl font-bold text-white mb-1">
-                        Trend Ekonomi Gig & Keusahawanan
-                    </h1>
-                    <p class="text-blue-100 text-sm lg:text-base">Analisis menyeluruh mengenai pilihan kerja bebas dan
-                        aktiviti keusahawanan</p>
-                    <div class="flex items-center mt-2 space-x-4 text-xs">
-                        <div class="flex items-center space-x-1">
-                            <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                            <span class="text-emerald-200 font-medium">Analisis Langsung</span>
-                        </div>
-                        <div class="text-blue-200">
-                            <span x-show="dataLoaded">
-                                <i class="fas fa-users mr-1"></i>
-                                <span x-text="kpis.total_records || 0"></span> Responden
-                            </span>
-                            <span x-show="loading">
-                                <i class="fas fa-spinner fa-spin mr-1"></i>
-                                Menganalisis...
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                <!-- Refresh -->
+                <button @click="refreshData()"
+                    class="flex items-center space-x-1 bg-white/15 backdrop-blur border border-white/30 hover:bg-white/25 px-3 py-2 rounded-lg transition-colors text-white text-sm"
+                    :disabled="loading">
+                    <i class="fas fa-sync-alt text-xs" :class="{ 'animate-spin': loading }"></i>
+                    <span class="hidden sm:inline">Muat Semula</span>
+                </button>
             </div>
         </div>
     </div>
@@ -179,21 +130,21 @@
     <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 lg:gap-4">
         <div
             class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-users text-[#074e7e] text-sm"></i>
                 </div>
                 <div>
                     <div class="text-lg lg:text-xl font-bold text-gray-800" x-text="kpis.total_records || '0'"></div>
-                    <div class="text-xs text-gray-500">Jumlah Responden</div>
+                    <div class="text-xs text-gray-500">Jumlah</div>
                 </div>
             </div>
         </div>
 
         <div
             class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-briefcase text-[#c92427] text-sm"></i>
                 </div>
                 <div>
@@ -206,8 +157,8 @@
 
         <div
             class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-rocket text-green-600 text-sm"></i>
                 </div>
                 <div>
@@ -220,8 +171,8 @@
 
         <div
             class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-graduation-cap text-purple-600 text-sm"></i>
                 </div>
                 <div>
@@ -234,8 +185,8 @@
 
         <div
             class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-dollar-sign text-amber-600 text-sm"></i>
                 </div>
                 <div>
@@ -247,8 +198,8 @@
 
         <div
             class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-chart-line text-indigo-600 text-sm"></i>
                 </div>
                 <div>
@@ -262,50 +213,36 @@
 
     <!-- Professional Bento Grid Layout for Charts -->
     <div class="grid grid-cols-12 gap-4 lg:gap-6">
-        <!-- Row 1: 2 Charts - Jenis Kerja Ekonomi Gig & Motivasi Ekonomi Gig -->
-        <!-- Jenis Kerja Ekonomi Gig (6 cols) -->
+        <!-- Row 1: Hero Charts -->
+        <!-- Gig Economy Types (Large Feature - 8 cols) -->
         <div
-            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
-            <div class="bg-gradient-to-r from-[#074e7e] to-[#0369a1] px-4 py-3">
+            class="col-span-12 lg:col-span-8 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
+            <div class="bg-gradient-to-r from-[#074e7e] to-[#0369a1] px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-md font-bold text-white">Jenis Kerja Ekonomi Gig</h3>
-                        <p class="text-blue-100 text-xs mt-1">Aktiviti kerja bebas semasa dan yang dirancang</p>
+                        <h3 class="text-xl font-bold text-white">Jenis Kerja Ekonomi Gig</h3>
+                        <p class="text-blue-100 text-sm mt-1">Aktiviti kerja bebas semasa dan yang dirancang (tidak termasuk bukan peserta)</p>
                     </div>
-                    <div class="flex space-x-1">
-                        <div class="relative group">
-                            <button @click="openTableModal('Gig Types')"
-                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table text-white text-xs"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Maklumat Lanjut
-                            </div>
-                        </div>
-                        <div class="relative group">
-                            <button @click="refreshChart('gigTypes')"
-                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                                <i class="fas fa-refresh text-white text-xs"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Muat Semula
-                            </div>
-                        </div>
+                    <div class="flex space-x-2">
+                        <button @click="openTableModal('Gig Types')"
+                            class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                            <i class="fas fa-table text-white text-sm"></i>
+                        </button>
+                        <button @click="refreshChart('gigTypes')"
+                            class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                            <i class="fas fa-refresh text-white text-sm"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="p-4">
-                <div class="h-48 relative">
+            <div class="p-6 lg:p-8">
+                <div class="h-80 lg:h-96 relative">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#074e7e] mx-auto mb-2">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-3 border-[#074e7e] mx-auto mb-3">
                             </div>
-                            <div class="text-gray-600 text-xs">Memuatkan jenis kerja...</div>
+                            <div class="text-gray-600 font-medium">Memuatkan jenis kerja...</div>
                         </div>
                     </div>
                     <canvas id="gigTypesChart" class="w-full h-full"></canvas>
@@ -313,60 +250,23 @@
             </div>
         </div>
 
-        <!-- Motivasi Ekonomi Gig (6 cols) -->
-        <div
-            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
-            <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-4 py-3">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-bold text-white">Motivasi Ekonomi Gig</h3>
-                        <p class="text-purple-100 text-xs mt-1">Sebab utama memilih kerja bebas</p>
-                    </div>
-                    <div class="flex space-x-1">
-                        <button @click="openTableModal('Motivations Analysis')"
-                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-white text-xs">
-                            <i class="fas fa-table"></i>
-                        </button>
-                        <button @click="refreshChart('gigMotivations')"
-                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                            <i class="fas fa-refresh text-white text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="p-4">
-                <div class="h-48 relative">
-                    <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
-                        <div class="text-center">
-                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600 mx-auto mb-2">
-                            </div>
-                            <div class="text-gray-600 text-xs">Menganalisis motivasi...</div>
-                        </div>
-                    </div>
-                    <canvas id="gigMotivationsChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Row 2: 3 Charts - Sokongan Universiti, Program Universiti, Impak Program -->
-        <!-- Sokongan Universiti (4 cols) -->
+        <!-- University Support Overview (4 cols) -->
         <div
             class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
-            <div class="bg-gradient-to-r from-[#c92427] to-red-600 px-4 py-3">
+            <div class="bg-gradient-to-r from-[#c92427] to-red-600 px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-md font-bold text-white">Sokongan Universiti</h3>
-                        <p class="text-red-100 text-xs mt-1">Kursus Keusahawanan</p>
+                        <h3 class="text-lg font-bold text-white">Sokongan Universiti</h3>
+                        <p class="text-red-100 text-sm mt-1">Kursus Keusahawanan</p>
                     </div>
                     <button @click="refreshChart('universitySupport')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                        <i class="fas fa-refresh text-white text-xs"></i>
+                        class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                        <i class="fas fa-refresh text-white text-sm"></i>
                     </button>
                 </div>
             </div>
-            <div class="p-4">
-                <div class="h-48 relative">
+            <div class="p-6">
+                <div class="h-80 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#c92427]"></div>
                     </div>
@@ -375,74 +275,172 @@
             </div>
         </div>
 
-        <!-- Program Universiti (4 cols) -->
+        <!-- Row 2: University Programs Analysis -->
+        <!-- University Programs (6 cols) -->
         <div
-            class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
-            <div class="bg-gradient-to-r from-slate-700 to-slate-800 px-4 py-3">
+            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            <div class="bg-gradient-to-r from-slate-700 to-slate-800 px-5 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-md font-semibold text-white">Program Universiti</h3>
-                        <p class="text-slate-300 text-xs mt-1">Inisiatif perniagaan & ekonomi gig</p>
+                        <h3 class="text-lg font-semibold text-white">Program Universiti</h3>
+                        <p class="text-slate-300 text-sm mt-1">Inisiatif perniagaan & ekonomi gig</p>
                     </div>
                     <button @click="openTableModal('Programs')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                        class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
                         <i class="fas fa-external-link-alt text-white text-xs"></i>
                     </button>
                 </div>
             </div>
-            <div class="p-4">
-                <div class="h-48 relative">
+            <div class="p-5">
+                <div class="h-64 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
-                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-700"></div>
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-slate-700"></div>
                     </div>
                     <canvas id="universityProgramsChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Impak Program (4 cols) -->
+        <!-- Program Effectiveness (6 cols) -->
         <div
-            class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
-            <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 px-4 py-3">
+            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 px-5 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-md font-semibold text-white">Impak Program</h3>
-                        <p class="text-emerald-100 text-xs mt-1">Bagaimana program membantu pelajar</p>
+                        <h3 class="text-lg font-semibold text-white">Impak Program</h3>
+                        <p class="text-emerald-100 text-sm mt-1">Bagaimana program membantu pelajar</p>
                     </div>
                     <button @click="refreshChart('programEffectiveness')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                        class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
                         <i class="fas fa-refresh text-white text-xs"></i>
                     </button>
                 </div>
             </div>
-            <div class="p-4">
-                <div class="h-48 relative">
+            <div class="p-5">
+                <div class="h-64 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
-                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600"></div>
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-600"></div>
                     </div>
                     <canvas id="programEffectivenessChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Row 3: 2 Charts - Sokongan & Bantuan Diperlukan, Cabaran Utama -->
-        <!-- Sokongan & Bantuan Diperlukan (6 cols) -->
+        <!-- Row 3: Motivations Analysis (Full Width Feature) -->
         <div
-            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
-            <div class="bg-gradient-to-r from-amber-600 to-orange-600 px-4 py-3">
+            class="col-span-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
+            <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-6 lg:px-8 py-5">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-md font-semibold text-white">Sokongan & Bantuan Diperlukan</h3>
-                        <p class="text-amber-100 text-xs mt-1">Apa yang usahawan perlukan untuk berjaya</p>
+                        <h3 class="text-xl lg:text-2xl font-bold text-white">Motivasi Ekonomi Gig</h3>
+                        <p class="text-purple-100 text-sm lg:text-base mt-2">Sebab utama memilih kerja bebas (tidak termasuk jawapan yang tidak berkaitan)</p>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <div class="flex items-center space-x-1">
+                                <div class="w-2 h-2 bg-yellow-300 rounded-full"></div>
+                                <span class="text-xs text-purple-200">Analisis pelbagai jawapan</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <div class="w-2 h-2 bg-green-300 rounded-full"></div>
+                                <span class="text-xs text-purple-200">Pemprosesan dipisahkan koma</span>
+                            </div>
+                        </div>
                     </div>
-                    <button @click="openTableModal('Support Analysis')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-white text-xs">
-                        <i class="fas fa-external-link-alt"></i>
+                    <div class="flex space-x-2">
+                        <button @click="openTableModal('Motivations Analysis')"
+                            class="px-3 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-white text-sm font-medium">
+                            <i class="fas fa-table mr-1"></i>Lihat Data
+                        </button>
+                        <button @click="refreshChart('gigMotivations')"
+                            class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                            <i class="fas fa-refresh text-white"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 lg:p-8">
+                <div class="h-80 lg:h-96 relative">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
+                        <div class="text-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-3 border-indigo-600 mx-auto mb-3">
+                            </div>
+                            <div class="text-gray-600 font-medium">Menganalisis motivasi...</div>
+                        </div>
+                    </div>
+                    <canvas id="gigMotivationsChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: Skills & Challenges Row -->
+        <!-- Skill Acquisition (7 cols) -->
+        <div
+            class="col-span-12 lg:col-span-7 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            <div class="bg-gradient-to-r from-cyan-600 to-blue-600 px-5 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-white">Kaedah Pemerolehan Kemahiran</h3>
+                        <p class="text-cyan-100 text-sm mt-1">Bagaimana pekerja gig mempelajari kemahiran mereka</p>
+                    </div>
+                    <button @click="refreshChart('skillAcquisition')"
+                        class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                        <i class="fas fa-refresh text-white text-xs"></i>
                     </button>
                 </div>
             </div>
-            <div class="p-4">
-                <div class="h-48 relative">
+            <div class="p-5">
+                <div class="h-64 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-cyan-600"></div>
+                    </div>
+                    <canvas id="skillAcquisitionChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gig Challenges (5 cols) -->
+        <div
+            class="col-span-12 lg:col-span-5 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            <div class="bg-gradient-to-r from-red-500 to-red-600 px-5 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-white">Cabaran Utama</h3>
+                        <p class="text-red-100 text-sm mt-1">Halangan dalam ekonomi gig</p>
+                    </div>
+                    <button @click="openTableModal('Challenges')"
+                        class="p-1 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                        <i class="fas fa-table text-white text-xs"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-5">
+                <div class="h-64 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-red-500"></div>
+                    </div>
+                    <canvas id="gigChallengesChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 5: Support & Financial Analysis -->
+        <!-- Support Needed (8 cols) -->
+        <div
+            class="col-span-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
+            <div class="bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg lg:text-xl font-semibold text-white">Sokongan & Bantuan Diperlukan</h3>
+                        <p class="text-amber-100 text-sm lg:text-base mt-1">Apa yang usahawan perlukan untuk berjaya dalam ekonomi gig</p>
+                    </div>
+                    <button @click="openTableModal('Support Analysis')"
+                        class="px-3 py-1 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-white text-sm">
+                        <i class="fas fa-external-link-alt mr-1"></i>Butiran
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="h-72 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-600"></div>
                     </div>
@@ -451,79 +449,33 @@
             </div>
         </div>
 
-        <!-- Cabaran Utama (6 cols) -->
+        <!-- Monthly Income (4 cols) -->
         <div
-            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
-            <div class="bg-gradient-to-r from-red-500 to-red-600 px-4 py-3">
+            class="col-span-12 lg:col-span-7 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            <div class="bg-gradient-to-r from-green-600 to-emerald-600 px-5 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-md font-semibold text-white">Cabaran Utama</h3>
-                        <p class="text-red-100 text-xs mt-1">Halangan dalam ekonomi gig</p>
-                    </div>
-                    <button @click="openTableModal('Challenges')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                        <i class="fas fa-table text-white text-xs"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="p-4">
-                <div class="h-48 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
-                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-500"></div>
-                    </div>
-                    <canvas id="gigChallengesChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Row 4: 3 Charts - Kaedah Pemerolehan Kemahiran, Pendapatan Bulanan, Pilihan Kerjaya -->
-        <!-- Kaedah Pemerolehan Kemahiran (4 cols) -->
-        <div
-            class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
-            <div class="bg-gradient-to-r from-cyan-600 to-blue-600 px-4 py-3">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-semibold text-white">Kaedah Pemerolehan Kemahiran</h3>
-                        <p class="text-cyan-100 text-xs mt-1">Bagaimana pekerja mempelajari kemahiran</p>
-                    </div>
-                    <button @click="refreshChart('skillAcquisition')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                        <i class="fas fa-refresh text-white text-xs"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="p-4">
-                <div class="h-48 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
-                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-600"></div>
-                    </div>
-                    <canvas id="skillAcquisitionChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pendapatan Bulanan (4 cols) -->
-        <div
-            class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
-            <div class="bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-3">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-bold text-white">Pendapatan Bulanan</h3>
-                        <p class="text-green-100 text-xs mt-1">Pendapatan ekonomi gig</p>
+                        <h3 class="text-lg font-bold text-white">Pendapatan Bulanan</h3>
+                        <p class="text-green-100 text-sm mt-1">Pendapatan ekonomi gig</p>
+                        <div class="mt-2 px-2 py-1 bg-white/20 rounded-full inline-block">
+                            <span class="text-xs text-green-100 font-medium">
+                                <i class="fas fa-chart-bar mr-1"></i>Julat pendapatan
+                            </span>
+                        </div>
                     </div>
                     <button @click="refreshChart('monthlyIncome')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                        <i class="fas fa-refresh text-white text-xs"></i>
+                        class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                        <i class="fas fa-refresh text-white text-sm"></i>
                     </button>
                 </div>
             </div>
-            <div class="p-4">
-                <div class="h-48 relative">
+            <div class="p-5">
+                <div class="h-72 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="text-center">
                             <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mx-auto mb-2">
                             </div>
-                            <div class="text-gray-600 text-xs">Memuatkan data pendapatan...</div>
+                            <div class="text-gray-600 text-sm">Memuatkan data pendapatan...</div>
                         </div>
                     </div>
                     <canvas id="monthlyIncomeChart" class="w-full h-full"></canvas>
@@ -531,32 +483,31 @@
             </div>
         </div>
 
-        <!-- Pilihan Kerjaya (4 cols) -->
+        <!-- Row 6: Job Preference Analysis (Centered) -->
         <div
-            class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
-            <div class="bg-gradient-to-r from-violet-600 to-purple-600 px-4 py-3">
+            class="col-span-12 lg:col-span-5 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            <div class="bg-gradient-to-r from-violet-600 to-purple-600 px-5 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-md font-semibold text-white">Pilihan Kerjaya</h3>
-                        <p class="text-violet-100 text-xs mt-1">Pilihan kerja tetap vs ekonomi gig</p>
+                        <h3 class="text-lg font-semibold text-white">Pilihan Kerjaya</h3>
+                        <p class="text-violet-100 text-sm mt-1">Pilihan kerja tetap vs ekonomi gig</p>
                     </div>
                     <a href="/gig-economy/table" target="_blank"
-                        class="p-1 flex items-center justify-center w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-white text-xs">
-                        <i class="fas fa-external-link-alt"></i>
+                        class="px-3 py-1 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-white text-sm font-medium">
+                        <i class="fas fa-external-link-alt mr-1"></i>Data Penuh
                     </a>
                 </div>
             </div>
-            <div class="p-4">
-                <div class="h-48 relative">
+            <div class="p-5">
+                <div class="h-64 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
-                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-violet-600"></div>
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-violet-600"></div>
                     </div>
                     <canvas id="jobPreferenceChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 {% endblock %}
 
