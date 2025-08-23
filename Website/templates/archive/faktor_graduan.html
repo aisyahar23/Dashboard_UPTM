@@ -12,21 +12,21 @@
                         <i class="fas fa-chart-line text-white text-xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-slate-900">Faktor Kebolehpasaran Graduan</h1>
-                        <p class="text-slate-600 mt-1">Analisis menyeluruh faktor yang mempengaruhi kebolehpasaran graduan</p>
+                        <h1 class="text-3xl font-bold text-slate-900">Graduate Employability Factors</h1>
+                        <p class="text-slate-600 mt-1">Comprehensive analysis of factors influencing graduate employability</p>
                         <div class="flex items-center mt-2 space-x-4">
                             <div class="flex items-center space-x-2">
                                 <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span class="text-sm font-medium text-green-600">Analitik Langsung</span>
+                                <span class="text-sm font-medium text-green-600">Live Analytics</span>
                             </div>
                             <div class="text-sm text-slate-500">
                                 <span x-show="dataLoaded">
                                     <i class="fas fa-database mr-1"></i>
-                                    <span x-text="kpis.total_records || 0"></span> Rekod
+                                    <span x-text="kpis.total_records || 0"></span> Records
                                 </span>
                                 <span x-show="loading">
                                     <i class="fas fa-spinner fa-spin mr-1"></i>
-                                    Memuatkan...
+                                    Loading...
                                 </span>
                             </div>
                         </div>
@@ -40,7 +40,7 @@
                         <button @click="open = !open" 
                                 class="flex items-center space-x-2 bg-white border border-gray-300 hover:border-gray-400 px-4 py-2.5 rounded-lg transition-colors shadow-sm">
                             <i class="fas fa-filter text-slate-600"></i>
-                            <span class="text-sm font-medium text-slate-700">Penapisan</span>
+                            <span class="text-sm font-medium text-slate-700">Filters</span>
                             <div x-show="activeFiltersCount > 0" 
                                  class="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
                                  x-text="activeFiltersCount"></div>
@@ -53,10 +53,10 @@
                              class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                             <div class="p-6">
                                 <div class="flex items-center justify-between mb-4">
-                                    <h3 class="text-lg font-semibold text-slate-900">Tapis Data</h3>
+                                    <h3 class="text-lg font-semibold text-slate-900">Filter Data</h3>
                                     <button @click="clearAllFilters()" 
                                             class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                                        Kosongkan Semua
+                                        Clear All
                                     </button>
                                 </div>
                                 
@@ -64,7 +64,7 @@
                                 <div class="space-y-4">
                                     <!-- Graduation Year -->
                                     <div>
-                                        <label class="text-sm font-medium text-slate-700 mb-2 block">Tahun Graduasi</label>
+                                        <label class="text-sm font-medium text-slate-700 mb-2 block">Graduation Year</label>
                                         <div class="grid grid-cols-3 gap-2">
                                             <template x-for="year in availableFilters.graduation_years || []">
                                                 <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer">
@@ -80,7 +80,7 @@
                                     
                                     <!-- Gender -->
                                     <div>
-                                        <label class="text-sm font-medium text-slate-700 mb-2 block">Jantina</label>
+                                        <label class="text-sm font-medium text-slate-700 mb-2 block">Gender</label>
                                         <div class="space-y-1">
                                             <template x-for="gender in availableFilters.genders || []">
                                                 <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer">
@@ -96,7 +96,7 @@
                                     
                                     <!-- Employment Status -->
                                     <div>
-                                        <label class="text-sm font-medium text-slate-700 mb-2 block">Status Pekerjaan</label>
+                                        <label class="text-sm font-medium text-slate-700 mb-2 block">Employment Status</label>
                                         <div class="space-y-1">
                                             <template x-for="status in availableFilters.employment_status || []">
                                                 <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer">
@@ -114,7 +114,7 @@
                                 <div class="mt-6 pt-4 border-t border-gray-200">
                                     <button @click="applyFilters(); open = false" 
                                             class="w-full bg-blue-600 text-white font-medium py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-                                        Tapis
+                                        Apply Filters
                                     </button>
                                 </div>
                             </div>
@@ -126,7 +126,7 @@
                         <button @click="open = !open" 
                                 class="flex items-center space-x-2 bg-slate-900 text-white px-4 py-2.5 rounded-lg hover:bg-slate-800 transition-colors shadow-sm">
                             <i class="fas fa-download"></i>
-                            <span class="text-sm font-medium">Eksport</span>
+                            <span class="text-sm font-medium">Export</span>
                         </button>
                         
                         <div x-show="open" 
@@ -137,17 +137,17 @@
                                 <button @click="exportData('csv'); open = false" 
                                         class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center space-x-3">
                                     <i class="fas fa-file-csv text-green-600"></i>
-                                    <span>Format CSV</span>
+                                    <span>CSV Format</span>
                                 </button>
                                 <button @click="exportData('excel'); open = false" 
                                         class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center space-x-3">
                                     <i class="fas fa-file-excel text-blue-600"></i>
-                                    <span>Format Excel</span>
+                                    <span>Excel Format</span>
                                 </button>
                                 <button @click="exportData('json'); open = false" 
                                         class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center space-x-3">
                                     <i class="fas fa-file-code text-purple-600"></i>
-                                    <span>Format JSON</span>
+                                    <span>JSON Format</span>
                                 </button>
                             </div>
                         </div>
@@ -158,7 +158,7 @@
                             class="flex items-center space-x-2 bg-white border border-gray-300 hover:border-gray-400 px-4 py-2.5 rounded-lg transition-colors shadow-sm"
                             :disabled="loading">
                         <i class="fas fa-sync-alt text-slate-600" :class="{ 'animate-spin': loading }"></i>
-                        <span class="text-sm font-medium text-slate-700">Muat Semula</span>
+                        <span class="text-sm font-medium text-slate-700">Refresh</span>
                     </button>
                 </div>
             </div>
@@ -173,7 +173,7 @@
             <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600">Jumlah Rekod</p>
+                        <p class="text-sm font-medium text-slate-600">Total Records</p>
                         <p class="text-2xl font-bold text-slate-900" x-text="kpis.total_records || '0'"></p>
                     </div>
                     <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -186,9 +186,9 @@
             <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600">Latihan Industri</p>
+                        <p class="text-sm font-medium text-slate-600">Industrial Training</p>
                         <p class="text-2xl font-bold text-slate-900" x-text="(kpis.industrial_training_avg || 0).toFixed(1)"></p>
-                        <p class="text-xs text-slate-500">Skor Impak Purata</p>
+                        <p class="text-xs text-slate-500">Avg. Impact Score</p>
                     </div>
                     <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                         <i class="fas fa-industry text-green-600"></i>
@@ -200,9 +200,9 @@
             <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600">Kemahiran Komunikasi</p>
+                        <p class="text-sm font-medium text-slate-600">Communication</p>
                         <p class="text-2xl font-bold text-slate-900" x-text="(kpis.communication_skills_avg || 0).toFixed(1)"></p>
-                        <p class="text-xs text-slate-500">Skor Impak Purata</p>
+                        <p class="text-xs text-slate-500">Avg. Impact Score</p>
                     </div>
                     <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                         <i class="fas fa-comments text-purple-600"></i>
@@ -214,9 +214,9 @@
             <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600">Kemahiran Teknikal</p>
+                        <p class="text-sm font-medium text-slate-600">Technical Skills</p>
                         <p class="text-2xl font-bold text-slate-900" x-text="(kpis.technical_skills_avg || 0).toFixed(1)"></p>
-                        <p class="text-xs text-slate-500">Skor Impak Purata</p>
+                        <p class="text-xs text-slate-500">Avg. Impact Score</p>
                     </div>
                     <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                         <i class="fas fa-cogs text-orange-600"></i>
@@ -228,9 +228,9 @@
             <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600">Persediaan Baik</p>
+                        <p class="text-sm font-medium text-slate-600">Well Prepared</p>
                         <p class="text-2xl font-bold text-slate-900" x-text="(kpis.well_prepared_rate || 0) + '%'"></p>
-                        <p class="text-xs text-slate-500">Oleh Universiti</p>
+                        <p class="text-xs text-slate-500">By University</p>
                     </div>
                     <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
                         <i class="fas fa-graduation-cap text-indigo-600"></i>
@@ -246,8 +246,8 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900">Impak Faktor Kebolehpasaran</h3>
-                            <p class="text-sm text-slate-600">Taburan skala bagi setiap faktor (skala 1-5)</p>
+                            <h3 class="text-lg font-semibold text-slate-900">Employability Factors Impact</h3>
+                            <p class="text-sm text-slate-600">Scale distribution for each factor (1-5 scale)</p>
                         </div>
                         <button @click="refreshChart('employability')" 
                                 class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-50">
@@ -260,7 +260,7 @@
                         <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
                             <div class="text-center">
                                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-                                <div class="text-slate-600 text-sm">Memuatkan carta...</div>
+                                <div class="text-slate-600 text-sm">Loading chart...</div>
                             </div>
                         </div>
                         <canvas id="employabilityFactorsChart" class="w-full h-full"></canvas>
@@ -273,8 +273,8 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900">Sijil Profesional</h3>
-                            <p class="text-sm text-slate-600">Impak terhadap pekerjaan</p>
+                            <h3 class="text-lg font-semibold text-slate-900">Professional Certificates</h3>
+                            <p class="text-sm text-slate-600">Impact on employment</p>
                         </div>
                         <button @click="refreshChart('certificates')" 
                                 class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-50">
@@ -287,7 +287,7 @@
                         <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
                             <div class="text-center">
                                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-                                <div class="text-slate-600 text-sm">Memuatkan carta...</div>
+                                <div class="text-slate-600 text-sm">Loading chart...</div>
                             </div>
                         </div>
                         <canvas id="professionalCertificatesChart" class="w-full h-full"></canvas>
@@ -300,8 +300,8 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900">Keperluan Majikan</h3>
-                            <p class="text-sm text-slate-600">Kelayakan tambahan yang diminta</p>
+                            <h3 class="text-lg font-semibold text-slate-900">Employer Requirements</h3>
+                            <p class="text-sm text-slate-600">Additional qualifications requested</p>
                         </div>
                         <button @click="refreshChart('requirements')" 
                                 class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-50">
@@ -314,7 +314,7 @@
                         <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
                             <div class="text-center">
                                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-                                <div class="text-slate-600 text-sm">Memuatkan carta...</div>
+                                <div class="text-slate-600 text-sm">Loading chart...</div>
                             </div>
                         </div>
                         <canvas id="employerRequirementsChart" class="w-full h-full"></canvas>
@@ -327,8 +327,8 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900">Persediaan Universiti</h3>
-                            <p class="text-sm text-slate-600">Penilaian kesediaan pasaran kerja</p>
+                            <h3 class="text-lg font-semibold text-slate-900">University Preparation</h3>
+                            <p class="text-sm text-slate-600">Job market readiness assessment</p>
                         </div>
                         <button @click="refreshChart('preparation')" 
                                 class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-50">
@@ -341,7 +341,7 @@
                         <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
                             <div class="text-center">
                                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-                                <div class="text-slate-600 text-sm">Memuatkan carta...</div>
+                                <div class="text-slate-600 text-sm">Loading chart...</div>
                             </div>
                         </div>
                         <canvas id="universityPreparationChart" class="w-full h-full"></canvas>
@@ -354,8 +354,8 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900">Kemahiran Yang Diperlukan</h3>
-                            <p class="text-sm text-slate-600">Kemahiran tambahan yang paling diminta oleh majikan</p>
+                            <h3 class="text-lg font-semibold text-slate-900">Skills in Demand</h3>
+                            <p class="text-sm text-slate-600">Most requested additional skills by employers</p>
                         </div>
                         <div class="flex space-x-2">
                             <button @click="openTableModal('Skills Demand Analysis')" 
@@ -374,7 +374,7 @@
                         <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
                             <div class="text-center">
                                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-                                <div class="text-slate-600 text-sm">Memuatkan carta...</div>
+                                <div class="text-slate-600 text-sm">Loading chart...</div>
                             </div>
                         </div>
                         <canvas id="additionalSkillsChart" class="w-full h-full"></canvas>
