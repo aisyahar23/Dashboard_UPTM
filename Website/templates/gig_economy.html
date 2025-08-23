@@ -323,14 +323,30 @@
                         <p class="text-purple-100 text-xs mt-1">Sebab utama memilih kerja bebas</p>
                     </div>
                     <div class="flex space-x-1">
-                        <button @click="openTableModal('Motivations Analysis')"
-                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-white text-xs">
-                            <i class="fas fa-table"></i>
-                        </button>
-                        <button @click="refreshChart('gigMotivations')"
-                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                            <i class="fas fa-refresh text-white text-xs"></i>
-                        </button>
+                        <div class="relative group">
+
+                            <button @click="openTableModal('Motivations Analysis')"
+                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-white text-xs">
+                                <i class="fas fa-table"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+
+                        <div class="relative group">
+                            <button @click="refreshChart('gigMotivations')"
+                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh text-white text-xs"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -359,10 +375,17 @@
                         <h3 class="text-md font-bold text-white">Sokongan Universiti</h3>
                         <p class="text-red-100 text-xs mt-1">Kursus Keusahawanan</p>
                     </div>
-                    <button @click="refreshChart('universitySupport')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                        <i class="fas fa-refresh text-white text-xs"></i>
-                    </button>
+                    <div class="relative group">
+                        <button @click="refreshChart('universitySupport')"
+                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                            <i class="fas fa-refresh text-white text-xs"></i>
+                        </button>
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Muat Semula
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="p-4">
@@ -381,13 +404,21 @@
             <div class="bg-gradient-to-r from-slate-700 to-slate-800 px-4 py-3">
                 <div class="flex items-center justify-between">
                     <div>
+
                         <h3 class="text-md font-semibold text-white">Program Universiti</h3>
                         <p class="text-slate-300 text-xs mt-1">Inisiatif perniagaan & ekonomi gig</p>
                     </div>
-                    <button @click="openTableModal('Programs')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                        <i class="fas fa-external-link-alt text-white text-xs"></i>
-                    </button>
+                    <div class="relative group">
+                        <button @click="openTableModal('Programs')"
+                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                            <i class="fas fa-external-link-alt text-white text-xs"></i>
+                        </button>
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Buka Halaman
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="p-4">
@@ -409,10 +440,18 @@
                         <h3 class="text-md font-semibold text-white">Impak Program</h3>
                         <p class="text-emerald-100 text-xs mt-1">Bagaimana program membantu pelajar</p>
                     </div>
-                    <button @click="refreshChart('programEffectiveness')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                        <i class="fas fa-refresh text-white text-xs"></i>
-                    </button>
+                    <div class="relative group">
+
+                        <button @click="refreshChart('programEffectiveness')"
+                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                            <i class="fas fa-refresh text-white text-xs"></i>
+                        </button>
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Muat Semula
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="p-4">
@@ -435,10 +474,17 @@
                         <h3 class="text-md font-semibold text-white">Sokongan & Bantuan Diperlukan</h3>
                         <p class="text-amber-100 text-xs mt-1">Apa yang usahawan perlukan untuk berjaya</p>
                     </div>
-                    <button @click="openTableModal('Support Analysis')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-white text-xs">
-                        <i class="fas fa-external-link-alt"></i>
-                    </button>
+                    <div class="relative group">
+                        <button @click="openTableModal('Support Analysis')"
+                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-white text-xs">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Buka Halaman
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="p-4">
@@ -460,10 +506,17 @@
                         <h3 class="text-md font-semibold text-white">Cabaran Utama</h3>
                         <p class="text-red-100 text-xs mt-1">Halangan dalam ekonomi gig</p>
                     </div>
-                    <button @click="openTableModal('Challenges')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                        <i class="fas fa-table text-white text-xs"></i>
-                    </button>
+                    <div class="relative group">
+                        <button @click="openTableModal('Challenges')"
+                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                            <i class="fas fa-table text-white text-xs"></i>
+                        </button>
+                         <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Maklumat Lanjut
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="p-4">
@@ -486,10 +539,17 @@
                         <h3 class="text-md font-semibold text-white">Kaedah Pemerolehan Kemahiran</h3>
                         <p class="text-cyan-100 text-xs mt-1">Bagaimana pekerja mempelajari kemahiran</p>
                     </div>
-                    <button @click="refreshChart('skillAcquisition')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                        <i class="fas fa-refresh text-white text-xs"></i>
-                    </button>
+                    <div class="relative group">
+                        <button @click="refreshChart('skillAcquisition')"
+                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                            <i class="fas fa-refresh text-white text-xs"></i>
+                        </button>
+                         <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Muat Semula
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="p-4">
@@ -511,10 +571,18 @@
                         <h3 class="text-md font-bold text-white">Pendapatan Bulanan</h3>
                         <p class="text-green-100 text-xs mt-1">Pendapatan ekonomi gig</p>
                     </div>
-                    <button @click="refreshChart('monthlyIncome')"
-                        class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                        <i class="fas fa-refresh text-white text-xs"></i>
-                    </button>
+                    <div class="relative group">
+
+                        <button @click="refreshChart('monthlyIncome')"
+                            class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                            <i class="fas fa-refresh text-white text-xs"></i>
+                        </button>
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Muat Semula
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="p-4">
@@ -540,10 +608,17 @@
                         <h3 class="text-md font-semibold text-white">Pilihan Kerjaya</h3>
                         <p class="text-violet-100 text-xs mt-1">Pilihan kerja tetap vs ekonomi gig</p>
                     </div>
-                    <a href="/gig-economy/table" target="_blank"
-                        class="p-1 flex items-center justify-center w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-white text-xs">
-                        <i class="fas fa-external-link-alt"></i>
-                    </a>
+                    <div class="relative group">
+                        <a href="/gig-economy/table" target="_blank"
+                            class="p-1 flex items-center justify-center w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-white text-xs">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Buka Halaman
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="p-4">
