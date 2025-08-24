@@ -25,9 +25,9 @@
                 <!-- Filters -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open"
-                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-primary-200 hover:border-primary-400">
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400">
                         <i class="fas fa-filter  text-primary-700 text-[10px]"></i>
-                        <span class="font-semibold  text-primary-700 text-[10px]">Penapisan</span>
+                        <span class="font-semibold text-primary-700 text-[10px]">Penapisan</span>
                         <div x-show="activeFiltersCount > 0"
                             class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
                             x-text="activeFiltersCount"></div>
@@ -149,7 +149,7 @@
                 <!-- Refresh Button -->
                 <div>
                     <button @click="refreshData()"
-                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-primary-200 hover:border-primary-400"
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400"
                         :disabled="loading">
                         <i class="fas fa-sync-alt text-primary-700 text-[10px]"
                             :class="{ 'animate-spin': loading }"></i>
@@ -213,7 +213,7 @@
             <div
                 class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
                 <div class="flex flex-row justify-start">
-                    <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                    <div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-xl flex items-center justify-center">
                         <i class="fas fa-user-times text-sm text-slate-600"></i>
                     </div>
                     <div class="text-left ml-5">
@@ -230,7 +230,7 @@
             <div
                 class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
                 <div class="flex flex-row justify-start">
-                    <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
+                    <div class="w-8 h-8 flex items-center justify-center bg-red-50 rounded-xl flex items-center justify-center">
                         <i class="fas fa-exclamation-triangle text-[#c92427]"></i>
                     </div>
                     <div class="text-left ml-5">
@@ -247,7 +247,7 @@
             <div
                 class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
                 <div class="flex flex-row justify-start">
-                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                    <div class="w-8 h-8 flex items-center justify-center bg-blue-50 rounded-xl flex items-center justify-center">
                         <i class="fas fa-search text-[#074e7e]"></i>
                     </div>
                     <div class="text-left ml-5">
@@ -264,7 +264,7 @@
             <div
                 class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
                 <div class="flex flex-row justify-start">
-                    <div class="w-10 h-10 bg-green-100/60 rounded-xl flex items-center justify-center">
+                    <div class="w-8 h-8 flex items-center justify-center bg-green-100/60 rounded-xl flex items-center justify-center">
                         <i class="fas fa-chart-line text-green-600"></i>
                     </div>
                     <div class="text-left ml-5">
@@ -286,13 +286,13 @@
                         <h3 class="text-md font-bold">Sebab Graduan Bekerja di Luar Bidang</h3>
                         <p class="text-gray-500 text-[10px]">Analisis sebab utama dengan pecahan kekerapan</p>
                     </div>
-                    <div class="flex space-x-3">
+                    <div class="flex space-x-1">
                         <!-- Table button -->
                         <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-primary-600 transition-all duration-200">
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-primary-600 transition-all duration-200">
                             <button @click="openTableModal('Reasons Analysis')"
-                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table"></i>
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
                             </button>
                             <!-- Tooltip -->
                             <div
@@ -304,10 +304,10 @@
 
                         <!-- Refresh button -->
                         <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-primary-600 transition-all duration-200">
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-primary-600 transition-all duration-200">
                             <button @click="refreshChart('reasons')"
-                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-refresh"></i>
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh text-xs"></i>
                             </button>
                             <!-- Tooltip -->
                             <div
@@ -342,12 +342,12 @@
                         <h3 class="text-md font-bold">Pekerjaan Semasa</h3>
                         <p class="text-gray-700 text-[10px]">Agihan Pekerjaan</p>
                     </div>
-                    <div class="flex space-x-3">
+                    <div class="flex space-x-1">
                         <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-primary-600 transition-all duration-200">
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-primary-600 transition-all duration-200">
                             <button @click="openTableModal('Job Types')"
-                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table"></i>
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
                             </button>
                             <div
                                 class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
@@ -357,10 +357,10 @@
                         </div>
 
                         <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-primary-600 transition-all duration-200">
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-primary-600 transition-all duration-200">
                             <button @click="refreshChart('jobtypes')"
-                                class="p-2 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-refresh"></i>
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh text-xs"></i>
                             </button>
                             <div
                                 class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
@@ -397,12 +397,12 @@
                             peralihan kerjaya</p>
                     </div>
 
-                    <div class="flex space-x-3">
+                    <div class="flex space-x-1">
                         <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-primary-600 transition-all duration-200">
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-primary-600 transition-all duration-200">
                             <button @click="openTableModal('Institution Analysis')"
-                                class="w-10 h-10 p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors ">
-                                <i class="fas fa-table"></i>
+                                class="w-8 h-8 flex items-center justify-center p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors ">
+                                <i class="fas fa-table text-xs"></i>
                             </button>
                             <div
                                 class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
@@ -411,11 +411,11 @@
                             </div>
                         </div>
                         <div
-                            class="flex flex-row items-center relative group border border-gray-200 rounded-lg border-[1.5px] border-primary-200 hover:border-primary-600 transition-all duration-200">
+                            class="flex flex-row items-center relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-primary-600 transition-all duration-200">
                             <div>
                                 <a href="/graduan-luar/table" target="_blank"
-                                    class="px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-semibold">
-                                    <i class="fas fa-external-link-alt mr-2"></i>Lihat Maklumat Penuh
+                                    class="px-3 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-semibold">
+                                    <i class="fas fa-external-link-alt text-xs mr-2"></i>Lihat Maklumat Penuh
                                 </a>
                             </div>
                             <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 

@@ -133,7 +133,7 @@
                 <!-- Eksport -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open"
-                        class="button-style-fulll-red flex items-center bg-gradient-to-r from-secondary-900 via-secondary-500 to-secondary-600 text-white px-3 py-1 rounded-md hover:from-secondary-500 hover:via-secondary-500 hover:to-secondary-900 transition-all duration-200 shadow-lg shadow-secondary-700/30">
+                        class="button-style-fulll-red flex items-center bg-gradient-to-r from-secondary-700 via-secondary-500 to-secondary-600 text-white px-3 py-1 rounded-md hover:from-secondary-500 hover:via-secondary-500 hover:to-secondary-700 transition-all duration-200 shadow-lg shadow-secondary-700/30">
                         <i class="fas fa-download text-[10px]"></i>
                         <span class="font-semibold text-[10px] ml-1">Eksport</span>
                     </button>
@@ -285,17 +285,17 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Gender Distribution -->
         <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-3 text-white">
+            <div class="blue-gradient px-6 py-3 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-md font-bold">Taburan Jantina</h3>
-                        <p class="text-primary-100 text-[10px] mt-1">Taburan pelajar mengikut jantina</p>
+                        <p class="text-white text-[10px] mt-1">Taburan pelajar mengikut jantina</p>
                     </div>
-                    <div class="flex space-x-3">
+                    <div class="flex space-x-1">
                         <div class="relative group">
                             <button @click="openTableModal('Gender Distribution')"
-                                class="p-2 bg-white/20 w-10 h-10  rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table"></i>
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
                             </button>
                             <div
                                 class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
@@ -306,7 +306,7 @@
 
                         <div class="relative group">
                             <button @click="refreshChart('gender')"
-                                class="p-2 bg-white/20 w-10 h-10  rounded-lg hover:bg-white/30 transition-colors">
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-refresh"></i>
                             </button>
                             <div
@@ -334,17 +334,17 @@
 
         <!-- Age Distribution -->
         <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 px-6 py-3 text-white">
+            <div class="red-gradient px-6 py-3 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-md font-bold">Taburan Umur</h3>
-                        <p class="text-secondary-100 text-[10px] mt-1">Pecahan kumpulan umur pelajar</p>
+                        <p class="text-white text-[10px] mt-1">Pecahan kumpulan umur pelajar</p>
                     </div>
-                    <div class="flex space-x-3">
+                    <div class="flex space-x-1">
                         <div class="relative group">
                             <button @click="openTableModal('Age Distribution')"
-                                class="p-2 bg-white/20 w-10 h-10  rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table"></i>
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
                             </button>
                             <div
                                 class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
@@ -354,7 +354,7 @@
                         </div>
                         <div class="relative group">
                             <button @click="refreshChart('age')"
-                                class="p-2 bg-white/20 w-10 h-10  rounded-lg hover:bg-white/30 transition-colors">
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-refresh"></i>
                             </button>
                             <div
@@ -384,17 +384,17 @@
 
     <!-- Institution Distribution -->
     <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-3 text-white">
+        <div class="bluered-gradient px-6 py-3 text-white">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-md font-bold">Taburan Institusi</h3>
-                    <p class="text-emerald-100 text-[10px] mt-1">Taburan graduan di seluruh institusi MARA</p>
+                    <p class="text-white text-[10px] mt-1">Taburan graduan di seluruh institusi MARA</p>
                 </div>
-                <div class="flex space-x-3">
+                <div class="flex space-x-1">
                     <div class="relative group">
                         <button @click="openTableModal('Institution Distribution')"
-                            class="p-2 bg-white/20 w-10 h-10  rounded-lg hover:bg-white/30 transition-colors">
-                            <i class="fas fa-table"></i>
+                            class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                            <i class="fas fa-table text-xs"></i>
                         </button>
                         <div
                             class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
@@ -405,8 +405,8 @@
                     <div class="flex flex-row items-center relative group rounded-lg transition-all duration-200">
                         <div>
                             <a href="/demografi/table" target="_blank"
-                                class="px-4 py-3 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-semibold">
-                                <i class="fas fa-external-link-alt mr-3"></i>Paparan Data Penuh
+                                class="px-3 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-semibold">
+                                <i class="fas fa-external-link-alt text-xs mr-3"></i>Paparan Data Penuh
                             </a>
                         </div>
                         <div
@@ -434,17 +434,17 @@
 
     <!-- Field of Study vs Graduation Year -->
     <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-3 text-white">
+        <div class="purple-gradient px-6 py-3 text-white">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-md font-bold">Bidang Pengajian mengikut Tahun Graduasi</h3>
-                    <p class="text-purple-100 text-[10px] mt-1">Trend bidang akademik merentasi tahun graduasi</p>
+                    <p class="text-white text-[10px] mt-1">Trend bidang akademik merentasi tahun graduasi</p>
                 </div>
-                <div class="flex space-x-3">
+                <div class="flex space-x-1">
                     <div class="relative group">
                         <button @click="openTableModal('Field Study Analysis')"
-                            class="p-2 bg-white/20 w-10 h-10  rounded-lg hover:bg-white/30 transition-colors">
-                            <i class="fas fa-table"></i>
+                            class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                            <i class="fas fa-table text-xs"></i>
                         </button>
                         <div
                             class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
@@ -454,7 +454,7 @@
                     </div>
                     <div class="relative group">
                         <button @click="refreshChart('fieldGraduation')"
-                            class="p-2 bg-white/20 w-10 h-10  rounded-lg hover:bg-white/30 transition-colors">
+                            class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
                             <i class="fas fa-refresh"></i>
                         </button>
                         <div

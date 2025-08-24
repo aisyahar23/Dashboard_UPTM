@@ -263,17 +263,17 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Income Distribution -->
         <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-3 text-white">
+            <div class="blue-gradient px-6 py-3 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-md font-bold">Taburan Pendapatan Isi Rumah</h3>
-                        <p class="text-primary-100 text-[10px] mt-1">Analisis pendapatan bulanan keluarga</p>
+                        <p class="text-white text-[10px] mt-1">Analisis pendapatan bulanan keluarga</p>
                     </div>
-                    <div class="flex space-x-3">
+                    <div class="flex space-x-1">
                         <div class="relative group">
                             <button @click="openTableModal('Household Income')"
-                                class="p-2 bg-white/20 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table"></i>
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
                             </button>
                             <div
                                 class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
@@ -283,7 +283,7 @@
                         </div>
                         <div class="relative group">
                             <button @click="refreshChart('income')"
-                                class="p-2 bg-white/20 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-refresh"></i>
                             </button>
                             <div
@@ -311,17 +311,17 @@
 
         <!-- Financing Methods -->
         <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 px-6 py-3 text-white">
+            <div class="red-gradient px-6 py-3 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-md font-bold">Kaedah Pembiayaan Pendidikan</h3>
-                        <p class="text-secondary-100 text-[10px] mt-1">Pecahan sumber pembiayaan</p>
+                        <p class="text-white text-[10px] mt-1">Pecahan sumber pembiayaan</p>
                     </div>
-                    <div class="flex space-x-3">
+                    <div class="flex space-x-1">
                         <div class="relative group">
                             <button @click="openTableModal('Financing Methods')"
-                                class="p-2 bg-white/20 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table"></i>
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
                             </button>
                             <div
                                 class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
@@ -331,7 +331,7 @@
                         </div>
                         <div class="relative group">
                             <button @click="refreshChart('financing')"
-                                class="p-2 bg-white/20 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-refresh"></i>
                             </button>
                             <div
@@ -361,19 +361,19 @@
 
     <!-- Parent Occupation Analysis -->
     <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-3 text-white">
+        <div class="bluered-gradient px-6 py-3 text-white">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-md font-bold">Pekerjaan Ibu Bapa vs Pendapatan Keluarga</h3>
-                    <p class="text-emerald-100 text-[10px] mt-1">Analisis korelasi antara pekerjaan ibu bapa dan
+                    <p class="text-white text-[10px] mt-1">Analisis korelasi antara pekerjaan ibu bapa dan
                         pendapatan
                         isi rumah</p>
                 </div>
-                <div class="flex space-x-3">
+                <div class="flex space-x-1">
                     <div class="relative group">
                         <button @click="openTableModal('Parent Occupation Analysis')"
-                            class="p-2 bg-white/20 w-10 h-10 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                            <i class="fas fa-table"></i>
+                            class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                            <i class="fas fa-table text-xs"></i>
                         </button>
                         <div
                             class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
@@ -384,8 +384,11 @@
 
                     <div class="flex flex-row items-center relative group rounded-lg transition-all duration-200">
                         <a href="/sosioekonomi/table" target="_blank"
-                            class="flex items-center px-4 h-full bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-semibold">
-                            <i class="fas fa-external-link-alt mr-2"></i>Paparan Data Penuh
+                            class="flex items-center px-3 py-[6px] bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-semibold">
+                            <i class="fas fa-external-link-alt text-xs mr-2"></i>
+                            <div class="text-[10px]">
+                                Paparan Data Penuh
+                            </div>
                         </a>
                         <div
                             class="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
