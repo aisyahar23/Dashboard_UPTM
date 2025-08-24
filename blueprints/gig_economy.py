@@ -12,6 +12,39 @@ EXCEL_FILE_PATH = 'data/Questionnaire.xlsx'
 df = load_excel_data(EXCEL_FILE_PATH)
 data_processor = DataProcessor(df)
 
+# Centralized Chart Data Formatter for consistent data structure
+class ChartDataFormatter:
+    """Format chart data consistently for the centralized chart configuration system"""
+    
+    @staticmethod
+    def format_pie_chart(data_series, title="Distribution"):
+        """Format data for pie charts - compatible with centralized config"""
+        return {
+            'labels': data_series.index.tolist(),
+            'datasets': [{
+                'label': title,
+                'data': data_series.values.tolist()
+                # Colors and styling will be applied by EnhancedChartFactory
+            }]
+        }
+    
+    @staticmethod  
+    def format_bar_chart(data_series, title="Chart", sort_desc=True):
+        """Format data for bar charts - compatible with centralized config"""
+        if sort_desc:
+            data_series = data_series.sort_values(ascending=False)
+        
+        return {
+            'labels': data_series.index.tolist(),
+            'datasets': [{
+                'label': title,
+                'data': data_series.values.tolist()
+                # Colors and styling will be applied by EnhancedChartFactory
+            }]
+        }
+
+formatter = ChartDataFormatter()
+
 @gig_economy_bp.route('/')
 def index():
     """Main gig economy dashboard page"""
@@ -146,7 +179,7 @@ def api_summary():
 
 @gig_economy_bp.route('/api/gig-types')
 def api_gig_types():
-    """Get gig economy work types data"""
+    """Get gig economy work types data - Uses 'gig-types' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -154,15 +187,10 @@ def api_gig_types():
         gig_column = 'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?'
         
         if gig_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Gig Economy Types"
+            ))
         
         # Apply gig mapping and filtering
         gig_mapping = {
@@ -192,15 +220,10 @@ def api_gig_types():
         df_gig_filtered = df_work[df_work['gig_clean'] != 'Tidak Berminat'].copy()
         
         if df_gig_filtered.empty:
-            return jsonify({
-                'labels': ['No Interested Participants'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Interested Participants']),
+                "Gig Economy Types"
+            ))
         
         # Calculate frequency
         all_gigs = []
@@ -210,48 +233,31 @@ def api_gig_types():
                 all_gigs.extend(gigs)
         
         if not all_gigs:
-            return jsonify({
-                'labels': ['No Gig Data'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Gig Data']),
+                "Gig Economy Types"
+            ))
         
         gig_counts = pd.Series(all_gigs).value_counts()
         
-        # Use brand colors
-        brand_colors = ['#074e7e', '#c92427', '#0ea5e9', '#ef4444', '#06b6d4', '#f97316']
-        
-        chart_data = {
-            'labels': gig_counts.index.tolist(),
-            'datasets': [{
-                'data': gig_counts.values.tolist(),
-                'backgroundColor': brand_colors[:len(gig_counts.index)],
-                'borderColor': '#ffffff',
-                'borderWidth': 1
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_bar_chart(
+            gig_counts,
+            "Gig Economy Types",
+            sort_desc=True
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderColor': '#dc2626',
-                'borderWidth': 1
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @gig_economy_bp.route('/api/university-support')
 def api_university_support():
-    """Get university entrepreneurship support data"""
+    """Get university entrepreneurship support data - Uses 'university-support' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -259,42 +265,30 @@ def api_university_support():
         support_column = 'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?'
         
         if support_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderWidth': 2,
-                    'borderColor': '#ffffff'
-                }]
-            })
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([1], index=['No Data Available']),
+                "University Support"
+            ))
         
-        data = filtered_processor.get_chart_data('pie', support_column)
+        support_counts = filtered_processor.filtered_df[support_column].value_counts()
         
-        # Use brand colors
-        brand_colors = ['#074e7e', '#c92427', '#0ea5e9']
-        if data.get('datasets') and len(data['datasets']) > 0:
-            data['datasets'][0]['backgroundColor'] = brand_colors[:len(data.get('labels', []))]
-            data['datasets'][0]['borderColor'] = '#ffffff'
-            data['datasets'][0]['borderWidth'] = 3
+        # Use centralized formatter
+        chart_data = formatter.format_pie_chart(
+            support_counts,
+            "University Entrepreneurship Support"
+        )
         
-        return jsonify(data)
+        return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderWidth': 2,
-                'borderColor': '#ffffff'
-            }]
-        }), 500
+        return jsonify(formatter.format_pie_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @gig_economy_bp.route('/api/university-programs')
 def api_university_programs():
-    """Get university business programs data"""
+    """Get university business programs data - Uses 'university-programs' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -302,42 +296,30 @@ def api_university_programs():
         programs_column = 'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?'
         
         if programs_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderWidth': 2,
-                    'borderColor': '#ffffff'
-                }]
-            })
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([1], index=['No Data Available']),
+                "University Programs"
+            ))
         
-        data = filtered_processor.get_chart_data('pie', programs_column)
+        programs_counts = filtered_processor.filtered_df[programs_column].value_counts()
         
-        # Use brand colors
-        brand_colors = ['#074e7e', '#c92427', '#0ea5e9', '#ef4444']
-        if data.get('datasets') and len(data['datasets']) > 0:
-            data['datasets'][0]['backgroundColor'] = brand_colors[:len(data.get('labels', []))]
-            data['datasets'][0]['borderColor'] = '#ffffff'
-            data['datasets'][0]['borderWidth'] = 3
+        # Use centralized formatter
+        chart_data = formatter.format_pie_chart(
+            programs_counts,
+            "University Business Programs"
+        )
         
-        return jsonify(data)
+        return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderWidth': 2,
-                'borderColor': '#ffffff'
-            }]
-        }), 500
+        return jsonify(formatter.format_pie_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @gig_economy_bp.route('/api/program-effectiveness')
 def api_program_effectiveness():
-    """Get program effectiveness data"""
+    """Get program effectiveness data - Uses 'program-effectiveness' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -351,48 +333,30 @@ def api_program_effectiveness():
         ].copy()
         
         if df_filtered.empty or effectiveness_column not in df_filtered.columns:
-            return jsonify({
-                'labels': ['No Relevant Data'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderWidth': 2,
-                    'borderColor': '#ffffff'
-                }]
-            })
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([1], index=['No Relevant Data']),
+                "Program Effectiveness"
+            ))
         
         effectiveness_counts = df_filtered[effectiveness_column].value_counts()
         
-        # Use brand colors
-        brand_colors = ['#074e7e', '#c92427', '#0ea5e9', '#ef4444']
-        
-        chart_data = {
-            'labels': effectiveness_counts.index.tolist(),
-            'datasets': [{
-                'data': effectiveness_counts.values.tolist(),
-                'backgroundColor': brand_colors[:len(effectiveness_counts.index)],
-                'borderColor': '#ffffff',
-                'borderWidth': 3
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_pie_chart(
+            effectiveness_counts,
+            "Program Effectiveness"
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderWidth': 2,
-                'borderColor': '#ffffff'
-            }]
-        }), 500
+        return jsonify(formatter.format_pie_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @gig_economy_bp.route('/api/gig-motivations')
 def api_gig_motivations():
-    """Get gig economy motivations data with proper comma-separated processing"""
+    """Get gig economy motivations data - Uses 'gig-motivations' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -410,31 +374,19 @@ def api_gig_motivations():
                 break
         
         if motivations_column is None:
-            # Debug: return available columns
-            available_cols = [col for col in filtered_processor.filtered_df.columns if 'gig' in col.lower() or 'sebab' in col.lower()]
-            return jsonify({
-                'labels': [f'Column not found. Available: {", ".join(available_cols[:3])}'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['Column not found']),
+                "Gig Motivations"
+            ))
         
         # Get all non-null values first
         all_responses = filtered_processor.filtered_df[motivations_column].dropna()
         
         if all_responses.empty:
-            return jsonify({
-                'labels': ['No responses in column'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No responses in column']),
+                "Gig Motivations"
+            ))
         
         # Process all responses, including those with "Tidak relevan"
         all_motivations = []
@@ -442,24 +394,19 @@ def api_gig_motivations():
             if pd.notna(motivations_cell) and str(motivations_cell).strip():
                 # Split by comma and clean each motivation
                 motivations = [m.strip() for m in str(motivations_cell).split(',')]
-                # Filter out empty strings but keep all responses initially for debugging
+                # Filter out empty strings
                 motivations = [m for m in motivations if m and len(m.strip()) > 0]
                 all_motivations.extend(motivations)
         
         if not all_motivations:
-            return jsonify({
-                'labels': ['No motivations found after processing'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No motivations found after processing']),
+                "Gig Motivations"
+            ))
         
         motivations_counts = pd.Series(all_motivations).value_counts()
         
-        # Filter out "Tidak relevan" AFTER counting for debugging
+        # Filter out "Tidak relevan" responses
         relevant_motivations = motivations_counts[~motivations_counts.index.str.contains('Tidak relevan', case=False, na=False)]
         
         if relevant_motivations.empty:
@@ -469,53 +416,24 @@ def api_gig_motivations():
             # Show top 10 relevant motivations
             top_motivations = relevant_motivations.head(10)
         
-        # Convert pandas data to native Python types to avoid JSON serialization issues
-        motivation_labels = [str(label) for label in top_motivations.index.tolist()]
-        motivation_values = [int(value) for value in top_motivations.values.tolist()]
-        
-        # Use a more diverse color palette for motivations
-        motivation_colors = [
-            '#074e7e',  # Primary blue
-            '#c92427',  # Primary red
-            '#0ea5e9',  # Sky blue
-            '#ef4444',  # Red
-            '#06b6d4',  # Cyan
-            '#f97316',  # Orange
-            '#10b981',  # Emerald
-            '#8b5cf6',  # Violet
-            '#ec4899',  # Pink
-            '#84cc16'   # Lime
-        ]
-        
-        chart_data = {
-            'labels': motivation_labels,
-            'datasets': [{
-                'label': 'Number of Responses',
-                'data': motivation_values,
-                'backgroundColor': motivation_colors[:len(motivation_labels)],
-                'borderColor': '#ffffff',
-                'borderWidth': 2,
-                'borderRadius': 6
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_bar_chart(
+            top_motivations,
+            "Gig Economy Motivations",
+            sort_desc=True
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': f'Error: {str(e)}',
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderColor': '#dc2626',
-                'borderWidth': 1
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @gig_economy_bp.route('/api/skill-acquisition')
 def api_skill_acquisition():
-    """Get skill acquisition methods data"""
+    """Get skill acquisition methods data - Uses 'skill-acquisition' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -523,15 +441,10 @@ def api_skill_acquisition():
         skills_column = 'Bagaimanakah anda memperoleh kemahiran untuk bekerja dalam ekonomi gig?'
         
         if skills_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Skill Acquisition"
+            ))
         
         # Apply skills mapping
         skills_mapping = {
@@ -563,48 +476,31 @@ def api_skill_acquisition():
                 all_skills.extend(skills)
         
         if not all_skills:
-            return jsonify({
-                'labels': ['No Skills Data'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Skills Data']),
+                "Skill Acquisition"
+            ))
         
         skills_counts = pd.Series(all_skills).value_counts()
         
-        # Use brand colors
-        brand_colors = ['#074e7e', '#c92427', '#0ea5e9', '#ef4444', '#06b6d4']
-        
-        chart_data = {
-            'labels': skills_counts.index.tolist(),
-            'datasets': [{
-                'data': skills_counts.values.tolist(),
-                'backgroundColor': brand_colors[:len(skills_counts.index)],
-                'borderColor': '#ffffff',
-                'borderWidth': 1
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_bar_chart(
+            skills_counts,
+            "Skill Acquisition Methods",
+            sort_desc=True
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderColor': '#dc2626',
-                'borderWidth': 1
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @gig_economy_bp.route('/api/gig-challenges')
 def api_gig_challenges():
-    """Get gig economy challenges data"""
+    """Get gig economy challenges data - Uses 'gig-challenges' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -612,15 +508,10 @@ def api_gig_challenges():
         challenges_column = 'Apakah cabaran utama yang anda hadapi dalam keusahawanan atau ekonomi gig?'
         
         if challenges_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Gig Challenges"
+            ))
         
         # Process comma-separated challenges
         all_challenges = []
@@ -631,48 +522,31 @@ def api_gig_challenges():
                 all_challenges.extend(challenges)
         
         if not all_challenges:
-            return jsonify({
-                'labels': ['No Challenges Data'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Challenges Data']),
+                "Gig Challenges"
+            ))
         
         challenges_counts = pd.Series(all_challenges).value_counts()
         
-        # Use brand colors
-        brand_colors = ['#074e7e', '#c92427', '#0ea5e9', '#ef4444', '#06b6d4', '#f97316', '#10b981']
-        
-        chart_data = {
-            'labels': challenges_counts.index.tolist(),
-            'datasets': [{
-                'data': challenges_counts.values.tolist(),
-                'backgroundColor': brand_colors[:len(challenges_counts.index)],
-                'borderColor': '#ffffff',
-                'borderWidth': 1
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_bar_chart(
+            challenges_counts,
+            "Gig Economy Challenges",
+            sort_desc=True
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderColor': '#dc2626',
-                'borderWidth': 1
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @gig_economy_bp.route('/api/support-needed')
 def api_support_needed():
-    """Get support needed data"""
+    """Get support needed data - Uses 'support-needed' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -680,15 +554,10 @@ def api_support_needed():
         support_column = 'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?'
         
         if support_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Support Needed"
+            ))
         
         # Process comma-separated support needs
         all_support = []
@@ -699,48 +568,31 @@ def api_support_needed():
                 all_support.extend(support_items)
         
         if not all_support:
-            return jsonify({
-                'labels': ['No Support Data'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Support Data']),
+                "Support Needed"
+            ))
         
         support_counts = pd.Series(all_support).value_counts()
         
-        # Use brand colors
-        brand_colors = ['#074e7e', '#c92427', '#0ea5e9', '#ef4444', '#06b6d4', '#f97316', '#10b981']
-        
-        chart_data = {
-            'labels': support_counts.index.tolist(),
-            'datasets': [{
-                'data': support_counts.values.tolist(),
-                'backgroundColor': brand_colors[:len(support_counts.index)],
-                'borderColor': '#ffffff',
-                'borderWidth': 1
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_bar_chart(
+            support_counts,
+            "Support Needed",
+            sort_desc=True
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderColor': '#dc2626',
-                'borderWidth': 1
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @gig_economy_bp.route('/api/monthly-income')
 def api_monthly_income():
-    """Get monthly income from gig economy data with proper ordering"""
+    """Get monthly income from gig economy data - Uses 'monthly-income' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -760,32 +612,19 @@ def api_monthly_income():
                 break
         
         if income_column is None:
-            # Debug: find income-related columns
-            income_related_cols = [col for col in filtered_processor.filtered_df.columns 
-                                 if any(keyword in col.lower() for keyword in ['pendapatan', 'income', 'gaji', 'salary', 'gig'])]
-            return jsonify({
-                'labels': [f'Column not found. Found: {", ".join(income_related_cols[:3])}'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['Column not found']),
+                "Monthly Income"
+            ))
         
         # Get all non-null values
         all_income_data = filtered_processor.filtered_df[income_column].dropna()
         
         if all_income_data.empty:
-            return jsonify({
-                'labels': ['No income data found'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No income data found']),
+                "Monthly Income"
+            ))
         
         # Filter out 'Tidak relevan' and similar responses
         df_income_filtered = all_income_data[
@@ -795,103 +634,33 @@ def api_monthly_income():
         if df_income_filtered.empty:
             # If no relevant data, show sample of what we have for debugging
             sample_responses = all_income_data.value_counts().head(3)
-            sample_list = [str(idx) for idx in sample_responses.index.tolist()]
-            return jsonify({
-                'labels': sample_list,
-                'datasets': [{
-                    'data': [int(val) for val in sample_responses.values.tolist()],
-                    'backgroundColor': ['#6b7280', '#9ca3af', '#d1d5db'][:len(sample_list)],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            chart_data = formatter.format_bar_chart(
+                sample_responses,
+                "Income Data (including non-relevant)",
+                sort_desc=True
+            )
+            return jsonify(chart_data)
         
         income_counts = df_income_filtered.value_counts()
         
-        # Convert pandas data to native Python types to avoid JSON serialization issues
-        income_labels = [str(label) for label in income_counts.index.tolist()]
-        income_values = [int(value) for value in income_counts.values.tolist()]
-        
-        # Define proper order for income ranges - more flexible matching
-        income_patterns = [
-            ('Kurang daripada RM500', ['kurang', 'less', '<', 'rm500']),
-            ('RM500 - RM1000', ['rm500', '500', '1000']), 
-            ('RM1001 - RM2000', ['1001', '1000', '2000']),
-            ('RM2001 - RM3000', ['2001', '2000', '3000']),
-            ('RM3001 - RM5000', ['3001', '3000', '5000']),
-            ('Lebih daripada RM5000', ['lebih', 'more', '>', '5000'])
-        ]
-        
-        # Match income ranges flexibly
-        ordered_labels = []
-        ordered_values = []
-        matched_ranges = set()
-        
-        for pattern_label, keywords in income_patterns:
-            for i, actual_range in enumerate(income_labels):
-                actual_lower = actual_range.lower()
-                if any(keyword in actual_lower for keyword in keywords) and actual_range not in matched_ranges:
-                    ordered_labels.append(actual_range)
-                    ordered_values.append(income_values[i])
-                    matched_ranges.add(actual_range)
-                    break
-        
-        # Add any remaining unmatched categories
-        for i, income_range in enumerate(income_labels):
-            if income_range not in matched_ranges:
-                ordered_labels.append(income_range)
-                ordered_values.append(income_values[i])
-        
-        if not ordered_labels:
-            return jsonify({
-                'labels': ['No valid income ranges found'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
-        
-        # Use gradient colors for income ranges (low to high)
-        income_colors = [
-            '#ef4444',  # Red for low income
-            '#f97316',  # Orange for lower-mid
-            '#eab308',  # Yellow for mid
-            '#22c55e',  # Green for upper-mid
-            '#059669',  # Dark green for high
-            '#047857'   # Very dark green for highest
-        ]
-        
-        chart_data = {
-            'labels': ordered_labels,
-            'datasets': [{
-                'label': 'Number of Respondents',
-                'data': ordered_values,
-                'backgroundColor': income_colors[:len(ordered_labels)],
-                'borderColor': '#ffffff',
-                'borderWidth': 2,
-                'borderRadius': 6
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_bar_chart(
+            income_counts,
+            "Monthly Income from Gig Economy",
+            sort_desc=False  # Keep income in logical order, not by count
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': f'Error: {str(e)}',
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderColor': '#dc2626',
-                'borderWidth': 1
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @gig_economy_bp.route('/api/job-preference')
 def api_job_preference():
-    """Get job preference data (permanent vs gig)"""
+    """Get job preference data - Uses 'job-preference' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -899,15 +668,10 @@ def api_job_preference():
         preference_column = 'Jika diberikan peluang pekerjaan tetap dengan gaji setanding ekonomi gig, adakah anda akan menerimanya?'
         
         if preference_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderWidth': 2,
-                    'borderColor': '#ffffff'
-                }]
-            })
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Job Preference"
+            ))
         
         # Filter out 'Tidak relevan'
         df_preference_filtered = filtered_processor.filtered_df[
@@ -915,45 +679,28 @@ def api_job_preference():
         ].copy()
         
         if df_preference_filtered.empty:
-            return jsonify({
-                'labels': ['No Relevant Data'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderWidth': 2,
-                    'borderColor': '#ffffff'
-                }]
-            })
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([1], index=['No Relevant Data']),
+                "Job Preference"
+            ))
         
         preference_counts = df_preference_filtered[preference_column].value_counts()
         
-        # Use brand colors
-        brand_colors = ['#074e7e', '#c92427', '#0ea5e9']
-        
-        chart_data = {
-            'labels': preference_counts.index.tolist(),
-            'datasets': [{
-                'data': preference_counts.values.tolist(),
-                'backgroundColor': brand_colors[:len(preference_counts.index)],
-                'borderColor': '#ffffff',
-                'borderWidth': 3
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_pie_chart(
+            preference_counts,
+            "Job Preference: Permanent vs Gig"
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderWidth': 2,
-                'borderColor': '#ffffff'
-            }]
-        }), 500
+        return jsonify(formatter.format_pie_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
+# Keep existing table, export, and filter endpoints
 @gig_economy_bp.route('/api/table-data')
 def api_table_data():
     """Get paginated table data for gig economy"""

@@ -12,6 +12,39 @@ EXCEL_FILE_PATH = 'data/Questionnaire.xlsx'
 df = load_excel_data(EXCEL_FILE_PATH)
 data_processor = DataProcessor(df)
 
+# Centralized Chart Data Formatter for consistent data structure
+class ChartDataFormatter:
+    """Format chart data consistently for the centralized chart configuration system"""
+    
+    @staticmethod
+    def format_pie_chart(data_series, title="Distribution"):
+        """Format data for pie charts - compatible with centralized config"""
+        return {
+            'labels': data_series.index.tolist(),
+            'datasets': [{
+                'label': title,
+                'data': data_series.values.tolist()
+                # Colors and styling will be applied by EnhancedChartFactory
+            }]
+        }
+    
+    @staticmethod  
+    def format_bar_chart(data_series, title="Chart", sort_desc=True):
+        """Format data for bar charts - compatible with centralized config"""
+        if sort_desc:
+            data_series = data_series.sort_values(ascending=False)
+        
+        return {
+            'labels': data_series.index.tolist(),
+            'datasets': [{
+                'label': title,
+                'data': data_series.values.tolist()
+                # Colors and styling will be applied by EnhancedChartFactory
+            }]
+        }
+
+formatter = ChartDataFormatter()
+
 @intern_bp.route('/')
 def index():
     """Main intern dashboard page"""
@@ -59,7 +92,7 @@ def api_summary():
             # Employment challenges analysis
             challenge_column = 'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?'
             if challenge_column in filtered_df.columns:
-                # Apply the challenge mapping and grouping logic from the provided code
+                # Apply the challenge mapping and grouping logic
                 challenge_mapping = {
                     'Tiada pengalaman kerja yang mencukupi': 'Tiada Pengalaman',
                     'Terlalu banyak persaingan dalam bidang saya': 'Persaingan',
@@ -73,22 +106,6 @@ def api_summary():
                     'Saya perlu menjaga keluarga dan sukar untuk bekerja di luar kawasan': 'Isu Keluarga',
                     'Proses permohonan kerja terlalu kompleks atau mengambil masa yang lama': 'Proses Permohonan',
                     'Keadaan ekonomi semasa menyukarkan peluang pekerjaan': 'Ekonomi'
-                }
-                
-                # Group mapping
-                grouping_mapping = {
-                    'Tiada Pengalaman': 'Tiada Pengalaman',
-                    'Tiada Pengalaman 2': 'Tiada Pengalaman',
-                    'Persaingan': 'Pasaran Pekerjaan',
-                    'Kurang Kemahiran': 'Ketidakpadanan Kemahiran',
-                    'Gaji Rendah': 'Pasaran Pekerjaan',
-                    'Tiada Pengetahuan': 'Tiada Pengetahuan',
-                    'Tiada Rangkaian': 'Tiada Rangkaian',
-                    'Kelayakan Tidak Sepadan': 'Ketidakpadanan Kemahiran',
-                    'Lokasi Pekerjaan': 'Kekangan Struktur',
-                    'Isu Keluarga': 'Kekangan Personal',
-                    'Proses Permohonan': 'Kekangan Struktur',
-                    'Ekonomi': 'Pasaran Pekerjaan'
                 }
                 
                 # Process challenges
@@ -136,54 +153,42 @@ def api_summary():
 
 @intern_bp.route('/api/internship-participation')
 def api_internship_participation():
-    """Get internship participation data (Pie Chart)"""
+    """Get internship participation data - Uses 'internship-participation' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
         
         internship_column = 'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'
         if internship_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderWidth': 2,
-                    'borderColor': '#ffffff'
-                }]
-            })
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Internship Participation"
+            ))
         
-        data = filtered_processor.get_chart_data('pie', internship_column)
+        participation_counts = filtered_processor.filtered_df[internship_column].value_counts()
         
-        # Use brand colors - primary blue and red with supporting colors
-        brand_colors = ['#074e7e', '#c92427', '#0ea5e9', '#ef4444', '#06b6d4', '#f97316']
-        if data.get('datasets') and len(data['datasets']) > 0:
-            data['datasets'][0]['backgroundColor'] = brand_colors[:len(data.get('labels', []))]
-            data['datasets'][0]['borderColor'] = '#ffffff'
-            data['datasets'][0]['borderWidth'] = 3
+        # Use centralized formatter - frontend will apply colors based on endpoint name
+        chart_data = formatter.format_pie_chart(
+            participation_counts,
+            "Internship Participation"
+        )
         
-        return jsonify(data)
+        return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderWidth': 2,
-                'borderColor': '#ffffff'
-            }]
-        }), 500
+        return jsonify(formatter.format_pie_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @intern_bp.route('/api/internship-benefits')
 def api_internship_benefits():
-    """Get internship benefits data (Bar Chart)"""
+    """Get internship benefits data - Uses 'internship-benefits' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
         
-        # Filter to only those who completed internship and are working
+        # Filter to only those who completed internship
         df_filtered = filtered_processor.filtered_df
         df_internship = df_filtered[
             df_filtered['Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'] != 'Tidak menjalani internship'
@@ -192,15 +197,10 @@ def api_internship_benefits():
         benefits_column = 'Bagaimana internship membantu anda dalam mendapatkan pekerjaan?'
         
         if benefits_column not in df_internship.columns or df_internship.empty:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Internship Benefits"
+            ))
         
         # Process comma-separated benefits
         all_benefits = []
@@ -210,45 +210,31 @@ def api_internship_benefits():
                 all_benefits.extend([b for b in benefits if b])
         
         if not all_benefits:
-            return jsonify({
-                'labels': ['No Benefits Data'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Benefits Data']),
+                "Internship Benefits"
+            ))
         
         benefits_counts = pd.Series(all_benefits).value_counts()
         
-        chart_data = {
-            'labels': benefits_counts.index.tolist(),
-            'datasets': [{
-                'data': benefits_counts.values.tolist(),
-                'backgroundColor': '#074e7e',
-                'borderColor': '#063a5f',
-                'borderWidth': 1
-            }]
-        }
+        # Use centralized formatter - colors will be applied by frontend
+        chart_data = formatter.format_bar_chart(
+            benefits_counts,
+            "Internship Benefits",
+            sort_desc=True
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderColor': '#dc2626',
-                'borderWidth': 1
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @intern_bp.route('/api/no-internship-reasons')
 def api_no_internship_reasons():
-    """Get reasons for not doing internship (Bar Chart)"""
+    """Get reasons for not doing internship - Uses 'no-internship-reasons' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -262,15 +248,10 @@ def api_no_internship_reasons():
         reasons_column = 'Jika tidak menjalani internship, apakah sebab utama?'
         
         if reasons_column not in df_no_internship.columns or df_no_internship.empty:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Reasons for No Internship"
+            ))
         
         # Process comma-separated reasons
         all_reasons = []
@@ -280,45 +261,31 @@ def api_no_internship_reasons():
                 all_reasons.extend([r for r in reasons if r])
         
         if not all_reasons:
-            return jsonify({
-                'labels': ['No Reasons Data'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Reasons Data']),
+                "Reasons for No Internship"
+            ))
         
         reasons_counts = pd.Series(all_reasons).value_counts()
         
-        chart_data = {
-            'labels': reasons_counts.index.tolist(),
-            'datasets': [{
-                'data': reasons_counts.values.tolist(),
-                'backgroundColor': '#c92427',
-                'borderColor': '#a91e22',
-                'borderWidth': 1
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_bar_chart(
+            reasons_counts,
+            "Reasons for No Internship",
+            sort_desc=True
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderColor': '#dc2626',
-                'borderWidth': 1
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @intern_bp.route('/api/employment-challenges')
 def api_employment_challenges():
-    """Get employment challenges data (Bar Chart)"""
+    """Get employment challenges - Uses 'employment-challenges' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -326,17 +293,12 @@ def api_employment_challenges():
         challenge_column = 'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?'
         
         if challenge_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Employment Challenges"
+            ))
         
-        # Apply challenge mapping
+        # Apply standardized challenge mapping
         challenge_mapping = {
             'Tiada pengalaman kerja yang mencukupi': 'Tiada Pengalaman',
             'Terlalu banyak persaingan dalam bidang saya': 'Persaingan',
@@ -352,7 +314,7 @@ def api_employment_challenges():
             'Keadaan ekonomi semasa menyukarkan peluang pekerjaan': 'Ekonomi'
         }
         
-        # Process challenges
+        # Process challenges with mapping
         all_challenges = []
         for challenges_cell in filtered_processor.filtered_df[challenge_column].dropna():
             if pd.notna(challenges_cell):
@@ -361,45 +323,31 @@ def api_employment_challenges():
                 all_challenges.extend(mapped_challenges)
         
         if not all_challenges:
-            return jsonify({
-                'labels': ['No Challenges Data'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Challenges Data']),
+                "Employment Challenges"
+            ))
         
         challenge_counts = pd.Series(all_challenges).value_counts()
         
-        chart_data = {
-            'labels': challenge_counts.index.tolist(),
-            'datasets': [{
-                'data': challenge_counts.values.tolist(),
-                'backgroundColor': '#0ea5e9',
-                'borderColor': '#0284c7',
-                'borderWidth': 1
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_bar_chart(
+            challenge_counts,
+            "Employment Challenges",
+            sort_desc=True
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderColor': '#dc2626',
-                'borderWidth': 1
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
 @intern_bp.route('/api/grouped-challenges')
 def api_grouped_challenges():
-    """Get grouped challenges data (Bar Chart)"""
+    """Get grouped challenges - Uses 'grouped-challenges' color scheme"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
@@ -407,15 +355,10 @@ def api_grouped_challenges():
         challenge_column = 'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?'
         
         if challenge_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Grouped Challenges"
+            ))
         
         # Apply both mapping and grouping
         challenge_mapping = {
@@ -458,45 +401,29 @@ def api_grouped_challenges():
                 all_grouped_challenges.extend(grouped_challenges)
         
         if not all_grouped_challenges:
-            return jsonify({
-                'labels': ['No Challenges Data'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6b7280'],
-                    'borderColor': '#374151',
-                    'borderWidth': 1
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Challenges Data']),
+                "Grouped Challenges"
+            ))
         
         grouped_challenge_counts = pd.Series(all_grouped_challenges).value_counts()
         
-        # Brand color scheme for grouped data
-        brand_colors = ['#074e7e', '#c92427', '#0ea5e9', '#ef4444', '#06b6d4', '#f97316', '#10b981']
-        
-        chart_data = {
-            'labels': grouped_challenge_counts.index.tolist(),
-            'datasets': [{
-                'data': grouped_challenge_counts.values.tolist(),
-                'backgroundColor': brand_colors[:len(grouped_challenge_counts.index)],
-                'borderColor': '#ffffff',
-                'borderWidth': 1
-            }]
-        }
+        # Use centralized formatter
+        chart_data = formatter.format_bar_chart(
+            grouped_challenge_counts,
+            "Grouped Employment Challenges",
+            sort_desc=True
+        )
         
         return jsonify(chart_data)
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#ef4444'],
-                'borderColor': '#dc2626',
-                'borderWidth': 1
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
 
+# Keep the existing table, export, and filters endpoints as they are
 @intern_bp.route('/api/table-data')
 def api_table_data():
     """Get paginated table data for intern"""

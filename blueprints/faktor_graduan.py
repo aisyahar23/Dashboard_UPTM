@@ -3,626 +3,509 @@ from models.data_processor import DataProcessor, load_excel_data
 import io
 import os
 import pandas as pd
-import numpy as np
 from collections import Counter
+import numpy as np
 
-faktor_graduan_bp = Blueprint('faktor_graduan', __name__)
+faktor_graduan_bp = Blueprint('faktor-graduan', __name__)
 
 # Load data from Excel file
 EXCEL_FILE_PATH = 'data/Questionnaire.xlsx'
 df = load_excel_data(EXCEL_FILE_PATH)
 data_processor = DataProcessor(df)
 
-# Define the employability impact columns
-EMPLOYABILITY_IMPACT_COLUMNS = [
-    'Sejauh mana latihan industri/praktikal mempengaruhi kebolehpasaran anda?',
-    'Sejauh mana kemahiran komunikasi  mempengaruhi kebolehpasaran anda?',
-    'Sejauh mana kemahiran teknikal mempengaruhi kebolehpasaran anda?',
-    'Sejauh mana rangkaian peribadi (networking) mempengaruhi kebolehpasaran anda?',
-    'Sejauh mana kelayakan akademik mempengaruhi kebolehpasaran anda?'
-]
-
-# Additional skills grouping mapping
-ADDITIONAL_SKILLS_GROUPING = {
-    'Kemahiran Komunikasi': 'Kemahiran Komunikasi & Interpersonal',
-    'Kemahiran Pembentangan': 'Kemahiran Komunikasi & Interpersonal',
-    'Kemahiran Penulisan profesional': 'Kemahiran Komunikasi & Interpersonal',
-    'Kemahiran Perundingan dan diplomasi': 'Kemahiran Komunikasi & Interpersonal',
-    'Pemikiran kritis dan penyelesaian masalah': 'Pemikiran Kritis & Penyelesaian Masalah',
-    'Keupayaan membuat keputusan berasaskan data': 'Pemikiran Kritis & Penyelesaian Masalah',
-    'Analisis data dan penyelidikan': 'Pemikiran Kritis & Penyelesaian Masalah',
-    'Kepimpinan dan pengurusan projek': 'Kemahiran Kepimpinan & Pengurusan Diri',
-    'Pengurusan masa dan multitasking': 'Kemahiran Kepimpinan & Pengurusan Diri',
-    'Keusahawanan dan pengurusan perniagaan': 'Kemahiran Kepimpinan & Pengurusan Diri',
-    'Kemahiran bekerja dalam pasukan': 'Kemahiran Bekerja Dalam Pasukan',
-    'Penggunaan perisian pejabat (Microsoft Office, Google Workspace)': 'Kemahiran Digital & Teknologi',
-    'Kecekapan dalam perisian industri (AutoCAD, Photoshop, QuickBooks)': 'Kemahiran Digital & Teknologi',
-    'Pemasaran digital dan media sosial': 'Kemahiran Digital & Teknologi',
-    'Kemahiran pengaturcaraan (Python, SQL, Java)': 'Kemahiran Digital & Teknologi'
-}
-
-def group_additional_skills(cell):
-    """Function to clean and group skills"""
-    if pd.isnull(cell):
-        return ''
-    text = str(cell)
-    matched_groups = set()
-
-    for keyword, group in ADDITIONAL_SKILLS_GROUPING.items():
-        if keyword in text:
-            matched_groups.add(group)
-
-    return '; '.join(sorted(matched_groups)) if matched_groups else 'Lain-lain'
-
 @faktor_graduan_bp.route('/')
 def index():
     """Main faktor graduan dashboard page"""
     return render_template('faktor_graduan.html')
 
-@faktor_graduan_bp.route('/table')
-def table_view():
-    """Table view for faktor graduan data"""
-    return render_template('data_table.html', 
-                         page_title='Faktor Kebolehpasaran Graduan Data Table',
-                         api_endpoint='/faktor-graduan/api/table-data')
-
 @faktor_graduan_bp.route('/api/summary')
 def api_summary():
-    """Get summary statistics for faktor graduan data"""
+    """Get enhanced summary statistics for employability factors"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
-        
-        stats = filtered_processor.get_summary_stats()
         filtered_df = filtered_processor.filtered_df
         
         total_records = len(filtered_df)
-        print(f"Total records in filtered data: {total_records}")  # Debug logging
         
-        # Calculate employability factors statistics
-        employability_stats = {}
-        professional_certs_stats = {}
-        university_preparation_stats = {}
+        # Define employability impact columns
+        employability_columns = [
+            'Sejauh mana latihan industri/praktikal mempengaruhi kebolehpasaran anda?',
+            'Sejauh mana kemahiran komunikasi  mempengaruhi kebolehpasaran anda?',
+            'Sejauh mana kemahiran teknikal mempengaruhi kebolehpasaran anda?',
+            'Sejauh mana rangkaian peribadi (networking) mempengaruhi kebolehpasaran anda?',
+            'Sejauh mana kelayakan akademik mempengaruhi kebolehpasaran anda?'
+        ]
+        
+        # Calculate average scores for each factor
+        factor_averages = {}
+        highest_impact_factor = "N/A"
+        lowest_impact_factor = "N/A"
+        overall_preparedness = 0
         
         if total_records > 0:
-            # Analyze employability factors impact (scale 1-5)
-            for column in EMPLOYABILITY_IMPACT_COLUMNS:
+            for column in employability_columns:
                 if column in filtered_df.columns:
-                    scores = pd.to_numeric(filtered_df[column], errors='coerce').dropna()
-                    if len(scores) > 0:
-                        avg_score = scores.mean()
-                        high_impact_count = len(scores[scores >= 4])  # Score 4-5 considered high impact
-                        high_impact_percentage = (high_impact_count / len(scores)) * 100
-                        
-                        key = column.split('mempengaruhi')[0].strip().lower()
-                        if 'industri' in key or 'praktikal' in key:
-                            employability_stats['industrial_training_avg'] = round(avg_score, 2)
-                            employability_stats['industrial_training_high_impact'] = round(high_impact_percentage, 1)
-                        elif 'komunikasi' in key:
-                            employability_stats['communication_skills_avg'] = round(avg_score, 2)
-                            employability_stats['communication_skills_high_impact'] = round(high_impact_percentage, 1)
-                        elif 'teknikal' in key:
-                            employability_stats['technical_skills_avg'] = round(avg_score, 2)
-                            employability_stats['technical_skills_high_impact'] = round(high_impact_percentage, 1)
-                        elif 'rangkaian' in key or 'networking' in key:
-                            employability_stats['networking_avg'] = round(avg_score, 2)
-                            employability_stats['networking_high_impact'] = round(high_impact_percentage, 1)
-                        elif 'akademik' in key:
-                            employability_stats['academic_qualifications_avg'] = round(avg_score, 2)
-                            employability_stats['academic_qualifications_high_impact'] = round(high_impact_percentage, 1)
+                    # Calculate average (excluding non-numeric values)
+                    numeric_values = pd.to_numeric(filtered_df[column], errors='coerce').dropna()
+                    if len(numeric_values) > 0:
+                        avg_score = numeric_values.mean()
+                        factor_averages[column] = avg_score
             
-            # Professional certificates analysis
-            cert_columns = [col for col in filtered_df.columns 
-                           if 'sijil profesional' in col.lower() and 'memiliki' in col.lower()]
-            
-            if cert_columns:
-                cert_column = cert_columns[0]
-                cert_responses = filtered_df[cert_column].dropna()
-                has_certs = len(cert_responses[cert_responses.str.contains('Ya', na=False, case=False)])
-                professional_certs_stats['has_professional_certs_rate'] = round((has_certs / len(cert_responses)) * 100, 1) if len(cert_responses) > 0 else 0
-            
-            # University preparation analysis
-            prep_columns = [col for col in filtered_df.columns 
-                           if 'universiti' in col.lower() and 'pasaran kerja' in col.lower()]
-            
-            if prep_columns:
-                prep_column = prep_columns[0]
-                prep_scores = pd.to_numeric(filtered_df[prep_column], errors='coerce').dropna()
-                if len(prep_scores) > 0:
-                    avg_prep_score = prep_scores.mean()
-                    well_prepared_count = len(prep_scores[prep_scores >= 4])  # Score 4-5 considered well prepared
-                    university_preparation_stats['university_preparation_avg'] = round(avg_prep_score, 2)
-                    university_preparation_stats['well_prepared_rate'] = round((well_prepared_count / len(prep_scores)) * 100, 1)
+            if factor_averages:
+                highest_impact_factor = max(factor_averages, key=factor_averages.get)
+                lowest_impact_factor = min(factor_averages, key=factor_averages.get)
+                overall_preparedness = sum(factor_averages.values()) / len(factor_averages)
         
-        # Set default values if no data found
-        default_stats = {
+        # University preparedness analysis
+        prep_column = 'Sejauh mana anda bersetuju bahawa universiti telah menyediakan anda untuk pasaran kerja?'
+        university_preparedness_avg = 0
+        high_preparedness_rate = 0
+        
+        if prep_column in filtered_df.columns:
+            prep_values = pd.to_numeric(filtered_df[prep_column], errors='coerce').dropna()
+            if len(prep_values) > 0:
+                university_preparedness_avg = prep_values.mean()
+                high_preparedness_rate = (len(prep_values[prep_values >= 4]) / len(prep_values)) * 100
+        
+        # Professional certificates analysis
+        cert_column = 'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'
+        cert_impact_column = 'Adakah sijil profesional ini membantu anda dalam mendapatkan pekerjaan?'
+        
+        cert_ownership_rate = 0
+        cert_impact_rate = 0
+        
+        if cert_column in filtered_df.columns:
+            cert_responses = filtered_df[cert_column].dropna()
+            if len(cert_responses) > 0:
+                cert_ownership_rate = (len(cert_responses[cert_responses.str.contains('Ya', na=False)]) / len(cert_responses)) * 100
+        
+        if cert_impact_column in filtered_df.columns:
+            cert_impact_responses = filtered_df[cert_impact_column].dropna()
+            if len(cert_impact_responses) > 0:
+                cert_impact_rate = (len(cert_impact_responses[cert_impact_responses.str.contains('Ya', na=False)]) / len(cert_impact_responses)) * 100
+        
+        enhanced_stats = {
             'total_records': total_records,
-            'industrial_training_avg': 0,
-            'communication_skills_avg': 0,
-            'technical_skills_avg': 0,
-            'networking_avg': 0,
-            'academic_qualifications_avg': 0,
-            'has_professional_certs_rate': 0,
-            'university_preparation_avg': 0,
-            'well_prepared_rate': 0
+            'highest_impact_factor': highest_impact_factor.replace('Sejauh mana ', '').replace(' mempengaruhi kebolehpasaran anda?', '') if highest_impact_factor != "N/A" else "N/A",
+            'lowest_impact_factor': lowest_impact_factor.replace('Sejauh mana ', '').replace(' mempengaruhi kebolehpasaran anda?', '') if lowest_impact_factor != "N/A" else "N/A",
+            'overall_preparedness_score': round(overall_preparedness, 2),
+            'university_preparedness_avg': round(university_preparedness_avg, 2),
+            'high_preparedness_rate': round(high_preparedness_rate, 1),
+            'cert_ownership_rate': round(cert_ownership_rate, 1),
+            'cert_impact_rate': round(cert_impact_rate, 1),
+            'filter_applied': len([f for f in filters.values() if f]) > 0
         }
         
-        # Update with calculated stats
-        default_stats.update(employability_stats)
-        default_stats.update(professional_certs_stats)
-        default_stats.update(university_preparation_stats)
-        
-        print(f"Final stats: {default_stats}")  # Debug logging
-        return jsonify(default_stats)
+        return jsonify(enhanced_stats)
         
     except Exception as e:
-        print(f"Error in summary endpoint: {str(e)}")  # Debug logging
         return jsonify({
             'error': str(e),
             'total_records': 0,
-            'industrial_training_avg': 0,
-            'communication_skills_avg': 0,
-            'technical_skills_avg': 0,
-            'networking_avg': 0,
-            'academic_qualifications_avg': 0,
-            'has_professional_certs_rate': 0,
-            'university_preparation_avg': 0,
-            'well_prepared_rate': 0
+            'highest_impact_factor': 'N/A',
+            'lowest_impact_factor': 'N/A',
+            'overall_preparedness_score': 0,
+            'university_preparedness_avg': 0,
+            'high_preparedness_rate': 0,
+            'cert_ownership_rate': 0,
+            'cert_impact_rate': 0
         }), 500
 
-@faktor_graduan_bp.route('/api/employability-factors')
-def api_employability_factors():
-    """Get employability factors impact distribution"""
+@faktor_graduan_bp.route('/api/employability-factor/<factor_id>')
+def api_individual_employability_factor(factor_id):
+    """Get individual employability factor analysis for separate bar charts"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
+        filtered_df = filtered_processor.filtered_df
         
-        datasets = []
-        labels = ['1', '2', '3', '4', '5']  # Scale 1-5
+        employability_columns = {
+            'industrial-training': 'Sejauh mana latihan industri/praktikal mempengaruhi kebolehpasaran anda?',
+            'communication-skills': 'Sejauh mana kemahiran komunikasi  mempengaruhi kebolehpasaran anda?',
+            'technical-skills': 'Sejauh mana kemahiran teknikal mempengaruhi kebolehpasaran anda?',
+            'networking': 'Sejauh mana rangkaian peribadi (networking) mempengaruhi kebolehpasaran anda?',
+            'academic-qualifications': 'Sejauh mana kelayakan akademik mempengaruhi kebolehpasaran anda?'
+        }
         
-        colors = ['#1e40af', '#7c3aed', '#059669', '#d97706', '#dc2626']
-        
-        # Check if we have any data at all
-        if len(filtered_processor.filtered_df) == 0:
+        if factor_id not in employability_columns:
             return jsonify({
-                'labels': labels,
+                'labels': ['Invalid Factor'],
                 'datasets': [{
-                    'label': 'No Data Available',
-                    'data': [0, 0, 0, 0, 0],
-                    'backgroundColor': '#6b7280',
-                    'borderWidth': 0,
-                    'borderRadius': 6
+                    'label': 'Error',
+                    'data': [1]
+                }]
+            }), 400
+            
+        column = employability_columns[factor_id]
+        
+        if column not in filtered_df.columns:
+            return jsonify({
+                'labels': ['No Data Available'],
+                'datasets': [{
+                    'label': f"Faktor: {factor_id.replace('-', ' ').title()}",
+                    'data': [1]
                 }]
             })
         
-        for i, column in enumerate(EMPLOYABILITY_IMPACT_COLUMNS):
-            if column in filtered_processor.filtered_df.columns:
-                # Get value counts for each scale, handling non-numeric values
-                column_data = filtered_processor.filtered_df[column].dropna()
-                
-                # Convert to numeric, coercing errors to NaN
-                numeric_data = pd.to_numeric(column_data, errors='coerce').dropna()
-                
-                if len(numeric_data) > 0:
-                    impact_counts = numeric_data.value_counts().sort_index()
-                    
-                    # Ensure all scale values are represented
-                    data = [int(impact_counts.get(scale, 0)) for scale in [1, 2, 3, 4, 5]]
-                    
-                    # Create shorter label for legend
-                    short_label = column.replace('Sejauh mana ', '').replace(' mempengaruhi kebolehpasaran anda?', '')
-                    
-                    # Simplify labels further
-                    if 'latihan industri' in short_label.lower():
-                        short_label = 'Industrial Training'
-                    elif 'kemahiran komunikasi' in short_label.lower():
-                        short_label = 'Communication Skills'
-                    elif 'kemahiran teknikal' in short_label.lower():
-                        short_label = 'Technical Skills'
-                    elif 'rangkaian peribadi' in short_label.lower() or 'networking' in short_label.lower():
-                        short_label = 'Networking'
-                    elif 'kelayakan akademik' in short_label.lower():
-                        short_label = 'Academic Qualifications'
-                    
-                    datasets.append({
-                        'label': short_label,
-                        'data': data,
-                        'backgroundColor': colors[i % len(colors)],
-                        'borderColor': colors[i % len(colors)],
-                        'borderWidth': 0,
-                        'borderRadius': 6
-                    })
+        # Get value counts for scale 1-5
+        values = pd.to_numeric(filtered_df[column], errors='coerce').dropna()
+        if len(values) == 0:
+            return jsonify({
+                'labels': ['No Numeric Data'],
+                'datasets': [{
+                    'label': f"Faktor: {factor_id.replace('-', ' ').title()}",
+                    'data': [1]
+                }]
+            })
+            
+        value_counts = values.value_counts().sort_index()
         
-        # If no valid datasets found, return sample data
-        if not datasets:
-            datasets = [{
-                'label': 'No Valid Data',
-                'data': [0, 0, 0, 0, 0],
-                'backgroundColor': '#6b7280',
-                'borderWidth': 0,
-                'borderRadius': 6
-            }]
+        # Ensure we have all scale points 1-5
+        labels = []
+        data = []
+        scale_labels = {
+            1: '1 - Sangat Rendah',
+            2: '2 - Rendah', 
+            3: '3 - Sederhana',
+            4: '4 - Tinggi',
+            5: '5 - Sangat Tinggi'
+        }
         
-        return jsonify({
+        for i in range(1, 6):
+            labels.append(scale_labels[i])
+            # Convert to int to avoid JSON serialization issues
+            data.append(int(value_counts.get(i, 0)))
+        
+        chart_data = {
             'labels': labels,
-            'datasets': datasets
-        })
+            'datasets': [{
+                'label': column.replace('Sejauh mana ', '').replace(' mempengaruhi kebolehpasaran anda?', '').title(),
+                'data': data
+            }]
+        }
+        
+        return jsonify(chart_data)
         
     except Exception as e:
-        print(f"Error in employability factors: {str(e)}")  # Debug logging
+        print(f"Error in individual factor endpoint: {str(e)}")
         return jsonify({
-            'labels': ['1', '2', '3', '4', '5'],
+            'error': str(e),
+            'labels': ['Error'],
             'datasets': [{
                 'label': 'Error Loading Data',
-                'data': [1, 1, 1, 1, 1],
-                'backgroundColor': '#ef4444',
-                'borderWidth': 0
+                'data': [1]
             }]
         }), 500
 
-@faktor_graduan_bp.route('/api/professional-certificates-impact')
-def api_professional_certificates_impact():
-    """Get professional certificates impact on employment"""
+@faktor_graduan_bp.route('/api/professional-certificates')
+def api_professional_certificates():
+    """Get professional certificates impact analysis - Bar Chart"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
+        filtered_df = filtered_processor.filtered_df
         
-        # Find relevant columns with variations
-        cert_columns = [col for col in filtered_processor.filtered_df.columns 
-                       if 'sijil profesional' in col.lower() and 'memiliki' in col.lower()]
+        # Filter for working respondents with certificates
+        cert_column = 'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'
+        impact_column = 'Adakah sijil profesional ini membantu anda dalam mendapatkan pekerjaan?'
         
-        impact_columns = [col for col in filtered_processor.filtered_df.columns 
-                         if 'sijil profesional' in col.lower() and 'membantu' in col.lower()]
-        
-        if not cert_columns or not impact_columns:
-            # Return sample data for demonstration
+        if cert_column not in filtered_df.columns or impact_column not in filtered_df.columns:
             return jsonify({
-                'labels': ['Ya, sangat membantu', 'Ya, sedikit membantu', 'Tidak membantu', 'Tidak pasti'],
+                'labels': ['No Data Available'],
                 'datasets': [{
-                    'data': [45, 30, 15, 10],
-                    'backgroundColor': ['#059669', '#d97706', '#dc2626', '#6b7280'],
-                    'borderColor': '#ffffff',
-                    'borderWidth': 3
+                    'label': 'Kesan Sijil Profesional',
+                    'data': [1]
                 }]
             })
         
-        cert_column = cert_columns[0]
-        impact_column = impact_columns[0]
+        # Standardize 'Ya' responses
+        filtered_df_copy = filtered_df.copy()
+        filtered_df_copy[cert_column] = filtered_df_copy[cert_column].replace(
+            'Ya, contoh: ACCA, CFA, PMP, Cisco, Google Certification', 'Ya'
+        )
         
         # Filter for respondents with certificates
-        df_filtered = filtered_processor.filtered_df.copy()
+        with_certs_df = filtered_df_copy[filtered_df_copy[cert_column] == 'Ya'].copy()
         
-        # Standardize the 'Ya' response
-        df_filtered[cert_column] = df_filtered[cert_column].replace({
-            'Ya, contoh: ACCA, CFA, PMP, Cisco, Google Certification': 'Ya',
-            'ya': 'Ya',
-            'YA': 'Ya'
-        })
+        if with_certs_df.empty:
+            return jsonify({
+                'labels': ['Tiada Data Sijil'],
+                'datasets': [{
+                    'label': 'Kesan Sijil Profesional',
+                    'data': [1]
+                }]
+            })
         
-        # Filter respondents with certificates
-        df_with_certs = df_filtered[df_filtered[cert_column].str.contains('Ya', na=False, case=False)]
+        # Get impact counts
+        impact_counts = with_certs_df[impact_column].value_counts()
         
-        if len(df_with_certs) > 0 and impact_column in df_with_certs.columns:
-            impact_counts = df_with_certs[impact_column].value_counts()
-            
-            # Clean up the labels
-            cleaned_labels = []
-            cleaned_data = []
-            
-            for label, count in impact_counts.items():
-                if pd.notna(label) and str(label).strip():
-                    cleaned_labels.append(str(label).strip())
-                    cleaned_data.append(int(count))
-            
-            if cleaned_labels:
-                return jsonify({
-                    'labels': cleaned_labels,
-                    'datasets': [{
-                        'data': cleaned_data,
-                        'backgroundColor': ['#059669', '#d97706', '#dc2626', '#6b7280'][:len(cleaned_data)],
-                        'borderColor': '#ffffff',
-                        'borderWidth': 3
-                    }]
-                })
-        
-        # Fallback sample data
-        return jsonify({
-            'labels': ['Limited Data Available'],
+        chart_data = {
+            'labels': [str(label) for label in impact_counts.index.tolist()],
             'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#6b7280'],
-                'borderColor': '#ffffff',
-                'borderWidth': 3
+                'label': 'Kesan Sijil Profesional',
+                'data': [int(val) for val in impact_counts.values.tolist()]
             }]
-        })
+        }
+        
+        return jsonify(chart_data)
         
     except Exception as e:
-        print(f"Error in professional certificates: {str(e)}")  # Debug logging
+        print(f"Error in professional certificates endpoint: {str(e)}")
         return jsonify({
-            'labels': ['Sample: Very Helpful', 'Sample: Somewhat Helpful', 'Sample: Not Helpful'],
+            'error': str(e),
+            'labels': ['Error'],
             'datasets': [{
-                'data': [50, 30, 20],
-                'backgroundColor': ['#059669', '#d97706', '#dc2626'],
-                'borderColor': '#ffffff',
-                'borderWidth': 3
+                'label': 'Error',
+                'data': [1]
             }]
         }), 500
 
 @faktor_graduan_bp.route('/api/employer-requirements')
 def api_employer_requirements():
-    """Get additional qualifications requested by employers"""
+    """Get employer additional requirements analysis - Bar Chart"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
+        filtered_df = filtered_processor.filtered_df
         
-        # Find relevant columns with variations
-        req_columns = [col for col in filtered_processor.filtered_df.columns 
-                      if 'majikan' in col.lower() and 'kelayakan' in col.lower()]
+        req_column = 'Adakah majikan anda meminta kelayakan tambahan selain daripada ijazah anda?'
         
-        if not req_columns:
-            # Return sample data for demonstration
+        if req_column not in filtered_df.columns:
             return jsonify({
-                'labels': ['Technical Skills', 'Professional Certificates', 'No Additional Requirements', 'Language Skills'],
+                'labels': ['No Data Available'],
                 'datasets': [{
-                    'data': [35, 25, 30, 10],
-                    'backgroundColor': ['#1e40af', '#7c3aed', '#059669', '#d97706'],
-                    'borderColor': '#374151',
-                    'borderWidth': 0,
-                    'borderRadius': 8
+                    'label': 'Kelayakan Tambahan',
+                    'data': [1]
                 }]
             })
         
-        req_column = req_columns[0]
-        df_filtered = filtered_processor.filtered_df.copy()
-        
-        if len(df_filtered) > 0:
-            # Standardize responses
-            df_filtered[req_column] = df_filtered[req_column].replace({
-                'Ya, kemahiran teknikal tertentu (contoh: Python, Data Analytics)': 'Technical Skills',
-                'Ya, sijil profesional (contoh: CFA, PMP, ACCA)': 'Professional Certificates',
-                'Tidak': 'No Additional Requirements',
-                'tidak': 'No Additional Requirements'
-            })
-            
-            req_counts = df_filtered[req_column].value_counts()
-            
-            # Clean up the data
-            cleaned_labels = []
-            cleaned_data = []
-            
-            for label, count in req_counts.items():
-                if pd.notna(label) and str(label).strip():
-                    cleaned_labels.append(str(label).strip())
-                    cleaned_data.append(int(count))
-            
-            if cleaned_labels:
-                return jsonify({
-                    'labels': cleaned_labels,
-                    'datasets': [{
-                        'data': cleaned_data,
-                        'backgroundColor': ['#1e40af', '#7c3aed', '#059669', '#d97706', '#dc2626'][:len(cleaned_data)],
-                        'borderColor': '#374151',
-                        'borderWidth': 0,
-                        'borderRadius': 8
-                    }]
-                })
-        
-        # Fallback sample data
-        return jsonify({
-            'labels': ['Limited Data Available'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#6b7280'],
-                'borderColor': '#374151',
-                'borderWidth': 0,
-                'borderRadius': 8
-            }]
+        # Standardize responses
+        filtered_df_copy = filtered_df.copy()
+        filtered_df_copy[req_column] = filtered_df_copy[req_column].replace({
+            'Ya, kemahiran teknikal tertentu (contoh: Python, Data Analytics)': 'Ya, kemahiran teknikal',
+            'Ya, sijil profesional (contoh: CFA, PMP, ACCA)': 'Ya, sijil profesional'
         })
         
-    except Exception as e:
-        print(f"Error in employer requirements: {str(e)}")  # Debug logging
-        return jsonify({
-            'labels': ['Sample: Technical Skills', 'Sample: Certificates', 'Sample: No Requirements'],
+        req_counts = filtered_df_copy[req_column].value_counts()
+        
+        chart_data = {
+            'labels': [str(label) for label in req_counts.index.tolist()],
             'datasets': [{
-                'data': [40, 35, 25],
-                'backgroundColor': ['#1e40af', '#7c3aed', '#059669'],
-                'borderColor': '#374151',
-                'borderWidth': 0,
-                'borderRadius': 8
+                'label': 'Kelayakan Tambahan Majikan',
+                'data': [int(val) for val in req_counts.values.tolist()]
+            }]
+        }
+        
+        return jsonify(chart_data)
+        
+    except Exception as e:
+        print(f"Error in employer requirements endpoint: {str(e)}")
+        return jsonify({
+            'error': str(e),
+            'labels': ['Error'],
+            'datasets': [{
+                'label': 'Error',
+                'data': [1]
             }]
         }), 500
 
-@faktor_graduan_bp.route('/api/additional-skills-demand')
-def api_additional_skills_demand():
-    """Get additional skills demanded by employers"""
+@faktor_graduan_bp.route('/api/university-preparedness')
+def api_university_preparedness():
+    """Get university preparedness analysis - Bar Chart"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
+        filtered_df = filtered_processor.filtered_df
         
-        # Find relevant columns with variations
-        skills_columns = [col for col in filtered_processor.filtered_df.columns 
-                         if 'kemahiran tambahan' in col.lower() and 'majikan' in col.lower()]
+        prep_column = 'Sejauh mana anda bersetuju bahawa universiti telah menyediakan anda untuk pasaran kerja?'
         
-        if not skills_columns:
-            # Return sample data for demonstration
+        if prep_column not in filtered_df.columns:
             return jsonify({
-                'labels': [
-                    'Kemahiran Digital & Teknologi',
-                    'Kemahiran Komunikasi & Interpersonal', 
-                    'Pemikiran Kritis & Penyelesaian Masalah',
-                    'Kemahiran Kepimpinan & Pengurusan Diri',
-                    'Kemahiran Bekerja Dalam Pasukan'
-                ],
+                'labels': ['No Data Available'],
                 'datasets': [{
-                    'data': [45, 35, 30, 25, 20],
-                    'backgroundColor': ['#1e40af', '#7c3aed', '#059669', '#d97706', '#dc2626'],
-                    'borderColor': '#374151',
-                    'borderWidth': 0,
-                    'borderRadius': 8
+                    'label': 'Persediaan Universiti',
+                    'data': [1]
                 }]
             })
         
-        skills_column = skills_columns[0]
-        df_filtered = filtered_processor.filtered_df.copy()
+        prep_values = pd.to_numeric(filtered_df[prep_column], errors='coerce').dropna()
+        if len(prep_values) == 0:
+            return jsonify({
+                'labels': ['No Numeric Data'],
+                'datasets': [{
+                    'label': 'Persediaan Universiti',
+                    'data': [1]
+                }]
+            })
+            
+        prep_counts = prep_values.value_counts().sort_index()
         
-        if len(df_filtered) > 0:
-            # Apply grouping function
-            df_filtered['Additional_Skills_Grouped'] = df_filtered[skills_column].apply(group_additional_skills)
-            
-            # Split cells with multiple categories and count
-            split_skills = df_filtered['Additional_Skills_Grouped'].dropna().apply(
-                lambda x: [i.strip() for i in x.split(';')] if x and x != 'Lain-lain' else []
-            )
-            
-            # Flatten and count
-            all_skills = [skill for sublist in split_skills for skill in sublist if skill]
-            
-            if all_skills:
-                skill_counts = pd.Series(Counter(all_skills)).sort_values(ascending=False)
-                
-                # Take top 8 skills
-                top_skills = skill_counts.head(8)
-                
-                return jsonify({
-                    'labels': top_skills.index.tolist(),
-                    'datasets': [{
-                        'data': top_skills.values.tolist(),
-                        'backgroundColor': ['#1e40af', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2', '#8b5cf6', '#f59e0b'][:len(top_skills)],
-                        'borderColor': '#374151',
-                        'borderWidth': 0,
-                        'borderRadius': 8
-                    }]
-                })
+        # Convert numeric scale to descriptive labels
+        labels = []
+        data = []
+        scale_labels = {
+            1: '1 - Sangat Tidak Setuju',
+            2: '2 - Tidak Setuju', 
+            3: '3 - Neutral',
+            4: '4 - Setuju',
+            5: '5 - Sangat Setuju'
+        }
         
-        # Fallback sample data
-        return jsonify({
-            'labels': ['Limited Skills Data Available'],
+        for i in range(1, 6):
+            labels.append(scale_labels[i])
+            # Convert to int to avoid JSON serialization issues
+            data.append(int(prep_counts.get(i, 0)))
+        
+        chart_data = {
+            'labels': labels,
             'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#6b7280'],
-                'borderColor': '#374151',
-                'borderWidth': 0,
-                'borderRadius': 8
+                'label': 'Persediaan Universiti',
+                'data': data
             }]
-        })
+        }
+        
+        return jsonify(chart_data)
         
     except Exception as e:
-        print(f"Error in additional skills: {str(e)}")  # Debug logging
+        print(f"Error in university preparedness endpoint: {str(e)}")
         return jsonify({
-            'labels': [
-                'Sample: Digital Skills',
-                'Sample: Communication', 
-                'Sample: Problem Solving',
-                'Sample: Leadership',
-                'Sample: Teamwork'
-            ],
+            'error': str(e),
+            'labels': ['Error'],
             'datasets': [{
-                'data': [40, 35, 30, 25, 20],
-                'backgroundColor': ['#1e40af', '#7c3aed', '#059669', '#d97706', '#dc2626'],
-                'borderColor': '#374151',
-                'borderWidth': 0,
-                'borderRadius': 8
+                'label': 'Error',
+                'data': [1]
             }]
         }), 500
 
-@faktor_graduan_bp.route('/api/university-preparation')
-def api_university_preparation():
-    """Get university preparation for job market assessment"""
+@faktor_graduan_bp.route('/api/additional-skills')
+def api_additional_skills():
+    """Get additional skills analysis with grouped categories - Horizontal Bar Chart - Exact Colab Replication"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
+        filtered_df = filtered_processor.filtered_df
         
-        # Find relevant columns with variations
-        prep_columns = [col for col in filtered_processor.filtered_df.columns 
-                       if 'universiti' in col.lower() and 'pasaran kerja' in col.lower()]
+        # Find the skills column - try exact match first, then similar
+        skills_column = 'Kemahiran tambahan manakah yang paling banyak diminta oleh majikan semasa temu duga? '
         
-        if not prep_columns:
-            # Return sample data for demonstration
-            return jsonify({
-                'labels': ['1', '2', '3', '4', '5'],
-                'datasets': [{
-                    'label': 'University Preparation Assessment',
-                    'data': [5, 15, 35, 30, 15],
-                    'backgroundColor': '#1e40af30',
-                    'borderColor': '#1e40af',
-                    'borderWidth': 3,
-                    'tension': 0.4,
-                    'fill': True,
-                    'pointBackgroundColor': '#ffffff',
-                    'pointBorderColor': '#1e40af',
-                    'pointBorderWidth': 3,
-                    'pointRadius': 6
-                }]
-            })
-        
-        prep_column = prep_columns[0]
-        
-        if len(filtered_processor.filtered_df) > 0:
-            # Get numeric data only
-            column_data = filtered_processor.filtered_df[prep_column].dropna()
-            numeric_data = pd.to_numeric(column_data, errors='coerce').dropna()
+        if skills_column not in filtered_df.columns:
+            # Try to find similar column names
+            similar_columns = [col for col in filtered_df.columns if 'kemahiran tambahan' in col.lower()]
+            print(f"Similar columns found: {similar_columns}")
             
-            if len(numeric_data) > 0:
-                prep_counts = numeric_data.value_counts().sort_index()
-                
-                # Ensure all scale values are represented
-                labels = ['1', '2', '3', '4', '5']
-                data = [int(prep_counts.get(scale, 0)) for scale in [1, 2, 3, 4, 5]]
-                
+            if similar_columns:
+                skills_column = similar_columns[0]
+                print(f"Using column: {skills_column}")
+            else:
+                print(f"Available columns: {list(filtered_df.columns)}")
                 return jsonify({
-                    'labels': labels,
+                    'labels': ['Skills Column Not Found'],
                     'datasets': [{
-                        'label': 'Number of Respondents',
-                        'data': data,
-                        'backgroundColor': '#1e40af30',
-                        'borderColor': '#1e40af',
-                        'borderWidth': 3,
-                        'tension': 0.4,
-                        'fill': True,
-                        'pointBackgroundColor': '#ffffff',
-                        'pointBorderColor': '#1e40af',
-                        'pointBorderWidth': 3,
-                        'pointRadius': 6
+                        'label': 'Kemahiran Tambahan',
+                        'data': [1]
                     }]
                 })
         
-        # Fallback sample data
-        return jsonify({
-            'labels': ['1', '2', '3', '4', '5'],
+        # EXACT COLAB REPLICATION - Define the grouping mapping exactly as in Colab
+        additional_skills_grouping = {
+            'Kemahiran Komunikasi': 'Kemahiran Komunikasi & Interpersonal',
+            'Kemahiran Pembentangan': 'Kemahiran Komunikasi & Interpersonal',
+            'Kemahiran Penulisan profesional': 'Kemahiran Komunikasi & Interpersonal',
+            'Kemahiran Perundingan dan diplomasi': 'Kemahiran Komunikasi & Interpersonal',
+            'Pemikiran kritis dan penyelesaian masalah': 'Pemikiran Kritis & Penyelesaian Masalah',
+            'Keupayaan membuat keputusan berasaskan data': 'Pemikiran Kritis & Penyelesaian Masalah',
+            'Analisis data dan penyelidikan': 'Pemikiran Kritis & Penyelesaian Masalah',
+            'Kepimpinan dan pengurusan projek': 'Kemahiran Kepimpinan & Pengurusan Diri',
+            'Pengurusan masa dan multitasking': 'Kemahiran Kepimpinan & Pengurusan Diri',
+            'Keusahawanan dan pengurusan perniagaan': 'Kemahiran Kepimpinan & Pengurusan Diri',
+            'Kemahiran bekerja dalam pasukan': 'Kemahiran Bekerja Dalam Pasukan',
+            'Penggunaan perisian pejabat (Microsoft Office, Google Workspace)': 'Kemahiran Digital & Teknologi',
+            'Kecekapan dalam perisian industri (AutoCAD, Photoshop, QuickBooks)': 'Kemahiran Digital & Teknologi',
+            'Pemasaran digital dan media sosial': 'Kemahiran Digital & Teknologi',
+            'Kemahiran pengaturcaraan (Python, SQL, Java)': 'Kemahiran Digital & Teknologi'
+        }
+        
+        # EXACT COLAB REPLICATION - Function to clean and group skills
+        def group_additional_skills(cell):
+            if pd.isnull(cell):
+                return ''
+            text = str(cell)
+            matched_groups = set()
+
+            for keyword, group in additional_skills_grouping.items():
+                if keyword in text:
+                    matched_groups.add(group)
+
+            return '; '.join(sorted(matched_groups)) if matched_groups else 'Lain-lain'
+        
+        # EXACT COLAB REPLICATION - Apply the grouping function to the column
+        filtered_df_copy = filtered_df.copy()
+        filtered_df_copy['Additional_Skills_Grouped'] = filtered_df_copy[skills_column].apply(group_additional_skills)
+        
+        print(f"Skills grouping results:")
+        print(filtered_df_copy['Additional_Skills_Grouped'].value_counts())
+        
+        # EXACT COLAB REPLICATION - Step 1: Drop NaNs and split cells with multiple categories
+        split_skills = filtered_df_copy['Additional_Skills_Grouped'].dropna().apply(lambda x: [i.strip() for i in x.split(';')])
+        
+        # EXACT COLAB REPLICATION - Step 2: Flatten the list to get all individual skills
+        all_skills = [skill for sublist in split_skills for skill in sublist]
+        
+        print(f"All skills extracted: {all_skills}")
+        
+        if not all_skills:
+            return jsonify({
+                'labels': ['No Skills Found'],
+                'datasets': [{
+                    'label': 'Kemahiran Tambahan',
+                    'data': [1]
+                }]
+            })
+        
+        # EXACT COLAB REPLICATION - Step 3: Count the frequency of each skill group
+        skill_counts = pd.Series(Counter(all_skills)).sort_values(ascending=True)
+        
+        print(f"Skill counts: {dict(skill_counts)}")
+        
+        if skill_counts.empty:
+            return jsonify({
+                'labels': ['No Skill Counts'],
+                'datasets': [{
+                    'label': 'Kemahiran Tambahan',
+                    'data': [1]
+                }]
+            })
+        
+        # Prepare data for horizontal bar chart (smallest to largest from bottom to top)
+        labels = [str(skill) for skill in skill_counts.index.tolist()]
+        data = [int(count) for count in skill_counts.values.tolist()]
+        
+        chart_data = {
+            'labels': labels,
             'datasets': [{
-                'label': 'Limited Data Available',
-                'data': [1, 1, 1, 1, 1],
-                'backgroundColor': '#6b728030',
-                'borderColor': '#6b7280',
-                'borderWidth': 3,
-                'tension': 0.4,
-                'fill': True,
-                'pointBackgroundColor': '#ffffff',
-                'pointBorderColor': '#6b7280',
-                'pointBorderWidth': 3,
-                'pointRadius': 6
+                'label': 'Kekerapan Diminta',
+                'data': data
             }]
-        })
+        }
+        
+        print(f"Final chart data: {chart_data}")
+        return jsonify(chart_data)
         
     except Exception as e:
-        print(f"Error in university preparation: {str(e)}")  # Debug logging
+        print(f"Error in additional skills endpoint: {str(e)}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         return jsonify({
-            'labels': ['1', '2', '3', '4', '5'],
+            'error': str(e),
+            'labels': ['Error Loading Skills Data'],
             'datasets': [{
-                'label': 'Sample Data',
-                'data': [10, 20, 30, 25, 15],
-                'backgroundColor': '#1e40af30',
-                'borderColor': '#1e40af',
-                'borderWidth': 3,
-                'tension': 0.4,
-                'fill': True,
-                'pointBackgroundColor': '#ffffff',
-                'pointBorderColor': '#1e40af',
-                'pointBorderWidth': 3,
-                'pointRadius': 6
+                'label': 'Error',
+                'data': [1]
             }]
         }), 500
 
+# Keep existing endpoints (table, export, filters)
 @faktor_graduan_bp.route('/api/table-data')
 def api_table_data():
     """Get paginated table data for faktor graduan"""
@@ -637,7 +520,6 @@ def api_table_data():
         
         # Define relevant columns for faktor graduan
         relevant_columns = [
-            'Status pekerjaan semasa',
             'Sejauh mana latihan industri/praktikal mempengaruhi kebolehpasaran anda?',
             'Sejauh mana kemahiran komunikasi  mempengaruhi kebolehpasaran anda?',
             'Sejauh mana kemahiran teknikal mempengaruhi kebolehpasaran anda?',
@@ -649,7 +531,8 @@ def api_table_data():
             'Kemahiran tambahan manakah yang paling banyak diminta oleh majikan semasa temu duga? ',
             'Sejauh mana anda bersetuju bahawa universiti telah menyediakan anda untuk pasaran kerja?',
             'Tahun graduasi anda?',
-            'Jantina anda?'
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
         ]
         
         available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
@@ -676,7 +559,6 @@ def api_export():
         
         relevant_columns = [
             'Timestamp',
-            'Status pekerjaan semasa',
             'Sejauh mana latihan industri/praktikal mempengaruhi kebolehpasaran anda?',
             'Sejauh mana kemahiran komunikasi  mempengaruhi kebolehpasaran anda?',
             'Sejauh mana kemahiran teknikal mempengaruhi kebolehpasaran anda?',
@@ -689,7 +571,7 @@ def api_export():
             'Sejauh mana anda bersetuju bahawa universiti telah menyediakan anda untuk pasaran kerja?',
             'Tahun graduasi anda?',
             'Jantina anda?',
-            'Umur anda?'
+            'Institusi pendidikan MARA yang anda hadiri?'
         ]
         
         available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
@@ -698,13 +580,13 @@ def api_export():
         
         if format_type == 'csv':
             mimetype = 'text/csv'
-            filename = 'faktor_graduan_data.csv'
+            filename = 'faktor_kebolehpasaran_graduan_data.csv'
         elif format_type == 'excel':
             mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            filename = 'faktor_graduan_data.xlsx'
+            filename = 'faktor_kebolehpasaran_graduan_data.xlsx'
         else:
             mimetype = 'application/json'
-            filename = 'faktor_graduan_data.json'
+            filename = 'faktor_kebolehpasaran_graduan_data.json'
         
         return send_file(
             io.BytesIO(data),
@@ -716,6 +598,51 @@ def api_export():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@faktor_graduan_bp.route('/api/test')
+def api_test():
+    """Test endpoint to verify the blueprint is working + get available filters"""
+    try:
+        # Test info
+        test_info = {
+            'status': 'success',
+            'message': 'Faktor Graduan API is working',
+            'available_columns': list(df.columns) if not df.empty else [],
+            'total_records': len(df)
+        }
+
+        # Build filter options
+        sample_df = data_processor.df
+        filters = {}
+        filter_columns = [
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Program pengajian yang anda ikuti?',
+            'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'
+        ]
+
+        for column in filter_columns:
+            if column in sample_df.columns:
+                unique_values = sample_df[column].dropna().unique().tolist()
+                if isinstance(unique_values[0] if unique_values else None, (int, float)):
+                    unique_values = sorted(unique_values)
+                else:
+                    unique_values = sorted([str(val) for val in unique_values])
+                filters[column] = unique_values
+
+        # Return everything together
+        return jsonify({
+            **test_info,
+            'filters': filters
+        })
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
 @faktor_graduan_bp.route('/api/filters/available')
 def api_available_filters():
     """Get available filter options for faktor graduan data"""
@@ -726,8 +653,8 @@ def api_available_filters():
         filter_columns = [
             'Tahun graduasi anda?',
             'Jantina anda?',
-            'Status pekerjaan semasa',
             'Institusi pendidikan MARA yang anda hadiri?',
+            'Program pengajian yang anda ikuti?',
             'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'
         ]
         

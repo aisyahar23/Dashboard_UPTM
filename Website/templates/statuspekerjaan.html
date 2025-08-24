@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div x-data="faktorGraduanDashboard()" x-init="init()" class="px-6 pb-6 space-y-6 bg-white min-h-screen">
+<div x-data="statusPekerjaanDashboard()" x-init="init()" class="px-6 pb-6 space-y-6 bg-white min-h-screen">
     <!-- Header Section -->
     <div class="relative">
         <div class="flex flex-row border-b border-gray-300 justify-between py-4 -mx-6">
@@ -113,18 +113,18 @@
                                     </div>
                                 </div>
 
-                                <!-- Professional Certificates -->
+                                <!-- Employment Status -->
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
-                                        <i class="fas fa-certificate mr-2 text-orange-500"></i>Sijil Profesional
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.certificates.length > 0" x-text="`${filters.certificates.length} dipilih`"></span>
+                                        <i class="fas fa-briefcase mr-2 text-indigo-500"></i>Status Pekerjaan
+                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.employment_status.length > 0" x-text="`${filters.employment_status.length} dipilih`"></span>
                                     </label>
                                     <div class="space-y-2">
-                                        <template x-for="cert in availableFilters.certificates || []">
-                                            <label class="flex items-center p-2 rounded-md hover:bg-orange-50 cursor-pointer text-sm transition-colors">
-                                                <input type="checkbox" :value="cert" x-model="filters.certificates"
-                                                    class="rounded border-orange-300 text-orange-600 focus:ring-orange-500 focus:ring-offset-0">
-                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="cert"></span>
+                                        <template x-for="status in availableFilters.employment_status || []">
+                                            <label class="flex items-center p-2 rounded-md hover:bg-indigo-50 cursor-pointer text-sm transition-colors">
+                                                <input type="checkbox" :value="status" x-model="filters.employment_status"
+                                                    class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="status"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -195,9 +195,9 @@
     </div>
 
     <!-- Enhanced Title Section -->
-    <div class="bg-gradient-to-br from-emerald-700 via-emerald-600 to-emerald-500 rounded-3xl p-8 shadow-2xl border border-emerald-800/20 relative overflow-hidden">
+    <div class="bg-gradient-to-br from-indigo-700 via-indigo-600 to-indigo-500 rounded-3xl p-8 shadow-2xl border border-indigo-800/20 relative overflow-hidden">
         <!-- Background decoration -->
-        <div class="absolute inset-0 bg-gradient-to-r from-emerald-700/20 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-indigo-700/20 to-transparent"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
         <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
         
@@ -205,16 +205,16 @@
             <div class="flex items-center space-x-6">
                 <!-- Enhanced Icon -->
                 <div class="w-20 h-20 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white/20 border border-white/30">
-                    <i class="fas fa-chart-line text-white text-3xl drop-shadow-lg"></i>
+                    <i class="fas fa-chart-pie text-white text-3xl drop-shadow-lg"></i>
                 </div>
 
                 <!-- Enhanced Text -->
                 <div>
                     <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg">
-                        Faktor Mempengaruhi Kebolehpasaran Graduan
+                        Status Pekerjaan & Kesesuaian Bidang
                     </h1>
-                    <p class="text-green-100 text-lg leading-relaxed">
-                        Analisis komprehensif faktor-faktor yang mempengaruhi kebolehpasaran dalam pasaran kerja
+                    <p class="text-indigo-100 text-lg leading-relaxed">
+                        Analisis komprehensif status pekerjaan dan kesesuaian dengan bidang pengajian
                     </p>
 
                     <!-- Enhanced Status Row -->
@@ -223,7 +223,7 @@
                             <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg"></div>
                             <span class="text-sm font-medium text-green-200">Analisis Langsung</span>
                         </div>
-                        <div class="text-sm text-green-200 flex items-center space-x-2">
+                        <div class="text-sm text-indigo-200 flex items-center space-x-2">
                             <span x-show="dataLoaded && !loading" class="flex items-center">
                                 <i class="fas fa-users mr-2"></i>
                                 <strong x-text="kpis.total_records || 0"></strong> Responden Dianalisis
@@ -244,96 +244,96 @@
         
         <!-- Enhanced KPI Cards Row -->
         <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Highest Impact Factor -->
+            <!-- Employment Rate -->
             <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                            <i class="fas fa-arrow-up text-xl text-green-600"></i>
+                            <i class="fas fa-briefcase text-xl text-green-600"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-gray-600 font-medium">Faktor Tertinggi</div>
-                            <div class="text-lg font-bold text-gray-900 leading-tight" x-text="kpis.highest_impact_factor || 'N/A'"></div>
+                            <div class="text-sm text-gray-600 font-medium">Kadar Pekerjaan</div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.employment_rate || 0) + '%'"></div>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4 text-xs text-gray-500 flex items-center">
                     <i class="fas fa-info-circle mr-1"></i>
-                    Faktor paling berpengaruh
+                    Graduan yang bekerja
                 </div>
             </div>
 
-            <!-- Overall Preparedness Score -->
+            <!-- Field Match Rate -->
             <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                            <i class="fas fa-star text-xl text-blue-600"></i>
+                            <i class="fas fa-bullseye text-xl text-blue-600"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-gray-600 font-medium">Skor Keseluruhan</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.overall_preparedness_score || '0.0'"></div>
+                            <div class="text-sm text-gray-600 font-medium">Kesesuaian Bidang</div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.field_match_rate || 0) + '%'"></div>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4 text-xs text-gray-500 flex items-center">
                     <i class="fas fa-info-circle mr-1"></i>
-                    Purata semua faktor (skala 1-5)
+                    Bekerja dalam bidang pengajian
                 </div>
             </div>
 
-            <!-- University Preparedness -->
+            <!-- Quick Employment Rate -->
             <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div class="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                            <i class="fas fa-graduation-cap text-xl text-purple-600"></i>
+                            <i class="fas fa-clock text-xl text-purple-600"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-gray-600 font-medium">Persediaan Universiti</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.university_preparedness_avg || '0.0'"></div>
+                            <div class="text-sm text-gray-600 font-medium">Pekerjaan Cepat</div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.quick_employment_rate || 0) + '%'"></div>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4 text-xs text-gray-500 flex items-center">
                     <i class="fas fa-info-circle mr-1"></i>
-                    Persediaan oleh institusi pendidikan
+                    Dalam 3 bulan
                 </div>
             </div>
 
-            <!-- Professional Certificates Impact -->
+            <!-- Most Common Job Type -->
             <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                            <i class="fas fa-certificate text-xl text-orange-600"></i>
+                            <i class="fas fa-star text-xl text-orange-600"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-gray-600 font-medium">Kesan Sijil</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.cert_impact_rate || 0) + '%'"></div>
+                            <div class="text-sm text-gray-600 font-medium">Jenis Kerja Utama</div>
+                            <div class="text-lg font-bold text-gray-900 leading-tight" x-text="kpis.most_common_job_type || 'N/A'"></div>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4 text-xs text-gray-500 flex items-center">
                     <i class="fas fa-info-circle mr-1"></i>
-                    Kesan sijil profesional pada pekerjaan
+                    Jenis pekerjaan terbanyak
                 </div>
             </div>
         </div>
 
-        <!-- 5 Individual Employability Factor Charts - Matching Colab subplots -->
-        <div class="col-span-12 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+        <!-- Employment Status - Pie Chart -->
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
             <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-xl font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-chart-bar text-primary-600 mr-3"></i>
-                            Faktor Mempengaruhi Kebolehpasaran Graduan
+                            <i class="fas fa-chart-pie text-primary-600 mr-3"></i>
+                            Taburan Status Pekerjaan
                         </h3>
-                        <p class="text-gray-600 text-sm mt-1">Analisis individu untuk setiap faktor kebolehpasaran (Skala 1-5)</p>
+                        <p class="text-gray-600 text-sm mt-1">Status pekerjaan semasa graduan</p>
                     </div>
                     <div class="flex space-x-2">
-                        <button @click="refreshAllFactorCharts()"
+                        <button @click="refreshChart('employment-status')"
                             class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
                             <i class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
                         </button>
@@ -341,100 +341,98 @@
                 </div>
             </div>
             <div class="p-8">
-                <!-- Individual Factor Charts Grid - 5 charts total -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                    
-                    <!-- Industrial Training Chart -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-industry text-blue-600 mr-2"></i>
-                            Latihan Industri/Praktikal
-                        </h4>
-                        <div class="h-64 relative">
-                            <div x-show="loading"
-                                class="absolute inset-0 flex items-center justify-center bg-gray-50/95 backdrop-blur-sm z-10 rounded-lg">
-                                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-500"></div>
-                            </div>
-                            <canvas id="industrialTrainingChart" class="w-full h-full"></canvas>
+                <div class="h-80 relative">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                        <div class="text-center">
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
+                            <div class="text-gray-700 font-medium">Memuatkan status pekerjaan...</div>
                         </div>
                     </div>
-
-                    <!-- Communication Skills Chart -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-comments text-green-600 mr-2"></i>
-                            Kemahiran Komunikasi
-                        </h4>
-                        <div class="h-64 relative">
-                            <div x-show="loading"
-                                class="absolute inset-0 flex items-center justify-center bg-gray-50/95 backdrop-blur-sm z-10 rounded-lg">
-                                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-green-500"></div>
-                            </div>
-                            <canvas id="communicationSkillsChart" class="w-full h-full"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Technical Skills Chart -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-code text-purple-600 mr-2"></i>
-                            Kemahiran Teknikal
-                        </h4>
-                        <div class="h-64 relative">
-                            <div x-show="loading"
-                                class="absolute inset-0 flex items-center justify-center bg-gray-50/95 backdrop-blur-sm z-10 rounded-lg">
-                                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-purple-500"></div>
-                            </div>
-                            <canvas id="technicalSkillsChart" class="w-full h-full"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Networking Chart -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-network-wired text-orange-600 mr-2"></i>
-                            Rangkaian Peribadi (Networking)
-                        </h4>
-                        <div class="h-64 relative">
-                            <div x-show="loading"
-                                class="absolute inset-0 flex items-center justify-center bg-gray-50/95 backdrop-blur-sm z-10 rounded-lg">
-                                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-orange-500"></div>
-                            </div>
-                            <canvas id="networkingChart" class="w-full h-full"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Academic Qualifications Chart -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-graduation-cap text-red-600 mr-2"></i>
-                            Kelayakan Akademik
-                        </h4>
-                        <div class="h-64 relative">
-                            <div x-show="loading"
-                                class="absolute inset-0 flex items-center justify-center bg-gray-50/95 backdrop-blur-sm z-10 rounded-lg">
-                                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-red-500"></div>
-                            </div>
-                            <canvas id="academicQualificationsChart" class="w-full h-full"></canvas>
-                        </div>
-                    </div>
+                    <canvas id="employmentStatusChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Professional Certificates Impact - Bar Chart -->
-        <div class="col-span-12 lg:col-span-4 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+        <!-- Current Job Status - Bar Chart -->
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+            <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-chart-bar text-primary-600 mr-3"></i>
+                            Jenis Pekerjaan Semasa
+                        </h3>
+                        <p class="text-gray-600 text-sm mt-1">Responden yang sedang bekerja</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button @click="refreshChart('job-status')"
+                            class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
+                            <i class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-8">
+                <div class="h-80 relative">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                        <div class="text-center">
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
+                            <div class="text-gray-700 font-medium">Memuatkan jenis pekerjaan...</div>
+                        </div>
+                    </div>
+                    <canvas id="currentJobStatusChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time to First Job - Area Chart -->
+        <div class="col-span-12 lg:col-span-7 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+            <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-chart-area text-primary-600 mr-3"></i>
+                            Masa Mendapat Pekerjaan Pertama
+                        </h3>
+                        <p class="text-gray-600 text-sm mt-1">Tempoh selepas tamat pengajian</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button @click="refreshChart('time-to-job')"
+                            class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
+                            <i class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-8">
+                <div class="h-80 relative">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                        <div class="text-center">
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
+                            <div class="text-gray-700 font-medium">Memuatkan masa ke pekerjaan...</div>
+                        </div>
+                    </div>
+                    <canvas id="timeToFirstJobChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Job Types - Bar Chart -->
+        <div class="col-span-12 lg:col-span-5 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
             <div class="px-6 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-certificate text-primary-600 mr-2"></i>
-                            Kesan Sijil Profesional
+                            <i class="fas fa-briefcase text-primary-600 mr-2"></i>
+                            Agihan Jenis Pekerjaan
                         </h3>
-                        <p class="text-gray-600 text-xs mt-1">Kesan terhadap mendapat pekerjaan</p>
+                        <p class="text-gray-600 text-xs mt-1">Jenis pekerjaan yang diceburi</p>
                     </div>
                     <div class="flex space-x-2">
-                        <button @click="refreshChart('certificates')"
+                        <button @click="refreshChart('job-types')"
                             class="p-2 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
                             <i class="fas fa-refresh text-primary-600 text-sm group-hover:rotate-180 transition-transform duration-300"></i>
                         </button>
@@ -442,102 +440,36 @@
                 </div>
             </div>
             <div class="p-6">
-                <div class="h-72 relative">
+                <div class="h-80 relative">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-3"></div>
-                            <div class="text-gray-600 font-medium text-sm">Memuatkan data sijil...</div>
+                            <div class="text-gray-600 font-medium text-sm">Memuatkan jenis kerja...</div>
                         </div>
                     </div>
-                    <canvas id="professionalCertificatesChart" class="w-full h-full"></canvas>
+                    <canvas id="currentJobTypesChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Employer Requirements - Bar Chart -->
-        <div class="col-span-12 lg:col-span-4 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
-            <div class="px-6 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-clipboard-check text-primary-600 mr-2"></i>
-                            Kelayakan Tambahan Majikan
-                        </h3>
-                        <p class="text-gray-600 text-xs mt-1">Kelayakan tambahan yang diminta</p>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button @click="refreshChart('requirements')"
-                            class="p-2 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 text-sm group-hover:rotate-180 transition-transform duration-300"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="p-6">
-                <div class="h-72 relative">
-                    <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
-                        <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-3"></div>
-                            <div class="text-gray-600 font-medium text-sm">Memuatkan kelayakan...</div>
-                        </div>
-                    </div>
-                    <canvas id="employerRequirementsChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- University Preparedness - Bar Chart -->
-        <div class="col-span-12 lg:col-span-4 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
-            <div class="px-6 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-university text-primary-600 mr-2"></i>
-                            Persediaan Universiti
-                        </h3>
-                        <p class="text-gray-600 text-xs mt-1">Tahap persediaan untuk pasaran kerja</p>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button @click="refreshChart('preparedness')"
-                            class="p-2 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 text-sm group-hover:rotate-180 transition-transform duration-300"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="p-6">
-                <div class="h-72 relative">
-                    <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
-                        <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-3"></div>
-                            <div class="text-gray-600 font-medium text-sm">Memuatkan persediaan...</div>
-                        </div>
-                    </div>
-                    <canvas id="universityPreparednessChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Additional Skills Required - Large Horizontal Bar Chart -->
+        <!-- Job Finding Factors - Bar Chart -->
         <div class="col-span-12 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
             <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-xl font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-cogs text-primary-600 mr-3"></i>
-                            Kemahiran Tambahan yang Diminta Majikan
+                            <i class="fas fa-search text-primary-600 mr-3"></i>
+                            Faktor Utama Mendapat Pekerjaan
                         </h3>
-                        <p class="text-gray-600 text-sm mt-1">Kemahiran tambahan paling banyak diminta semasa temu duga (dikategorikan)</p>
+                        <p class="text-gray-600 text-sm mt-1">Saluran dan cara mendapat pekerjaan (dikategorikan)</p>
                     </div>
                     <div class="flex space-x-3">
-                        <button @click="openTableModal('Additional Skills')"
+                        <button @click="openTableModal('Job Finding Factors')"
                             class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
                             <i class="fas fa-table text-primary-600 group-hover:text-primary-700"></i>
                         </button>
-                        <a href="/faktor-graduan/table" target="_blank"
+                        <a href="/status-pekerjaan/table" target="_blank"
                             class="px-4 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all text-sm font-medium transform hover:scale-105">
                             <i class="fas fa-external-link-alt mr-2"></i>Lihat Maklumat Penuh
                         </a>
@@ -550,10 +482,10 @@
                         class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
                             <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
-                            <div class="text-gray-700 font-medium">Memuatkan kemahiran tambahan...</div>
+                            <div class="text-gray-700 font-medium">Memuatkan faktor pekerjaan...</div>
                         </div>
                     </div>
-                    <canvas id="additionalSkillsChart" class="w-full h-full"></canvas>
+                    <canvas id="jobFindingFactorsChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
@@ -576,7 +508,7 @@
 
 {% block scripts %}
 <script>
-    function faktorGraduanDashboard() {
+    function statusPekerjaanDashboard() {
         return {
             loading: false,
             dataLoaded: false,
@@ -586,13 +518,14 @@
                 graduation_year: [],
                 gender: [],
                 institution: [],
-                certificates: []
+                employment_status: [],
+                job_types: []
             },
             availableFilters: {},
             activeFiltersCount: 0,
 
             init() {
-                console.log('Initializing faktor graduan dashboard...');
+                console.log('Initializing status pekerjaan dashboard...');
                 if (this.isInitialized) return;
                 this.isInitialized = true;
                 this.waitForEnhancedChart();
@@ -610,14 +543,15 @@
 
             async loadAvailableFilters() {
                 try {
-                    const response = await fetch('/faktor-graduan/api/filters/available');
+                    const response = await fetch('/status-pekerjaan/api/filters/available');
                     const data = await response.json();
 
                     this.availableFilters = {
                         graduation_years: data['Tahun graduasi anda?'] || [],
                         genders: data['Jantina anda?'] || [],
                         institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || [],
-                        certificates: data['Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'] || []
+                        employment_status: data['Adakah anda kini bekerja?'] || [],
+                        job_types: data['Apakah jenis pekerjaan anda sekarang'] || []
                     };
                 } catch (error) {
                     console.error('Error loading filters:', error);
@@ -633,26 +567,14 @@
                     await this.loadSummary();
                     await this.delay(200);
                     
-                    // Load all 5 individual employability factor charts
-                    await this.loadIndividualFactorChart('industrial-training', 'industrialTrainingChart');
+                    // Load all 5 charts
+                    await this.loadEmploymentStatusChart();
                     await this.delay(200);
-                    await this.loadIndividualFactorChart('communication-skills', 'communicationSkillsChart');
+                    await this.loadCurrentJobStatusChart();
                     await this.delay(200);
-                    await this.loadIndividualFactorChart('technical-skills', 'technicalSkillsChart');
+                    await this.loadCurrentJobTypesChart();
                     await this.delay(200);
-                    await this.loadIndividualFactorChart('networking', 'networkingChart');
-                    await this.delay(200);
-                    await this.loadIndividualFactorChart('academic-qualifications', 'academicQualificationsChart');
-                    await this.delay(200);
-                    
-                    // Load other charts
-                    await this.loadProfessionalCertificatesChart();
-                    await this.delay(200);
-                    await this.loadEmployerRequirementsChart();
-                    await this.delay(200);
-                    await this.loadUniversityPreparednessChart();
-                    await this.delay(200);
-                    await this.loadAdditionalSkillsChart();
+                    await this.loadJobFindingFactorsChart();
 
                     this.dataLoaded = true;
                 } catch (error) {
@@ -663,21 +585,128 @@
                 }
             },
 
-            async loadIndividualFactorChart(factorId, canvasId) {
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            },
+
+            async loadSummary() {
                 try {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/faktor-graduan/api/employability-factor/${factorId}?${params}`);
+                    const response = await fetch(`/status-pekerjaan/api/summary?${params}`);
+                    if (!response.ok) throw new Error('Failed to load summary');
+                    this.kpis = await response.json();
+                } catch (error) {
+                    console.error('Error loading summary:', error);
+                    this.kpis = {
+                        total_records: 0,
+                        employment_rate: 0,
+                        field_match_rate: 0,
+                        quick_employment_rate: 0,
+                        most_common_job_type: 'N/A'
+                    };
+                }
+            },
+
+            async loadEmploymentStatusChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/status-pekerjaan/api/employment-status?${params}`);
                     const data = await response.json();
 
-                    this.safeDestroyChart(canvasId.replace('Chart', ''));
+                    this.safeDestroyChart('employmentStatus');
 
-                    const canvas = document.getElementById(canvasId);
+                    const canvas = document.getElementById('employmentStatusChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            // Use Enhanced Chart Factory for pie chart
+                            window.globalCharts = window.globalCharts || {};
+                            window.globalCharts.employmentStatus = EnhancedChartFactory.createChart(ctx, 'enhanced-pie', data, 'employment-status', {
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                                return `${context.label}: ${context.parsed.toLocaleString()} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading employment status chart:', error);
+                }
+            },
+
+            async loadCurrentJobStatusChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/status-pekerjaan/api/current-job-status?${params}`);
+                    const data = await response.json();
+
+                    this.safeDestroyChart('currentJobStatus');
+
+                    const canvas = document.getElementById('currentJobStatusChart');
                     if (canvas) {
                         const ctx = canvas.getContext('2d');
                         if (ctx) {
                             // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts[canvasId.replace('Chart', '')] = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, `employability-factor/${factorId}`, {
+                            window.globalCharts.currentJobStatus = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'current-job-status', {
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
+                                            }
+                                        }
+                                    },
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        ticks: {
+                                            maxRotation: 0,
+                                            minRotation: 0,
+                                            font: { size: 10 },
+                                            callback: function(value, index) {
+                                                const label = this.getLabelForValue(value);
+                                                if (label && label.length > 15) {
+                                                    return label.substring(0, 12) + '...';
+                                                }
+                                                return label;
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading current job status chart:', error);
+                }
+            },
+
+            async loadTimeToFirstJobChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/status-pekerjaan/api/time-to-first-job?${params}`);
+                    const data = await response.json();
+
+                    this.safeDestroyChart('timeToFirstJob');
+
+                    const canvas = document.getElementById('timeToFirstJobChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            // Use Enhanced Chart Factory for area chart (line with fill)
+                            window.globalCharts = window.globalCharts || {};
+                            window.globalCharts.timeToFirstJob = EnhancedChartFactory.createChart(ctx, 'line', data, 'time-to-first-job', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
@@ -690,36 +719,28 @@
                                         display: false
                                     }
                                 },
+                                elements: {
+                                    line: {
+                                        tension: 0.4,
+                                        fill: true
+                                    },
+                                    point: {
+                                        radius: 5,
+                                        hoverRadius: 8
+                                    }
+                                },
                                 scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Bilangan Responden',
-                                            font: { size: 10, weight: '600' }
-                                        },
+                                    x: {
                                         ticks: {
+                                            maxRotation: 45,
                                             font: { size: 10 }
                                         }
                                     },
-                                    x: {
+                                    y: {
+                                        beginAtZero: true,
                                         title: {
                                             display: true,
-                                            text: 'Skala',
-                                            font: { size: 10, weight: '600' }
-                                        },
-                                        ticks: {
-                                            font: { size: 9 },
-                                            maxRotation: 0,  // Keep text straight
-                                            minRotation: 0,  // Keep text straight
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                // Truncate long labels and add ellipsis
-                                                if (label && label.length > 15) {
-                                                    return label.substring(0, 12) + '...';
-                                                }
-                                                return label;
-                                            }
+                                            text: 'Bilangan Responden'
                                         }
                                     }
                                 }
@@ -727,63 +748,25 @@
                         }
                     }
                 } catch (error) {
-                    console.error(`Error loading ${factorId} chart:`, error);
+                    console.error('Error loading time to first job chart:', error);
                 }
             },
 
-            async refreshAllFactorCharts() {
-                await this.loadIndividualFactorChart('industrial-training', 'industrialTrainingChart');
-                await this.loadIndividualFactorChart('communication-skills', 'communicationSkillsChart');
-                await this.loadIndividualFactorChart('technical-skills', 'technicalSkillsChart');
-                await this.loadIndividualFactorChart('networking', 'networkingChart');
-                await this.loadIndividualFactorChart('academic-qualifications', 'academicQualificationsChart');
-                this.showToast('Semua graf faktor dimuat semula', 'success');
-            },
-
-            delay(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            },
-
-            async loadSummary() {
+            async loadCurrentJobTypesChart() {
                 try {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/faktor-graduan/api/summary?${params}`);
-                    if (!response.ok) throw new Error('Failed to load summary');
-                    this.kpis = await response.json();
-                } catch (error) {
-                    console.error('Error loading summary:', error);
-                    this.kpis = {
-                        total_records: 0,
-                        highest_impact_factor: 'N/A',
-                        lowest_impact_factor: 'N/A',
-                        overall_preparedness_score: 0,
-                        university_preparedness_avg: 0,
-                        cert_impact_rate: 0
-                    };
-                }
-            },
-
-            async loadEmployabilityFactorsChart() {
-                // This method is now replaced by individual factor charts
-                // Keeping for compatibility but no longer used
-                console.log('Individual factor charts are loaded separately');
-            },
-
-            async loadProfessionalCertificatesChart() {
-                try {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/faktor-graduan/api/professional-certificates?${params}`);
+                    const response = await fetch(`/status-pekerjaan/api/current-job-types?${params}`);
                     const data = await response.json();
 
-                    this.safeDestroyChart('professionalCertificates');
+                    this.safeDestroyChart('currentJobTypes');
 
-                    const canvas = document.getElementById('professionalCertificatesChart');
+                    const canvas = document.getElementById('currentJobTypesChart');
                     if (canvas) {
                         const ctx = canvas.getContext('2d');
                         if (ctx) {
                             // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.professionalCertificates = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'professional-certificates', {
+                            window.globalCharts.currentJobTypes = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'current-job-types', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
@@ -797,144 +780,15 @@
                                     }
                                 },
                                 scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Bilangan Responden',
-                                            font: { size: 11, weight: '600' }
-                                        }
-                                    },
                                     x: {
                                         ticks: {
-                                            maxRotation: 0,  // Keep text straight
-                                            minRotation: 0,  // Keep text straight
-                                            font: { size: 10 },
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                // Truncate long labels
-                                                if (label && label.length > 12) {
-                                                    return label.substring(0, 9) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading professional certificates chart:', error);
-                }
-            },
-
-            async loadEmployerRequirementsChart() {
-                try {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/faktor-graduan/api/employer-requirements?${params}`);
-                    const data = await response.json();
-
-                    this.safeDestroyChart('employerRequirements');
-
-                    const canvas = document.getElementById('employerRequirementsChart');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            // Use Enhanced Chart Factory for vertical bar chart
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.employerRequirements = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'employer-requirements', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Bilangan Responden',
-                                            font: { size: 11, weight: '600' }
-                                        }
-                                    },
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 0,  // Keep text straight
-                                            minRotation: 0,  // Keep text straight
-                                            font: { size: 10 },
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                // Truncate long labels
-                                                if (label && label.length > 15) {
-                                                    return label.substring(0, 12) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading employer requirements chart:', error);
-                }
-            },
-
-            async loadUniversityPreparednessChart() {
-                try {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/faktor-graduan/api/university-preparedness?${params}`);
-                    const data = await response.json();
-
-                    this.safeDestroyChart('universityPreparedness');
-
-                    const canvas = document.getElementById('universityPreparednessChart');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            // Use Enhanced Chart Factory for vertical bar chart
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.universityPreparedness = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'university-preparedness', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Bilangan Responden',
-                                            font: { size: 11, weight: '600' }
-                                        }
-                                    },
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 0,  // Keep text straight
-                                            minRotation: 0,  // Keep text straight
+                                            maxRotation: 0,
+                                            minRotation: 0,
                                             font: { size: 9 },
                                             callback: function(value, index) {
                                                 const label = this.getLabelForValue(value);
-                                                // Truncate long labels
-                                                if (label && label.length > 15) {
-                                                    return label.substring(0, 12) + '...';
+                                                if (label && label.length > 20) {
+                                                    return label.substring(0, 17) + '...';
                                                 }
                                                 return label;
                                             }
@@ -945,31 +799,30 @@
                         }
                     }
                 } catch (error) {
-                    console.error('Error loading university preparedness chart:', error);
+                    console.error('Error loading current job types chart:', error);
                 }
             },
 
-            async loadAdditionalSkillsChart() {
+            async loadJobFindingFactorsChart() {
                 try {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/faktor-graduan/api/additional-skills?${params}`);
+                    const response = await fetch(`/status-pekerjaan/api/job-finding-factors?${params}`);
                     const data = await response.json();
 
-                    this.safeDestroyChart('additionalSkills');
+                    this.safeDestroyChart('jobFindingFactors');
 
-                    const canvas = document.getElementById('additionalSkillsChart');
+                    const canvas = document.getElementById('jobFindingFactorsChart');
                     if (canvas) {
                         const ctx = canvas.getContext('2d');
                         if (ctx) {
-                            // Use Enhanced Chart Factory for horizontal bar chart
+                            // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.additionalSkills = EnhancedChartFactory.createChart(ctx, 'horizontal-bar', data, 'additional-skills', {
-                                indexAxis: 'y',
+                            window.globalCharts.jobFindingFactors = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'job-finding-factors', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
                                             label: function(context) {
-                                                return `Kekerapan: ${context.parsed.x.toLocaleString()}`;
+                                                return `Kekerapan: ${context.parsed.y.toLocaleString()}`;
                                             }
                                         }
                                     },
@@ -979,16 +832,24 @@
                                 },
                                 scales: {
                                     x: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Kekerapan Diminta'
+                                        ticks: {
+                                            maxRotation: 0,
+                                            minRotation: 0,
+                                            font: { size: 11 },
+                                            callback: function(value, index) {
+                                                const label = this.getLabelForValue(value);
+                                                if (label && label.length > 25) {
+                                                    return label.substring(0, 22) + '...';
+                                                }
+                                                return label;
+                                            }
                                         }
                                     },
                                     y: {
+                                        beginAtZero: true,
                                         title: {
                                             display: true,
-                                            text: 'Kategori Kemahiran'
+                                            text: 'Kekerapan'
                                         }
                                     }
                                 }
@@ -996,7 +857,7 @@
                         }
                     }
                 } catch (error) {
-                    console.error('Error loading additional skills chart:', error);
+                    console.error('Error loading job finding factors chart:', error);
                 }
             },
 
@@ -1018,7 +879,8 @@
                         const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
                             key === 'gender' ? 'Jantina anda?' :
                                 key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' :
-                                    key === 'certificates' ? 'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?' : key;
+                                    key === 'employment_status' ? 'Adakah anda kini bekerja?' :
+                                        key === 'job_types' ? 'Apakah jenis pekerjaan anda sekarang' : key;
                         values.forEach(value => params.append(paramKey, value));
                     }
                 });
@@ -1037,7 +899,8 @@
                     graduation_year: [],
                     gender: [],
                     institution: [],
-                    certificates: []
+                    employment_status: [],
+                    job_types: []
                 };
                 this.updateActiveFiltersCount();
                 this.dataLoaded = false;
@@ -1058,16 +921,16 @@
             },
 
             async refreshChart(chartType) {
-                if (chartType === 'factors') {
-                    await this.refreshAllFactorCharts();
-                } else if (chartType === 'certificates') {
-                    await this.loadProfessionalCertificatesChart();
-                } else if (chartType === 'requirements') {
-                    await this.loadEmployerRequirementsChart();
-                } else if (chartType === 'preparedness') {
-                    await this.loadUniversityPreparednessChart();
-                } else if (chartType === 'skills') {
-                    await this.loadAdditionalSkillsChart();
+                if (chartType === 'employment-status') {
+                    await this.loadEmploymentStatusChart();
+                } else if (chartType === 'job-status') {
+                    await this.loadCurrentJobStatusChart();
+                } else if (chartType === 'time-to-job') {
+                    await this.loadTimeToFirstJobChart();
+                } else if (chartType === 'job-types') {
+                    await this.loadCurrentJobTypesChart();
+                } else if (chartType === 'job-factors') {
+                    await this.loadJobFindingFactorsChart();
                 }
                 this.showToast(`Graf ${chartType} dimuat semula`, 'success');
             },
@@ -1075,7 +938,7 @@
             async exportData(format) {
                 try {
                     const params = this.buildFilterParams();
-                    const url = `/faktor-graduan/api/export?format=${format}&${params}`;
+                    const url = `/status-pekerjaan/api/export?format=${format}&${params}`;
                     window.open(url, '_blank');
                     this.showToast(`Mengeksport data sebagai ${format.toUpperCase()}...`, 'info');
                 } catch (error) {
@@ -1087,7 +950,7 @@
             openTableModal(title) {
                 const params = this.buildFilterParams();
                 if (typeof openModal !== 'undefined') {
-                    openModal(title, `/faktor-graduan/api/table-data?${params}`);
+                    openModal(title, `/status-pekerjaan/api/table-data?${params}`);
                 }
             },
 

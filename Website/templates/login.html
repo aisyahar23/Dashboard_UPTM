@@ -424,11 +424,11 @@
                                     <div class="text-xs text-gray-600">Employment Rate</div>
                                 </div>
                                 <div class="text-center p-4 bg-success/5 rounded-xl">
-                                    <div class="text-2xl font-bold text-success">2,341</div>
+                                    <div class="text-2xl font-bold text-success">39</div>
                                     <div class="text-xs text-gray-600">Graduates</div>
                                 </div>
                                 <div class="text-center p-4 bg-secondary/5 rounded-xl">
-                                    <div class="text-2xl font-bold text-secondary">$52K</div>
+                                    <div class="text-2xl font-bold text-secondary">-</div>
                                     <div class="text-xs text-gray-600">Avg Salary</div>
                                 </div>
                             </div>
@@ -480,94 +480,98 @@
             </div>
 
             <!-- Right Side - Enhanced Login Form -->
-            <div class="relative flex items-center justify-center bg-white/50 min-h-screen">
-                <div class="w-full max-w-lg  mt-10">
-                    <div class="glass-card rounded-3xl shadow-2xl p-12 relative overflow-hidden">
-                        
-                        <!-- Decorative Elements -->
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/5 to-transparent rounded-full -mr-16 -mt-16"></div>
-                        <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-secondary/5 to-transparent rounded-full -ml-12 -mb-12"></div>
-                        
-                        <!-- Form Header -->
-                        <div class="relative text-center mb-10">
-                            <div class="w-20 h-20 gradient-primary rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-xl animate-scale-in relative">
-                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                                </svg>
-                                <div class="absolute inset-0 rounded-3xl border-4 border-primary/30 animate-pulse-ring"></div>
-                            </div>
-                            <h2 class="text-3xl font-bold gradient-text mb-3">Welcome Back</h2>
-                            <p class="text-gray-600">Access your analytics dashboard</p>
+             <div class="relative flex items-center justify-center bg-white min-h-screen">
+    <div class="w-full max-w-lg mt-12">
+        <div class="glass-card rounded-3xl shadow-lg p-10 relative overflow-hidden bg-white">
+            <!-- Form Header -->
+            <div class="relative text-center mb-10">
+                <!-- Logo and Header -->
+                <div class="text-center mb-8">
+                    <!-- Main Logo -->
+                    <div class="mb-8">
+                        <img src="https://www.uptm.edu.my/images/logo/LOGO_UPTM_no_bg_baru1.png" alt="UPTM Logo" class="h-20 w-auto max-w-[150px] mx-auto object-contain logo-glow">
+                        <div class="mt-3 text-sm font-semibold text-blue-600 uppercase tracking-wider">
+                            Universiti Poly-Tech Malaysia
                         </div>
-
-                        <!-- Login Form -->
-                        <form class="space-y-6" id="loginForm">
-                            <!-- Email Field -->
-                            <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
-                                <label class="block text-sm font-bold text-gray-700 mb-3">Email Address</label>
-                                <div class="relative group">
-                                    <input 
-                                        type="email" 
-                                        class="w-full px-6 py-4 bg-white/80 border-2 border-gray-200 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none input-focus transition-all duration-300"
-                                        placeholder="Enter your email"
-                                        required>
-                                    <div class="absolute inset-y-0 right-0 pr-6 flex items-center">
-                                        <svg class="h-5 w-5 text-gray-400 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Password Field -->
-                            <div class="animate-fade-in-up" style="animation-delay: 0.4s;">
-                                <label class="block text-sm font-bold text-gray-700 mb-3">Password</label>
-                                <div class="relative group">
-                                    <input 
-                                        type="password" 
-                                        id="password"
-                                        class="w-full px-6 py-4 bg-white/80 border-2 border-gray-200 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none input-focus transition-all duration-300"
-                                        placeholder="Enter your password"
-                                        required>
-                                    <button type="button" class="absolute inset-y-0 right-0 pr-6 flex items-center hover:scale-110 transition-transform" id="togglePassword">
-                                        <svg class="h-5 w-5 text-gray-400 hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Options -->
-                            <div class="flex items-center justify-between animate-fade-in-up" style="animation-delay: 0.6s;">
-                                <label class="flex items-center cursor-pointer group">
-                                    <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4">
-                                    <span class="ml-3 text-sm text-gray-600 font-medium">Remember me</span>
-                                </label>
-                                <a href="#" class="text-sm font-semibold text-primary hover:text-primary-light transition-colors">
-                                    Need help?
-                                </a>
-                            </div>
-
-                            <!-- Login Button -->
-                            <button 
-                                type="submit" 
-                                class="w-full btn-premium text-white font-bold py-4 px-8 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 shadow-xl animate-scale-in"
-                                style="animation-delay: 0.8s;"
-                                id="loginButton">
-                                <div class="flex items-center justify-center space-x-3">
-                                    <span>Access Dashboard</span>
-                                    <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                    </svg>
-                                </div>
-                            </button>
-
-                            
-                        </form>
                     </div>
+
+                   <!-- Collaboration Logos (Closer and Well-Organized) -->
+<!-- Collaboration Logos (Closer and Well-Organized) -->
+<!-- Collaboration Logos (Closer and Well-Organized) -->
+<div class="flex justify-center gap-8 items-center mb-6 px-4">
+    <img src="../static/img/2.MARA 2.png" alt="Logo MARA" style="height:30px;">
+    <img src="../static/img/3.KKWK.png" alt="Logo KKWK" style="height:30px;">
+    <img src="../static/img/4.KPTM.png" alt="Logo KPTM" style="height:30px;">
+    <img src="../static/img/5.IKEB.jpg" alt="Logo IKEB" style="height:27px;">
+</div>
+
+
+
+
+                    <!-- Collaboration Message -->
+                    <p class="text-gray-700 text-lg font-medium">dalam kerjasama UPTM, IKEB, dan AIBIG</p>
+                    <div class="w-24 h-1 bg-gray-300 mx-auto mt-4 rounded-full"></div>
+
+                    <h2 class="text-3xl font-bold text-gray-900 mb-3">Selamat Datang Kembali</h2>
+                    <p class="text-gray-600">Akses papan analitik anda</p>
                 </div>
+
+                <!-- Login Form -->
+                <form class="space-y-6" id="loginForm">
+                    <!-- Email Field -->
+                    <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                        <label class="block text-sm font-bold text-gray-700 mb-3">Alamat Emel</label>
+                        <div class="relative group">
+                            <input type="email" class="w-full px-6 py-4 bg-white border-2 border-gray-300 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-300" placeholder="Masukkan emel anda" required>
+                            <div class="absolute inset-y-0 right-0 pr-6 flex items-center">
+                                <svg class="h-5 w-5 text-gray-400 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="animate-fade-in-up" style="animation-delay: 0.4s;">
+                        <label class="block text-sm font-bold text-gray-700 mb-3">Katalaluan</label>
+                        <div class="relative group">
+                            <input type="password" id="password" class="w-full px-6 py-4 bg-white border-2 border-gray-300 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-300" placeholder="Masukkan katalaluan anda" required>
+                            <button type="button" class="absolute inset-y-0 right-0 pr-6 flex items-center hover:scale-110 transition-transform" id="togglePassword">
+                                <svg class="h-5 w-5 text-gray-400 hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="flex items-center justify-between animate-fade-in-up" style="animation-delay: 0.6s;">
+                        <label class="flex items-center cursor-pointer group">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4">
+                            <span class="ml-3 text-sm text-gray-600 font-medium">Ingatkan saya</span>
+                        </label>
+                        <a href="#" class="text-sm font-semibold text-primary hover:text-primary-light transition-colors">
+                            Perlukan bantuan?
+                        </a>
+                    </div>
+
+                    <!-- Login Button -->
+                    <button type="submit" class="w-full bg-primary text-white font-bold py-4 px-8 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 shadow-xl hover:bg-primary-dark transition-all duration-300" id="loginButton">
+                        <div class="flex items-center justify-center space-x-3">
+                            <span>Akses Papan Pemuka</span>
+                            <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </div>
+                    </button>
+                </form>
             </div>
+        </div>
+    </div>
+</div>
+
+            
         </div>
     </div>
 

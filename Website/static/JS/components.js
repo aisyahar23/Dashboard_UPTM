@@ -1,91 +1,181 @@
-// static/js/components.js
+// static/js/components.js - Updated with Custom Color Schemes
 
-// Global Chart Management
-window.globalCharts = {};
-
-// Safe chart destruction function
-function safeDestroyChart(chartId) {
-    if (window.globalCharts[chartId]) {
-        window.globalCharts[chartId].destroy();
-        delete window.globalCharts[chartId];
+// Global Color Palette Configuration
+const ColorPalette = {
+    // Primary color scheme for general charts
+    primary: [
+        '#2066a8', // Dark Blue
+        '#3594cc', // Med Blue  
+        '#8cc5e3', // Light Blue
+        '#a00000', // Dark Red
+        '#c46666', // Med Red
+        '#d8a6a6'  // Light Red
+    ],
+    
+    // Extended palette for pie charts and complex visualizations
+    extended: [
+        '#296899',
+        '#274754', 
+        '#cc7700',
+        '#e8c468',
+        '#ba454d',
+        '#2066a8',
+        '#cdecec', // Fixed the incomplete color
+        '#8eclda',
+        '#f6d6c2',
+        '#ededed',
+        '#d47264',
+        '#ae282c'
+    ],
+    
+    // Secondary/Accent colors (red scheme)
+    secondary: {
+        50: '#fef2f2',
+        100: '#fde2e2', 
+        200: '#fbc6c6',
+        300: '#f59898',
+        400: '#ee6b6b',
+        500: '#c92427', // Main secondary
+        600: '#b91c1c',
+        700: '#991b1b',
+        800: '#7f1d1d',
+        900: '#651515'
+    },
+    
+    // Neutral colors for backgrounds and borders
+    neutral: [
+        '#374151', '#6b7280', '#9ca3af', '#d1d5db',
+        '#e5e7eb', '#f3f4f6', '#f9fafb'
+    ],
+    
+    // Status colors
+    status: {
+        success: '#059669',
+        warning: '#d97706', 
+        danger: '#c92427',
+        info: '#2066a8'
     }
-}
+};
 
-// Global Chart Factory
+// Global Chart Factory with Enhanced Styling
 class ChartFactory {
     static defaultOptions = {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        },
         plugins: {
             legend: {
                 display: false,
-                position: 'bottom',
+                position: 'top',
                 labels: {
-                    padding: 20,
                     usePointStyle: true,
+                    padding: 20,
                     font: {
                         size: 12,
-                        weight: '500'
-                    }
+                        weight: '500',
+                        family: "'Inter', 'Segoe UI', sans-serif"
+                    },
+                    color: '#374151'
                 }
             },
             tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                titleColor: 'white',
-                bodyColor: 'white',
+                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
                 cornerRadius: 12,
                 padding: 16,
                 titleFont: {
                     size: 14,
-                    weight: 'bold'
+                    weight: '600',
+                    family: "'Inter', 'Segoe UI', sans-serif"
                 },
                 bodyFont: {
-                    size: 13
-                }
+                    size: 13,
+                    family: "'Inter', 'Segoe UI', sans-serif"
+                },
+                displayColors: true,
+                boxPadding: 6,
+                usePointStyle: true
+            }
+        },
+        elements: {
+            point: {
+                radius: 6,
+                hoverRadius: 8,
+                backgroundColor: '#ffffff',
+                borderWidth: 3
+            },
+            line: {
+                tension: 0.4,
+                borderWidth: 3
+            },
+            bar: {
+                borderRadius: 6,
+                borderSkipped: false
             }
         }
     };
 
-    static createBarChart(ctx, data, options = {}) {
-        // Brand-focused color palette
-        const theme = options.theme || 'brand';
-        const colorPalettes = {
-            default: [
-                '#1e40af', '#dc2626', '#059669', '#d97706', '#7c3aed',
-                '#be185d', '#0891b2', '#65a30d', '#c2410c', '#7c2d12'
-            ],
-            corporate: [
-                '#074e7e', '#c92427', '#0369a1', '#dc2626', '#0891b2'
-            ],
-            brand: [
-                '#074e7e', '#c92427', '#0ea5e9', '#ef4444', '#06b6d4',
-                '#f97316', '#10b981', '#8b5cf6', '#ec4899', '#84cc16'
-            ],
-            minimal: [
-                '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#e5e7eb'
-            ]
-        };
-
-        const colors = colorPalettes[theme] || colorPalettes.brand;
-
-        // Apply colors to dataset if not already set
-        if (data.datasets && data.datasets[0] && !data.datasets[0].backgroundColor) {
-            if (options.singleColor) {
-                // Use primary brand color for single color charts
-                data.datasets[0].backgroundColor = colors[0];
-                data.datasets[0].borderColor = colors[0];
-            } else {
-                data.datasets[0].backgroundColor = colors.slice(0, data.labels?.length || 10);
-                data.datasets[0].borderColor = colors.slice(0, data.labels?.length || 10);
-            }
-            data.datasets[0].borderWidth = 1;
-            data.datasets[0].borderRadius = 6;
-            data.datasets[0].borderSkipped = false;
+    // Get colors based on chart type and count
+    static getColors(type = 'primary', count = 8) {
+        let colors = [];
+        
+        switch(type) {
+            case 'pie':
+            case 'doughnut':
+                colors = [...ColorPalette.extended];
+                break;
+            case 'secondary':
+                colors = Object.values(ColorPalette.secondary).slice(2, 8); // Skip very light colors
+                break;
+            case 'primary':
+            default:
+                colors = [...ColorPalette.primary];
+                break;
         }
+        
+        // Extend colors if needed
+        while (colors.length < count) {
+            colors.push(...ColorPalette.extended);
+        }
+        
+        return colors.slice(0, count);
+    }
+
+    // Create transparent versions of colors for backgrounds
+    static getTransparentColors(colors, opacity = 0.2) {
+        return colors.map(color => {
+            // Convert hex to rgba
+            const hex = color.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        });
+    }
+
+    static createBarChart(ctx, data, options = {}) {
+        const colorCount = data.datasets?.[0]?.data?.length || data.labels?.length || 6;
+        const colors = this.getColors('primary', colorCount);
+        
+        const enhancedData = {
+            ...data,
+            datasets: data.datasets.map((dataset, index) => ({
+                ...dataset,
+                backgroundColor: dataset.backgroundColor || colors,
+                borderColor: dataset.borderColor || colors,
+                borderWidth: 0,
+                borderRadius: 8,
+                borderSkipped: false
+            }))
+        };
 
         return new Chart(ctx, {
             type: 'bar',
-            data: data,
+            data: enhancedData,
             options: {
                 ...this.defaultOptions,
                 ...options,
@@ -93,29 +183,44 @@ class ChartFactory {
                     y: {
                         beginAtZero: true,
                         grid: { 
-                            color: 'rgba(7, 78, 126, 0.08)', 
-                            drawBorder: false 
+                            color: 'rgba(0,0,0,0.04)', 
+                            drawBorder: false,
+                            lineWidth: 1
                         },
                         ticks: { 
-                            font: { size: 11, weight: '500' },
-                            color: '#374151'
+                            font: { 
+                                size: 12, 
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#6b7280',
+                            padding: 12
                         }
                     },
                     x: { 
                         grid: { display: false },
                         ticks: { 
-                            font: { size: 11, weight: '500' },
-                            color: '#374151',
-                            maxRotation: options.indexAxis === 'y' ? 0 : 45
+                            font: { 
+                                size: 12, 
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#6b7280',
+                            maxRotation: 45,
+                            padding: 8
                         }
                     },
                     ...options.scales
                 },
                 plugins: {
                     ...this.defaultOptions.plugins,
-                    legend: {
-                        display: false,
-                        ...this.defaultOptions.plugins.legend
+                    tooltip: {
+                        ...this.defaultOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label || 'Value'}: ${context.parsed.y.toLocaleString()}`;
+                            }
+                        }
                     },
                     ...options.plugins
                 }
@@ -123,26 +228,26 @@ class ChartFactory {
         });
     }
 
-    static createStackedBarChart(ctx, data, options = {}) {
-        // Professional color palette for stacked charts
-        const colors = [
-            '#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', 
-            '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f59e0b'
-        ];
-
-        // Apply colors to datasets
-        if (data.datasets) {
-            data.datasets.forEach((dataset, index) => {
-                if (!dataset.backgroundColor) {
-                    dataset.backgroundColor = colors[index % colors.length];
-                    dataset.borderWidth = 0;
-                }
-            });
-        }
+    static createMultipleBarChart(ctx, data, options = {}) {
+        const colors = this.getColors('primary', data.datasets.length);
+        
+        const enhancedData = {
+            ...data,
+            datasets: data.datasets.map((dataset, index) => ({
+                ...dataset,
+                backgroundColor: dataset.backgroundColor || colors[index % colors.length],
+                borderColor: dataset.borderColor || colors[index % colors.length],
+                borderWidth: 0,
+                borderRadius: 6,
+                borderSkipped: false,
+                barThickness: 'flex',
+                maxBarThickness: 40
+            }))
+        };
 
         return new Chart(ctx, {
             type: 'bar',
-            data: data,
+            data: enhancedData,
             options: {
                 ...this.defaultOptions,
                 ...options,
@@ -151,13 +256,106 @@ class ChartFactory {
                     legend: {
                         display: true,
                         position: 'top',
+                        align: 'end',
                         labels: {
-                            padding: 20,
                             usePointStyle: true,
+                            pointStyle: 'rect',
+                            padding: 20,
                             font: {
                                 size: 12,
-                                weight: '500'
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#374151'
+                        }
+                    },
+                    tooltip: {
+                        ...this.defaultOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
                             }
+                        }
+                    },
+                    ...options.plugins
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { 
+                            color: 'rgba(0,0,0,0.04)', 
+                            drawBorder: false,
+                            lineWidth: 1
+                        },
+                        ticks: { 
+                            font: { 
+                                size: 12, 
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#6b7280',
+                            padding: 12,
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { 
+                            font: { 
+                                size: 12, 
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#6b7280',
+                            maxRotation: 45,
+                            padding: 8
+                        }
+                    },
+                    ...options.scales
+                }
+            }
+        });
+    }
+
+    static createStackedBarChart(ctx, data, options = {}) {
+        const colors = this.getColors('primary', data.datasets.length);
+        
+        const enhancedData = {
+            ...data,
+            datasets: data.datasets.map((dataset, index) => ({
+                ...dataset,
+                backgroundColor: dataset.backgroundColor || colors[index % colors.length],
+                borderColor: dataset.borderColor || colors[index % colors.length],
+                borderWidth: 0,
+                borderRadius: 6,
+                borderSkipped: false
+            }))
+        };
+
+        return new Chart(ctx, {
+            type: 'bar',
+            data: enhancedData,
+            options: {
+                ...this.defaultOptions,
+                ...options,
+                plugins: {
+                    ...this.defaultOptions.plugins,
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'rect',
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#374151'
                         }
                     },
                     ...options.plugins
@@ -167,8 +365,12 @@ class ChartFactory {
                         stacked: true,
                         grid: { display: false },
                         ticks: { 
-                            font: { size: 11, weight: '500' },
-                            color: '#374151',
+                            font: { 
+                                size: 12, 
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#6b7280',
                             maxRotation: 45
                         }
                     },
@@ -176,12 +378,222 @@ class ChartFactory {
                         stacked: true,
                         beginAtZero: true,
                         grid: { 
-                            color: 'rgba(0,0,0,0.05)', 
-                            drawBorder: false 
+                            color: 'rgba(0,0,0,0.04)', 
+                            drawBorder: false,
+                            lineWidth: 1
                         },
                         ticks: { 
-                            font: { size: 12, weight: '500' },
+                            font: { 
+                                size: 12, 
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#6b7280',
+                            padding: 12
+                        }
+                    },
+                    ...options.scales
+                }
+            }
+        });
+    }
+
+    static createLineChart(ctx, data, options = {}) {
+        const colors = this.getColors('primary', data.datasets.length);
+        const backgroundColors = this.getTransparentColors(colors, 0.1);
+        
+        const enhancedData = {
+            ...data,
+            datasets: data.datasets.map((dataset, index) => ({
+                ...dataset,
+                backgroundColor: dataset.backgroundColor || backgroundColors[index % backgroundColors.length],
+                borderColor: dataset.borderColor || colors[index % colors.length],
+                borderWidth: 3,
+                tension: 0.4,
+                fill: dataset.fill !== undefined ? dataset.fill : false,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: dataset.borderColor || colors[index % colors.length],
+                pointBorderWidth: 3,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: '#ffffff',
+                pointHoverBorderWidth: 4
+            }))
+        };
+
+        return new Chart(ctx, {
+            type: 'line',
+            data: enhancedData,
+            options: {
+                ...this.defaultOptions,
+                ...options,
+                plugins: {
+                    ...this.defaultOptions.plugins,
+                    legend: {
+                        display: data.datasets.length > 1,
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
                             color: '#374151'
+                        }
+                    },
+                    tooltip: {
+                        ...this.defaultOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label || 'Value'}: ${context.parsed.y.toLocaleString()}`;
+                            }
+                        }
+                    },
+                    ...options.plugins
+                },
+                scales: {
+                    x: { 
+                        grid: { 
+                            display: true,
+                            color: 'rgba(0,0,0,0.04)',
+                            drawBorder: false,
+                            lineWidth: 1
+                        },
+                        ticks: { 
+                            font: { 
+                                size: 12, 
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#6b7280',
+                            maxRotation: 45,
+                            padding: 8
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { 
+                            color: 'rgba(0,0,0,0.04)', 
+                            drawBorder: false,
+                            lineWidth: 1
+                        },
+                        ticks: { 
+                            font: { 
+                                size: 12, 
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#6b7280',
+                            padding: 12,
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    },
+                    ...options.scales
+                }
+            }
+        });
+    }
+
+    static createAreaChart(ctx, data, options = {}) {
+        const colors = this.getColors('primary', data.datasets.length);
+        const backgroundColors = this.getTransparentColors(colors, 0.3);
+        
+        const enhancedData = {
+            ...data,
+            datasets: data.datasets.map((dataset, index) => ({
+                ...dataset,
+                backgroundColor: dataset.backgroundColor || backgroundColors[index % backgroundColors.length],
+                borderColor: dataset.borderColor || colors[index % colors.length],
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: dataset.borderColor || colors[index % colors.length],
+                pointBorderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: '#ffffff',
+                pointHoverBorderWidth: 4
+            }))
+        };
+
+        return new Chart(ctx, {
+            type: 'line',
+            data: enhancedData,
+            options: {
+                ...this.defaultOptions,
+                ...options,
+                plugins: {
+                    ...this.defaultOptions.plugins,
+                    legend: {
+                        display: data.datasets.length > 1,
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#374151'
+                        }
+                    },
+                    tooltip: {
+                        ...this.defaultOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label || 'Value'}: ${context.parsed.y.toLocaleString()}`;
+                            }
+                        }
+                    },
+                    ...options.plugins
+                },
+                scales: {
+                    x: { 
+                        grid: { 
+                            display: true,
+                            color: 'rgba(0,0,0,0.04)',
+                            drawBorder: false,
+                            lineWidth: 1
+                        },
+                        ticks: { 
+                            font: { 
+                                size: 12, 
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#6b7280',
+                            maxRotation: 45,
+                            padding: 8
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { 
+                            color: 'rgba(0,0,0,0.04)', 
+                            drawBorder: false,
+                            lineWidth: 1
+                        },
+                        ticks: { 
+                            font: { 
+                                size: 12, 
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#6b7280',
+                            padding: 12,
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
                         }
                     },
                     ...options.scales
@@ -191,31 +603,24 @@ class ChartFactory {
     }
 
     static createPieChart(ctx, data, options = {}) {
-        // Brand color palette for pie charts
-        const theme = options.theme || 'brand';
-        const colorPalettes = {
-            default: [
-                '#1e40af', '#dc2626', '#059669', '#d97706', '#7c3aed',
-                '#be185d', '#0891b2', '#65a30d', '#c2410c', '#7c2d12'
-            ],
-            brand: [
-                '#074e7e', '#c92427', '#0ea5e9', '#ef4444', '#06b6d4',
-                '#f97316', '#10b981', '#8b5cf6', '#ec4899', '#84cc16'
-            ]
+        const colorCount = data.datasets?.[0]?.data?.length || data.labels?.length || 12;
+        const colors = this.getColors('pie', colorCount);
+        
+        const enhancedData = {
+            ...data,
+            datasets: data.datasets.map((dataset) => ({
+                ...dataset,
+                backgroundColor: dataset.backgroundColor || colors,
+                borderColor: '#ffffff',
+                borderWidth: 3,
+                hoverBorderWidth: 4,
+                hoverOffset: 8
+            }))
         };
-
-        const colors = colorPalettes[theme] || colorPalettes.brand;
-
-        // Apply colors to dataset if not already set
-        if (data.datasets && data.datasets[0] && !data.datasets[0].backgroundColor) {
-            data.datasets[0].backgroundColor = colors.slice(0, data.labels?.length || 10);
-            data.datasets[0].borderColor = '#ffffff';
-            data.datasets[0].borderWidth = 3;
-        }
 
         return new Chart(ctx, {
             type: 'pie',
-            data: data,
+            data: enhancedData,
             options: {
                 ...this.defaultOptions,
                 ...options,
@@ -223,34 +628,47 @@ class ChartFactory {
                     ...this.defaultOptions.plugins,
                     legend: {
                         display: true,
-                        position: 'bottom',
+                        position: 'right',
                         labels: {
-                            padding: 20,
                             usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 15,
                             font: {
                                 size: 12,
-                                weight: '500'
+                                weight: '500',
+                                family: "'Inter', 'Segoe UI', sans-serif"
                             },
+                            color: '#374151',
                             generateLabels: function(chart) {
                                 const data = chart.data;
                                 if (data.labels.length && data.datasets.length) {
-                                    return data.labels.map((label, i) => {
+                                    return data.labels.map((label, index) => {
                                         const dataset = data.datasets[0];
-                                        const value = dataset.data[i];
-                                        const total = dataset.data.reduce((a, b) => a + b, 0);
+                                        const value = dataset.data[index];
+                                        const total = dataset.data.reduce((sum, val) => sum + val, 0);
                                         const percentage = ((value / total) * 100).toFixed(1);
                                         
                                         return {
                                             text: `${label} (${percentage}%)`,
-                                            fillStyle: dataset.backgroundColor[i],
+                                            fillStyle: dataset.backgroundColor[index],
                                             strokeStyle: dataset.borderColor,
                                             lineWidth: dataset.borderWidth,
                                             hidden: false,
-                                            index: i
+                                            index: index
                                         };
                                     });
                                 }
                                 return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        ...this.defaultOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed.toLocaleString()} (${percentage}%)`;
                             }
                         }
                     },
@@ -260,678 +678,269 @@ class ChartFactory {
         });
     }
 
-    static createLineChart(ctx, data, options = {}) {
-        // Professional styling for line charts
-        const colors = [
-            '#1e40af', '#dc2626', '#059669', '#d97706', '#7c3aed'
-        ];
+    // Utility method to create gradient backgrounds
+    static createGradient(ctx, colorStart, colorEnd, direction = 'vertical') {
+        const gradient = direction === 'vertical' 
+            ? ctx.createLinearGradient(0, 0, 0, ctx.canvas.height)
+            : ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+        
+        gradient.addColorStop(0, colorStart);
+        gradient.addColorStop(1, colorEnd);
+        return gradient;
+    }
 
-        if (data.datasets) {
-            data.datasets.forEach((dataset, index) => {
-                if (!dataset.borderColor) {
-                    dataset.borderColor = colors[index % colors.length];
-                    dataset.backgroundColor = colors[index % colors.length] + '20';
-                    dataset.borderWidth = 3;
-                    dataset.fill = false;
-                    dataset.tension = 0.4;
-                }
-            });
-        }
-
-        return new Chart(ctx, {
-            type: 'line',
-            data: data,
-            options: {
-                ...this.defaultOptions,
-                ...options,
-                scales: {
-                    x: { 
-                        grid: { 
-                            color: 'rgba(0,0,0,0.05)',
-                            drawBorder: false
-                        },
-                        ticks: { 
-                            font: { size: 12, weight: '500' },
-                            color: '#374151'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: { 
-                            color: 'rgba(0,0,0,0.05)', 
-                            drawBorder: false 
-                        },
-                        ticks: { 
-                            font: { size: 12, weight: '500' },
-                            color: '#374151'
-                        }
-                    },
-                    ...options.scales
-                }
-            }
-        });
+    // Method to get consistent color palette
+    static getColorPalette(type = 'primary', count = 8) {
+        return this.getColors(type, count);
     }
 }
 
-// Utility Functions
-class DashboardUtils {
-    // Toast notification system
-    static showToast(message, type = 'info', duration = 3000) {
-        const toast = document.createElement('div');
-        const colors = {
-            success: 'bg-emerald-500 border-emerald-600',
-            error: 'bg-red-500 border-red-600',
-            info: 'bg-blue-500 border-blue-600',
-            warning: 'bg-amber-500 border-amber-600'
-        };
-        
-        const icons = {
-            success: 'fas fa-check-circle',
-            error: 'fas fa-exclamation-circle',
-            info: 'fas fa-info-circle',
-            warning: 'fas fa-exclamation-triangle'
-        };
-        
-        toast.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 transition-all duration-300 transform translate-x-0 border-l-4 max-w-sm`;
-        toast.innerHTML = `
-            <div class="flex items-center space-x-3">
-                <i class="${icons[type]} text-lg"></i>
-                <div class="flex-1">
-                    <div class="font-semibold">${message}</div>
-                </div>
-                <button onclick="this.parentElement.parentElement.style.transform = 'translateX(100%)'; setTimeout(() => this.parentElement.parentElement.remove(), 300);" class="text-white/80 hover:text-white">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
-        
-        document.body.appendChild(toast);
-        
-        // Auto-remove
-        setTimeout(() => {
-            if (toast.parentElement) {
-                toast.style.transform = 'translateX(100%)';
-                setTimeout(() => toast.remove(), 300);
-            }
-        }, duration);
-    }
-
-    // Loading overlay
-    static showLoading(container) {
-        const overlay = document.createElement('div');
-        overlay.className = 'absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-40';
-        overlay.innerHTML = `
-            <div class="text-center">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4"></div>
-                <div class="text-gray-700 font-medium">Loading data...</div>
-            </div>
-        `;
-        container.appendChild(overlay);
-        return overlay;
-    }
-
-    static hideLoading(overlay) {
-        if (overlay && overlay.parentElement) {
-            overlay.remove();
-        }
-    }
-
-    // Format numbers with proper separators
-    static formatNumber(num) {
-        if (typeof num !== 'number') return num;
-        return new Intl.NumberFormat().format(num);
-    }
-
-    // Format percentages
-    static formatPercentage(num, decimals = 1) {
-        if (typeof num !== 'number') return '0%';
-        return `${num.toFixed(decimals)}%`;
-    }
-
-    // Debounce function for search inputs
-    static debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // Color generator for charts with corporate minimal palette
-    static generateColors(count, theme = 'default') {
-        const themes = {
-            default: [
-                '#1e40af', '#dc2626', '#059669', '#d97706', '#7c3aed',
-                '#be185d', '#0891b2', '#65a30d', '#c2410c', '#7c2d12'
-            ],
-            corporate: [
-                '#074e7e', '#c92427', '#0369a1', '#dc2626', '#0891b2',
-                '#be185d', '#059669', '#d97706', '#7c3aed', '#65a30d'
-            ],
-            minimal: [
-                '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#e5e7eb'
-            ],
-            brand: [
-                '#074e7e', '#c92427', '#0ea5e9', '#ef4444', '#06b6d4',
-                '#f97316', '#10b981', '#8b5cf6', '#ec4899', '#84cc16'
-            ]
-        };
-        
-        const baseColors = themes[theme] || themes.default;
-        const colors = [];
-        for (let i = 0; i < count; i++) {
-            colors.push(baseColors[i % baseColors.length]);
-        }
-        return colors;
-    }
-
-    // CSV export helper
-    static exportToCSV(data, filename) {
-        if (!data || data.length === 0) {
-            this.showToast('No data to export', 'warning');
-            return;
-        }
-
-        const csvContent = this.convertToCSV(data);
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        
-        if (link.download !== undefined) {
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }
-
-    static convertToCSV(data) {
-        if (!data || data.length === 0) return '';
-        
-        const headers = Object.keys(data[0]);
-        const csvHeaders = headers.join(',');
-        
-        const csvRows = data.map(row => 
-            headers.map(header => {
-                const value = row[header];
-                // Escape commas and quotes
-                if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-                    return `"${value.replace(/"/g, '""')}"`;
-                }
-                return value;
-            }).join(',')
-        );
-        
-        return [csvHeaders, ...csvRows].join('\n');
-    }
-}
-
-// Modal Management
-class ModalManager {
-    static openModal(title, endpoint, additionalParams = {}) {
-        const existingModal = document.getElementById('dataModal');
-        if (existingModal) {
-            existingModal.remove();
-        }
-
-        const modal = this.createModal(title);
-        document.body.appendChild(modal);
-        
-        this.loadModalData(endpoint, additionalParams);
-        modal.classList.add('show');
-    }
-
-    static createModal(title) {
-        const modal = document.createElement('div');
-        modal.id = 'dataModal';
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 opacity-0 transition-opacity duration-300';
-        modal.innerHTML = `
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden transform scale-95 transition-transform duration-300">
-                <div class="bg-gradient-to-r from-slate-700 to-slate-800 px-8 py-6 text-white">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-xl font-bold">${title}</h3>
-                        <button onclick="ModalManager.closeModal()" class="text-white/80 hover:text-white text-2xl">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-                <div id="modalContent" class="p-8">
-                    <div class="flex items-center justify-center py-12">
-                        <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-slate-600"></div>
-                        <span class="ml-4 text-gray-600">Loading data...</span>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Close on backdrop click
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                this.closeModal();
-            }
-        });
-
-        return modal;
-    }
-
-    static async loadModalData(endpoint, params = {}) {
-        try {
-            const url = new URL(endpoint, window.location.origin);
-            Object.keys(params).forEach(key => {
-                if (Array.isArray(params[key])) {
-                    params[key].forEach(value => url.searchParams.append(key, value));
-                } else {
-                    url.searchParams.append(key, params[key]);
-                }
-            });
-
-            const response = await fetch(url);
-            const data = await response.json();
-
-            const modalContent = document.getElementById('modalContent');
-            if (!modalContent) return;
-
-            if (data.error) {
-                modalContent.innerHTML = `
-                    <div class="text-center py-12">
-                        <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
-                        <p class="text-red-600 font-medium">Error loading data: ${data.error}</p>
-                    </div>
-                `;
-                return;
-            }
-
-            if (!data.data || data.data.length === 0) {
-                modalContent.innerHTML = `
-                    <div class="text-center py-12">
-                        <i class="fas fa-database text-gray-400 text-4xl mb-4"></i>
-                        <p class="text-gray-600 font-medium">No data available</p>
-                    </div>
-                `;
-                return;
-            }
-
-            // Create table
-            const headers = Object.keys(data.data[0]);
-            const tableHTML = `
-                <div class="overflow-x-auto">
-                    <div class="mb-4 flex items-center justify-between">
-                        <div class="text-sm text-gray-600">
-                            Showing ${data.data.length} records
-                        </div>
-                        <button onclick="DashboardUtils.exportToCSV(${JSON.stringify(data.data).replace(/"/g, '&quot;')}, 'modal_data.csv')" 
-                                class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors">
-                            <i class="fas fa-download mr-2"></i>Export CSV
-                        </button>
-                    </div>
-                    <table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                ${headers.map(header => `
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border-b border-gray-200">
-                                        ${header}
-                                    </th>
-                                `).join('')}
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            ${data.data.map((row, index) => `
-                                <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50 transition-colors">
-                                    ${headers.map(header => `
-                                        <td class="px-6 py-4 text-sm text-gray-900 border-b border-gray-100">
-                                            ${this.formatCellValue(row[header])}
-                                        </td>
-                                    `).join('')}
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            modalContent.innerHTML = tableHTML;
-
-        } catch (error) {
-            console.error('Error loading modal data:', error);
-            const modalContent = document.getElementById('modalContent');
-            if (modalContent) {
-                modalContent.innerHTML = `
-                    <div class="text-center py-12">
-                        <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
-                        <p class="text-red-600 font-medium">Error loading data: ${error.message}</p>
-                    </div>
-                `;
-            }
-        }
-    }
-
-    static formatCellValue(value) {
-        if (value === null || value === undefined) return '-';
-        if (typeof value === 'string' && value.length > 100) {
-            return value.substring(0, 100) + '...';
-        }
-        return String(value);
-    }
-
-    static closeModal() {
-        const modal = document.getElementById('dataModal');
-        if (modal) {
-            modal.classList.remove('show');
-            modal.style.opacity = '0';
-            setTimeout(() => {
-                if (modal.parentElement) {
-                    modal.remove();
-                }
-            }, 300);
-        }
-    }
-}
-
-// Global utility functions for backward compatibility
-function showToast(message, type = 'info') {
-    DashboardUtils.showToast(message, type);
-}
-
-function openModal(title, endpoint, params = {}) {
-    ModalManager.openModal(title, endpoint, params);
-}
-
-function closeModal() {
-    ModalManager.closeModal();
-}
-
-// Enhanced Dashboard Base Class
+// Enhanced Dashboard Class (keeping existing functionality)
 class Dashboard {
-    constructor(apiBase = '/api') {
+    constructor() {
         this.charts = {};
         this.filters = {};
-        this.apiBase = apiBase;
-        this.loadingOverlays = {};
+        this.apiBase = '/api';
     }
 
     // Initialize dashboard
     init() {
         this.setupEventListeners();
         this.loadData();
+        this.addCustomStyles();
     }
 
-    // Setup common event listeners
-    setupEventListeners() {
-        // Filter controls
-        const filterBtn = document.getElementById('filterBtn');
-        if (filterBtn) {
-            filterBtn.addEventListener('click', () => {
-                document.getElementById('filterDropdown')?.classList.toggle('show');
-            });
-        }
-
-        // Close filter dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('#filterBtn') && !e.target.closest('#filterDropdown')) {
-                const dropdown = document.getElementById('filterDropdown');
-                if (dropdown) dropdown.classList.remove('show');
-            }
-        });
-
-        // Refresh button
-        const refreshBtn = document.getElementById('refreshBtn');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => this.refreshData());
-        }
-
-        // Export buttons
-        document.querySelectorAll('[data-export]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const format = e.target.closest('[data-export]').dataset.export;
-                this.exportData(format);
-            });
-        });
-
-        // Apply filters button
-        const applyFiltersBtn = document.getElementById('applyFilters');
-        if (applyFiltersBtn) {
-            applyFiltersBtn.addEventListener('click', () => this.applyFilters());
-        }
-
-        // Clear filters button
-        const clearFiltersBtn = document.getElementById('clearAllFilters');
-        if (clearFiltersBtn) {
-            clearFiltersBtn.addEventListener('click', () => this.clearFilters());
-        }
-    }
-
-    // Fetch data from API with error handling
-    async fetchData(endpoint, params = {}) {
-        try {
-            const url = new URL(`${this.apiBase}${endpoint}`, window.location.origin);
-            Object.keys(params).forEach(key => {
-                if (Array.isArray(params[key])) {
-                    params[key].forEach(value => url.searchParams.append(key, value));
-                } else {
-                    url.searchParams.append(key, params[key]);
+    // Add custom CSS styles for professional look
+    addCustomStyles() {
+        if (!document.getElementById('dashboard-styles')) {
+            const style = document.createElement('style');
+            style.id = 'dashboard-styles';
+            style.textContent = `
+                .chart-container {
+                    background: #ffffff;
+                    border-radius: 12px;
+                    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+                    border: 1px solid rgba(0, 0, 0, 0.05);
+                    transition: all 0.2s ease-in-out;
                 }
-            });
 
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Fetch error:', error);
-            DashboardUtils.showToast(`Error loading data: ${error.message}`, 'error');
-            return null;
-        }
-    }
-
-    // Apply filters with loading state
-    applyFilters() {
-        this.updateActiveFiltersDisplay();
-        this.loadData();
-        DashboardUtils.showToast('Filters applied successfully', 'success');
-    }
-
-    // Clear all filters
-    clearFilters() {
-        this.filters = {};
-        document.querySelectorAll('#filterDropdown input[type="checkbox"]').forEach(cb => {
-            cb.checked = false;
-        });
-        this.updateActiveFiltersDisplay();
-        this.loadData();
-        DashboardUtils.showToast('All filters cleared', 'info');
-    }
-
-    // Update active filters display
-    updateActiveFiltersDisplay() {
-        const container = document.getElementById('activeFilters');
-        const filterCount = document.getElementById('filterCount');
-        
-        if (container) {
-            container.innerHTML = '';
-            let count = 0;
-            
-            Object.entries(this.filters).forEach(([key, values]) => {
-                if (Array.isArray(values)) {
-                    values.forEach(value => {
-                        count++;
-                        const tag = document.createElement('div');
-                        tag.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm bg-slate-600 text-white mr-2 mb-2';
-                        tag.innerHTML = `
-                            ${value}
-                            <button onclick="dashboard.removeFilter('${key}', '${value}')" class="ml-2 p-1 rounded-full hover:bg-white/20">
-                                <i class="fas fa-times text-xs"></i>
-                            </button>
-                        `;
-                        container.appendChild(tag);
-                    });
+                .chart-container:hover {
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
                 }
-            });
-            
-            if (filterCount) {
-                if (count > 0) {
-                    filterCount.textContent = count;
-                    filterCount.classList.remove('hidden');
-                } else {
-                    filterCount.classList.add('hidden');
+
+                .chart-header {
+                    padding: 20px 24px 16px 24px;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
                 }
-            }
-        }
-    }
 
-    // Remove specific filter
-    removeFilter(key, value) {
-        if (Array.isArray(this.filters[key])) {
-            this.filters[key] = this.filters[key].filter(v => v !== value);
-            if (this.filters[key].length === 0) {
-                delete this.filters[key];
-            }
-        } else {
-            delete this.filters[key];
-        }
-        
-        // Update checkbox state
-        const checkbox = document.querySelector(`input[value="${value}"]`);
-        if (checkbox) checkbox.checked = false;
-        
-        this.updateActiveFiltersDisplay();
-        this.loadData();
-    }
+                .chart-title {
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #111827;
+                    margin-bottom: 4px;
+                    font-family: 'Inter', 'Segoe UI', sans-serif;
+                }
 
-    // Refresh data with visual feedback
-    async refreshData() {
-        const btn = document.getElementById('refreshBtn');
-        if (btn) {
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = `
-                <i class="fas fa-spinner fa-spin"></i>
-                <span class="text-sm font-semibold">Refreshing...</span>
+                .chart-subtitle {
+                    font-size: 14px;
+                    color: #6b7280;
+                    font-family: 'Inter', 'Segoe UI', sans-serif;
+                }
+
+                .chart-body {
+                    padding: 20px 24px 24px 24px;
+                    height: 300px;
+                    position: relative;
+                }
+
+                .chart-loading {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    color: #6b7280;
+                    font-family: 'Inter', 'Segoe UI', sans-serif;
+                }
+
+                .chart-actions {
+                    position: absolute;
+                    top: 20px;
+                    right: 24px;
+                    display: flex;
+                    gap: 8px;
+                }
+
+                .chart-action-btn {
+                    padding: 6px;
+                    background: rgba(0, 0, 0, 0.05);
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: all 0.2s ease-in-out;
+                    color: #6b7280;
+                }
+
+                .chart-action-btn:hover {
+                    background: rgba(0, 0, 0, 0.1);
+                    color: #374151;
+                }
             `;
-            btn.disabled = true;
-            
-            await this.loadData();
-            
-            setTimeout(() => {
-                btn.innerHTML = originalContent;
-                btn.disabled = false;
-                DashboardUtils.showToast('Data refreshed successfully', 'success');
-            }, 1000);
+            document.head.appendChild(style);
         }
     }
 
-    // Export data with loading state
-    async exportData(format = 'csv') {
-        const params = this.buildFilterParams();
-        const url = `${this.apiBase}/export?format=${format}&${params}`;
+    // Enhanced chart container creation
+    createChartContainer(id, title, subtitle = '') {
+        return `
+            <div class="chart-container" id="${id}-container">
+                <div class="chart-header">
+                    <div class="chart-actions">
+                        <button class="chart-action-btn" onclick="dashboard.refreshChart('${id}')" title="Refresh Chart">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                        </button>
+                        <button class="chart-action-btn" onclick="dashboard.exportChart('${id}')" title="Export Chart">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <h3 class="chart-title">${title}</h3>
+                    ${subtitle ? `<p class="chart-subtitle">${subtitle}</p>` : ''}
+                </div>
+                <div class="chart-body">
+                    <div class="chart-loading" id="${id}-loading">
+                        <svg class="w-6 h-6 animate-spin mr-2" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Loading chart...
+                    </div>
+                    <canvas id="${id}" style="display: none;"></canvas>
+                </div>
+            </div>
+        `;
+    }
+
+    // Method to show chart and hide loading
+    showChart(chartId) {
+        const loading = document.getElementById(`${chartId}-loading`);
+        const canvas = document.getElementById(chartId);
         
-        try {
-            // Open in new tab for download
-            window.open(url, '_blank');
-            DashboardUtils.showToast(`Exporting data as ${format.toUpperCase()}...`, 'info');
-        } catch (error) {
-            console.error('Export error:', error);
-            DashboardUtils.showToast('Export failed', 'error');
+        if (loading) loading.style.display = 'none';
+        if (canvas) canvas.style.display = 'block';
+    }
+
+    // Method to refresh individual chart
+    async refreshChart(chartId) {
+        if (this.charts[chartId]) {
+            this.charts[chartId].destroy();
+        }
+        
+        const loading = document.getElementById(`${chartId}-loading`);
+        const canvas = document.getElementById(chartId);
+        
+        if (loading) loading.style.display = 'flex';
+        if (canvas) canvas.style.display = 'none';
+        
+        // Reload chart data - override this method in child classes
+        await this.loadChartData(chartId);
+    }
+
+    // Method to export individual chart
+    exportChart(chartId) {
+        if (this.charts[chartId]) {
+            const url = this.charts[chartId].toBase64Image();
+            const link = document.createElement('a');
+            link.download = `${chartId}-chart.png`;
+            link.href = url;
+            link.click();
+            
+            this.showToast(`Chart exported successfully`, 'success');
         }
     }
 
-    // Build filter parameters string
-    buildFilterParams() {
-        const params = new URLSearchParams();
-        Object.entries(this.filters).forEach(([key, values]) => {
-            if (Array.isArray(values) && values.length > 0) {
-                values.forEach(value => params.append(key, value));
-            }
-        });
-        return params.toString();
-    }
-
-    // Show table modal
-    showTableModal(title, endpoint) {
-        const params = this.buildFilterParams();
-        const fullEndpoint = `${this.apiBase}${endpoint}`;
-        ModalManager.openModal(title, fullEndpoint, this.filters);
+    // Show toast notification (enhanced with better styling)
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        const colors = {
+            success: 'bg-emerald-500 text-white border-emerald-600',
+            error: `bg-red-500 text-white border-red-600`,
+            info: `bg-blue-500 text-white border-blue-600`,
+            warning: 'bg-amber-500 text-white border-amber-600'
+        };
+        
+        const icons = {
+            success: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>',
+            error: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>',
+            info: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>',
+            warning: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>'
+        };
+        
+        toast.className = `fixed top-4 right-4 ${colors[type]} px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 border-l-4 font-medium`;
+        toast.innerHTML = `
+            <div class="flex items-center">
+                <div class="flex-shrink-0 mr-3">
+                    ${icons[type]}
+                </div>
+                <div class="text-sm font-medium">${message}</div>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => toast.style.transform = 'translateX(0)', 10);
+        
+        // Animate out and remove
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
     }
 
     // Override in child classes
     async loadData() {
         console.log('Override loadData method in child class');
     }
+
+    // Override in child classes for individual chart loading
+    async loadChartData(chartId) {
+        console.log(`Override loadChartData method for chart: ${chartId}`);
+    }
 }
 
-// CSS for modals and components (inject into head)
-const componentStyles = `
-<style>
-    .modal {
-        display: flex !important;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-    }
-    
-    .modal.show {
-        opacity: 1;
-        pointer-events: auto;
-    }
-    
-    .modal.show > div {
-        transform: scale(1);
-    }
-    
-    .modal > div {
-        transform: scale(0.95);
-        transition: transform 0.3s ease;
-    }
-    
-    /* Custom scrollbar for tables */
-    .table-container {
-        scrollbar-width: thin;
-        scrollbar-color: #cbd5e1 #f1f5f9;
-    }
-    
-    .table-container::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-    
-    .table-container::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 4px;
-    }
-    
-    .table-container::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-    }
-    
-    .table-container::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-    }
-    
-    /* Loading animation */
-    .loading-pulse {
-        animation: pulse 1.5s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-    }
-</style>
-`;
-
-// Inject styles into head
-if (!document.getElementById('component-styles')) {
-    const styleElement = document.createElement('div');
-    styleElement.id = 'component-styles';
-    styleElement.innerHTML = componentStyles;
-    document.head.appendChild(styleElement);
-}
-
-// Global dashboard instance placeholder
+// Global dashboard instance
 let dashboard;
+
+// Initialize dashboard when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the appropriate dashboard based on page
+    if (typeof faktorGraduanDashboard === 'function') {
+        dashboard = faktorGraduanDashboard();
+        dashboard.init();
+    } else if (typeof sosioekonomiDashboard === 'function') {
+        dashboard = sosioekonomiDashboard();
+        dashboard.init();
+    }
+});
+
+// Global function to safely destroy charts
+function safeDestroyChart(chartName) {
+    try {
+        if (window.globalCharts && window.globalCharts[chartName]) {
+            window.globalCharts[chartName].destroy();
+            delete window.globalCharts[chartName];
+        }
+    } catch (error) {
+        console.error(`Error destroying chart ${chartName}:`, error);
+    }
+}
+
+// Make ColorPalette globally accessible for other scripts
+window.ColorPalette = ColorPalette;
+window.globalCharts = window.globalCharts || {};
+
+console.log('ChartFactory with custom color schemes loaded successfully');

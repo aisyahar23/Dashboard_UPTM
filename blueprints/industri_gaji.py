@@ -6,6 +6,104 @@ import pandas as pd
 from collections import Counter
 import numpy as np
 
+# Global Color Palette Configuration
+class ColorPalette:
+    """Centralized color palette management for consistent theming across charts"""
+    
+    # Primary color scheme for general charts
+    PRIMARY = [
+        '#2066a8',  # Dark Blue
+        '#3594cc',  # Med Blue  
+        '#8cc5e3',  # Light Blue
+        '#a00000',  # Dark Red
+        '#c46666',  # Med Red
+        '#d8a6a6'   # Light Red
+    ]
+    
+    # Extended palette for pie charts and complex visualizations
+    EXTENDED = [
+        '#296899',
+        '#274754', 
+        '#cc7700',
+        '#e8c468',
+        '#ba454d',
+        '#2066a8',
+        '#cdecec',
+        '#8eclda',
+        '#f6d6c2',
+        '#ededed',
+        '#d47264',
+        '#ae282c'
+    ]
+    
+    # Secondary/Accent colors (red scheme)
+    SECONDARY = {
+        50: '#fef2f2',
+        100: '#fde2e2', 
+        200: '#fbc6c6',
+        300: '#f59898',
+        400: '#ee6b6b',
+        500: '#c92427',  # Main secondary
+        600: '#b91c1c',
+        700: '#991b1b',
+        800: '#7f1d1d',
+        900: '#651515'
+    }
+    
+    # Neutral colors for backgrounds and borders
+    NEUTRAL = [
+        '#374151', '#6b7280', '#9ca3af', '#d1d5db',
+        '#e5e7eb', '#f3f4f6', '#f9fafb'
+    ]
+    
+    # Status colors
+    STATUS = {
+        'success': '#059669',
+        'warning': '#d97706', 
+        'danger': '#c92427',
+        'info': '#2066a8'
+    }
+    
+    @classmethod
+    def get_colors(cls, chart_type='primary', count=8):
+        """Get colors based on chart type and required count"""
+        if chart_type == 'pie' or chart_type == 'doughnut':
+            colors = cls.EXTENDED.copy()
+        elif chart_type == 'secondary':
+            colors = [cls.SECONDARY[key] for key in [200, 300, 400, 500, 600, 700, 800, 900]]
+        else:  # primary or default
+            colors = cls.PRIMARY.copy()
+        
+        # Extend colors if needed
+        while len(colors) < count:
+            colors.extend(cls.EXTENDED)
+        
+        return colors[:count]
+    
+    @classmethod
+    def get_gradient_colors(cls, start_color, end_color, steps):
+        """Generate gradient colors between two hex colors"""
+        def hex_to_rgb(hex_color):
+            hex_color = hex_color.lstrip('#')
+            return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+        
+        def rgb_to_hex(rgb):
+            return '#{:02x}{:02x}{:02x}'.format(int(rgb[0]), int(rgb[1]), int(rgb[2]))
+        
+        start_rgb = hex_to_rgb(start_color)
+        end_rgb = hex_to_rgb(end_color)
+        
+        colors = []
+        for i in range(steps):
+            factor = i / (steps - 1) if steps > 1 else 0
+            rgb = tuple(
+                start_rgb[j] + factor * (end_rgb[j] - start_rgb[j])
+                for j in range(3)
+            )
+            colors.append(rgb_to_hex(rgb))
+        
+        return colors
+
 industri_gaji_bp = Blueprint('industri_gaji', __name__)
 
 # Load data from Excel file
@@ -32,6 +130,86 @@ def group_job_factors(cell):
     raw_factors = [x.strip() for x in str(cell).split(';')]
     mapped = [JOB_FACTOR_GROUPING.get(factor, factor) for factor in raw_factors]
     return '; '.join(dict.fromkeys(mapped))
+
+def create_chart_data(chart_type, labels, values, dataset_label='Data'):
+    """Create standardized chart data with consistent color scheme"""
+    color_count = len(labels) if labels else len(values) if isinstance(values, list) else 1
+    colors = ColorPalette.get_colors(chart_type, color_count)
+    
+    if chart_type in ['pie', 'doughnut']:
+        return {
+            'labels': labels,
+            'datasets': [{
+                'data': values,
+                'backgroundColor': colors,
+                'borderColor': '#ffffff',
+                'borderWidth': 3,
+                'hoverBorderWidth': 4,
+                'hoverOffset': 8
+            }]
+        }
+    elif chart_type == 'bar':
+        return {
+            'labels': labels,
+            'datasets': [{
+                'label': dataset_label,
+                'data': values,
+                'backgroundColor': colors,
+                'borderColor': colors,
+                'borderWidth': 0,
+                'borderRadius': 8,
+                'borderSkipped': False
+            }]
+        }
+    elif chart_type == 'line':
+        return {
+            'labels': labels,
+            'datasets': [{
+                'label': dataset_label,
+                'data': values,
+                'backgroundColor': f'{colors[0]}20',  # 20% opacity
+                'borderColor': colors[0],
+                'borderWidth': 3,
+                'tension': 0.4,
+                'fill': False,
+                'pointBackgroundColor': '#ffffff',
+                'pointBorderColor': colors[0],
+                'pointBorderWidth': 2,
+                'pointRadius': 4
+            }]
+        }
+    else:
+        return {
+            'labels': labels,
+            'datasets': [{
+                'label': dataset_label,
+                'data': values,
+                'backgroundColor': colors,
+                'borderColor': colors,
+                'borderWidth': 1
+            }]
+        }
+
+def create_stacked_chart_data(labels, datasets_info):
+    """Create stacked chart data with consistent color scheme"""
+    colors = ColorPalette.get_colors('primary', len(datasets_info))
+    
+    datasets = []
+    for i, (label, data) in enumerate(datasets_info):
+        datasets.append({
+            'label': label,
+            'data': data,
+            'backgroundColor': colors[i % len(colors)],
+            'borderColor': colors[i % len(colors)],
+            'borderWidth': 0,
+            'borderRadius': 6,
+            'borderSkipped': False
+        })
+    
+    return {
+        'labels': labels,
+        'datasets': datasets
+    }
 
 @industri_gaji_bp.route('/')
 def index():
@@ -142,29 +320,16 @@ def api_employment_status():
         
         employment_column = 'Adakah anda kini bekerja?'
         if employment_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': ['#6B7280'],
-                    'borderWidth': 0,
-                    'hoverBackgroundColor': ['#6B7280']
-                }]
-            })
+            return jsonify(create_chart_data('pie', ['No Data Available'], [1]))
         
-        data = filtered_processor.get_chart_data('pie', employment_column)
-        return jsonify(data)
+        employment_counts = filtered_processor.filtered_df[employment_column].value_counts()
+        labels = employment_counts.index.tolist()
+        values = employment_counts.values.tolist()
+        
+        return jsonify(create_chart_data('pie', labels, values))
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': ['#DC2626'],
-                'borderWidth': 0
-            }]
-        }), 500
+        return jsonify(create_chart_data('pie', ['Error Loading Data'], [1])), 500
 
 @industri_gaji_bp.route('/api/job-types')
 def api_job_types():
@@ -182,48 +347,21 @@ def api_job_types():
         ]
         
         if working_df.empty:
-            return jsonify({
-                'labels': ['No working respondents'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': '#6b7280',
-                    'borderColor': '#374151',
-                    'borderWidth': 2,
-                    'borderRadius': 8
-                }]
-            })
+            return jsonify(create_chart_data('bar', ['No working respondents'], [1], 'Respondents'))
         
         job_status_col = 'Apakah status pekerjaan anda sekarang?'
         if job_status_col not in working_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'data': [1],
-                    'backgroundColor': '#6b7280',
-                    'borderColor': '#374151',
-                    'borderWidth': 2,
-                    'borderRadius': 8
-                }]
-            })
+            return jsonify(create_chart_data('bar', ['No Data Available'], [1], 'Respondents'))
         
-        # Let your processor handle the chart creation
-        filtered_processor.filtered_df = working_df
-        data = filtered_processor.get_chart_data('bar', job_status_col)
-        return jsonify(data)
+        job_counts = working_df[job_status_col].value_counts()
+        labels = job_counts.index.tolist()
+        values = job_counts.values.tolist()
+        
+        return jsonify(create_chart_data('bar', labels, values, 'Number of Employees'))
         
     except Exception as e:
         print(f"Error in api_job_types: {str(e)}")
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'data': [1],
-                'backgroundColor': '#ef4444',
-                'borderColor': '#dc2626',
-                'borderWidth': 2,
-                'borderRadius': 8
-            }]
-        }), 500
+        return jsonify(create_chart_data('bar', ['Error Loading Data'], [1], 'Error')), 500
 
 @industri_gaji_bp.route('/api/salary-distribution')
 def api_salary_distribution():
@@ -235,17 +373,7 @@ def api_salary_distribution():
         time_col = 'Jika bekerja, berapa lama selepas tamat pengajian anda mendapat pekerjaan pertama?'
         
         if time_col not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'label': 'Salary Range',
-                    'data': [1],
-                    'backgroundColor': 'rgba(31, 41, 55, 0.1)',
-                    'borderColor': '#1F2937',
-                    'borderWidth': 2,
-                    'fill': True
-                }]
-            })
+            return jsonify(create_chart_data('line', ['No Data Available'], [1], 'Salary Range'))
         
         tempoh_counts = filtered_processor.filtered_df[time_col].value_counts().sort_index()
         labels = tempoh_counts.index.tolist()
@@ -257,38 +385,10 @@ def api_salary_distribution():
             base_salary = 3000 + (i * 500)  # Mock progression
             salary_data.append(base_salary)
         
-        chart_data = {
-            'labels': labels,
-            'datasets': [{
-                'label': 'Average Salary (RM)',
-                'data': salary_data,
-                'backgroundColor': 'rgba(31, 41, 55, 0.1)',
-                'borderColor': '#1F2937',
-                'borderWidth': 2,
-                'fill': True,
-                'tension': 0.4,
-                'pointBackgroundColor': '#1F2937',
-                'pointBorderColor': '#1F2937',
-                'pointBorderWidth': 2,
-                'pointRadius': 4
-            }]
-        }
-        
-        return jsonify(chart_data)
+        return jsonify(create_chart_data('line', labels, salary_data, 'Average Salary (RM)'))
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'label': 'Error',
-                'data': [1],
-                'backgroundColor': 'rgba(220, 38, 38, 0.1)',
-                'borderColor': '#DC2626',
-                'borderWidth': 2,
-                'fill': True
-            }]
-        }), 500
+        return jsonify(create_chart_data('line', ['Error Loading Data'], [1], 'Error')), 500
 
 @industri_gaji_bp.route('/api/job-finding-factors')
 def api_job_finding_factors():
@@ -300,15 +400,7 @@ def api_job_finding_factors():
         factors_column = 'Apakah faktor utama yang membantu anda mendapat pekerjaan tersebut?'
         
         if factors_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'label': 'No Data',
-                    'data': [1],
-                    'backgroundColor': '#6B7280',
-                    'borderWidth': 0
-                }]
-            })
+            return jsonify(create_chart_data('bar', ['No Data Available'], [1], 'No Data'))
         
         df_copy = filtered_processor.filtered_df.copy()
         df_copy['Faktor_Pekerjaan_Grouped'] = df_copy[factors_column].apply(group_job_factors)
@@ -321,15 +413,7 @@ def api_job_finding_factors():
         factor_counts = pd.Series(Counter(all_factors)).sort_values(ascending=False)
         
         if factor_counts.empty:
-            return jsonify({
-                'labels': ['No Factors Available'],
-                'datasets': [{
-                    'label': 'Count',
-                    'data': [1],
-                    'backgroundColor': '#6B7280',
-                    'borderWidth': 0
-                }]
-            })
+            return jsonify(create_chart_data('bar', ['No Factors Available'], [1], 'Count'))
         
         labels = factor_counts.index.tolist()
         values = factor_counts.values.tolist()
@@ -339,43 +423,16 @@ def api_job_finding_factors():
         mid_level = [v * 0.4 for v in values]    # 40% mid level  
         senior_level = [v * 0.2 for v in values] # 20% senior level
         
-        chart_data = {
-            'labels': labels,
-            'datasets': [
-                {
-                    'label': 'Entry Level (RM 2,000-3,500)',
-                    'data': entry_level,
-                    'backgroundColor': '#6B7280',
-                    'borderWidth': 0
-                },
-                {
-                    'label': 'Mid Level (RM 3,500-6,000)', 
-                    'data': mid_level,
-                    'backgroundColor': '#374151',
-                    'borderWidth': 0
-                },
-                {
-                    'label': 'Senior Level (RM 6,000+)',
-                    'data': senior_level,
-                    'backgroundColor': '#1F2937',
-                    'borderWidth': 0
-                }
-            ]
-        }
+        datasets_info = [
+            ('Entry Level (RM 2,000-3,500)', entry_level),
+            ('Mid Level (RM 3,500-6,000)', mid_level),
+            ('Senior Level (RM 6,000+)', senior_level)
+        ]
         
-        return jsonify(chart_data)
+        return jsonify(create_stacked_chart_data(labels, datasets_info))
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'label': 'Error',
-                'data': [1],
-                'backgroundColor': '#DC2626',
-                'borderWidth': 0
-            }]
-        }), 500
+        return jsonify(create_chart_data('bar', ['Error Loading Data'], [1], 'Error')), 500
 
 @industri_gaji_bp.route('/api/current-job-types')
 def api_current_job_types():
@@ -387,47 +444,16 @@ def api_current_job_types():
         job_type_column = 'Apakah jenis pekerjaan anda sekarang'
         
         if job_type_column not in filtered_processor.filtered_df.columns:
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'label': 'Respondents',
-                    'data': [1],
-                    'backgroundColor': '#6B7280',
-                    'borderColor': '#6B7280',
-                    'borderWidth': 0
-                }]
-            })
+            return jsonify(create_chart_data('bar', ['No Data Available'], [1], 'Respondents'))
         
         pekerjaan_counts = filtered_processor.filtered_df[job_type_column].value_counts()
         labels = pekerjaan_counts.index.tolist()
         values = pekerjaan_counts.values.tolist()
         
-        chart_data = {
-            'labels': labels,
-            'datasets': [{
-                'label': 'Number of Respondents',
-                'data': values,
-                'backgroundColor': '#1F2937',
-                'borderColor': '#1F2937',
-                'borderWidth': 0,
-                'borderRadius': 4
-            }]
-        }
-        
-        return jsonify(chart_data)
+        return jsonify(create_chart_data('bar', labels, values, 'Number of Respondents'))
         
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Data'],
-            'datasets': [{
-                'label': 'Error',
-                'data': [1],
-                'backgroundColor': '#DC2626',
-                'borderColor': '#DC2626',
-                'borderWidth': 0
-            }]
-        }), 500
+        return jsonify(create_chart_data('bar', ['Error Loading Data'], [1], 'Error')), 500
 
 # Keep existing table data, export, and filter routes unchanged
 @industri_gaji_bp.route('/api/table-data')
@@ -554,3 +580,15 @@ def api_available_filters():
         
     except Exception as e:
         return jsonify({'error': str(e), 'filters': {}}), 500
+
+# Color palette endpoint for frontend synchronization
+@industri_gaji_bp.route('/api/color-palette')
+def api_color_palette():
+    """Get the current color palette configuration"""
+    return jsonify({
+        'primary': ColorPalette.PRIMARY,
+        'extended': ColorPalette.EXTENDED,
+        'secondary': ColorPalette.SECONDARY,
+        'neutral': ColorPalette.NEUTRAL,
+        'status': ColorPalette.STATUS
+    })

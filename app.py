@@ -8,6 +8,7 @@ from blueprints.graduanluar import graduanluar_bp
 from blueprints.intern import intern_bp
 from blueprints.gig_economy import gig_economy_bp
 from blueprints.faktor_graduan import faktor_graduan_bp
+from blueprints.statuspekerjaan import status_pekerjaan_bp
 
 
 def create_app():
@@ -22,6 +23,7 @@ def create_app():
     app.register_blueprint(intern_bp, url_prefix='/intern')
     app.register_blueprint(gig_economy_bp, url_prefix='/gig-economy')
     app.register_blueprint(faktor_graduan_bp, url_prefix='/faktor-graduan')
+    app.register_blueprint(status_pekerjaan_bp, url_prefix='/status-pekerjaan')
     app.register_blueprint(analytics_bp, url_prefix='/api')
 
     

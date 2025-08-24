@@ -1,0 +1,299 @@
+/* static/css/color-palette.css - Centralized Color Scheme */
+
+:root {
+  /* Primary Color Scheme */
+  --color-primary-dark-blue: #2066a8;
+  --color-primary-med-blue: #3594cc;
+  --color-primary-light-blue: #8cc5e3;
+  --color-primary-dark-red: #a00000;
+  --color-primary-med-red: #c46666;
+  --color-primary-light-red: #d8a6a6;
+  
+  /* Extended Palette for Complex Visualizations */
+  --color-extended-1: #296899;
+  --color-extended-2: #274754;
+  --color-extended-3: #cc7700;
+  --color-extended-4: #e8c468;
+  --color-extended-5: #ba454d;
+  --color-extended-6: #2066a8;
+  --color-extended-7: #cdecec;
+  --color-extended-8: #8eclda;
+  --color-extended-9: #f6d6c2;
+  --color-extended-10: #ededed;
+  --color-extended-11: #d47264;
+  --color-extended-12: #ae282c;
+  
+  /* Secondary/Accent Colors (Red Scheme) */
+  --color-secondary-50: #fef2f2;
+  --color-secondary-100: #fde2e2;
+  --color-secondary-200: #fbc6c6;
+  --color-secondary-300: #f59898;
+  --color-secondary-400: #ee6b6b;
+  --color-secondary-500: #c92427; /* Main secondary */
+  --color-secondary-600: #b91c1c;
+  --color-secondary-700: #991b1b;
+  --color-secondary-800: #7f1d1d;
+  --color-secondary-900: #651515;
+  
+  /* Neutral Colors */
+  --color-neutral-50: #f9fafb;
+  --color-neutral-100: #f3f4f6;
+  --color-neutral-200: #e5e7eb;
+  --color-neutral-300: #d1d5db;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-500: #6b7280;
+  --color-neutral-600: #4b5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1f2937;
+  --color-neutral-900: #111827;
+  
+  /* Status Colors */
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-danger: #c92427;
+  --color-info: #2066a8;
+  
+  /* Background and Border Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: var(--color-neutral-50);
+  --bg-accent: var(--color-secondary-50);
+  --border-color: var(--color-neutral-200);
+  --border-hover: var(--color-primary-med-blue);
+  
+  /* Text Colors */
+  --text-primary: var(--color-neutral-900);
+  --text-secondary: var(--color-neutral-600);
+  --text-muted: var(--color-neutral-500);
+}
+
+/* KPI Card Styling with Color Scheme */
+.KPI-card {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--color-neutral-50) 100%);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.KPI-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Primary Color Classes */
+.bg-primary-dark-blue { background-color: var(--color-primary-dark-blue); }
+.bg-primary-med-blue { background-color: var(--color-primary-med-blue); }
+.bg-primary-light-blue { background-color: var(--color-primary-light-blue); }
+.bg-primary-dark-red { background-color: var(--color-primary-dark-red); }
+.bg-primary-med-red { background-color: var(--color-primary-med-red); }
+.bg-primary-light-red { background-color: var(--color-primary-light-red); }
+
+.text-primary-dark-blue { color: var(--color-primary-dark-blue); }
+.text-primary-med-blue { color: var(--color-primary-med-blue); }
+.text-primary-light-blue { color: var(--color-primary-light-blue); }
+.text-primary-dark-red { color: var(--color-primary-dark-red); }
+.text-primary-med-red { color: var(--color-primary-med-red); }
+.text-primary-light-red { color: var(--color-primary-light-red); }
+
+.border-primary-dark-blue { border-color: var(--color-primary-dark-blue); }
+.border-primary-med-blue { border-color: var(--color-primary-med-blue); }
+.border-primary-light-blue { border-color: var(--color-primary-light-blue); }
+
+/* Extended Color Classes */
+.bg-extended-1 { background-color: var(--color-extended-1); }
+.bg-extended-2 { background-color: var(--color-extended-2); }
+.bg-extended-3 { background-color: var(--color-extended-3); }
+.bg-extended-4 { background-color: var(--color-extended-4); }
+.bg-extended-5 { background-color: var(--color-extended-5); }
+.bg-extended-6 { background-color: var(--color-extended-6); }
+.bg-extended-7 { background-color: var(--color-extended-7); }
+.bg-extended-8 { background-color: var(--color-extended-8); }
+.bg-extended-9 { background-color: var(--color-extended-9); }
+.bg-extended-10 { background-color: var(--color-extended-10); }
+.bg-extended-11 { background-color: var(--color-extended-11); }
+.bg-extended-12 { background-color: var(--color-extended-12); }
+
+/* Secondary Color Classes */
+.bg-secondary-50 { background-color: var(--color-secondary-50); }
+.bg-secondary-100 { background-color: var(--color-secondary-100); }
+.bg-secondary-200 { background-color: var(--color-secondary-200); }
+.bg-secondary-300 { background-color: var(--color-secondary-300); }
+.bg-secondary-400 { background-color: var(--color-secondary-400); }
+.bg-secondary-500 { background-color: var(--color-secondary-500); }
+.bg-secondary-600 { background-color: var(--color-secondary-600); }
+.bg-secondary-700 { background-color: var(--color-secondary-700); }
+.bg-secondary-800 { background-color: var(--color-secondary-800); }
+.bg-secondary-900 { background-color: var(--color-secondary-900); }
+
+.text-secondary-500 { color: var(--color-secondary-500); }
+.text-secondary-600 { color: var(--color-secondary-600); }
+.text-secondary-700 { color: var(--color-secondary-700); }
+
+.border-secondary-200 { border-color: var(--color-secondary-200); }
+.border-secondary-300 { border-color: var(--color-secondary-300); }
+.border-secondary-400 { border-color: var(--color-secondary-400); }
+
+/* Status Color Classes */
+.bg-success { background-color: var(--color-success); }
+.bg-warning { background-color: var(--color-warning); }
+.bg-danger { background-color: var(--color-danger); }
+.bg-info { background-color: var(--color-info); }
+
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.text-danger { color: var(--color-danger); }
+.text-info { color: var(--color-info); }
+
+.border-success { border-color: var(--color-success); }
+.border-warning { border-color: var(--color-warning); }
+.border-danger { border-color: var(--color-danger); }
+.border-info { border-color: var(--color-info); }
+
+/* Button Styling with Color Scheme */
+.button-style {
+  background: var(--bg-primary);
+  border: 1.5px solid var(--color-secondary-200);
+  color: var(--color-secondary-700);
+  transition: all 0.2s ease;
+}
+
+.button-style:hover {
+  border-color: var(--color-secondary-400);
+  background: var(--color-secondary-50);
+}
+
+.button-style2 {
+  background: linear-gradient(to right, var(--color-secondary-400), var(--color-secondary-500));
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.button-style2:hover {
+  background: linear-gradient(to right, var(--color-secondary-500), var(--color-secondary-700));
+}
+
+/* Chart Container Styling */
+.chart-container {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Primary Color Gradients */
+.bg-primary-gradient {
+  background: linear-gradient(135deg, var(--color-primary-dark-blue) 0%, var(--color-primary-med-blue) 100%);
+}
+
+.bg-secondary-gradient {
+  background: linear-gradient(135deg, var(--color-secondary-400) 0%, var(--color-secondary-600) 100%);
+}
+
+.bg-accent-gradient {
+  background: linear-gradient(135deg, var(--color-extended-3) 0%, var(--color-extended-4) 100%);
+}
+
+/* Utility Classes for Transparency */
+.bg-primary-dark-blue-10 { background-color: rgba(32, 102, 168, 0.1); }
+.bg-primary-dark-blue-20 { background-color: rgba(32, 102, 168, 0.2); }
+.bg-primary-dark-blue-30 { background-color: rgba(32, 102, 168, 0.3); }
+
+.bg-secondary-500-10 { background-color: rgba(201, 36, 39, 0.1); }
+.bg-secondary-500-20 { background-color: rgba(201, 36, 39, 0.2); }
+.bg-secondary-500-30 { background-color: rgba(201, 36, 39, 0.3); }
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: var(--color-neutral-800);
+    --bg-secondary: var(--color-neutral-900);
+    --text-primary: var(--color-neutral-100);
+    --text-secondary: var(--color-neutral-300);
+    --text-muted: var(--color-neutral-400);
+    --border-color: var(--color-neutral-700);
+  }
+  
+  .KPI-card {
+    background: linear-gradient(135deg, var(--color-neutral-800) 0%, var(--color-neutral-700) 100%);
+  }
+  
+  .chart-container {
+    background: var(--color-neutral-800);
+    border-color: var(--color-neutral-700);
+  }
+}
+
+/* Animation Classes */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-in-out;
+}
+
+.animate-pulse-custom {
+  animation: pulseCustom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseCustom {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Responsive Design Helpers */
+@media (max-width: 768px) {
+  .KPI-card {
+    border-radius: 12px;
+  }
+  
+  .chart-container {
+    border-radius: 12px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  :root {
+    --bg-primary: white;
+    --bg-secondary: white;
+    --text-primary: black;
+    --text-secondary: #333;
+    --border-color: #ccc;
+  }
+  
+  .KPI-card,
+  .chart-container {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+}

@@ -1,0 +1,35 @@
+<!-- templates/base_dashboard.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div x-data="dashboardController()" x-init="init()" class="px-6 space-y-6 bg-white min-h-screen">
+    
+    <!-- Header Section -->
+    {% include 'partials/dashboard_header.html' %}
+    
+    <!-- Title Section -->
+    {% include 'partials/dashboard_title.html' %}
+    
+    <!-- KPI Cards Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        {% for kpi in dashboard_config.kpis %}
+            {% include 'partials/kpi_card.html' %}
+        {% endfor %}
+    </div>
+    
+    <!-- Charts Section - This will be overridden in child templates -->
+    {% block charts_section %}
+    {% endblock %}
+    
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Base dashboard scripts -->
+<script src="{{ url_for('static', filename='js/chart-factory.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard-utils.js') }}"></script>
+
+{% block dashboard_scripts %}
+<!-- Child template specific scripts -->
+{% endblock %}
+{% endblock %}
