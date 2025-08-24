@@ -18,32 +18,31 @@
                 <img src="{{ url_for('static', filename='img/5.IKEB.jpg') }}" alt="Logo IKEB"
                     style="width: auto; height: 27px;">
             </div>
-            
+
             <!-- Button Section -->
             <div class="flex flex-row space-x-4 px-6">
                 <!-- Enhanced Filters Dropdown -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click.stop="open = !open"
-                        class="button-style flex items-center px-3 py-2 rounded-lg transition-all duration-200 shadow-lg border-[1.5px] border-primary-200 hover:border-primary-400 bg-white hover:bg-primary-50 group">
-                        <i class="fas fa-filter text-primary-700 text-xs mr-2 group-hover:text-primary-800"></i>
-                        <span class="font-semibold text-primary-700 text-xs group-hover:text-primary-800">Penapisan</span>
-                        <div x-show="activeFiltersCount > 0" x-transition
-                            class="bg-primary-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold ml-2"
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400 bg-white group">
+                        <i class="fas fa-filter text-primary-700 text-[10px] group-hover:text-primary-800"></i>
+                        <span
+                            class="font-semibold text-primary-700 text-[10px] group-hover:text-primary-800">Penapisan</span>
+                        <div x-show="activeFiltersCount > 0"
+                            class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold ml-2"
                             x-text="activeFiltersCount"></div>
-                        <i class="fas fa-chevron-down text-primary-600 text-xs ml-2 transition-transform duration-200"
-                           :class="{ 'rotate-180': open }"></i>
+                        <i class="fas fa-chevron-down text-primary-600 text-xs transition-transform duration-200"
+                            :class="{ 'rotate-180': open }"></i>
                     </button>
 
                     <!-- Enhanced Filter Dropdown -->
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-200"
-                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
-                         @click.away="open = false"
-                         class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <div x-show="open" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" @click.away="open = false"
+                        class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
                         <div class="px-6 py-5">
                             <!-- Header -->
                             <div class="flex items-center justify-between mb-5">
@@ -66,14 +65,19 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Tahun Graduasi
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.graduation_year.length > 0" x-text="`${filters.graduation_year.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.graduation_year.length > 0"
+                                            x-text="`${filters.graduation_year.length} dipilih`"></span>
                                     </label>
-                                    <div class="grid grid-cols-4 gap-2 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+                                    <div
+                                        class="grid grid-cols-4 gap-2 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
                                         <template x-for="year in availableFilters.graduation_years || []">
-                                            <label class="flex items-center p-2 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
+                                            <label
+                                                class="flex items-center p-2 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
                                                 <input type="checkbox" :value="year" x-model="filters.graduation_year"
                                                     class="rounded border-blue-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0">
-                                                <span class="ml-2 text-sm font-medium text-gray-700" x-text="year"></span>
+                                                <span class="ml-2 text-sm font-medium text-gray-700"
+                                                    x-text="year"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -83,14 +87,17 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-venus-mars mr-2 text-purple-500"></i>Jantina
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.gender.length > 0" x-text="`${filters.gender.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.gender.length > 0"
+                                            x-text="`${filters.gender.length} dipilih`"></span>
                                     </label>
                                     <div class="grid grid-cols-2 gap-3">
                                         <template x-for="gender in availableFilters.genders || []">
-                                            <label class="flex items-center p-3 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
+                                            <label
+                                                class="flex items-center p-3 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
                                                 <input type="checkbox" :value="gender" x-model="filters.gender"
                                                     class="rounded border-purple-300 text-purple-600 focus:ring-purple-500 focus:ring-offset-0">
-                                                <span class="ml-3 text-sm font-medium text-gray-700" x-text="gender"></span>
+                                                <span class="ml-3 text-sm font-medium text-gray-700"
+                                                    x-text="gender"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -100,14 +107,19 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-university mr-2 text-green-500"></i>Institusi
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.institution.length > 0" x-text="`${filters.institution.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.institution.length > 0"
+                                            x-text="`${filters.institution.length} dipilih`"></span>
                                     </label>
                                     <div class="max-h-36 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
                                         <template x-for="institution in availableFilters.institutions || []">
-                                            <label class="flex items-center p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm transition-colors">
-                                                <input type="checkbox" :value="institution" x-model="filters.institution"
+                                            <label
+                                                class="flex items-center p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm transition-colors">
+                                                <input type="checkbox" :value="institution"
+                                                    x-model="filters.institution"
                                                     class="rounded border-green-300 text-green-600 focus:ring-green-500 focus:ring-offset-0">
-                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="institution"></span>
+                                                <span class="ml-3 font-medium text-gray-700 leading-tight"
+                                                    x-text="institution"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -117,14 +129,19 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-briefcase mr-2 text-indigo-500"></i>Status Pekerjaan
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.employment_status.length > 0" x-text="`${filters.employment_status.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.employment_status.length > 0"
+                                            x-text="`${filters.employment_status.length} dipilih`"></span>
                                     </label>
                                     <div class="space-y-2">
                                         <template x-for="status in availableFilters.employment_status || []">
-                                            <label class="flex items-center p-2 rounded-md hover:bg-indigo-50 cursor-pointer text-sm transition-colors">
-                                                <input type="checkbox" :value="status" x-model="filters.employment_status"
+                                            <label
+                                                class="flex items-center p-2 rounded-md hover:bg-indigo-50 cursor-pointer text-sm transition-colors">
+                                                <input type="checkbox" :value="status"
+                                                    x-model="filters.employment_status"
                                                     class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
-                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="status"></span>
+                                                <span class="ml-3 font-medium text-gray-700 leading-tight"
+                                                    x-text="status"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -145,26 +162,26 @@
                 <!-- Enhanced Export Button -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click.stop="open = !open"
-                        class="button-style-fulll-blue flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 shadow-lg group transform hover:scale-105">
-                        <i class="fas fa-download text-sm mr-2 group-hover:animate-bounce"></i>
-                        <span class="font-semibold text-sm">Eksport</span>
-                        <i class="fas fa-chevron-down text-sm ml-2 transition-transform duration-200"
-                           :class="{ 'rotate-180': open }"></i>
+                        class="button-style2 flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 shadow-lg group transform hover:scale-105">
+                        <i class="fas fa-download mr-2 group-hover:animate-bounce text-[10px]"></i>
+                        <span class="font-semibold text-[10px]">Eksport</span>
+                        <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-[10px]"
+                            :class="{ 'rotate-180': open }"></i>
                     </button>
 
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
-                         @click.away="open = false"
-                         class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+
+                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" @click.away="open = false"
+                        class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
                         <div class="py-2">
                             <button @click="exportData('csv'); open = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
-                                <i class="fas fa-file-csv text-emerald-600 text-lg group-hover:scale-110 transition-transform"></i>
+                                <i
+                                    class="fas fa-file-csv text-emerald-600 text-lg group-hover:scale-110 transition-transform"></i>
                                 <div>
                                     <div class="font-semibold text-gray-900">CSV Format</div>
                                     <div class="text-xs text-gray-500">Fail nilai dipisahkan koma</div>
@@ -172,7 +189,8 @@
                             </button>
                             <button @click="exportData('excel'); open = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors group">
-                                <i class="fas fa-file-excel text-blue-600 text-lg group-hover:scale-110 transition-transform"></i>
+                                <i
+                                    class="fas fa-file-excel text-blue-600 text-lg group-hover:scale-110 transition-transform"></i>
                                 <div>
                                     <div class="font-semibold text-gray-900">Excel Format</div>
                                     <div class="text-xs text-gray-500">Fail Microsoft Excel</div>
@@ -184,27 +202,30 @@
 
                 <!-- Enhanced Refresh Button -->
                 <button @click="refreshData()"
-                    class="button-style flex items-center px-4 py-2 rounded-lg transition-all duration-200 shadow-lg border-[1.5px] border-primary-200 hover:border-primary-400 bg-white hover:bg-primary-50 group transform hover:scale-105"
+                    class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400 bg-white group transform hover:scale-[1.02]"
                     :disabled="loading">
-                    <i class="fas fa-sync-alt text-primary-700 text-sm mr-2 group-hover:text-primary-800"
+                    <i class="fas fa-sync-alt text-primary-700 text-[10px] group-hover:text-primary-800"
                         :class="{ 'animate-spin': loading }"></i>
-                    <span class="text-sm text-primary-700 font-semibold group-hover:text-primary-800">Muat Semula</span>
+                    <span class="font-semibold text-primary-700 text-[10px] group-hover:text-primary-800">Muat
+                        Semula</span>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Enhanced Title Section -->
-    <div class="bg-gradient-to-br from-indigo-700 via-indigo-600 to-indigo-500 rounded-3xl p-8 shadow-2xl border border-indigo-800/20 relative overflow-hidden">
+    <div
+        class="bg-gradient-to-br from-indigo-700 via-indigo-600 to-indigo-500 rounded-3xl p-8 shadow-2xl border border-indigo-800/20 relative overflow-hidden">
         <!-- Background decoration -->
         <div class="absolute inset-0 bg-gradient-to-r from-indigo-700/20 to-transparent"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
         <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
-        
+
         <div class="relative flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
             <div class="flex items-center space-x-6">
                 <!-- Enhanced Icon -->
-                <div class="w-20 h-20 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white/20 border border-white/30">
+                <div
+                    class="w-20 h-20 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white/20 border border-white/30">
                     <i class="fas fa-chart-pie text-white text-3xl drop-shadow-lg"></i>
                 </div>
 
@@ -241,19 +262,22 @@
 
     <!-- Enhanced Main Content - Bento Grid Layout -->
     <div class="grid grid-cols-12 gap-6 auto-rows-auto">
-        
+
         <!-- Enhanced KPI Cards Row -->
         <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Employment Rate -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div
+                class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-briefcase text-xl text-green-600"></i>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Kadar Pekerjaan</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.employment_rate || 0) + '%'"></div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.employment_rate || 0) + '%'">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -264,15 +288,18 @@
             </div>
 
             <!-- Field Match Rate -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div
+                class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-bullseye text-xl text-blue-600"></i>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Kesesuaian Bidang</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.field_match_rate || 0) + '%'"></div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.field_match_rate || 0) + '%'">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -283,15 +310,18 @@
             </div>
 
             <!-- Quick Employment Rate -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div
+                class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-clock text-xl text-purple-600"></i>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Pekerjaan Cepat</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.quick_employment_rate || 0) + '%'"></div>
+                            <div class="text-3xl font-bold text-gray-900"
+                                x-text="(kpis.quick_employment_rate || 0) + '%'"></div>
                         </div>
                     </div>
                 </div>
@@ -302,15 +332,18 @@
             </div>
 
             <!-- Most Common Job Type -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div
+                class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-star text-xl text-orange-600"></i>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Jenis Kerja Utama</div>
-                            <div class="text-lg font-bold text-gray-900 leading-tight" x-text="kpis.most_common_job_type || 'N/A'"></div>
+                            <div class="text-lg font-bold text-gray-900 leading-tight"
+                                x-text="kpis.most_common_job_type || 'N/A'"></div>
                         </div>
                     </div>
                 </div>
@@ -322,7 +355,8 @@
         </div>
 
         <!-- Employment Status - Pie Chart -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+        <div
+            class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
             <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
@@ -335,7 +369,8 @@
                     <div class="flex space-x-2">
                         <button @click="refreshChart('employment-status')"
                             class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
+                            <i
+                                class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
                         </button>
                     </div>
                 </div>
@@ -345,7 +380,8 @@
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4">
+                            </div>
                             <div class="text-gray-700 font-medium">Memuatkan status pekerjaan...</div>
                         </div>
                     </div>
@@ -355,7 +391,8 @@
         </div>
 
         <!-- Current Job Status - Bar Chart -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+        <div
+            class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
             <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
@@ -368,7 +405,8 @@
                     <div class="flex space-x-2">
                         <button @click="refreshChart('job-status')"
                             class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
+                            <i
+                                class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
                         </button>
                     </div>
                 </div>
@@ -378,7 +416,8 @@
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4">
+                            </div>
                             <div class="text-gray-700 font-medium">Memuatkan jenis pekerjaan...</div>
                         </div>
                     </div>
@@ -388,7 +427,8 @@
         </div>
 
         <!-- Time to First Job - Area Chart -->
-        <div class="col-span-12 lg:col-span-7 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+        <div
+            class="col-span-12 lg:col-span-7 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
             <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
@@ -401,7 +441,8 @@
                     <div class="flex space-x-2">
                         <button @click="refreshChart('time-to-job')"
                             class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
+                            <i
+                                class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
                         </button>
                     </div>
                 </div>
@@ -411,7 +452,8 @@
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4">
+                            </div>
                             <div class="text-gray-700 font-medium">Memuatkan masa ke pekerjaan...</div>
                         </div>
                     </div>
@@ -421,7 +463,8 @@
         </div>
 
         <!-- Current Job Types - Bar Chart -->
-        <div class="col-span-12 lg:col-span-5 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+        <div
+            class="col-span-12 lg:col-span-5 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
             <div class="px-6 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
@@ -434,7 +477,8 @@
                     <div class="flex space-x-2">
                         <button @click="refreshChart('job-types')"
                             class="p-2 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 text-sm group-hover:rotate-180 transition-transform duration-300"></i>
+                            <i
+                                class="fas fa-refresh text-primary-600 text-sm group-hover:rotate-180 transition-transform duration-300"></i>
                         </button>
                     </div>
                 </div>
@@ -444,7 +488,8 @@
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-3"></div>
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-3">
+                            </div>
                             <div class="text-gray-600 font-medium text-sm">Memuatkan jenis kerja...</div>
                         </div>
                     </div>
@@ -454,7 +499,8 @@
         </div>
 
         <!-- Job Finding Factors - Bar Chart -->
-        <div class="col-span-12 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+        <div
+            class="col-span-12 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
             <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
@@ -481,7 +527,8 @@
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4">
+                            </div>
                             <div class="text-gray-700 font-medium">Memuatkan faktor pekerjaan...</div>
                         </div>
                     </div>
@@ -494,11 +541,14 @@
 
 <!-- Click outside handler to close dropdowns -->
 <script>
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event)
+    {
         // Close all dropdowns when clicking outside
         const dropdowns = document.querySelectorAll('[x-data*="open"]');
-        dropdowns.forEach(dropdown => {
-            if (!dropdown.contains(event.target)) {
+        dropdowns.forEach(dropdown =>
+        {
+            if (!dropdown.contains(event.target))
+            {
                 Alpine.store('dropdowns', { open: false });
             }
         });
@@ -508,7 +558,8 @@
 
 {% block scripts %}
 <script>
-    function statusPekerjaanDashboard() {
+    function statusPekerjaanDashboard()
+    {
         return {
             loading: false,
             dataLoaded: false,
@@ -524,7 +575,8 @@
             availableFilters: {},
             activeFiltersCount: 0,
 
-            init() {
+            init()
+            {
                 console.log('Initializing status pekerjaan dashboard...');
                 if (this.isInitialized) return;
                 this.isInitialized = true;
@@ -533,40 +585,47 @@
                 this.updateActiveFiltersCount();
             },
 
-            waitForEnhancedChart() {
-                if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined') {
+            waitForEnhancedChart()
+            {
+                if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined')
+                {
                     setTimeout(() => this.waitForEnhancedChart(), 100);
                     return;
                 }
                 this.loadData();
             },
 
-            async loadAvailableFilters() {
-                try {
+            async loadAvailableFilters()
+            {
+                try
+                {
                     const response = await fetch('/status-pekerjaan/api/filters/available');
                     const data = await response.json();
 
                     this.availableFilters = {
-                        graduation_years: data['Tahun graduasi anda?'] || [],
-                        genders: data['Jantina anda?'] || [],
-                        institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || [],
-                        employment_status: data['Adakah anda kini bekerja?'] || [],
-                        job_types: data['Apakah jenis pekerjaan anda sekarang'] || []
+                        graduation_years: data[ 'Tahun graduasi anda?' ] || [],
+                        genders: data[ 'Jantina anda?' ] || [],
+                        institutions: data[ 'Institusi pendidikan MARA yang anda hadiri?' ] || [],
+                        employment_status: data[ 'Adakah anda kini bekerja?' ] || [],
+                        job_types: data[ 'Apakah jenis pekerjaan anda sekarang' ] || []
                     };
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading filters:', error);
                 }
             },
 
-            async loadData() {
+            async loadData()
+            {
                 if (this.loading) return;
 
                 this.loading = true;
 
-                try {
+                try
+                {
                     await this.loadSummary();
                     await this.delay(200);
-                    
+
                     // Load all 5 charts
                     await this.loadEmploymentStatusChart();
                     await this.delay(200);
@@ -577,25 +636,31 @@
                     await this.loadJobFindingFactorsChart();
 
                     this.dataLoaded = true;
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading dashboard data:', error);
                     this.showToast('Error loading data: ' + error.message, 'error');
-                } finally {
+                } finally
+                {
                     this.loading = false;
                 }
             },
 
-            delay(ms) {
+            delay(ms)
+            {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
 
-            async loadSummary() {
-                try {
+            async loadSummary()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/status-pekerjaan/api/summary?${params}`);
                     if (!response.ok) throw new Error('Failed to load summary');
                     this.kpis = await response.json();
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading summary:', error);
                     this.kpis = {
                         total_records: 0,
@@ -607,8 +672,10 @@
                 }
             },
 
-            async loadEmploymentStatusChart() {
-                try {
+            async loadEmploymentStatusChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/status-pekerjaan/api/employment-status?${params}`);
                     const data = await response.json();
@@ -616,16 +683,19 @@
                     this.safeDestroyChart('employmentStatus');
 
                     const canvas = document.getElementById('employmentStatusChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Use Enhanced Chart Factory for pie chart
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.employmentStatus = EnhancedChartFactory.createChart(ctx, 'enhanced-pie', data, 'employment-status', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                                 const percentage = ((context.parsed / total) * 100).toFixed(1);
                                                 return `${context.label}: ${context.parsed.toLocaleString()} (${percentage}%)`;
@@ -636,13 +706,16 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading employment status chart:', error);
                 }
             },
 
-            async loadCurrentJobStatusChart() {
-                try {
+            async loadCurrentJobStatusChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/status-pekerjaan/api/current-job-status?${params}`);
                     const data = await response.json();
@@ -650,16 +723,19 @@
                     this.safeDestroyChart('currentJobStatus');
 
                     const canvas = document.getElementById('currentJobStatusChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.currentJobStatus = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'current-job-status', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                             }
                                         }
@@ -674,9 +750,11 @@
                                             maxRotation: 0,
                                             minRotation: 0,
                                             font: { size: 10 },
-                                            callback: function(value, index) {
+                                            callback: function (value, index)
+                                            {
                                                 const label = this.getLabelForValue(value);
-                                                if (label && label.length > 15) {
+                                                if (label && label.length > 15)
+                                                {
                                                     return label.substring(0, 12) + '...';
                                                 }
                                                 return label;
@@ -687,13 +765,16 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading current job status chart:', error);
                 }
             },
 
-            async loadTimeToFirstJobChart() {
-                try {
+            async loadTimeToFirstJobChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/status-pekerjaan/api/time-to-first-job?${params}`);
                     const data = await response.json();
@@ -701,16 +782,19 @@
                     this.safeDestroyChart('timeToFirstJob');
 
                     const canvas = document.getElementById('timeToFirstJobChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Use Enhanced Chart Factory for area chart (line with fill)
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.timeToFirstJob = EnhancedChartFactory.createChart(ctx, 'line', data, 'time-to-first-job', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Bilangan: ${context.parsed.y.toLocaleString()} responden`;
                                             }
                                         }
@@ -747,13 +831,16 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading time to first job chart:', error);
                 }
             },
 
-            async loadCurrentJobTypesChart() {
-                try {
+            async loadCurrentJobTypesChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/status-pekerjaan/api/current-job-types?${params}`);
                     const data = await response.json();
@@ -761,16 +848,19 @@
                     this.safeDestroyChart('currentJobTypes');
 
                     const canvas = document.getElementById('currentJobTypesChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.currentJobTypes = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'current-job-types', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                             }
                                         }
@@ -785,9 +875,11 @@
                                             maxRotation: 0,
                                             minRotation: 0,
                                             font: { size: 9 },
-                                            callback: function(value, index) {
+                                            callback: function (value, index)
+                                            {
                                                 const label = this.getLabelForValue(value);
-                                                if (label && label.length > 20) {
+                                                if (label && label.length > 20)
+                                                {
                                                     return label.substring(0, 17) + '...';
                                                 }
                                                 return label;
@@ -798,13 +890,16 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading current job types chart:', error);
                 }
             },
 
-            async loadJobFindingFactorsChart() {
-                try {
+            async loadJobFindingFactorsChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/status-pekerjaan/api/job-finding-factors?${params}`);
                     const data = await response.json();
@@ -812,16 +907,19 @@
                     this.safeDestroyChart('jobFindingFactors');
 
                     const canvas = document.getElementById('jobFindingFactorsChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.jobFindingFactors = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'job-finding-factors', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Kekerapan: ${context.parsed.y.toLocaleString()}`;
                                             }
                                         }
@@ -836,9 +934,11 @@
                                             maxRotation: 0,
                                             minRotation: 0,
                                             font: { size: 11 },
-                                            callback: function(value, index) {
+                                            callback: function (value, index)
+                                            {
                                                 const label = this.getLabelForValue(value);
-                                                if (label && label.length > 25) {
+                                                if (label && label.length > 25)
+                                                {
                                                     return label.substring(0, 22) + '...';
                                                 }
                                                 return label;
@@ -856,26 +956,34 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading job finding factors chart:', error);
                 }
             },
 
-            safeDestroyChart(chartName) {
-                if (window.globalCharts && window.globalCharts[chartName]) {
-                    try {
-                        window.globalCharts[chartName].destroy();
-                        delete window.globalCharts[chartName];
-                    } catch (error) {
+            safeDestroyChart(chartName)
+            {
+                if (window.globalCharts && window.globalCharts[ chartName ])
+                {
+                    try
+                    {
+                        window.globalCharts[ chartName ].destroy();
+                        delete window.globalCharts[ chartName ];
+                    } catch (error)
+                    {
                         console.warn(`Error destroying chart ${chartName}:`, error);
                     }
                 }
             },
 
-            buildFilterParams() {
+            buildFilterParams()
+            {
                 const params = new URLSearchParams();
-                Object.entries(this.filters).forEach(([key, values]) => {
-                    if (Array.isArray(values) && values.length > 0) {
+                Object.entries(this.filters).forEach(([ key, values ]) =>
+                {
+                    if (Array.isArray(values) && values.length > 0)
+                    {
                         const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
                             key === 'gender' ? 'Jantina anda?' :
                                 key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' :
@@ -887,14 +995,16 @@
                 return params.toString();
             },
 
-            applyFilters() {
+            applyFilters()
+            {
                 this.updateActiveFiltersCount();
                 this.dataLoaded = false;
                 this.loadData();
                 this.showToast('Penapis berjaya diterapkan', 'success');
             },
 
-            clearAllFilters() {
+            clearAllFilters()
+            {
                 this.filters = {
                     graduation_year: [],
                     gender: [],
@@ -908,57 +1018,74 @@
                 this.showToast('Semua penapis dikosongkan', 'info');
             },
 
-            updateActiveFiltersCount() {
-                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
+            updateActiveFiltersCount()
+            {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
+                {
                     return count + (Array.isArray(filter) ? filter.length : 0);
                 }, 0);
             },
 
-            async refreshData() {
+            async refreshData()
+            {
                 this.dataLoaded = false;
                 await this.loadData();
                 this.showToast('Data berjaya dimuat semula', 'success');
             },
 
-            async refreshChart(chartType) {
-                if (chartType === 'employment-status') {
+            async refreshChart(chartType)
+            {
+                if (chartType === 'employment-status')
+                {
                     await this.loadEmploymentStatusChart();
-                } else if (chartType === 'job-status') {
+                } else if (chartType === 'job-status')
+                {
                     await this.loadCurrentJobStatusChart();
-                } else if (chartType === 'time-to-job') {
+                } else if (chartType === 'time-to-job')
+                {
                     await this.loadTimeToFirstJobChart();
-                } else if (chartType === 'job-types') {
+                } else if (chartType === 'job-types')
+                {
                     await this.loadCurrentJobTypesChart();
-                } else if (chartType === 'job-factors') {
+                } else if (chartType === 'job-factors')
+                {
                     await this.loadJobFindingFactorsChart();
                 }
                 this.showToast(`Graf ${chartType} dimuat semula`, 'success');
             },
 
-            async exportData(format) {
-                try {
+            async exportData(format)
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const url = `/status-pekerjaan/api/export?format=${format}&${params}`;
                     window.open(url, '_blank');
                     this.showToast(`Mengeksport data sebagai ${format.toUpperCase()}...`, 'info');
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Export error:', error);
                     this.showToast('Eksport gagal', 'error');
                 }
             },
 
-            openTableModal(title) {
+            openTableModal(title)
+            {
                 const params = this.buildFilterParams();
-                if (typeof openModal !== 'undefined') {
+                if (typeof openModal !== 'undefined')
+                {
                     openModal(title, `/status-pekerjaan/api/table-data?${params}`);
                 }
             },
 
-            showToast(message, type = 'info') {
+            showToast(message, type = 'info')
+            {
                 // Enhanced toast notification
-                if (typeof showToast !== 'undefined') {
+                if (typeof showToast !== 'undefined')
+                {
                     showToast(message, type);
-                } else {
+                } else
+                {
                     console.log(`${type.toUpperCase()}: ${message}`);
                 }
             }
@@ -968,12 +1095,16 @@
     // Enhanced global chart management
     window.globalCharts = window.globalCharts || {};
 
-    function safeDestroyChart(chartName) {
-        if (window.globalCharts && window.globalCharts[chartName]) {
-            try {
-                window.globalCharts[chartName].destroy();
-                delete window.globalCharts[chartName];
-            } catch (error) {
+    function safeDestroyChart(chartName)
+    {
+        if (window.globalCharts && window.globalCharts[ chartName ])
+        {
+            try
+            {
+                window.globalCharts[ chartName ].destroy();
+                delete window.globalCharts[ chartName ];
+            } catch (error)
+            {
                 console.warn(`Error destroying chart ${chartName}:`, error);
             }
         }

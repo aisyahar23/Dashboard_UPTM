@@ -472,7 +472,7 @@
                         <h3 class="text-md font-bold">Analisis Kategori Cabaran</h3>
                         <p class="text-gray-500 text-[10px]">Cabaran pekerjaan dikumpulkan mengikut kategori</p>
                     </div>
-                    <div class="flex space-x-1">
+                    <div class="flex space-x-3">
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
                             <button @click="openTableModal('Grouped Challenges')"
@@ -485,16 +485,17 @@
                                 Maklumat Lanjut
                             </div>
                         </div>
-                        <div
-                            class="flex flex-row items-center relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
+                        <div class="flex flex-row items-center relative group">
                             <div>
-                                <a href="/intern/table" target="_blank"
-                                    class="flex items-center justify-center px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-semibold">
-                                    <i class="fas fa-external-link-alt text-xs mr-2"></i>Paparan Penuh
+                                <a href="/intern/table" target="_blank" class="inline-block px-3 py-2 text-sm font-semibold bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-lg 
+                                          hover:from-secondary-600 hover:to-secondary-700 transform hover:scale-105 
+                                          transition-transform duration-200 ease-out" title="Buka Halaman">
+                                    <i class="fas fa-external-link-alt text-xs mr-2"></i>Lihat Paparan Penuh
                                 </a>
                             </div>
                             <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none 
+                                transition-opacity duration-200 whitespace-nowrap">
                                 Buka Halaman
                             </div>
                         </div>
