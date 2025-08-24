@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div x-data="faktorGraduanDashboard()" x-init="init()" class="px-6 pb-6 space-y-6 bg-white min-h-screen">
-    <!-- Header Section -->
+<div x-data="faktorGraduanDashboard()" x-init="init()" class="min-h-screen bg-gray-50 px-6 pb-6 space-y-6">
+    <!-- Professional Header -->
     <div class="relative">
         <div class="flex flex-row border-b border-gray-300 justify-between py-4 -mx-6">
+
             <!-- Logo -->
             <div class="px-4 space-x-4 flex flex-row items-center">
                 <img src="{{ url_for('static', filename='img/1. UPTM.png') }}" alt="Logo UPTM"
@@ -18,35 +19,30 @@
                 <img src="{{ url_for('static', filename='img/5.IKEB.jpg') }}" alt="Logo IKEB"
                     style="width: auto; height: 27px;">
             </div>
-            
-            <!-- Button Section -->
+            <!-- Action Controls -->
             <div class="flex flex-row space-x-4 px-6">
-                <!-- Enhanced Filters Dropdown -->
+                <!-- Filters -->
                 <div class="relative" x-data="{ open: false }">
-                    <button @click.stop="open = !open"
-                        class="button-style flex items-center px-3 py-2 rounded-lg transition-all duration-200 shadow-lg border-[1.5px] border-primary-200 hover:border-primary-400 bg-white hover:bg-primary-50 group">
-                        <i class="fas fa-filter text-primary-700 text-xs mr-2 group-hover:text-primary-800"></i>
-                        <span class="font-semibold text-primary-700 text-xs group-hover:text-primary-800">Penapisan</span>
-                        <div x-show="activeFiltersCount > 0" x-transition
-                            class="bg-primary-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold ml-2"
+                    <button @click="open = !open"
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-gray-200 bg-white text-gray-700 group transform hover:scale-105">
+                        <i class="fas fa-filter text-secondary-700 text-[10px]"></i>
+                        <span class="font-semibold text-secondary-700 text-[10px] ml-1">Penapisan</span>
+                        <div x-show="activeFiltersCount > 0"
+                            class="bg-secondary-900 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold ml-2"
                             x-text="activeFiltersCount"></div>
-                        <i class="fas fa-chevron-down text-primary-600 text-xs ml-2 transition-transform duration-200"
-                           :class="{ 'rotate-180': open }"></i>
                     </button>
 
-                    <!-- Enhanced Filter Dropdown -->
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-200"
-                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
-                         @click.away="open = false"
-                         class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <!-- Filter Dropdown -->
+                    <div x-show="open" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" @click.away="open = false"
+                        class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
                         <div class="px-6 py-5">
                             <!-- Header -->
-                            <div class="flex items-center justify-between mb-5">
+                            <div class="flex flex-row items-start justify-between mb-5">
                                 <div>
                                     <h3 class="text-lg font-bold text-gray-900 flex items-center">
                                         <i class="fas fa-filter text-primary-600 mr-2"></i>
@@ -61,19 +57,24 @@
                             </div>
 
                             <!-- Filter Options -->
-                            <div class="space-y-5">
+                            <div class="space-y-3">
                                 <!-- Graduation Year -->
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Tahun Graduasi
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.graduation_year.length > 0" x-text="`${filters.graduation_year.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.graduation_year.length > 0"
+                                            x-text="`${filters.graduation_year.length} dipilih`"></span>
                                     </label>
-                                    <div class="grid grid-cols-4 gap-2 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+                                    <div
+                                        class="grid grid-cols-4 gap-1 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
                                         <template x-for="year in availableFilters.graduation_years || []">
-                                            <label class="flex items-center p-2 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
+                                            <label
+                                                class="flex items-center px-3 py-1 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
                                                 <input type="checkbox" :value="year" x-model="filters.graduation_year"
                                                     class="rounded border-blue-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0">
-                                                <span class="ml-2 text-sm font-medium text-gray-700" x-text="year"></span>
+                                                <span class="ml-2 text-sm font-medium text-gray-700"
+                                                    x-text="year"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -83,14 +84,17 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-venus-mars mr-2 text-purple-500"></i>Jantina
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.gender.length > 0" x-text="`${filters.gender.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.gender.length > 0"
+                                            x-text="`${filters.gender.length} dipilih`"></span>
                                     </label>
                                     <div class="grid grid-cols-2 gap-3">
                                         <template x-for="gender in availableFilters.genders || []">
-                                            <label class="flex items-center p-3 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
+                                            <label
+                                                class="flex items-center px-3 py-1 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
                                                 <input type="checkbox" :value="gender" x-model="filters.gender"
                                                     class="rounded border-purple-300 text-purple-600 focus:ring-purple-500 focus:ring-offset-0">
-                                                <span class="ml-3 text-sm font-medium text-gray-700" x-text="gender"></span>
+                                                <span class="ml-3 text-sm font-medium text-gray-700"
+                                                    x-text="gender"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -100,14 +104,19 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-university mr-2 text-green-500"></i>Institusi
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.institution.length > 0" x-text="`${filters.institution.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.institution.length > 0"
+                                            x-text="`${filters.institution.length} dipilih`"></span>
                                     </label>
                                     <div class="max-h-36 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
                                         <template x-for="institution in availableFilters.institutions || []">
-                                            <label class="flex items-center p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm transition-colors">
-                                                <input type="checkbox" :value="institution" x-model="filters.institution"
+                                            <label
+                                                class="flex items-center px-2 py-1 rounded-md hover:bg-green-50 cursor-pointer text-sm transition-colors">
+                                                <input type="checkbox" :value="institution"
+                                                    x-model="filters.institution"
                                                     class="rounded border-green-300 text-green-600 focus:ring-green-500 focus:ring-offset-0">
-                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="institution"></span>
+                                                <span class="ml-3 font-medium text-gray-700 leading-tight"
+                                                    x-text="institution"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -117,14 +126,18 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-certificate mr-2 text-orange-500"></i>Sijil Profesional
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.certificates.length > 0" x-text="`${filters.certificates.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.certificates.length > 0"
+                                            x-text="`${filters.certificates.length} dipilih`"></span>
                                     </label>
                                     <div class="space-y-2">
                                         <template x-for="cert in availableFilters.certificates || []">
-                                            <label class="flex items-center p-2 rounded-md hover:bg-orange-50 cursor-pointer text-sm transition-colors">
+                                            <label
+                                                class="flex items-center p-2 rounded-md hover:bg-orange-50 cursor-pointer text-sm transition-colors">
                                                 <input type="checkbox" :value="cert" x-model="filters.certificates"
                                                     class="rounded border-orange-300 text-orange-600 focus:ring-orange-500 focus:ring-offset-0">
-                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="cert"></span>
+                                                <span class="ml-3 font-medium text-gray-700 leading-tight"
+                                                    x-text="cert"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -142,29 +155,26 @@
                     </div>
                 </div>
 
-                <!-- Enhanced Export Button -->
+                <!-- Export Button -->
                 <div class="relative" x-data="{ open: false }">
-                    <button @click.stop="open = !open"
-                        class="button-style-fulll-blue flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 shadow-lg group transform hover:scale-105">
-                        <i class="fas fa-download text-sm mr-2 group-hover:animate-bounce"></i>
-                        <span class="font-semibold text-sm">Eksport</span>
-                        <i class="fas fa-chevron-down text-sm ml-2 transition-transform duration-200"
-                           :class="{ 'rotate-180': open }"></i>
+                    <button @click="open = !open"
+                        class="button-style flex items-center bg-secondary-800 text-white px-3 h-full rounded-md hover:bg-secondary-900 transition-all duration-200 shadow-lg group transform hover:scale-105">
+                        <i class="fas fa-download text-[10px] group-hover:animate-bounce"></i>
+                        <span class="font-semibold text-[10px] ml-1">Eksport</span>
                     </button>
 
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
-                         @click.away="open = false"
-                         class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" @click.away="open = false"
+                        class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
                         <div class="py-2">
                             <button @click="exportData('csv'); open = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
-                                <i class="fas fa-file-csv text-emerald-600 text-lg group-hover:scale-110 transition-transform"></i>
+                                <i
+                                    class="fas fa-file-csv text-emerald-600 text-lg group-hover:scale-110 transition-transform"></i>
                                 <div>
                                     <div class="font-semibold text-gray-900">CSV Format</div>
                                     <div class="text-xs text-gray-500">Fail nilai dipisahkan koma</div>
@@ -172,7 +182,8 @@
                             </button>
                             <button @click="exportData('excel'); open = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors group">
-                                <i class="fas fa-file-excel text-blue-600 text-lg group-hover:scale-110 transition-transform"></i>
+                                <i
+                                    class="fas fa-file-excel text-blue-600 text-lg group-hover:scale-110 transition-transform"></i>
                                 <div>
                                     <div class="font-semibold text-gray-900">Excel Format</div>
                                     <div class="text-xs text-gray-500">Fail Microsoft Excel</div>
@@ -182,56 +193,50 @@
                     </div>
                 </div>
 
-                <!-- Enhanced Refresh Button -->
-                <button @click="refreshData()"
-                    class="button-style flex items-center px-4 py-2 rounded-lg transition-all duration-200 shadow-lg border-[1.5px] border-primary-200 hover:border-primary-400 bg-white hover:bg-primary-50 group transform hover:scale-105"
-                    :disabled="loading">
-                    <i class="fas fa-sync-alt text-primary-700 text-sm mr-2 group-hover:text-primary-800"
-                        :class="{ 'animate-spin': loading }"></i>
-                    <span class="text-sm text-primary-700 font-semibold group-hover:text-primary-800">Muat Semula</span>
-                </button>
+                <!-- Refresh Button -->
+                <div>
+                    <button @click="refreshData()"
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-gray-200 bg-white text-gray-700 group transform hover:scale-105"
+                        :disabled="loading">
+                        <i class="fas fa-sync-alt text-secondary-700 text-[10px]"
+                            :class="{ 'animate-spin': loading }"></i>
+                        <span class="text-[10px] text-secondary-700 font-semibold ml-1">Muat Semula</span>
+                    </button>
+                </div>
             </div>
+
         </div>
     </div>
 
-    <!-- Enhanced Title Section -->
-    <div class="bg-gradient-to-br from-emerald-700 via-emerald-600 to-emerald-500 rounded-3xl p-8 shadow-2xl border border-emerald-800/20 relative overflow-hidden">
-        <!-- Background decoration -->
-        <div class="absolute inset-0 bg-gradient-to-r from-emerald-700/20 to-transparent"></div>
-        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
-        <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
-        
-        <div class="relative flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
-            <div class="flex items-center space-x-6">
-                <!-- Enhanced Icon -->
-                <div class="w-20 h-20 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white/20 border border-white/30">
-                    <i class="fas fa-chart-line text-white text-3xl drop-shadow-lg"></i>
-                </div>
-
-                <!-- Enhanced Text -->
-                <div>
-                    <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg">
-                        Faktor Mempengaruhi Kebolehpasaran Graduan
-                    </h1>
-                    <p class="text-green-100 text-lg leading-relaxed">
-                        Analisis komprehensif faktor-faktor yang mempengaruhi kebolehpasaran dalam pasaran kerja
-                    </p>
-
-                    <!-- Enhanced Status Row -->
-                    <div class="flex items-center mt-4 space-x-8">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg"></div>
-                            <span class="text-sm font-medium text-green-200">Analisis Langsung</span>
-                        </div>
-                        <div class="text-sm text-green-200 flex items-center space-x-2">
-                            <span x-show="dataLoaded && !loading" class="flex items-center">
-                                <i class="fas fa-users mr-2"></i>
-                                <strong x-text="kpis.total_records || 0"></strong> Responden Dianalisis
-                            </span>
-                            <span x-show="loading" class="flex items-center">
-                                <i class="fas fa-spinner fa-spin mr-2"></i>
-                                Memproses Data...
-                            </span>
+    <div
+        class="bg-gradient-to-br to-black from-secondary-800 via-secondary-600 border-b border-gray-200 rounded-2xl p-8 shadow-xl ">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+                <!-- Title Section -->
+                <div class="flex items-center space-x-2">
+                    <div
+                        class="w-20 h-20 bg-gradient-to-br from-secondary-400 via-secondary-700 to-red-800 rounded-full flex items-center justify-center shadow-lg ring-4 ring-red-100/30">
+                        <i class="fas fa-chart-line text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-white">Faktor Kebolehpasaran Graduan</h1>
+                        <p class="text-white mt-1">Analisis menyeluruh faktor yang mempengaruhi kebolehpasaran
+                            graduan</p>
+                        <div class="flex items-center mt-2 space-x-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+                                <span class="text-sm font-medium text-green-300">Analitik Langsung</span>
+                            </div>
+                            <div class="text-sm text-white">
+                                <span x-show="dataLoaded">
+                                    <i class="fas fa-database mr-1"></i>
+                                    <span x-text="kpis.total_records || 0"></span> Rekod
+                                </span>
+                                <span x-show="loading">
+                                    <i class="fas fa-spinner fa-spin mr-1"></i>
+                                    Memuatkan...
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -239,113 +244,135 @@
         </div>
     </div>
 
-    <!-- Enhanced Main Content - Bento Grid Layout -->
+    <!-- Main Dashboard Content -->
     <div class="grid grid-cols-12 gap-6 auto-rows-auto">
-        
-        <!-- Enhanced KPI Cards Row -->
-        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- KPI Cards - Updated Style -->
+        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
             <!-- Highest Impact Factor -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                            <i class="fas fa-arrow-up text-xl text-green-600"></i>
+            <div
+                class="bg-white rounded-2xl px-6 py-3 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="flex flex-row items-center justify-start">
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <i class="flex justify-center fas fa-arrow-up w-8 text-green-600"
+                                style="font-size: 16px;"></i>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Faktor Tertinggi</div>
-                            <div class="text-lg font-bold text-gray-900 leading-tight" x-text="kpis.highest_impact_factor || 'N/A'"></div>
+                            <div class="text-lg font-bold text-gray-900 leading-tight titlecase"
+                                x-text="kpis.highest_impact_factor || 'N/A'"></div>
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
                     Faktor paling berpengaruh
                 </div>
             </div>
 
             <!-- Overall Preparedness Score -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                            <i class="fas fa-star text-xl text-blue-600"></i>
+            <div
+                class="bg-white rounded-2xl px-6 py-3 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="flex items-center justify-start">
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-star text-sm text-blue-600"></i>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Skor Keseluruhan</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.overall_preparedness_score || '0.0'"></div>
+                            <div class="text-3xl font-bold text-gray-900"
+                                x-text="kpis.overall_preparedness_score || '0.0'"></div>
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
                     Purata semua faktor (skala 1-5)
                 </div>
             </div>
-
             <!-- University Preparedness -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                            <i class="fas fa-graduation-cap text-xl text-purple-600"></i>
+            <div
+                class="bg-white rounded-2xl px-6 py-3 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="flex items-center justify-start">
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-graduation-cap text-sm text-purple-600"></i>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Persediaan Universiti</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.university_preparedness_avg || '0.0'"></div>
+                            <div class="text-3xl font-bold text-gray-900"
+                                x-text="kpis.university_preparedness_avg || '0.0'"></div>
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
                     Persediaan oleh institusi pendidikan
                 </div>
             </div>
 
             <!-- Professional Certificates Impact -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                            <i class="fas fa-certificate text-xl text-orange-600"></i>
+            <div
+                class="bg-white rounded-2xl px-6 py-3 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="flex items-center justify-start">
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-certificate text-sm text-orange-600"></i>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Kesan Sijil</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.cert_impact_rate || 0) + '%'"></div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.cert_impact_rate || 0) + '%'">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
                     Kesan sijil profesional pada pekerjaan
                 </div>
             </div>
         </div>
 
         <!-- 5 Individual Employability Factor Charts - Matching Colab subplots -->
-        <div class="col-span-12 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
-            <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+        <div
+            class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
                             <i class="fas fa-chart-bar text-primary-600 mr-3"></i>
                             Faktor Mempengaruhi Kebolehpasaran Graduan
                         </h3>
-                        <p class="text-gray-600 text-sm mt-1">Analisis individu untuk setiap faktor kebolehpasaran (Skala 1-5)</p>
+                        <p class="text-gray-500 text-[10px] mt-1">Analisis individu untuk setiap faktor kebolehpasaran
+                            (Skala 1-5)</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button @click="refreshAllFactorCharts()"
-                            class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
-                        </button>
+                    <div class="flex space-x-1">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="refreshAllFactorCharts()"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i
+                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="p-8">
+            <div class="px-6 py-6">
                 <!-- Individual Factor Charts Grid - 5 charts total -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                    
+                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+
                     <!-- Industrial Training Chart -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                    <div class="bg-gray-50 rounded-2xl px-6 py-3 border border-gray-200">
                         <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                             <i class="fas fa-industry text-blue-600 mr-2"></i>
                             Latihan Industri/Praktikal
@@ -360,7 +387,7 @@
                     </div>
 
                     <!-- Communication Skills Chart -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                    <div class="bg-gray-50 rounded-2xl px-6 py-3 border border-gray-200">
                         <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                             <i class="fas fa-comments text-green-600 mr-2"></i>
                             Kemahiran Komunikasi
@@ -375,7 +402,7 @@
                     </div>
 
                     <!-- Technical Skills Chart -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                    <div class="bg-gray-50 rounded-2xl px-6 py-3 border border-gray-200">
                         <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                             <i class="fas fa-code text-purple-600 mr-2"></i>
                             Kemahiran Teknikal
@@ -390,7 +417,7 @@
                     </div>
 
                     <!-- Networking Chart -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                    <div class="bg-gray-50 rounded-2xl px-6 py-3 border border-gray-200">
                         <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                             <i class="fas fa-network-wired text-orange-600 mr-2"></i>
                             Rangkaian Peribadi (Networking)
@@ -405,7 +432,7 @@
                     </div>
 
                     <!-- Academic Qualifications Chart -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                    <div class="bg-gray-50 rounded-2xl px-6 py-3 border border-gray-200">
                         <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                             <i class="fas fa-graduation-cap text-red-600 mr-2"></i>
                             Kelayakan Akademik
@@ -423,30 +450,40 @@
         </div>
 
         <!-- Professional Certificates Impact - Bar Chart -->
-        <div class="col-span-12 lg:col-span-4 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
-            <div class="px-6 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+        <div class="col-span-12 lg:col-span-4 bg-white rounded-2xl shadow-xl border overflow-hidden">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
                             <i class="fas fa-certificate text-primary-600 mr-2"></i>
                             Kesan Sijil Profesional
                         </h3>
-                        <p class="text-gray-600 text-xs mt-1">Kesan terhadap mendapat pekerjaan</p>
+                        <p class="text-gray-500 text-[10px] mt-1">Kesan terhadap mendapat pekerjaan</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button @click="refreshChart('certificates')"
-                            class="p-2 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 text-sm group-hover:rotate-180 transition-transform duration-300"></i>
-                        </button>
+                    <div class="flex space-x-1">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="refreshChart('certificates')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i
+                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="p-6">
+            <div class="px-6 py-10">
                 <div class="h-72 relative">
                     <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-3"></div>
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4">
+                            </div>
                             <div class="text-gray-600 font-medium text-sm">Memuatkan data sijil...</div>
                         </div>
                     </div>
@@ -456,30 +493,52 @@
         </div>
 
         <!-- Employer Requirements - Bar Chart -->
-        <div class="col-span-12 lg:col-span-4 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
-            <div class="px-6 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+        <div class="col-span-12 lg:col-span-4 bg-white rounded-2xl shadow-xl border overflow-hidden">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
                             <i class="fas fa-clipboard-check text-primary-600 mr-2"></i>
                             Kelayakan Tambahan Majikan
                         </h3>
-                        <p class="text-gray-600 text-xs mt-1">Kelayakan tambahan yang diminta</p>
+                        <p class="text-gray-500 text-[10px] mt-1">Kelayakan tambahan yang diminta</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button @click="refreshChart('requirements')"
-                            class="p-2 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 text-sm group-hover:rotate-180 transition-transform duration-300"></i>
-                        </button>
+                    <div class="flex space-x-1">
+                        <!-- <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Employer Requirements')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div> -->
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="refreshChart('requirements')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i
+                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="p-6">
+            <div class="px-6 py-10">
                 <div class="h-72 relative">
                     <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-3"></div>
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4">
+                            </div>
                             <div class="text-gray-600 font-medium text-sm">Memuatkan kelayakan...</div>
                         </div>
                     </div>
@@ -489,30 +548,52 @@
         </div>
 
         <!-- University Preparedness - Bar Chart -->
-        <div class="col-span-12 lg:col-span-4 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
-            <div class="px-6 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+        <div class="col-span-12 lg:col-span-4 bg-white rounded-2xl shadow-xl border overflow-hidden">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
                             <i class="fas fa-university text-primary-600 mr-2"></i>
                             Persediaan Universiti
                         </h3>
-                        <p class="text-gray-600 text-xs mt-1">Tahap persediaan untuk pasaran kerja</p>
+                        <p class="text-gray-500 text-[10px] mt-1">Tahap persediaan untuk pasaran kerja</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button @click="refreshChart('preparedness')"
-                            class="p-2 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 text-sm group-hover:rotate-180 transition-transform duration-300"></i>
-                        </button>
+                    <div class="flex space-x-1">
+                        <!-- <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('University Preparation')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div> -->
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="refreshChart('preparedness')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i
+                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="p-6">
+            <div class="px-6 py-10">
                 <div class="h-72 relative">
                     <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-3"></div>
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4">
+                            </div>
                             <div class="text-gray-600 font-medium text-sm">Memuatkan persediaan...</div>
                         </div>
                     </div>
@@ -522,35 +603,54 @@
         </div>
 
         <!-- Additional Skills Required - Large Horizontal Bar Chart -->
-        <div class="col-span-12 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
-            <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+        <div
+            class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden hover:shadow-3xl transition-shadow duration-300">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
                             <i class="fas fa-cogs text-primary-600 mr-3"></i>
                             Kemahiran Tambahan yang Diminta Majikan
                         </h3>
-                        <p class="text-gray-600 text-sm mt-1">Kemahiran tambahan paling banyak diminta semasa temu duga (dikategorikan)</p>
+                        <p class="text-gray-500 text-[10px] mt-1">Kemahiran tambahan paling banyak diminta semasa temu
+                            duga (dikategorikan)</p>
                     </div>
-                    <div class="flex space-x-3">
-                        <button @click="openTableModal('Additional Skills')"
-                            class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-table text-primary-600 group-hover:text-primary-700"></i>
-                        </button>
-                        <a href="/faktor-graduan/table" target="_blank"
-                            class="px-4 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all text-sm font-medium transform hover:scale-105">
-                            <i class="fas fa-external-link-alt mr-2"></i>Lihat Maklumat Penuh
-                        </a>
+                    <div class="flex space-x-1">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Additional Skills')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <a href="/faktor-graduan/table" target="_blank"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors flex items-center justify-center">
+                                <i class="fas fa-external-link-alt text-xs"></i>
+                            </a>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Penuh
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="p-8">
+            <div class="px-6 py-10">
                 <div class="h-96 relative">
                     <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
-                            <div class="text-gray-700 font-medium">Memuatkan kemahiran tambahan...</div>
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4">
+                            </div>
+                            <div class="text-gray-600 font-medium">Memuatkan kemahiran tambahan...</div>
                         </div>
                     </div>
                     <canvas id="additionalSkillsChart" class="w-full h-full"></canvas>
@@ -559,19 +659,6 @@
         </div>
     </div>
 </div>
-
-<!-- Click outside handler to close dropdowns -->
-<script>
-    document.addEventListener('click', function(event) {
-        // Close all dropdowns when clicking outside
-        const dropdowns = document.querySelectorAll('[x-data*="open"]');
-        dropdowns.forEach(dropdown => {
-            if (!dropdown.contains(event.target)) {
-                Alpine.store('dropdowns', { open: false });
-            }
-        });
-    });
-</script>
 {% endblock %}
 
 {% block scripts %}
@@ -592,7 +679,8 @@
             availableFilters: {},
             activeFiltersCount: 0,
 
-            init() {
+            init()
+            {
                 console.log('Initializing faktor graduan dashboard...');
                 if (this.isInitialized) return;
                 this.isInitialized = true;
@@ -601,25 +689,29 @@
                 this.updateActiveFiltersCount();
             },
 
-            waitForEnhancedChart() {
-                if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined') {
+            waitForEnhancedChart()
+            {
+                if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined')
+                {
                     setTimeout(() => this.waitForEnhancedChart(), 100);
                     return;
                 }
                 this.loadData();
             },
 
-            async loadAvailableFilters() {
-                try {
+            async loadAvailableFilters()
+            {
+                try
+                {
                     const response = await fetch('/faktor-graduan/api/filters/available');
                     const data = await response.json();
 
 
                     this.availableFilters = {
-                        graduation_years: data['Tahun graduasi anda?'] || [],
-                        genders: data['Jantina anda?'] || [],
-                        institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || [],
-                        certificates: data['Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'] || []
+                        graduation_years: data[ 'Tahun graduasi anda?' ] || [],
+                        genders: data[ 'Jantina anda?' ] || [],
+                        institutions: data[ 'Institusi pendidikan MARA yang anda hadiri?' ] || [],
+                        certificates: data[ 'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?' ] || []
                     };
                 } catch (error)
                 {
@@ -627,16 +719,18 @@
                 }
             },
 
-            async loadData() {
+            async loadData()
+            {
                 if (this.loading) return;
 
 
                 this.loading = true;
 
-                try {
+                try
+                {
                     await this.loadSummary();
                     await this.delay(200);
-                    
+
                     // Load all 5 individual employability factor charts
                     await this.loadIndividualFactorChart('industrial-training', 'industrialTrainingChart');
                     await this.delay(200);
@@ -648,7 +742,7 @@
                     await this.delay(200);
                     await this.loadIndividualFactorChart('academic-qualifications', 'academicQualificationsChart');
                     await this.delay(200);
-                    
+
                     // Load other charts
                     await this.loadProfessionalCertificatesChart();
                     await this.delay(200);
@@ -659,16 +753,20 @@
                     await this.loadAdditionalSkillsChart();
 
                     this.dataLoaded = true;
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading dashboard data:', error);
                     this.showToast('Error loading data: ' + error.message, 'error');
-                } finally {
+                } finally
+                {
                     this.loading = false;
                 }
             },
 
-            async loadIndividualFactorChart(factorId, canvasId) {
-                try {
+            async loadIndividualFactorChart(factorId, canvasId)
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/faktor-graduan/api/employability-factor/${factorId}?${params}`);
                     const data = await response.json();
@@ -676,16 +774,19 @@
                     this.safeDestroyChart(canvasId.replace('Chart', ''));
 
                     const canvas = document.getElementById(canvasId);
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts[canvasId.replace('Chart', '')] = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, `employability-factor/${factorId}`, {
+                            window.globalCharts[ canvasId.replace('Chart', '') ] = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, `employability-factor/${factorId}`, {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Bilangan: ${context.parsed.y.toLocaleString()} responden`;
                                             }
                                         }
@@ -716,10 +817,12 @@
                                             font: { size: 9 },
                                             maxRotation: 0,  // Keep text straight
                                             minRotation: 0,  // Keep text straight
-                                            callback: function(value, index) {
+                                            callback: function (value, index)
+                                            {
                                                 const label = this.getLabelForValue(value);
                                                 // Truncate long labels and add ellipsis
-                                                if (label && label.length > 15) {
+                                                if (label && label.length > 15)
+                                                {
                                                     return label.substring(0, 12) + '...';
                                                 }
                                                 return label;
@@ -730,12 +833,14 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error(`Error loading ${factorId} chart:`, error);
                 }
             },
 
-            async refreshAllFactorCharts() {
+            async refreshAllFactorCharts()
+            {
                 await this.loadIndividualFactorChart('industrial-training', 'industrialTrainingChart');
                 await this.loadIndividualFactorChart('communication-skills', 'communicationSkillsChart');
                 await this.loadIndividualFactorChart('technical-skills', 'technicalSkillsChart');
@@ -744,17 +849,21 @@
                 this.showToast('Semua graf faktor dimuat semula', 'success');
             },
 
-            delay(ms) {
+            delay(ms)
+            {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
 
-            async loadSummary() {
-                try {
+            async loadSummary()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/faktor-graduan/api/summary?${params}`);
                     if (!response.ok) throw new Error('Failed to load summary');
                     this.kpis = await response.json();
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading summary:', error);
                     this.kpis = {
                         total_records: 0,
@@ -767,14 +876,17 @@
                 }
             },
 
-            async loadEmployabilityFactorsChart() {
+            async loadEmployabilityFactorsChart()
+            {
                 // This method is now replaced by individual factor charts
                 // Keeping for compatibility but no longer used
                 console.log('Individual factor charts are loaded separately');
             },
 
-            async loadProfessionalCertificatesChart() {
-                try {
+            async loadProfessionalCertificatesChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/faktor-graduan/api/professional-certificates?${params}`);
                     const data = await response.json();
@@ -785,14 +897,16 @@
                     if (canvas)
                     {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.professionalCertificates = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'professional-certificates', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                             }
                                         }
@@ -815,10 +929,12 @@
                                             maxRotation: 0,  // Keep text straight
                                             minRotation: 0,  // Keep text straight
                                             font: { size: 10 },
-                                            callback: function(value, index) {
+                                            callback: function (value, index)
+                                            {
                                                 const label = this.getLabelForValue(value);
                                                 // Truncate long labels
-                                                if (label && label.length > 12) {
+                                                if (label && label.length > 12)
+                                                {
                                                     return label.substring(0, 9) + '...';
                                                 }
                                                 return label;
@@ -829,13 +945,16 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading professional certificates chart:', error);
                 }
             },
 
-            async loadEmployerRequirementsChart() {
-                try {
+            async loadEmployerRequirementsChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/faktor-graduan/api/employer-requirements?${params}`);
                     const data = await response.json();
@@ -846,14 +965,16 @@
                     if (canvas)
                     {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.employerRequirements = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'employer-requirements', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                             }
                                         }
@@ -876,10 +997,12 @@
                                             maxRotation: 0,  // Keep text straight
                                             minRotation: 0,  // Keep text straight
                                             font: { size: 10 },
-                                            callback: function(value, index) {
+                                            callback: function (value, index)
+                                            {
                                                 const label = this.getLabelForValue(value);
                                                 // Truncate long labels
-                                                if (label && label.length > 15) {
+                                                if (label && label.length > 15)
+                                                {
                                                     return label.substring(0, 12) + '...';
                                                 }
                                                 return label;
@@ -890,13 +1013,16 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading employer requirements chart:', error);
                 }
             },
 
-            async loadUniversityPreparednessChart() {
-                try {
+            async loadUniversityPreparednessChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/faktor-graduan/api/university-preparedness?${params}`);
                     const data = await response.json();
@@ -904,16 +1030,19 @@
                     this.safeDestroyChart('universityPreparedness');
 
                     const canvas = document.getElementById('universityPreparednessChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.universityPreparedness = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'university-preparedness', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                             }
                                         }
@@ -936,10 +1065,12 @@
                                             maxRotation: 0,  // Keep text straight
                                             minRotation: 0,  // Keep text straight
                                             font: { size: 9 },
-                                            callback: function(value, index) {
+                                            callback: function (value, index)
+                                            {
                                                 const label = this.getLabelForValue(value);
                                                 // Truncate long labels
-                                                if (label && label.length > 15) {
+                                                if (label && label.length > 15)
+                                                {
                                                     return label.substring(0, 12) + '...';
                                                 }
                                                 return label;
@@ -950,13 +1081,16 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading university preparedness chart:', error);
                 }
             },
 
-            async loadAdditionalSkillsChart() {
-                try {
+            async loadAdditionalSkillsChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/faktor-graduan/api/additional-skills?${params}`);
                     const data = await response.json();
@@ -967,7 +1101,8 @@
                     if (canvas)
                     {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Use Enhanced Chart Factory for horizontal bar chart
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.additionalSkills = EnhancedChartFactory.createChart(ctx, 'horizontal-bar', data, 'additional-skills', {
@@ -975,7 +1110,8 @@
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Kekerapan: ${context.parsed.x.toLocaleString()}`;
                                             }
                                         }
@@ -1002,23 +1138,29 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading additional skills chart:', error);
                 }
             },
 
-            safeDestroyChart(chartName) {
-                if (window.globalCharts && window.globalCharts[chartName]) {
-                    try {
-                        window.globalCharts[chartName].destroy();
-                        delete window.globalCharts[chartName];
-                    } catch (error) {
+            safeDestroyChart(chartName)
+            {
+                if (window.globalCharts && window.globalCharts[ chartName ])
+                {
+                    try
+                    {
+                        window.globalCharts[ chartName ].destroy();
+                        delete window.globalCharts[ chartName ];
+                    } catch (error)
+                    {
                         console.warn(`Error destroying chart ${chartName}:`, error);
                     }
                 }
             },
 
-            buildFilterParams() {
+            buildFilterParams()
+            {
                 const params = new URLSearchParams();
                 Object.entries(this.filters).forEach(([ key, values ]) =>
                 {
@@ -1034,14 +1176,16 @@
                 return params.toString();
             },
 
-            applyFilters() {
+            applyFilters()
+            {
                 this.updateActiveFiltersCount();
                 this.dataLoaded = false;
                 this.loadData();
                 this.showToast('Penapis berjaya diterapkan', 'success');
             },
 
-            clearAllFilters() {
+            clearAllFilters()
+            {
                 this.filters = {
                     graduation_year: [],
                     gender: [],
@@ -1054,57 +1198,74 @@
                 this.showToast('Semua penapis dikosongkan', 'info');
             },
 
-            updateActiveFiltersCount() {
-                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
+            updateActiveFiltersCount()
+            {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
+                {
                     return count + (Array.isArray(filter) ? filter.length : 0);
                 }, 0);
             },
 
-            async refreshData() {
+            async refreshData()
+            {
                 this.dataLoaded = false;
                 await this.loadData();
                 this.showToast('Data berjaya dimuat semula', 'success');
             },
 
-            async refreshChart(chartType) {
-                if (chartType === 'factors') {
+            async refreshChart(chartType)
+            {
+                if (chartType === 'factors')
+                {
                     await this.refreshAllFactorCharts();
-                } else if (chartType === 'certificates') {
+                } else if (chartType === 'certificates')
+                {
                     await this.loadProfessionalCertificatesChart();
-                } else if (chartType === 'requirements') {
+                } else if (chartType === 'requirements')
+                {
                     await this.loadEmployerRequirementsChart();
-                } else if (chartType === 'preparedness') {
+                } else if (chartType === 'preparedness')
+                {
                     await this.loadUniversityPreparednessChart();
-                } else if (chartType === 'skills') {
+                } else if (chartType === 'skills')
+                {
                     await this.loadAdditionalSkillsChart();
                 }
                 this.showToast(`Graf ${chartType} dimuat semula`, 'success');
             },
 
-            async exportData(format) {
-                try {
+            async exportData(format)
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const url = `/faktor-graduan/api/export?format=${format}&${params}`;
                     window.open(url, '_blank');
                     this.showToast(`Mengeksport data sebagai ${format.toUpperCase()}...`, 'info');
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Export error:', error);
                     this.showToast('Eksport gagal', 'error');
                 }
             },
 
-            openTableModal(title) {
+            openTableModal(title)
+            {
                 const params = this.buildFilterParams();
-                if (typeof openModal !== 'undefined') {
+                if (typeof openModal !== 'undefined')
+                {
                     openModal(title, `/faktor-graduan/api/table-data?${params}`);
                 }
             },
 
-            showToast(message, type = 'info') {
+            showToast(message, type = 'info')
+            {
                 // Enhanced toast notification
-                if (typeof showToast !== 'undefined') {
+                if (typeof showToast !== 'undefined')
+                {
                     showToast(message, type);
-                } else {
+                } else
+                {
                     console.log(`${type.toUpperCase()}: ${message}`);
                 }
             }
@@ -1114,12 +1275,16 @@
     // Enhanced global chart management
     window.globalCharts = window.globalCharts || {};
 
-    function safeDestroyChart(chartName) {
-        if (window.globalCharts && window.globalCharts[chartName]) {
-            try {
-                window.globalCharts[chartName].destroy();
-                delete window.globalCharts[chartName];
-            } catch (error) {
+    function safeDestroyChart(chartName)
+    {
+        if (window.globalCharts && window.globalCharts[ chartName ])
+        {
+            try
+            {
+                window.globalCharts[ chartName ].destroy();
+                delete window.globalCharts[ chartName ];
+            } catch (error)
+            {
                 console.warn(`Error destroying chart ${chartName}:`, error);
             }
         }
