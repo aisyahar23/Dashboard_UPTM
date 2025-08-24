@@ -151,6 +151,7 @@
                     </button>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -454,38 +455,49 @@
 <script>
     // Initialize global charts object
     window.globalCharts = window.globalCharts || {};
-    
+
     // Global safe destroy chart function
-    function safeDestroyChart(chartName) {
-        try {
-            if (window.globalCharts && window.globalCharts[chartName]) {
-                window.globalCharts[chartName].destroy();
-                delete window.globalCharts[chartName];
+    function safeDestroyChart(chartName)
+    {
+        try
+        {
+            if (window.globalCharts && window.globalCharts[ chartName ])
+            {
+                window.globalCharts[ chartName ].destroy();
+                delete window.globalCharts[ chartName ];
             }
-        } catch (error) {
+        } catch (error)
+        {
             console.error(`Error destroying chart ${chartName}:`, error);
         }
     }
-    
+
     // Global toast function if not available
-    function showToast(message, type = 'info') {
-        if (typeof showToast !== 'undefined') {
+    function showToast(message, type = 'info')
+    {
+        if (typeof showToast !== 'undefined')
+        {
             showToast(message, type);
-        } else {
+        } else
+        {
             console.log(`${type.toUpperCase()}: ${message}`);
         }
     }
-    
+
     // Global modal function if not available 
-    function openModal(title, url) {
-        if (typeof openModal !== 'undefined') {
+    function openModal(title, url)
+    {
+        if (typeof openModal !== 'undefined')
+        {
             openModal(title, url);
-        } else {
+        } else
+        {
             console.log(`Opening modal: ${title} - ${url}`);
         }
     }
 
-    function industriGajiDashboard() {
+    function industriGajiDashboard()
+    {
         return {
             loading: false,
             dataLoaded: false,
@@ -498,44 +510,52 @@
             },
             availableFilters: {},
             activeFiltersCount: 0,
-            
-            init() {
+
+            init()
+            {
                 console.log('Initializing employment analytics dashboard...');
                 if (this.isInitialized) return;
                 this.isInitialized = true;
                 this.waitForChart();
                 this.loadAvailableFilters();
             },
-            
-            waitForChart() {
-                if (typeof Chart === 'undefined') {
+
+            waitForChart()
+            {
+                if (typeof Chart === 'undefined')
+                {
                     setTimeout(() => this.waitForChart(), 100);
                     return;
                 }
                 this.loadData();
             },
-            
-            async loadAvailableFilters() {
-                try {
+
+            async loadAvailableFilters()
+            {
+                try
+                {
                     const response = await fetch('/industri-gaji/api/filters/available');
                     const data = await response.json();
-                    
+
                     this.availableFilters = {
                         graduation_years: data['Tahun graduasi anda?'] || [],
                         genders: data['Jantina anda?'] || [],
                         employment_status: data['Adakah anda kini bekerja?'] || []
                     };
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading filters:', error);
                 }
             },
-            
-            async loadData() {
+
+            async loadData()
+            {
                 if (this.loading) return;
-                
+
                 this.loading = true;
-                
-                try {
+
+                try
+                {
                     await this.loadSummary();
                     await this.delay(200);
                     await this.loadEmploymentStatus();
@@ -545,39 +565,47 @@
                     await this.loadSalaryDistribution();
                     await this.delay(200);
                     await this.loadJobFindingFactors();
-                    
+
                     this.dataLoaded = true;
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading data:', error);
                     showToast('Error loading data: ' + error.message, 'error');
-                } finally {
+                } finally
+                {
                     this.loading = false;
                 }
             },
-            
-            delay(ms) {
+
+            delay(ms)
+            {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
-            
-            async loadSummary() {
-                try {
+
+            async loadSummary()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/industri-gaji/api/summary?${params}`);
                     if (!response.ok) throw new Error('Failed to load summary');
                     this.kpis = await response.json();
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading summary:', error);
-                    this.kpis = { 
-                        total_records: 0, 
-                        full_time_employment_rate: 0, 
-                        private_sector_rate: 0, 
-                        quick_employment_rate: 0 
+                    this.kpis = {
+                        total_records: 0,
+                        full_time_employment_rate: 0,
+                        private_sector_rate: 0,
+                        quick_employment_rate: 0
                     };
                 }
             },
-            
-            async loadEmploymentStatus() {
-                try {
+
+            async loadEmploymentStatus()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/industri-gaji/api/employment-status?${params}`);
                     const data = await response.json();
@@ -585,7 +613,8 @@
                     safeDestroyChart('employment');
                     
                     const canvas = document.getElementById('employmentChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
                         if (ctx && typeof ChartFactory !== 'undefined') {
                             window.globalCharts.employment = ChartFactory.createPieChart(ctx, data, {
@@ -629,16 +658,20 @@
                                         }
                                     }
                                 }
+                                }
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading employment status:', error);
                 }
             },
-            
-            async loadJobTypes() {
-                try {
+
+            async loadJobTypes()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/industri-gaji/api/job-types?${params}`);
                     const data = await response.json();
@@ -646,7 +679,8 @@
                     safeDestroyChart('jobTypes');
                     
                     const canvas = document.getElementById('jobTypesChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
                         if (ctx && typeof ChartFactory !== 'undefined') {
                             window.globalCharts.jobTypes = ChartFactory.createBarChart(ctx, data, {
@@ -699,13 +733,16 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading job types:', error);
                 }
             },
-            
-            async loadSalaryDistribution() {
-                try {
+
+            async loadSalaryDistribution()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/industri-gaji/api/salary-distribution?${params}`);
                     const data = await response.json();
@@ -713,7 +750,8 @@
                     safeDestroyChart('salary');
                     
                     const canvas = document.getElementById('salaryChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
                         if (ctx) {
                             window.globalCharts.salary = new Chart(ctx, {
@@ -750,7 +788,8 @@
                                             grid: { color: '#E2E8F0' },
                                             ticks: {
                                                 color: '#718096',
-                                                callback: function(value) {
+                                                callback: function (value)
+                                                {
                                                     return 'RM ' + value.toLocaleString();
                                                 }
                                             }
@@ -760,13 +799,16 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading salary distribution:', error);
                 }
             },
-            
-            async loadJobFindingFactors() {
-                try {
+
+            async loadJobFindingFactors()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/industri-gaji/api/job-finding-factors?${params}`);
                     const data = await response.json();
@@ -774,7 +816,8 @@
                     safeDestroyChart('jobFactors');
                     
                     const canvas = document.getElementById('jobFactorsChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
                         if (ctx) {
                             window.globalCharts.jobFactors = new Chart(ctx, {
@@ -815,7 +858,8 @@
                                             grid: { color: '#E2E8F0' },
                                             ticks: {
                                                 color: '#718096',
-                                                callback: function(value) {
+                                                callback: function (value)
+                                                {
                                                     return 'RM ' + value.toLocaleString();
                                                 }
                                             }
@@ -825,7 +869,8 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading job finding factors:', error);
                 }
             },
@@ -836,31 +881,36 @@
                 if (this.filters.graduation_year.length > 0) {
                     params.append('graduation_year', this.filters.graduation_year.join(','));
                 }
-                if (this.filters.gender.length > 0) {
+                if (this.filters.gender.length > 0)
+                {
                     params.append('gender', this.filters.gender.join(','));
                 }
-                if (this.filters.employment_status.length > 0) {
+                if (this.filters.employment_status.length > 0)
+                {
                     params.append('employment_status', this.filters.employment_status.join(','));
                 }
                 
                 return params.toString();
             },
-            
-            updateActiveFiltersCount() {
-                this.activeFiltersCount = 
+
+            updateActiveFiltersCount()
+            {
+                this.activeFiltersCount =
                     this.filters.graduation_year.length +
                     this.filters.gender.length +
                     this.filters.employment_status.length;
             },
-            
-            applyFilters() {
+
+            applyFilters()
+            {
                 this.updateActiveFiltersCount();
                 this.dataLoaded = false;
                 this.loadData();
                 showToast('Filters applied successfully', 'success');
             },
-            
-            clearAllFilters() {
+
+            clearAllFilters()
+            {
                 this.filters = {
                     graduation_year: [],
                     gender: [],
@@ -871,23 +921,27 @@
                 this.loadData();
                 showToast('All filters cleared', 'info');
             },
-            
-            async refreshData() {
+
+            async refreshData()
+            {
                 if (this.loading) return;
-                
+
                 showToast('Refreshing data...', 'info');
                 this.dataLoaded = false;
                 await this.loadData();
                 showToast('Data refreshed successfully', 'success');
             },
-            
-            async refreshChart(chartType) {
+
+            async refreshChart(chartType)
+            {
                 if (this.loading) return;
-                
+
                 this.loading = true;
-                
-                try {
-                    switch(chartType) {
+
+                try
+                {
+                    switch (chartType)
+                    {
                         case 'employment':
                             await this.loadEmploymentStatus();
                             break;
@@ -904,50 +958,58 @@
                             console.warn('Unknown chart type:', chartType);
                     }
                     showToast(`${chartType} chart refreshed`, 'success');
-                } catch (error) {
+                } catch (error)
+                {
                     console.error(`Error refreshing ${chartType}:`, error);
                     showToast(`Error refreshing ${chartType}`, 'error');
-                } finally {
+                } finally
+                {
                     this.loading = false;
                 }
             },
-            
-            openTableModal(title) {
+
+            openTableModal(title)
+            {
                 const urlMap = {
                     'Employment Status': '/industri-gaji/api/employment-status/table',
                     'Job Types': '/industri-gaji/api/job-types/table',
                     'Salary Distribution': '/industri-gaji/api/salary-distribution/table',
                     'Job Finding Factors': '/industri-gaji/api/job-finding-factors/table'
                 };
-                
-                const url = urlMap[title];
-                if (url) {
+
+                const url = urlMap[ title ];
+                if (url)
+                {
                     const params = this.buildFilterParams();
                     const fullUrl = params ? `${url}?${params}` : url;
                     openModal(title, fullUrl);
-                } else {
+                } else
+                {
                     showToast('Table view not available for this chart', 'warning');
                 }
             },
-            
-            async exportData(format) {
+
+            async exportData(format)
+            {
                 if (this.loading) return;
-                
-                try {
+
+                try
+                {
                     const params = this.buildFilterParams();
                     const url = `/industri-gaji/api/export/${format}?${params}`;
-                    
+
                     showToast(`Preparing ${format.toUpperCase()} export...`, 'info');
                     
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = `employment_analytics_${new Date().toISOString().split('T')[0]}.${format}`;
+                    link.download = `employment_analytics_${new Date().toISOString().split('T')[ 0 ]}.${format}`;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    
+
                     showToast(`${format.toUpperCase()} export completed`, 'success');
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Export error:', error);
                     showToast(`Export failed: ${error.message}`, 'error');
                 }
@@ -962,11 +1024,14 @@
             }
         };
     }
-    
+
     // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-        if (window.globalCharts) {
-            Object.keys(window.globalCharts).forEach(chartName => {
+    window.addEventListener('beforeunload', () =>
+    {
+        if (window.globalCharts)
+        {
+            Object.keys(window.globalCharts).forEach(chartName =>
+            {
                 safeDestroyChart(chartName);
             });
         }

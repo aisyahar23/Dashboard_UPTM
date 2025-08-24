@@ -20,12 +20,16 @@
                     colors: {
                         primary: {
                             50: '#f0f7ff',
-                            100: '#F3F8FC',
+                            100: '#e6f0fa',
+                            200: '#bfd8f0',
+                            300: '#8bb9e1',
                             400: '#2159a2',
+                            500: '#1d4f90',
+                            600: '#19457e',
+                            700: '#143a6b',
+                            800: '#103059',
+                            900: '#0b2647',
                             450: '#296899',
-                            500: '#074e7e',
-                            600: '#053a5f',
-                            700: '#042a47',
                         },
                         secondary: {
                             50: '#fef2f2',
@@ -221,6 +225,65 @@
             .main-content {
                 margin-left: 0 !important;
             }
+        }
+
+        .blue-gradient {
+            background: linear-gradient(to bottom right,
+                    /* black, */
+                    #1d4f90,
+                    /* primary-800 */
+                    #103059
+                    /* primary-600 */
+                );
+        }
+
+        .red-gradient {
+            background: linear-gradient(to bottom right,
+                    /* black, */
+                    #b91c1c,
+                    #7f1d1d);
+        }
+
+        .bluered-gradient {
+            background: linear-gradient(to bottom right,
+                    /* black, */
+                    #1d4f90,
+                    #103059,
+                    #7f1d1d,
+                    #b91c1c);
+        }
+
+        .purple-gradient {
+            background: linear-gradient(to bottom right,
+                    #3a1c71,
+                    /* deep purple */
+                    #5e2977,
+                    /* purple with blue undertone */
+                    #8f2d7f
+                    /* purple with red undertone */
+                );
+        }
+
+        .blue-purple-gradient {
+            background: linear-gradient(to bottom right,
+                    #103059,
+                    /* blue */
+                    #3a1c71,
+                    /* deep purple */
+                    #5e2977
+                    /* purple with blue undertone */
+                );
+        }
+
+        .red-purple-gradient {
+            background: linear-gradient(to bottom right,
+                    #b91c1c,
+                    /* red */
+                    #8f2d7f,
+                    /* purple with red undertone */
+                    #3a1c71
+                    /* deep purple */
+                );
         }
     </style>
 </head>

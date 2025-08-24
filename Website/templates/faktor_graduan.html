@@ -576,7 +576,8 @@
 
 {% block scripts %}
 <script>
-    function faktorGraduanDashboard() {
+    function faktorGraduanDashboard()
+    {
         return {
             loading: false,
             dataLoaded: false,
@@ -613,19 +614,22 @@
                     const response = await fetch('/faktor-graduan/api/filters/available');
                     const data = await response.json();
 
+
                     this.availableFilters = {
                         graduation_years: data['Tahun graduasi anda?'] || [],
                         genders: data['Jantina anda?'] || [],
                         institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || [],
                         certificates: data['Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'] || []
                     };
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading filters:', error);
                 }
             },
 
             async loadData() {
                 if (this.loading) return;
+
 
                 this.loading = true;
 
@@ -778,7 +782,8 @@
                     this.safeDestroyChart('professionalCertificates');
 
                     const canvas = document.getElementById('professionalCertificatesChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
                         if (ctx) {
                             // Use Enhanced Chart Factory for vertical bar chart
@@ -838,7 +843,8 @@
                     this.safeDestroyChart('employerRequirements');
 
                     const canvas = document.getElementById('employerRequirementsChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
                         if (ctx) {
                             // Use Enhanced Chart Factory for vertical bar chart
@@ -958,7 +964,8 @@
                     this.safeDestroyChart('additionalSkills');
 
                     const canvas = document.getElementById('additionalSkillsChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
                         if (ctx) {
                             // Use Enhanced Chart Factory for horizontal bar chart
@@ -1013,8 +1020,10 @@
 
             buildFilterParams() {
                 const params = new URLSearchParams();
-                Object.entries(this.filters).forEach(([key, values]) => {
-                    if (Array.isArray(values) && values.length > 0) {
+                Object.entries(this.filters).forEach(([ key, values ]) =>
+                {
+                    if (Array.isArray(values) && values.length > 0)
+                    {
                         const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
                             key === 'gender' ? 'Jantina anda?' :
                                 key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' :

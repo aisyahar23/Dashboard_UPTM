@@ -1,290 +1,320 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div x-data="demografiDashboard()" x-init="init()" class="p-6 space-y-8">
+<div x-data="demografiDashboard()" x-init="init()" class="px-6 pb-6 space-y-6">
     <!-- Header Section -->
-    <div class="bg-gradient-to-br from-white via-primary-50 to-secondary-50 rounded-3xl p-8 border-2 border-primary-100 shadow-xl">
+
+    <div class="relative">
+        <div class="flex flex-row border-b border-gray-300 justify-between py-4 -mx-6">
+
+            <!-- Logo -->
+            <div class="px-4 space-x-4 flex flex-row items-center">
+                <img src="{{ url_for('static', filename='img/1. UPTM.png') }}" alt="Logo UPTM"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/2.MARA 2.png') }}" alt="Logo MARA"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/3.KKWK.png') }}" alt="Logo KKWK"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/4.KPTM.png') }}" alt="Logo KPTM"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/5.IKEB.jpg') }}" alt="Logo IKEB"
+                    style="width: auto; height: 27px;">
+            </div>
+
+            <!-- Action Panel -->
+            <div class="flex flex-row space-x-4 px-6">
+                <!-- Penapisan -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open"
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-secondary-700">
+                        <i class="fas fa-filter text-secondary-900 text-[10px]"></i>
+                        <span class="font-semibold text-secondary-900 text-[10px]">Penapisan</span>
+                        <div x-show="activeFiltersCount > 0"
+                            class="bg-secondary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
+                            x-text="activeFiltersCount"></div>
+                    </button>
+
+                    <!-- Dropdown Penapisan -->
+                    <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 transform scale-95"
+                        x-transition:enter-end="opacity-100 transform scale-100"
+                        class="absolute right-0 mt-2 w-80 bg-white/95 backdrop-blur rounded-xl shadow-2xl border border-gray-200 z-50">
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">Maklumat Ditapis</h3>
+                                <button @click="clearAllFilters()"
+                                    class="text-[#c92427] hover:text-red-700 text-sm font-medium">
+                                    <i class="fas fa-times-circle mr-1"></i>Kosongkan
+                                </button>
+                            </div>
+
+                            <!-- Pilihan Penapis -->
+                            <div class="space-y-4">
+                                <!-- Tahun Graduasi -->
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700 mb-2 block">
+                                        <i class="fas fa-calendar-alt mr-2 text-primary-500"></i>Tahun Graduasi
+                                    </label>
+                                    <div class="grid grid-cols-3 gap-1 text-sm">
+                                        <template x-for="year in availableFilters.graduation_years || []">
+                                            <label
+                                                class="flex items-center p-1 rounded hover:bg-blue-50 cursor-pointer">
+                                                <input type="checkbox" :value="year" x-model="filters.graduation_year"
+                                                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 text-xs">
+                                                <span class="ml-1 text-xs text-gray-700" x-text="year"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Jantina -->
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700 mb-2 block">
+                                        <i class="fas fa-venus-mars mr-2 text-secondary-500"></i>Jantina
+                                    </label>
+                                    <div class="grid grid-cols-2 gap-1">
+                                        <template x-for="gender in availableFilters.genders || []">
+                                            <label class="flex items-center p-1 rounded hover:bg-red-50 cursor-pointer">
+                                                <input type="checkbox" :value="gender" x-model="filters.gender"
+                                                    class="rounded border-gray-300 text-secondary-600 focus:ring-secondary-500 text-xs">
+                                                <span class="ml-1 text-xs text-gray-700" x-text="gender"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Institusi -->
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700 mb-2 block">
+                                        <i class="fas fa-university mr-2 text-emerald-500"></i>Institusi
+                                    </label>
+                                    <div class="space-y-1 max-h-24 overflow-y-auto text-xs">
+                                        <template x-for="institution in availableFilters.institutions || []">
+                                            <label
+                                                class="flex items-center p-1 rounded hover:bg-emerald-50 cursor-pointer">
+                                                <input type="checkbox" :value="institution"
+                                                    x-model="filters.institution"
+                                                    class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 text-xs">
+                                                <span class="ml-1 text-gray-700 leading-tight"
+                                                    x-text="institution"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Bidang Pengajian -->
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700 mb-2 block">
+                                        <i class="fas fa-book mr-2 text-purple-500"></i>Bidang Pengajian
+                                    </label>
+                                    <div class="space-y-1 max-h-24 overflow-y-auto text-xs">
+                                        <template x-for="field in availableFilters.fields || []">
+                                            <label
+                                                class="flex items-center p-1 rounded hover:bg-purple-50 cursor-pointer">
+                                                <input type="checkbox" :value="field" x-model="filters.field"
+                                                    class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 text-xs">
+                                                <span class="ml-1 text-gray-700 leading-tight" x-text="field"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 pt-4 border-t border-gray-200">
+                                <button @click="applyFilters(); open = false"
+                                    class="w-full bg-primary-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors text-sm">
+                                    <i class="fas fa-search mr-1"></i>Tapis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Eksport -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open"
+                        class="button-style-fulll-red flex items-center bg-gradient-to-r from-secondary-700 via-secondary-500 to-secondary-600 text-white px-3 py-1 rounded-md hover:from-secondary-500 hover:via-secondary-500 hover:to-secondary-700 transition-all duration-200 shadow-lg shadow-secondary-700/30">
+                        <i class="fas fa-download text-[10px]"></i>
+                        <span class="font-semibold text-[10px] ml-1">Eksport</span>
+                    </button>
+
+                    <div x-show="open" @click.away="open = false" x-transition
+                        class="absolute right-0 mt-3 w-56 bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 z-50">
+                        <div class="py-3">
+                            <button @click="exportData('csv'); open = false"
+                                class="w-full text-left px-6 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors">
+                                <i class="fas fa-file-csv text-emerald-600 text-lg"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900">Format CSV</div>
+                                    <div class="text-xs text-gray-500">Nilai dipisahkan koma</div>
+                                </div>
+                            </button>
+                            <button @click="exportData('excel'); open = false"
+                                class="w-full text-left px-6 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors">
+                                <i class="fas fa-file-excel text-blue-600 text-lg"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900">Format Excel</div>
+                                    <div class="text-xs text-gray-500">Fail Microsoft Excel</div>
+                                </div>
+                            </button>
+                            <button @click="exportData('json'); open = false"
+                                class="w-full text-left px-6 py-3 text-sm hover:bg-purple-50 flex items-center space-x-3 transition-colors">
+                                <i class="fas fa-file-code text-purple-600 text-lg"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900">Format JSON</div>
+                                    <div class="text-xs text-gray-500">Notasi Objek JavaScript</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Muat Semula -->
+                <div>
+                    <button @click="refreshData()"
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-secondary-700"
+                        :disabled="loading">
+                        <i class="fas fa-sync-alt text-secondary-900 text-[10px]"
+                            :class="{ 'animate-spin': loading }"></i>
+                        <span class="text-[10px] text-secondary-900 font-semibold">Muat Semula</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="bg-gradient-to-br from-white via-primary-50 to-secondary-50 rounded-3xl p-8 border-2 border-primary-100 shadow-xl">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
             <div class="flex items-center space-x-6">
-                <div class="w-20 h-20 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center shadow-lg">
+                <div
+                    class="w-20 h-20 bg-gradient-to-br from-primary-400 to-secondary-700 rounded-full flex items-center justify-center r shadow-lg ring-4 ring-primary-700/20">
                     <i class="fas fa-users text-white text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-4xl font-bold bg-gradient-to-r from-primary-700 to-secondary-600 bg-clip-text text-transparent">
+                    <h1
+                        class="text-4xl font-bold bg-gradient-to-r from-primary-700 to-secondary-600 bg-clip-text text-transparent">
                         Demografi & Latar Belakang Akademik
                     </h1>
-                    <p class="text-lg text-gray-600 mt-2">Comprehensive demographic & academic background analysis</p>
+                    <p class="text-lg text-gray-600 mt-2">Analisis menyeluruh demografi dan latar belakang akademik</p>
                     <div class="flex items-center mt-3 space-x-4">
                         <div class="flex items-center space-x-2">
                             <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                            <span class="text-sm font-medium text-emerald-600">Live Data</span>
+                            <span class="text-sm font-medium text-emerald-600">Data Langsung</span>
                         </div>
                         <div class="text-sm text-gray-500">
                             <span x-show="dataLoaded">
                                 <i class="fas fa-database mr-1"></i>
-                                <span x-text="kpis.total_records || 0"></span> Records Analyzed
+                                <span x-text="kpis.total_records || 0"></span> Rekod Dianalisis
                             </span>
                             <span x-show="loading">
                                 <i class="fas fa-spinner fa-spin mr-1"></i>
-                                Loading Analytics...
+                                Memuatkan Analitik...
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Action Panel -->
-            <div class="flex items-center space-x-4">
-                <!-- Filters -->
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" 
-                            class="flex items-center space-x-3 bg-white border-2 border-primary-200 hover:border-primary-400 px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg">
-                        <i class="fas fa-filter text-primary-600"></i>
-                        <span class="text-sm font-semibold text-primary-700">Advanced Filters</span>
-                        <div x-show="activeFiltersCount > 0" 
-                             class="bg-secondary-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
-                             x-text="activeFiltersCount"></div>
-                    </button>
-                    
-                    <!-- Filter Dropdown -->
-                    <div x-show="open" 
-                         @click.away="open = false"
-                         x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 transform scale-95"
-                         x-transition:enter-end="opacity-100 transform scale-100"
-                         class="absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-2xl border-2 border-primary-100 z-50">
-                        <div class="p-6">
-                            <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-gray-900">Filter Data</h3>
-                                <button @click="clearAllFilters()" 
-                                        class="text-secondary-500 hover:text-secondary-700 text-sm font-semibold">
-                                    <i class="fas fa-times-circle mr-1"></i>Clear All
-                                </button>
-                            </div>
-                            
-                            <!-- Filter Options -->
-                            <div class="space-y-6">
-                                <!-- Graduation Year -->
-                                <div>
-                                    <label class="text-sm font-bold text-gray-700 mb-3 block">
-                                        <i class="fas fa-calendar-alt mr-2 text-primary-500"></i>Tahun Graduasi
-                                    </label>
-                                    <div class="grid grid-cols-3 gap-2">
-                                        <template x-for="year in availableFilters.graduation_years || []">
-                                            <label class="flex items-center p-2 rounded-lg hover:bg-primary-50 cursor-pointer">
-                                                <input type="checkbox" 
-                                                       :value="year" 
-                                                       x-model="filters.graduation_year"
-                                                       class="rounded border-primary-300 text-primary-600 focus:ring-primary-500">
-                                                <span class="ml-2 text-sm font-medium text-gray-700" x-text="year"></span>
-                                            </label>
-                                        </template>
-                                    </div>
-                                </div>
-                                
-                                <!-- Gender -->
-                                <div>
-                                    <label class="text-sm font-bold text-gray-700 mb-3 block">
-                                        <i class="fas fa-venus-mars mr-2 text-secondary-500"></i>Jantina
-                                    </label>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <template x-for="gender in availableFilters.genders || []">
-                                            <label class="flex items-center p-2 rounded-lg hover:bg-secondary-50 cursor-pointer">
-                                                <input type="checkbox" 
-                                                       :value="gender" 
-                                                       x-model="filters.gender"
-                                                       class="rounded border-secondary-300 text-secondary-600 focus:ring-secondary-500">
-                                                <span class="ml-2 text-sm font-medium text-gray-700" x-text="gender"></span>
-                                            </label>
-                                        </template>
-                                    </div>
-                                </div>
-                                
-                                <!-- Institution -->
-                                <div>
-                                    <label class="text-sm font-bold text-gray-700 mb-3 block">
-                                        <i class="fas fa-university mr-2 text-emerald-500"></i>Institusi
-                                    </label>
-                                    <div class="space-y-2">
-                                        <template x-for="institution in availableFilters.institutions || []">
-                                            <label class="flex items-center p-2 rounded-lg hover:bg-emerald-50 cursor-pointer">
-                                                <input type="checkbox" 
-                                                       :value="institution" 
-                                                       x-model="filters.institution"
-                                                       class="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500">
-                                                <span class="ml-2 text-sm font-medium text-gray-700" x-text="institution"></span>
-                                            </label>
-                                        </template>
-                                    </div>
-                                </div>
-                                
-                                <!-- Field of Study -->
-                                <div>
-                                    <label class="text-sm font-bold text-gray-700 mb-3 block">
-                                        <i class="fas fa-book mr-2 text-purple-500"></i>Bidang Pengajian
-                                    </label>
-                                    <div class="space-y-2">
-                                        <template x-for="field in availableFilters.fields || []">
-                                            <label class="flex items-center p-2 rounded-lg hover:bg-purple-50 cursor-pointer">
-                                                <input type="checkbox" 
-                                                       :value="field" 
-                                                       x-model="filters.field"
-                                                       class="rounded border-purple-300 text-purple-600 focus:ring-purple-500">
-                                                <span class="ml-2 text-sm font-medium text-gray-700" x-text="field"></span>
-                                            </label>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-8 pt-6 border-t border-gray-200">
-                                <button @click="applyFilters(); open = false" 
-                                        class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-bold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg">
-                                    <i class="fas fa-search mr-2"></i>Apply Filters
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Export Button -->
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" 
-                            class="flex items-center space-x-3 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-6 py-3 rounded-xl hover:from-secondary-600 hover:to-secondary-700 transition-all duration-200 shadow-lg">
-                        <i class="fas fa-download"></i>
-                        <span class="text-sm font-semibold">Export Data</span>
-                    </button>
-                    
-                    <div x-show="open" 
-                         @click.away="open = false"
-                         x-transition
-                         class="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-2xl border-2 border-gray-100 z-50">
-                        <div class="py-3">
-                            <button @click="exportData('csv'); open = false" 
-                                    class="w-full text-left px-6 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors">
-                                <i class="fas fa-file-csv text-emerald-600 text-lg"></i>
-                                <div>
-                                    <div class="font-semibold text-gray-900">CSV Format</div>
-                                    <div class="text-xs text-gray-500">Comma-separated values</div>
-                                </div>
-                            </button>
-                            <button @click="exportData('excel'); open = false" 
-                                    class="w-full text-left px-6 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors">
-                                <i class="fas fa-file-excel text-blue-600 text-lg"></i>
-                                <div>
-                                    <div class="font-semibold text-gray-900">Excel Format</div>
-                                    <div class="text-xs text-gray-500">Microsoft Excel file</div>
-                                </div>
-                            </button>
-                            <button @click="exportData('json'); open = false" 
-                                    class="w-full text-left px-6 py-3 text-sm hover:bg-purple-50 flex items-center space-x-3 transition-colors">
-                                <i class="fas fa-file-code text-purple-600 text-lg"></i>
-                                <div>
-                                    <div class="font-semibold text-gray-900">JSON Format</div>
-                                    <div class="text-xs text-gray-500">JavaScript Object Notation</div>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Refresh Button -->
-                <button @click="refreshData()" 
-                        class="flex items-center space-x-3 bg-white border-2 border-gray-200 hover:border-emerald-400 px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
-                        :disabled="loading">
-                    <i class="fas fa-sync-alt text-emerald-600" :class="{ 'animate-spin': loading }"></i>
-                    <span class="text-sm font-semibold text-emerald-700">Refresh</span>
-                </button>
-            </div>
+
         </div>
     </div>
-    
-    <!-- Enhanced KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+    <!-- KPI Cards Row -->
+    <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+
         <!-- Total Respondents -->
-        <div class="bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-users text-2xl"></i>
+        <div
+            class="bg-white rounded-xl px-4 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
+            <div class="flex flex-row justify-start">
+                <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-users text-primary-600"></i>
                 </div>
-                <div class="text-right">
-                    <div class="text-3xl font-bold" x-text="kpis.total_records || '0'"></div>
-                    <div class="text-sm opacity-90">Total Respondents</div>
+                <div class="text-left ml-5">
+                    <div class="text-sm text-gray-500">Jumlah Responden</div>
+                    <div class="text-2xl font-bold" x-text="kpis.total_records || '0'"></div>
                 </div>
-            </div>
-            <div class="w-full bg-white/20 rounded-full h-2">
-                <div class="bg-white h-2 rounded-full transition-all duration-1000" :style="`width: ${Math.min((kpis.total_records || 0) / 100 * 100, 100)}%`"></div>
             </div>
         </div>
 
         <!-- Average Age -->
-        <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-clock text-2xl"></i>
+        <div
+            class="bg-white rounded-xl px-4 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
+            <div class="flex flex-row justify-start">
+                <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-clock text-emerald-600"></i>
                 </div>
-                <div class="text-right">
-                    <div class="text-3xl font-bold" x-text="(kpis.avg_age || 0)"></div>
-                    <div class="text-sm opacity-90">Average Age</div>
+                <div class="text-left ml-5">
+                    <div class="text-sm text-gray-500">Purata Umur</div>
+                    <div class="text-2xl font-bold" x-text="(kpis.avg_age || 0)"></div>
                 </div>
-            </div>
-            <div class="w-full bg-white/20 rounded-full h-2">
-                <div class="bg-white h-2 rounded-full transition-all duration-1000" :style="`width: ${Math.min((kpis.avg_age || 0) / 30 * 100, 100)}%`"></div>
             </div>
         </div>
 
         <!-- Gender Diversity -->
-        <div class="bg-gradient-to-br from-amber-500 to-amber-700 rounded-2xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-venus-mars text-2xl"></i>
+        <div
+            class="bg-white rounded-xl px-4 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
+            <div class="flex flex-row justify-start">
+                <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-venus-mars text-amber-600"></i>
                 </div>
-                <div class="text-right">
-                    <div class="text-3xl font-bold" x-text="(kpis.gender_diversity_index || 0) + '%'"></div>
-                    <div class="text-sm opacity-90">Gender Balance</div>
+                <div class="text-left ml-5">
+                    <div class="text-sm text-gray-500">Keseimbangan Jantina</div>
+                    <div class="text-2xl font-bold" x-text="(kpis.gender_diversity_index || 0) + '%'"></div>
                 </div>
-            </div>
-            <div class="w-full bg-white/20 rounded-full h-2">
-                <div class="bg-white h-2 rounded-full transition-all duration-1000" :style="`width: ${kpis.gender_diversity_index || 0}%`"></div>
             </div>
         </div>
 
         <!-- Total Institutions -->
-        <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-university text-2xl"></i>
+        <div
+            class="bg-white rounded-xl px-4 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
+            <div class="flex flex-row justify-start">
+                <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-university text-purple-600"></i>
                 </div>
-                <div class="text-right">
-                    <div class="text-3xl font-bold" x-text="kpis.total_institutions || '0'"></div>
-                    <div class="text-sm opacity-90">MARA Institutions</div>
+                <div class="text-left ml-5">
+                    <div class="text-sm text-gray-500">Institusi MARA</div>
+                    <div class="text-2xl font-bold" x-text="kpis.total_institutions || '0'"></div>
                 </div>
-            </div>
-            <div class="w-full bg-white/20 rounded-full h-2">
-                <div class="bg-white h-2 rounded-full transition-all duration-1000" :style="`width: ${Math.min((kpis.total_institutions || 0) / 10 * 100, 100)}%`"></div>
             </div>
         </div>
+
     </div>
-    
+
+
     <!-- Charts Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Gender Distribution -->
         <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-8 py-6 text-white">
+            <div class="blue-gradient px-6 py-3 text-white">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold">Gender Distribution</h3>
-                        <p class="text-primary-100 text-sm mt-1">Student distribution by gender</p>
+                        <h3 class="text-md font-bold">Taburan Jantina</h3>
+                        <p class="text-white text-[10px] mt-1">Taburan pelajar mengikut jantina</p>
                     </div>
-                    <div class="flex space-x-3">
-                        <button @click="openTableModal('Gender Distribution')" 
-                                class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                            <i class="fas fa-table"></i>
-                        </button>
-                        <button @click="refreshChart('gender')" 
-                                class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                            <i class="fas fa-refresh"></i>
-                        </button>
+                    <div class="flex space-x-1">
+                        <div class="relative group">
+                            <button @click="openTableModal('Gender Distribution')"
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+
+                        <div class="relative group">
+                            <button @click="refreshChart('gender')"
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -292,32 +322,47 @@
                 <div class="h-80 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-4"></div>
-                            <div class="text-gray-600 font-medium">Loading chart data...</div>
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-4">
+                            </div>
+                            <div class="text-gray-600 font-medium">Memuatkan data carta...</div>
                         </div>
                     </div>
                     <canvas id="genderChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
-        
+
         <!-- Age Distribution -->
         <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-secondary-500 to-secondary-600 px-8 py-6 text-white">
+            <div class="red-gradient px-6 py-3 text-white">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold">Age Distribution</h3>
-                        <p class="text-secondary-100 text-sm mt-1">Student age group breakdown</p>
+                        <h3 class="text-md font-bold">Taburan Umur</h3>
+                        <p class="text-white text-[10px] mt-1">Pecahan kumpulan umur pelajar</p>
                     </div>
-                    <div class="flex space-x-3">
-                        <button @click="openTableModal('Age Distribution')" 
-                                class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                            <i class="fas fa-table"></i>
-                        </button>
-                        <button @click="refreshChart('age')" 
-                                class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                            <i class="fas fa-refresh"></i>
-                        </button>
+                    <div class="flex space-x-1">
+                        <div class="relative group">
+                            <button @click="openTableModal('Age Distribution')"
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group">
+                            <button @click="refreshChart('age')"
+                                class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -325,8 +370,10 @@
                 <div class="h-80 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-secondary-500 mx-auto mb-4"></div>
-                            <div class="text-gray-600 font-medium">Loading chart data...</div>
+                            <div
+                                class="animate-spin rounded-full h-12 w-12 border-b-4 border-secondary-500 mx-auto mb-4">
+                            </div>
+                            <div class="text-gray-600 font-medium">Memuatkan data carta...</div>
                         </div>
                     </div>
                     <canvas id="ageChart" class="w-full h-full"></canvas>
@@ -334,24 +381,40 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Institution Distribution -->
     <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-8 py-6 text-white">
+        <div class="bluered-gradient px-6 py-3 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-xl font-bold">Institution Distribution</h3>
-                    <p class="text-emerald-100 text-sm mt-1">Graduate distribution across MARA institutions</p>
+                    <h3 class="text-md font-bold">Taburan Institusi</h3>
+                    <p class="text-white text-[10px] mt-1">Taburan graduan di seluruh institusi MARA</p>
                 </div>
-                <div class="flex space-x-3">
-                    <button @click="openTableModal('Institution Distribution')" 
-                            class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                        <i class="fas fa-table"></i>
-                    </button>
-                    <a href="/demografi/table" target="_blank"
-                       class="px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-semibold">
-                        <i class="fas fa-external-link-alt mr-2"></i>Full Data View
-                    </a>
+                <div class="flex space-x-1">
+                    <div class="relative group">
+                        <button @click="openTableModal('Institution Distribution')"
+                            class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                            <i class="fas fa-table text-xs"></i>
+                        </button>
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Maklumat Lanjut
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center relative group rounded-lg transition-all duration-200">
+                        <div>
+                            <a href="/demografi/table" target="_blank"
+                                class="px-3 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-semibold">
+                                <i class="fas fa-external-link-alt text-xs mr-3"></i>Paparan Data Penuh
+                            </a>
+                        </div>
+                        <div
+                            class="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Buka Halaman
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -359,32 +422,47 @@
             <div class="h-96 relative">
                 <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                     <div class="text-center">
-                        <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-emerald-500 mx-auto mb-4"></div>
-                        <div class="text-gray-600 font-medium">Loading chart data...</div>
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-emerald-500 mx-auto mb-4">
+                        </div>
+                        <div class="text-gray-600 font-medium">Memuatkan data carta...</div>
                     </div>
                 </div>
                 <canvas id="institutionChart" class="w-full h-full"></canvas>
             </div>
         </div>
     </div>
-    
+
     <!-- Field of Study vs Graduation Year -->
     <div class="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-8 py-6 text-white">
+        <div class="purple-gradient px-6 py-3 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-xl font-bold">Field of Study by Graduation Year</h3>
-                    <p class="text-purple-100 text-sm mt-1">Academic field trends across graduation years</p>
+                    <h3 class="text-md font-bold">Bidang Pengajian mengikut Tahun Graduasi</h3>
+                    <p class="text-white text-[10px] mt-1">Trend bidang akademik merentasi tahun graduasi</p>
                 </div>
-                <div class="flex space-x-3">
-                    <button @click="openTableModal('Field Study Analysis')" 
-                            class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                        <i class="fas fa-table"></i>
-                    </button>
-                    <button @click="refreshChart('fieldGraduation')" 
-                            class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                        <i class="fas fa-refresh"></i>
-                    </button>
+                <div class="flex space-x-1">
+                    <div class="relative group">
+                        <button @click="openTableModal('Field Study Analysis')"
+                            class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                            <i class="fas fa-table text-xs"></i>
+                        </button>
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Maklumat Lanjut
+                        </div>
+                    </div>
+                    <div class="relative group">
+                        <button @click="refreshChart('fieldGraduation')"
+                            class="p-2 bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/30 transition-colors">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            Muat Semula
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -392,8 +470,9 @@
             <div class="h-96 relative">
                 <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                     <div class="text-center">
-                        <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-purple-500 mx-auto mb-4"></div>
-                        <div class="text-gray-600 font-medium">Loading chart data...</div>
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-purple-500 mx-auto mb-4">
+                        </div>
+                        <div class="text-gray-600 font-medium">Memuatkan data carta...</div>
                     </div>
                 </div>
                 <canvas id="fieldGraduationChart" class="w-full h-full"></canvas>
@@ -405,7 +484,8 @@
 
 {% block scripts %}
 <script>
-    function demografiDashboard() {
+    function demografiDashboard()
+    {
         return {
             loading: false,
             dataLoaded: false,
@@ -419,45 +499,53 @@
             },
             availableFilters: {},
             activeFiltersCount: 0,
-            
-            init() {
+
+            init()
+            {
                 console.log('Initializing demografi dashboard...');
                 if (this.isInitialized) return;
                 this.isInitialized = true;
                 this.waitForChart();
                 this.loadAvailableFilters();
             },
-            
-            waitForChart() {
-                if (typeof Chart === 'undefined') {
+
+            waitForChart()
+            {
+                if (typeof Chart === 'undefined')
+                {
                     setTimeout(() => this.waitForChart(), 100);
                     return;
                 }
                 this.loadData();
             },
-            
-            async loadAvailableFilters() {
-                try {
+
+            async loadAvailableFilters()
+            {
+                try
+                {
                     const response = await fetch('/demografi/api/filters/available');
                     const data = await response.json();
-                    
+
                     this.availableFilters = {
-                        graduation_years: data['Tahun graduasi anda?'] || [],
-                        genders: data['Jantina anda?'] || [],
-                        institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || [],
-                        fields: data['Bidang pengajian utama anda?'] || []
+                        graduation_years: data[ 'Tahun graduasi anda?' ] || [],
+                        genders: data[ 'Jantina anda?' ] || [],
+                        institutions: data[ 'Institusi pendidikan MARA yang anda hadiri?' ] || [],
+                        fields: data[ 'Bidang pengajian utama anda?' ] || []
                     };
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading filters:', error);
                 }
             },
-            
-            async loadData() {
+
+            async loadData()
+            {
                 if (this.loading) return;
-                
+
                 this.loading = true;
-                
-                try {
+
+                try
+                {
                     await this.loadSummary();
                     await this.delay(200);
                     await this.loadGenderDistribution();
@@ -467,49 +555,60 @@
                     await this.loadInstitutionDistribution();
                     await this.delay(200);
                     await this.loadFieldGraduation();
-                    
+
                     this.dataLoaded = true;
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading data:', error);
                     showToast('Error loading data: ' + error.message, 'error');
-                } finally {
+                } finally
+                {
                     this.loading = false;
                 }
             },
-            
-            delay(ms) {
+
+            delay(ms)
+            {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
-            
-            async loadSummary() {
-                try {
+
+            async loadSummary()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/summary?${params}`);
                     if (!response.ok) throw new Error('Failed to load summary');
                     this.kpis = await response.json();
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading summary:', error);
                     this.kpis = { total_records: 0, avg_age: 0, gender_diversity_index: 0, total_institutions: 0 };
                 }
             },
-            
-            async loadGenderDistribution() {
-                try {
+
+            async loadGenderDistribution()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/gender-distribution?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('gender');
-                    
+
                     const canvas = document.getElementById('genderChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.gender = ChartFactory.createPieChart(ctx, data, {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                                 const percentage = ((context.parsed / total) * 100).toFixed(1);
                                                 return `${context.label}: ${context.parsed} (${percentage}%)`;
@@ -520,28 +619,34 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading gender distribution:', error);
                 }
             },
-            
-            async loadAgeDistribution() {
-                try {
+
+            async loadAgeDistribution()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/age-distribution?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('age');
-                    
+
                     const canvas = document.getElementById('ageChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.age = ChartFactory.createBarChart(ctx, data, {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Students: ${context.parsed.y}`;
                                             }
                                         }
@@ -550,29 +655,35 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading age distribution:', error);
                 }
             },
-            
-            async loadInstitutionDistribution() {
-                try {
+
+            async loadInstitutionDistribution()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/institution-distribution?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('institution');
-                    
+
                     const canvas = document.getElementById('institutionChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.institution = ChartFactory.createBarChart(ctx, data, {
                                 indexAxis: 'y',
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
+                                            label: function (context)
+                                            {
                                                 return `Graduates: ${context.parsed.x}`;
                                             }
                                         }
@@ -581,53 +692,64 @@
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading institution distribution:', error);
                 }
             },
-            
-            async loadFieldGraduation() {
-                try {
+
+            async loadFieldGraduation()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/field-graduation?${params}`);
                     const data = await response.json();
-                    
+
                     safeDestroyChart('fieldGraduation');
-                    
+
                     const canvas = document.getElementById('fieldGraduationChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             window.globalCharts.fieldGraduation = ChartFactory.createStackedBarChart(ctx, data);
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading field graduation:', error);
                 }
             },
-            
-            buildFilterParams() {
+
+            buildFilterParams()
+            {
                 const params = new URLSearchParams();
-                Object.entries(this.filters).forEach(([key, values]) => {
-                    if (Array.isArray(values) && values.length > 0) {
+                Object.entries(this.filters).forEach(([ key, values ]) =>
+                {
+                    if (Array.isArray(values) && values.length > 0)
+                    {
                         const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
-                                       key === 'gender' ? 'Jantina anda?' :
-                                       key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' :
-                                       key === 'field' ? 'Bidang pengajian utama anda?' : key;
+                            key === 'gender' ? 'Jantina anda?' :
+                                key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' :
+                                    key === 'field' ? 'Bidang pengajian utama anda?' : key;
                         values.forEach(value => params.append(paramKey, value));
                     }
                 });
                 return params.toString();
             },
-            
-            applyFilters() {
+
+            applyFilters()
+            {
                 this.updateActiveFiltersCount();
                 this.dataLoaded = false;
                 this.loadData();
                 showToast('Filters applied successfully', 'success');
             },
-            
-            clearAllFilters() {
+
+            clearAllFilters()
+            {
                 this.filters = {
                     graduation_year: [],
                     gender: [],
@@ -639,45 +761,57 @@
                 this.loadData();
                 showToast('All filters cleared', 'info');
             },
-            
-            updateActiveFiltersCount() {
-                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
+
+            updateActiveFiltersCount()
+            {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
+                {
                     return count + (Array.isArray(filter) ? filter.length : 0);
                 }, 0);
             },
-            
-            async refreshData() {
+
+            async refreshData()
+            {
                 this.dataLoaded = false;
                 await this.loadData();
                 showToast('Data refreshed successfully', 'success');
             },
-            
-            async refreshChart(chartType) {
-                if (chartType === 'gender') {
+
+            async refreshChart(chartType)
+            {
+                if (chartType === 'gender')
+                {
                     await this.loadGenderDistribution();
-                } else if (chartType === 'age') {
+                } else if (chartType === 'age')
+                {
                     await this.loadAgeDistribution();
-                } else if (chartType === 'institution') {
+                } else if (chartType === 'institution')
+                {
                     await this.loadInstitutionDistribution();
-                } else if (chartType === 'fieldGraduation') {
+                } else if (chartType === 'fieldGraduation')
+                {
                     await this.loadFieldGraduation();
                 }
                 showToast(`${chartType} chart refreshed`, 'success');
             },
-            
-            async exportData(format) {
-                try {
+
+            async exportData(format)
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const url = `/demografi/api/export?format=${format}&${params}`;
                     window.open(url, '_blank');
                     showToast(`Exporting data as ${format.toUpperCase()}...`, 'info');
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Export error:', error);
                     showToast('Export failed', 'error');
                 }
             },
-            
-            openTableModal(title) {
+
+            openTableModal(title)
+            {
                 const params = this.buildFilterParams();
                 openModal(title, `/demografi/api/table-data?${params}`);
             }
