@@ -31,9 +31,9 @@ class ColorPalette:
         '#ba454d',  # Burgundy
         '#2066a8',  # Primary blue (repeated for consistency)
         '#cdecec',  # Very light blue-gray
-        '#8eclda',  # Soft cyan
+        '#8ec1da',  # Soft cyan
         '#f6d6c2',  # Peach
-        '#ededed',  # Light gray
+        '#b7b4b4',  # Light gray
         '#d47264',  # Coral
         '#ae282c'   # Deep red
     ]
