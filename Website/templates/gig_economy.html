@@ -140,8 +140,7 @@
     </div>
 
     <!-- Minimal Corporate Header -->
-    <div
-        class="blue-gradient rounded-2xl p-6 lg:p-8 shadow-xl border border-blue-800/10">
+    <div class="blue-gradient rounded-2xl p-6 lg:p-8 shadow-xl border border-blue-800/10">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             <div class="flex items-center space-x-4">
                 <div
@@ -511,7 +510,7 @@
                             class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
                             <i class="fas fa-table text-white text-xs"></i>
                         </button>
-                         <div
+                        <div
                             class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                             Maklumat Lanjut
@@ -544,7 +543,7 @@
                             class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
                             <i class="fas fa-refresh text-white text-xs"></i>
                         </button>
-                         <div
+                        <div
                             class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                             Muat Semula
@@ -637,875 +636,1134 @@
 
 {% block scripts %}
 <script>
-function gigEconomyDashboard() {
-    return {
-        loading: false,
-        dataLoaded: false,
-        kpis: {},
-        isInitialized: false,
-        filters: {
-            graduation_year: [],
-            gender: []
-        },
-        availableFilters: {},
-        activeFiltersCount: 0,
-        charts: {}, // Store chart instances
-
-        init() {
-            console.log('Initializing gig economy dashboard...');
-            if (this.isInitialized) return;
-            this.isInitialized = true;
-            this.waitForChart();
-            this.loadAvailableFilters();
-        },
-
-        waitForChart() {
-            // Wait for both Chart.js and our centralized config to load
-            if (typeof Chart === 'undefined' || 
-                typeof EnhancedChartFactory === 'undefined' || 
-                typeof ChartConfig === 'undefined') {
-                setTimeout(() => this.waitForChart(), 100);
-                return;
-            }
-            console.log('Chart libraries loaded, initializing gig economy dashboard...');
-            this.loadData();
-        },
-
-        async loadAvailableFilters() {
-            try {
-                const response = await fetch('/gig-economy/api/filters/available');
-                const data = await response.json();
-
-                this.availableFilters = {
-                    graduation_years: data['Tahun graduasi anda?'] || [],
-                    genders: data['Jantina anda?'] || []
-                };
-            } catch (error) {
-                console.error('Error loading filters:', error);
-            }
-        },
-
-        async loadData() {
-            if (this.loading) return;
-
-            this.loading = true;
-
-            try {
-                await this.loadSummary();
-                await this.delay(100);
-                await this.loadGigTypesChart();
-                await this.delay(100);
-                await this.loadUniversitySupportChart();
-                await this.delay(100);
-                await this.loadUniversityProgramsChart();
-                await this.delay(100);
-                await this.loadProgramEffectivenessChart();
-                await this.delay(100);
-                await this.loadGigMotivationsChart();
-                await this.delay(100);
-                await this.loadSkillAcquisitionChart();
-                await this.delay(100);
-                await this.loadGigChallengesChart();
-                await this.delay(100);
-                await this.loadSupportNeededChart();
-                await this.delay(100);
-                await this.loadMonthlyIncomeChart();
-                await this.delay(100);
-                await this.loadJobPreferenceChart();
-
-                this.dataLoaded = true;
-            } catch (error) {
-                console.error('Error loading data:', error);
-                this.showToast('Error loading data: ' + error.message, 'error');
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        },
-
-        async loadSummary() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/summary?${params}`);
-                if (!response.ok) throw new Error('Failed to load summary');
-                this.kpis = await response.json();
-            } catch (error) {
-                console.error('Error loading summary:', error);
-                this.kpis = {
-                    total_records: 0,
-                    gig_participation_rate: 0,
-                    entrepreneurship_rate: 0,
-                    university_support_rate: 0,
-                    avg_income: 'RM0',
-                    job_preference_rate: 0
-                };
-            }
-        },
-
-        async loadGigTypesChart() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/gig-types?${params}`);
-                const data = await response.json();
-
-                if (this.charts.gigTypes) {
-                    this.charts.gigTypes.destroy();
-                }
-
-                const canvas = document.getElementById('gigTypesChart');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        // Use centralized chart factory with proper text handling
-                        this.charts.gigTypes = EnhancedChartFactory.createChart(
-                            ctx,
-                            'bar',
-                            data,
-                            'gig-types',
-                            {
-                                indexAxis: 'y', // Horizontal bar chart
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.04)',
-                                            drawBorder: false
-                                        },
-                                        ticks: {
-                                            font: { size: 11, weight: '500' },
-                                            color: '#6b7280',
-                                            callback: function(value) {
-                                                return value.toLocaleString();
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        grid: { display: false },
-                                        ticks: {
-                                            font: { size: 10, weight: '500' },
-                                            color: '#374151',
-                                            maxRotation: 0, // Keep labels horizontal
-                                            padding: 8,
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                // Truncate long labels
-                                                return label.length > 20 ? label.substring(0, 17) + '...' : label;
-                                            }
-                                        }
-                                    }
-                                },
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                return `${context.label}: ${context.parsed.x} responses`;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading gig types chart:', error);
-            }
-        },
-
-        async loadGigMotivationsChart() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/gig-motivations?${params}`);
-                const data = await response.json();
-
-                if (this.charts.gigMotivations) {
-                    this.charts.gigMotivations.destroy();
-                }
-
-                const canvas = document.getElementById('gigMotivationsChart');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        this.charts.gigMotivations = EnhancedChartFactory.createChart(
-                            ctx,
-                            'bar',
-                            data,
-                            'gig-motivations',
-                            {
-                                indexAxis: 'y',
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.04)',
-                                            drawBorder: false
-                                        },
-                                        ticks: {
-                                            font: { size: 11 },
-                                            color: '#6b7280',
-                                            callback: function(value) {
-                                                return value.toLocaleString();
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        grid: { display: false },
-                                        ticks: {
-                                            font: { size: 9, weight: '500' },
-                                            color: '#374151',
-                                            maxRotation: 0,
-                                            padding: 6,
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                // Truncate very long motivation labels
-                                                return label.length > 25 ? label.substring(0, 22) + '...' : label;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading gig motivations chart:', error);
-            }
-        },
-
-        async loadUniversitySupportChart() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/university-support?${params}`);
-                const data = await response.json();
-
-                if (this.charts.universitySupport) {
-                    this.charts.universitySupport.destroy();
-                }
-
-                const canvas = document.getElementById('universitySupportChart');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        this.charts.universitySupport = EnhancedChartFactory.createChart(
-                            ctx,
-                            'pie',
-                            data,
-                            'university-support',
-                            {
-                                plugins: {
-                                    legend: {
-                                        display: true,
-                                        position: 'bottom',
-                                        labels: {
-                                            padding: 15,
-                                            font: { size: 10, weight: '500' },
-                                            usePointStyle: true
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading university support chart:', error);
-            }
-        },
-
-        async loadUniversityProgramsChart() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/university-programs?${params}`);
-                const data = await response.json();
-
-                if (this.charts.universityPrograms) {
-                    this.charts.universityPrograms.destroy();
-                }
-
-                const canvas = document.getElementById('universityProgramsChart');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        this.charts.universityPrograms = EnhancedChartFactory.createChart(
-                            ctx,
-                            'pie',
-                            data,
-                            'university-programs',
-                            {
-                                plugins: {
-                                    legend: {
-                                        display: true,
-                                        position: 'bottom',
-                                        labels: {
-                                            padding: 12,
-                                            font: { size: 9, weight: '500' },
-                                            usePointStyle: true,
-                                            generateLabels: function(chart) {
-                                                const data = chart.data;
-                                                if (data.labels.length && data.datasets.length) {
-                                                    return data.labels.map((label, index) => {
-                                                        const dataset = data.datasets[0];
-                                                        const value = dataset.data[index];
-                                                        const total = dataset.data.reduce((sum, val) => sum + val, 0);
-                                                        const percentage = ((value / total) * 100).toFixed(1);
-                                                        
-                                                        // Truncate long labels for pie chart legend
-                                                        const truncatedLabel = label.length > 15 ? label.substring(0, 12) + '...' : label;
-                                                        
-                                                        return {
-                                                            text: `${truncatedLabel} (${percentage}%)`,
-                                                            fillStyle: dataset.backgroundColor[index],
-                                                            strokeStyle: dataset.borderColor,
-                                                            lineWidth: dataset.borderWidth,
-                                                            hidden: false,
-                                                            index: index
-                                                        };
-                                                    });
-                                                }
-                                                return [];
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading university programs chart:', error);
-            }
-        },
-
-        async loadProgramEffectivenessChart() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/program-effectiveness?${params}`);
-                const data = await response.json();
-
-                if (this.charts.programEffectiveness) {
-                    this.charts.programEffectiveness.destroy();
-                }
-
-                const canvas = document.getElementById('programEffectivenessChart');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        this.charts.programEffectiveness = EnhancedChartFactory.createChart(
-                            ctx,
-                            'pie',
-                            data,
-                            'program-effectiveness',
-                            {
-                                plugins: {
-                                    legend: {
-                                        display: true,
-                                        position: 'bottom',
-                                        labels: {
-                                            padding: 12,
-                                            font: { size: 9, weight: '500' },
-                                            usePointStyle: true
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading program effectiveness chart:', error);
-            }
-        },
-
-        async loadSkillAcquisitionChart() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/skill-acquisition?${params}`);
-                const data = await response.json();
-
-                if (this.charts.skillAcquisition) {
-                    this.charts.skillAcquisition.destroy();
-                }
-
-                const canvas = document.getElementById('skillAcquisitionChart');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        this.charts.skillAcquisition = EnhancedChartFactory.createChart(
-                            ctx,
-                            'bar',
-                            data,
-                            'skill-acquisition',
-                            {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: {
-                                        grid: { display: false },
-                                        ticks: {
-                                            font: { size: 10, weight: '500' },
-                                            color: '#374151',
-                                            maxRotation: 25, // Slight angle for better readability
-                                            padding: 8,
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                // Truncate skill acquisition method labels
-                                                return label.length > 12 ? label.substring(0, 10) + '..' : label;
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.04)',
-                                            drawBorder: false
-                                        },
-                                        ticks: {
-                                            font: { size: 10 },
-                                            color: '#6b7280',
-                                            callback: function(value) {
-                                                return value.toLocaleString();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading skill acquisition chart:', error);
-            }
-        },
-
-        async loadGigChallengesChart() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/gig-challenges?${params}`);
-                const data = await response.json();
-
-                if (this.charts.gigChallenges) {
-                    this.charts.gigChallenges.destroy();
-                }
-
-                const canvas = document.getElementById('gigChallengesChart');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        this.charts.gigChallenges = EnhancedChartFactory.createChart(
-                            ctx,
-                            'bar',
-                            data,
-                            'gig-challenges',
-                            {
-                                indexAxis: 'y',
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.04)',
-                                            drawBorder: false
-                                        },
-                                        ticks: {
-                                            font: { size: 10 },
-                                            color: '#6b7280',
-                                            callback: function(value) {
-                                                return value.toLocaleString();
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        grid: { display: false },
-                                        ticks: {
-                                            font: { size: 9, weight: '500' },
-                                            color: '#374151',
-                                            maxRotation: 0,
-                                            padding: 6,
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                // Truncate challenge labels
-                                                return label.length > 30 ? label.substring(0, 27) + '...' : label;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading gig challenges chart:', error);
-            }
-        },
-
-        async loadSupportNeededChart() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/support-needed?${params}`);
-                const data = await response.json();
-
-                if (this.charts.supportNeeded) {
-                    this.charts.supportNeeded.destroy();
-                }
-
-                const canvas = document.getElementById('supportNeededChart');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        this.charts.supportNeeded = EnhancedChartFactory.createChart(
-                            ctx,
-                            'bar',
-                            data,
-                            'support-needed',
-                            {
-                                indexAxis: 'y',
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.04)',
-                                            drawBorder: false
-                                        },
-                                        ticks: {
-                                            font: { size: 10 },
-                                            color: '#6b7280',
-                                            callback: function(value) {
-                                                return value.toLocaleString();
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        grid: { display: false },
-                                        ticks: {
-                                            font: { size: 9, weight: '500' },
-                                            color: '#374151',
-                                            maxRotation: 0,
-                                            padding: 6,
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                // Truncate support needed labels
-                                                return label.length > 28 ? label.substring(0, 25) + '...' : label;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading support needed chart:', error);
-            }
-        },
-
-        async loadMonthlyIncomeChart() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/monthly-income?${params}`);
-                const data = await response.json();
-
-                if (this.charts.monthlyIncome) {
-                    this.charts.monthlyIncome.destroy();
-                }
-
-                const canvas = document.getElementById('monthlyIncomeChart');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        this.charts.monthlyIncome = EnhancedChartFactory.createChart(
-                            ctx,
-                            'bar',
-                            data,
-                            'monthly-income',
-                            {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: {
-                                        grid: { display: false },
-                                        ticks: {
-                                            font: { size: 9, weight: '500' },
-                                            color: '#374151',
-                                            maxRotation: 35, // Better angle for income ranges
-                                            padding: 8,
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                // Shorten income range labels
-                                                if (label.includes('RM')) {
-                                                    return label.replace('RM', '').replace(' - ', '-');
-                                                }
-                                                return label.length > 10 ? label.substring(0, 8) + '..' : label;
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.04)',
-                                            drawBorder: false
-                                        },
-                                        ticks: {
-                                            font: { size: 10 },
-                                            color: '#6b7280',
-                                            stepSize: 1,
-                                            callback: function(value) {
-                                                return Math.round(value);
-                                            }
-                                        }
-                                    }
-                                },
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                return `${context.label}: ${context.parsed.y} respondents`;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading monthly income chart:', error);
-            }
-        },
-
-        async loadJobPreferenceChart() {
-            try {
-                const params = this.buildFilterParams();
-                const response = await fetch(`/gig-economy/api/job-preference?${params}`);
-                const data = await response.json();
-
-                if (this.charts.jobPreference) {
-                    this.charts.jobPreference.destroy();
-                }
-
-                const canvas = document.getElementById('jobPreferenceChart');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        this.charts.jobPreference = EnhancedChartFactory.createChart(
-                            ctx,
-                            'pie',
-                            data,
-                            'job-preference',
-                            {
-                                plugins: {
-                                    legend: {
-                                        display: true,
-                                        position: 'bottom',
-                                        labels: {
-                                            padding: 15,
-                                            font: { size: 10, weight: '500' },
-                                            usePointStyle: true
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading job preference chart:', error);
-            }
-        },
-
-        buildFilterParams() {
-            const params = new URLSearchParams();
-            Object.entries(this.filters).forEach(([key, values]) => {
-                if (Array.isArray(values) && values.length > 0) {
-                    const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
-                        key === 'gender' ? 'Jantina anda?' : key;
-                    values.forEach(value => params.append(paramKey, value));
-                }
-            });
-            return params.toString();
-        },
-
-        applyFilters() {
-            this.updateActiveFiltersCount();
-            this.dataLoaded = false;
-            this.loadData();
-            this.showToast('Filters applied', 'success');
-        },
-
-        clearAllFilters() {
-            this.filters = {
+    function gigEconomyDashboard()
+    {
+        return {
+            loading: false,
+            dataLoaded: false,
+            kpis: {},
+            isInitialized: false,
+            filters: {
                 graduation_year: [],
                 gender: []
-            };
-            this.updateActiveFiltersCount();
-            this.dataLoaded = false;
-            this.loadData();
-            this.showToast('Filters cleared', 'info');
-        },
+            },
+            availableFilters: {},
+            activeFiltersCount: 0,
+            charts: {}, // Store chart instances
 
-        updateActiveFiltersCount() {
-            this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
-                return count + (Array.isArray(filter) ? filter.length : 0);
-            }, 0);
-        },
+            init()
+            {
+                console.log('Initializing gig economy dashboard...');
+                if (this.isInitialized) return;
+                this.isInitialized = true;
+                this.waitForChart();
+                this.loadAvailableFilters();
+            },
 
-        async refreshData() {
-            this.dataLoaded = false;
-            await this.loadData();
-            this.showToast('Data refreshed', 'success');
-        },
-
-        async refreshChart(chartType) {
-            try {
-                switch(chartType) {
-                    case 'gigTypes':
-                        await this.loadGigTypesChart();
-                        break;
-                    case 'universitySupport':
-                        await this.loadUniversitySupportChart();
-                        break;
-                    case 'universityPrograms':
-                        await this.loadUniversityProgramsChart();
-                        break;
-                    case 'programEffectiveness':
-                        await this.loadProgramEffectivenessChart();
-                        break;
-                    case 'gigMotivations':
-                        await this.loadGigMotivationsChart();
-                        break;
-                    case 'skillAcquisition':
-                        await this.loadSkillAcquisitionChart();
-                        break;
-                    case 'gigChallenges':
-                        await this.loadGigChallengesChart();
-                        break;
-                    case 'supportNeeded':
-                        await this.loadSupportNeededChart();
-                        break;
-                    case 'monthlyIncome':
-                        await this.loadMonthlyIncomeChart();
-                        break;
-                    case 'jobPreference':
-                        await this.loadJobPreferenceChart();
-                        break;
+            waitForChart()
+            {
+                // Wait for both Chart.js and our centralized config to load
+                if (typeof Chart === 'undefined' ||
+                    typeof EnhancedChartFactory === 'undefined' ||
+                    typeof ChartConfig === 'undefined')
+                {
+                    setTimeout(() => this.waitForChart(), 100);
+                    return;
                 }
-                this.showToast('Chart refreshed', 'success');
-            } catch (error) {
-                console.error('Error refreshing chart:', error);
-                this.showToast('Error refreshing chart', 'error');
-            }
-        },
+                console.log('Chart libraries loaded, initializing gig economy dashboard...');
+                this.loadData();
+            },
 
-        async exportData(format) {
-            try {
+            async loadAvailableFilters()
+            {
+                try
+                {
+                    const response = await fetch('/gig-economy/api/filters/available');
+                    const data = await response.json();
+
+                    this.availableFilters = {
+                        graduation_years: data[ 'Tahun graduasi anda?' ] || [],
+                        genders: data[ 'Jantina anda?' ] || []
+                    };
+                } catch (error)
+                {
+                    console.error('Error loading filters:', error);
+                }
+            },
+
+            async loadData()
+            {
+                if (this.loading) return;
+
+                this.loading = true;
+
+                try
+                {
+                    await this.loadSummary();
+                    await this.delay(100);
+                    await this.loadGigTypesChart();
+                    await this.delay(100);
+                    await this.loadUniversitySupportChart();
+                    await this.delay(100);
+                    await this.loadUniversityProgramsChart();
+                    await this.delay(100);
+                    await this.loadProgramEffectivenessChart();
+                    await this.delay(100);
+                    await this.loadGigMotivationsChart();
+                    await this.delay(100);
+                    await this.loadSkillAcquisitionChart();
+                    await this.delay(100);
+                    await this.loadGigChallengesChart();
+                    await this.delay(100);
+                    await this.loadSupportNeededChart();
+                    await this.delay(100);
+                    await this.loadMonthlyIncomeChart();
+                    await this.delay(100);
+                    await this.loadJobPreferenceChart();
+
+                    this.dataLoaded = true;
+                } catch (error)
+                {
+                    console.error('Error loading data:', error);
+                    this.showToast('Error loading data: ' + error.message, 'error');
+                } finally
+                {
+                    this.loading = false;
+                }
+            },
+
+            delay(ms)
+            {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            },
+
+            async loadSummary()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/summary?${params}`);
+                    if (!response.ok) throw new Error('Failed to load summary');
+                    this.kpis = await response.json();
+                } catch (error)
+                {
+                    console.error('Error loading summary:', error);
+                    this.kpis = {
+                        total_records: 0,
+                        gig_participation_rate: 0,
+                        entrepreneurship_rate: 0,
+                        university_support_rate: 0,
+                        avg_income: 'RM0',
+                        job_preference_rate: 0
+                    };
+                }
+            },
+
+            async loadGigTypesChart()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/gig-types?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.gigTypes)
+                    {
+                        this.charts.gigTypes.destroy();
+                    }
+
+                    const canvas = document.getElementById('gigTypesChart');
+                    if (canvas)
+                    {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx)
+                        {
+                            // Use centralized chart factory with proper text handling
+                            this.charts.gigTypes = EnhancedChartFactory.createChart(
+                                ctx,
+                                'bar',
+                                data,
+                                'gig-types',
+                                {
+                                    indexAxis: 'y', // Horizontal bar chart
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.04)',
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                font: { size: 10, weight: '500' },
+                                                color: '#6b7280',
+                                                callback: function (value)
+                                                {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 10, weight: '500' },
+                                                color: '#374151',
+                                                maxRotation: 0, // Keep labels horizontal
+                                                padding: 8,
+                                                callback: function (value, index)
+                                                {
+                                                    const label = this.getLabelForValue(value);
+                                                    // Truncate long labels
+                                                    return label.length > 20 ? label.substring(0, 17) + '...' : label;
+                                                }
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context)
+                                                {
+                                                    return `${context.label}: ${context.parsed.x} responses`;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error)
+                {
+                    console.error('Error loading gig types chart:', error);
+                }
+            },
+
+            async loadGigMotivationsChart()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/gig-motivations?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.gigMotivations)
+                    {
+                        this.charts.gigMotivations.destroy();
+                    }
+
+                    const canvas = document.getElementById('gigMotivationsChart');
+                    if (canvas)
+                    {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx)
+                        {
+                            this.charts.gigMotivations = EnhancedChartFactory.createChart(
+                                ctx,
+                                'bar',
+                                data,
+                                'gig-motivations',
+                                {
+                                    indexAxis: 'y',
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.04)',
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                color: '#6b7280',
+                                                callback: function (value)
+                                                {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 9, weight: '500' },
+                                                color: '#374151',
+                                                maxRotation: 0,
+                                                padding: 6,
+                                                callback: function (value, index)
+                                                {
+                                                    const label = this.getLabelForValue(value);
+                                                    // Truncate very long motivation labels
+                                                    return label.length > 25 ? label.substring(0, 22) + '...' : label;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error)
+                {
+                    console.error('Error loading gig motivations chart:', error);
+                }
+            },
+
+            async loadUniversitySupportChart()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/university-support?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.universitySupport)
+                    {
+                        this.charts.universitySupport.destroy();
+                    }
+
+                    const canvas = document.getElementById('universitySupportChart');
+                    if (canvas)
+                    {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx)
+                        {
+                            this.charts.universitySupport = EnhancedChartFactory.createChart(
+                                ctx,
+                                'pie',
+                                data,
+                                'university-support',
+                                {
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'bottom',
+                                            labels: {
+                                                padding: 10,
+                                                font: { size: 10, weight: '500' },
+                                                usePointStyle: true,
+                                                generateLabels: function (chart)
+                                                {
+                                                    const data = chart.data;
+                                                    if (data.labels.length && data.datasets.length)
+                                                    {
+                                                        return data.labels.map((label, index) =>
+                                                        {
+                                                            const dataset = data.datasets[ 0 ];
+                                                            const value = dataset.data[ index ];
+                                                            const total = dataset.data.reduce((sum, val) => sum + val, 0);
+                                                            const percentage = ((value / total) * 100).toFixed(1);
+
+                                                            // Truncate long labels for pie chart legend
+                                                            const truncatedLabel = label.length > 15 ? label.substring(0, 12) + '...' : label;
+
+                                                            return {
+                                                                text: `${truncatedLabel} (${percentage}%)`,
+                                                                fillStyle: dataset.backgroundColor[ index ],
+                                                                strokeStyle: dataset.borderColor,
+                                                                lineWidth: dataset.borderWidth,
+                                                                hidden: false,
+                                                                index: index
+                                                            };
+                                                        });
+                                                    }
+                                                    return [];
+                                                }
+                                            },
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error)
+                {
+                    console.error('Error loading university support chart:', error);
+                }
+            },
+
+            async loadUniversityProgramsChart()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/university-programs?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.universityPrograms)
+                    {
+                        this.charts.universityPrograms.destroy();
+                    }
+
+                    const canvas = document.getElementById('universityProgramsChart');
+                    if (canvas)
+                    {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx)
+                        {
+                            this.charts.universityPrograms = EnhancedChartFactory.createChart(
+                                ctx,
+                                'pie',
+                                data,
+                                'university-programs',
+                                {
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'bottom',
+                                            labels: {
+                                                padding: 10,
+                                                font: { size: 9, weight: '500' },
+                                                usePointStyle: true,
+                                                generateLabels: function (chart)
+                                                {
+                                                    const data = chart.data;
+                                                    if (data.labels.length && data.datasets.length)
+                                                    {
+                                                        return data.labels.map((label, index) =>
+                                                        {
+                                                            const dataset = data.datasets[ 0 ];
+                                                            const value = dataset.data[ index ];
+                                                            const total = dataset.data.reduce((sum, val) => sum + val, 0);
+                                                            const percentage = ((value / total) * 100).toFixed(1);
+
+                                                            // Truncate long labels for pie chart legend
+                                                            const truncatedLabel = label.length > 15 ? label.substring(0, 12) + '...' : label;
+
+                                                            return {
+                                                                text: `${truncatedLabel} (${percentage}%)`,
+                                                                fillStyle: dataset.backgroundColor[ index ],
+                                                                strokeStyle: dataset.borderColor,
+                                                                lineWidth: dataset.borderWidth,
+                                                                hidden: false,
+                                                                index: index
+                                                            };
+                                                        });
+                                                    }
+                                                    return [];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error)
+                {
+                    console.error('Error loading university programs chart:', error);
+                }
+            },
+
+            async loadProgramEffectivenessChart()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/program-effectiveness?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.programEffectiveness)
+                    {
+                        this.charts.programEffectiveness.destroy();
+                    }
+
+                    const canvas = document.getElementById('programEffectivenessChart');
+                    if (canvas)
+                    {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx)
+                        {
+                            this.charts.programEffectiveness = EnhancedChartFactory.createChart(
+                                ctx,
+                                'pie',
+                                data,
+                                'program-effectiveness',
+                                {
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'bottom',
+                                            labels: {
+                                                padding: 10,
+                                                font: { size: 9, weight: '500' },
+                                                usePointStyle: true,
+                                                generateLabels: function (chart)
+                                                {
+                                                    const data = chart.data;
+                                                    if (data.labels.length && data.datasets.length)
+                                                    {
+                                                        return data.labels.map((label, index) =>
+                                                        {
+                                                            const dataset = data.datasets[ 0 ];
+                                                            const value = dataset.data[ index ];
+                                                            const total = dataset.data.reduce((sum, val) => sum + val, 0);
+                                                            const percentage = ((value / total) * 100).toFixed(1);
+
+                                                            // Truncate long labels for pie chart legend
+                                                            const truncatedLabel = label.length > 15 ? label.substring(0, 12) + '...' : label;
+
+                                                            return {
+                                                                text: `${truncatedLabel} (${percentage}%)`,
+                                                                fillStyle: dataset.backgroundColor[ index ],
+                                                                strokeStyle: dataset.borderColor,
+                                                                lineWidth: dataset.borderWidth,
+                                                                hidden: false,
+                                                                index: index
+                                                            };
+                                                        });
+                                                    }
+                                                    return [];
+                                                }
+                                            },
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error)
+                {
+                    console.error('Error loading program effectiveness chart:', error);
+                }
+            },
+
+            async loadSkillAcquisitionChart()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/skill-acquisition?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.skillAcquisition)
+                    {
+                        this.charts.skillAcquisition.destroy();
+                    }
+
+                    const canvas = document.getElementById('skillAcquisitionChart');
+                    if (canvas)
+                    {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx)
+                        {
+                            this.charts.skillAcquisition = EnhancedChartFactory.createChart(
+                                ctx,
+                                'bar',
+                                data,
+                                'skill-acquisition',
+                                {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 10, weight: '500' },
+                                                color: '#374151',
+                                                maxRotation: 0, // Remove rotation
+                                                minRotation: 0, // Ensure no rotation
+                                                padding: 8,
+                                                callback: function (value, index)
+                                                {
+                                                    const label = this.getLabelForValue(value);
+
+                                                    // Always return something, even if it's just the original label
+                                                    if (!label) return '';
+
+                                                    // Check for "/" first and split there
+                                                    if (label.includes('/'))
+                                                    {
+                                                        const slashIndex = label.indexOf('/');
+                                                        const firstLine = label.substring(0, slashIndex + 1); // Include the "/"
+                                                        const secondLine = label.substring(slashIndex + 1);   // Everything after "/"
+                                                        return [ firstLine, secondLine ];
+                                                    }
+
+                                                    // Split long labels into multiple lines
+                                                    if (label.length > 8)
+                                                    {
+                                                        // Try to split at word boundaries first
+                                                        const words = label.split(' ');
+
+                                                        if (words.length >= 2)
+                                                        {
+                                                            // For multiple words, split roughly in half
+                                                            const mid = Math.floor(words.length / 2);
+                                                            const firstLine = words.slice(0, mid).join(' ');
+                                                            const secondLine = words.slice(mid).join(' ');
+                                                            return [ firstLine, secondLine ];
+                                                        } else
+                                                        {
+                                                            // For single long words, split at middle
+                                                            const mid = Math.floor(label.length / 2);
+                                                            return [ label.substring(0, mid), label.substring(mid) ];
+                                                        }
+                                                    }
+
+                                                    // Return original label if short enough
+                                                    return label;
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.04)',
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                color: '#6b7280',
+                                                callback: function (value)
+                                                {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error)
+                {
+                    console.error('Error loading skill acquisition chart:', error);
+                }
+            },
+
+            async loadGigChallengesChart()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/gig-challenges?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.gigChallenges)
+                    {
+                        this.charts.gigChallenges.destroy();
+                    }
+
+                    const canvas = document.getElementById('gigChallengesChart');
+                    if (canvas)
+                    {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx)
+                        {
+                            this.charts.gigChallenges = EnhancedChartFactory.createChart(
+                                ctx,
+                                'bar',
+                                data,
+                                'gig-challenges',
+                                {
+                                    indexAxis: 'y',
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.04)',
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                color: '#6b7280',
+                                                callback: function (value)
+                                                {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 9, weight: '500' },
+                                                color: '#374151',
+                                                maxRotation: 0,
+                                                padding: 6,
+                                                callback: function (value, index)
+                                                {
+                                                    const label = this.getLabelForValue(value);
+                                                    // Truncate challenge labels
+                                                    return label.length > 30 ? label.substring(0, 27) + '...' : label;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error)
+                {
+                    console.error('Error loading gig challenges chart:', error);
+                }
+            },
+
+            async loadSupportNeededChart()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/support-needed?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.supportNeeded)
+                    {
+                        this.charts.supportNeeded.destroy();
+                    }
+
+                    const canvas = document.getElementById('supportNeededChart');
+                    if (canvas)
+                    {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx)
+                        {
+                            this.charts.supportNeeded = EnhancedChartFactory.createChart(
+                                ctx,
+                                'bar',
+                                data,
+                                'support-needed',
+                                {
+                                    indexAxis: 'y',
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.04)',
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                color: '#6b7280',
+                                                callback: function (value)
+                                                {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 9, weight: '500' },
+                                                color: '#374151',
+                                                maxRotation: 0,
+                                                padding: 6,
+                                                callback: function (value, index)
+                                                {
+                                                    const label = this.getLabelForValue(value);
+                                                    // Truncate support needed labels
+                                                    return label.length > 28 ? label.substring(0, 25) + '...' : label;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error)
+                {
+                    console.error('Error loading support needed chart:', error);
+                }
+            },
+
+            async loadMonthlyIncomeChart()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/monthly-income?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.monthlyIncome)
+                    {
+                        this.charts.monthlyIncome.destroy();
+                    }
+
+                    const canvas = document.getElementById('monthlyIncomeChart');
+                    if (canvas)
+                    {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx)
+                        {
+                            this.charts.monthlyIncome = EnhancedChartFactory.createChart(
+                                ctx,
+                                'bar',
+                                data,
+                                'monthly-income',
+                                {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 9, weight: '500' },
+                                                color: '#374151',
+                                                maxRotation: 0, // Set to 0 to prevent rotation
+                                                minRotation: 0, // Ensure no rotation
+                                                padding: 8,
+                                                callback: function (value, index)
+                                                {
+                                                    const label = this.getLabelForValue(value);
+                                                    let processedLabel = label;
+                                                    // Shorten income range labels
+                                                    if (label.includes('RM'))
+                                                    {
+                                                        processedLabel = label.replace('RM', 'RM').replace(' - ', '-');
+                                                    }
+
+                                                    // Split long labels into multiple lines
+                                                    if (processedLabel.length > 8)
+                                                    {
+                                                        // For income ranges like "3,000-4,999", split at the dash
+                                                        if (processedLabel.includes('-'))
+                                                        {
+                                                            const parts = processedLabel.split('-');
+                                                            return [ parts[ 0 ] + " - ", parts[ 1 ] ];
+                                                        }
+                                                        // For other long labels, split in the middle
+                                                        else
+                                                        {
+                                                            const mid = Math.ceil(processedLabel.length / 2);
+                                                            const firstPart = processedLabel.substring(0, mid);
+                                                            const secondPart = processedLabel.substring(mid);
+                                                            return [ firstPart, secondPart ];
+                                                        }
+                                                    }
+
+                                                    return processedLabel;
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.04)',
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                color: '#6b7280',
+                                                stepSize: 1,
+                                                callback: function (value)
+                                                {
+                                                    return Math.round(value);
+                                                }
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context)
+                                                {
+                                                    return `${context.label}: ${context.parsed.y} respondents`;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error)
+                {
+                    console.error('Error loading monthly income chart:', error);
+                }
+            },
+
+            async loadJobPreferenceChart()
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/gig-economy/api/job-preference?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.jobPreference)
+                    {
+                        this.charts.jobPreference.destroy();
+                    }
+
+                    const canvas = document.getElementById('jobPreferenceChart');
+                    if (canvas)
+                    {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx)
+                        {
+                            this.charts.jobPreference = EnhancedChartFactory.createChart(
+                                ctx,
+                                'pie',
+                                data,
+                                'job-preference',
+                                {
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'bottom',
+                                            labels: {
+                                                padding: 10,
+                                                font: { size: 10, weight: '500' },
+                                                usePointStyle: true,
+                                                generateLabels: function (chart)
+                                                {
+                                                    const data = chart.data;
+                                                    if (data.labels.length && data.datasets.length)
+                                                    {
+                                                        return data.labels.map((label, index) =>
+                                                        {
+                                                            const dataset = data.datasets[ 0 ];
+                                                            const value = dataset.data[ index ];
+                                                            const total = dataset.data.reduce((sum, val) => sum + val, 0);
+                                                            const percentage = ((value / total) * 100).toFixed(1);
+
+                                                            // Truncate long labels for pie chart legend
+                                                            const truncatedLabel = label.length > 15 ? label.substring(0, 12) + '...' : label;
+
+                                                            return {
+                                                                text: `${truncatedLabel} (${percentage}%)`,
+                                                                fillStyle: dataset.backgroundColor[ index ],
+                                                                strokeStyle: dataset.borderColor,
+                                                                lineWidth: dataset.borderWidth,
+                                                                hidden: false,
+                                                                index: index
+                                                            };
+                                                        });
+                                                    }
+                                                    return [];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error)
+                {
+                    console.error('Error loading job preference chart:', error);
+                }
+            },
+
+            buildFilterParams()
+            {
+                const params = new URLSearchParams();
+                Object.entries(this.filters).forEach(([ key, values ]) =>
+                {
+                    if (Array.isArray(values) && values.length > 0)
+                    {
+                        const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
+                            key === 'gender' ? 'Jantina anda?' : key;
+                        values.forEach(value => params.append(paramKey, value));
+                    }
+                });
+                return params.toString();
+            },
+
+            applyFilters()
+            {
+                this.updateActiveFiltersCount();
+                this.dataLoaded = false;
+                this.loadData();
+                this.showToast('Filters applied', 'success');
+            },
+
+            clearAllFilters()
+            {
+                this.filters = {
+                    graduation_year: [],
+                    gender: []
+                };
+                this.updateActiveFiltersCount();
+                this.dataLoaded = false;
+                this.loadData();
+                this.showToast('Filters cleared', 'info');
+            },
+
+            updateActiveFiltersCount()
+            {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
+                {
+                    return count + (Array.isArray(filter) ? filter.length : 0);
+                }, 0);
+            },
+
+            async refreshData()
+            {
+                this.dataLoaded = false;
+                await this.loadData();
+                this.showToast('Data refreshed', 'success');
+            },
+
+            async refreshChart(chartType)
+            {
+                try
+                {
+                    switch (chartType)
+                    {
+                        case 'gigTypes':
+                            await this.loadGigTypesChart();
+                            break;
+                        case 'universitySupport':
+                            await this.loadUniversitySupportChart();
+                            break;
+                        case 'universityPrograms':
+                            await this.loadUniversityProgramsChart();
+                            break;
+                        case 'programEffectiveness':
+                            await this.loadProgramEffectivenessChart();
+                            break;
+                        case 'gigMotivations':
+                            await this.loadGigMotivationsChart();
+                            break;
+                        case 'skillAcquisition':
+                            await this.loadSkillAcquisitionChart();
+                            break;
+                        case 'gigChallenges':
+                            await this.loadGigChallengesChart();
+                            break;
+                        case 'supportNeeded':
+                            await this.loadSupportNeededChart();
+                            break;
+                        case 'monthlyIncome':
+                            await this.loadMonthlyIncomeChart();
+                            break;
+                        case 'jobPreference':
+                            await this.loadJobPreferenceChart();
+                            break;
+                    }
+                    this.showToast('Chart refreshed', 'success');
+                } catch (error)
+                {
+                    console.error('Error refreshing chart:', error);
+                    this.showToast('Error refreshing chart', 'error');
+                }
+            },
+
+            async exportData(format)
+            {
+                try
+                {
+                    const params = this.buildFilterParams();
+                    const url = `/gig-economy/api/export?format=${format}&${params}`;
+                    window.open(url, '_blank');
+                    this.showToast(`Exporting ${format.toUpperCase()}...`, 'info');
+                } catch (error)
+                {
+                    console.error('Export error:', error);
+                    this.showToast('Export failed', 'error');
+                }
+            },
+
+            openTableModal(title)
+            {
                 const params = this.buildFilterParams();
-                const url = `/gig-economy/api/export?format=${format}&${params}`;
-                window.open(url, '_blank');
-                this.showToast(`Exporting ${format.toUpperCase()}...`, 'info');
-            } catch (error) {
-                console.error('Export error:', error);
-                this.showToast('Export failed', 'error');
-            }
-        },
+                if (typeof openModal === 'function')
+                {
+                    openModal(title, `/gig-economy/api/table-data?${params}`);
+                } else
+                {
+                    // Fallback - open in new window
+                    window.open(`/gig-economy/table?${params}`, '_blank');
+                }
+            },
 
-        openTableModal(title) {
-            const params = this.buildFilterParams();
-            if (typeof openModal === 'function') {
-                openModal(title, `/gig-economy/api/table-data?${params}`);
-            } else {
-                // Fallback - open in new window
-                window.open(`/gig-economy/table?${params}`, '_blank');
-            }
-        },
+            showToast(message, type = 'info')
+            {
+                // Create toast notification
+                const toast = document.createElement('div');
+                const colors = {
+                    success: 'bg-emerald-500 text-white border-emerald-600',
+                    error: 'bg-red-500 text-white border-red-600',
+                    info: 'bg-blue-500 text-white border-blue-600',
+                    warning: 'bg-amber-500 text-white border-amber-600'
+                };
 
-        showToast(message, type = 'info') {
-            // Create toast notification
-            const toast = document.createElement('div');
-            const colors = {
-                success: 'bg-emerald-500 text-white border-emerald-600',
-                error: 'bg-red-500 text-white border-red-600',
-                info: 'bg-blue-500 text-white border-blue-600',
-                warning: 'bg-amber-500 text-white border-amber-600'
-            };
+                const icons = {
+                    success: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>',
+                    error: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>',
+                    info: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>',
+                    warning: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>'
+                };
 
-            const icons = {
-                success: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>',
-                error: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>',
-                info: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>',
-                warning: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>'
-            };
-
-            toast.className = `fixed top-4 right-4 ${colors[type]} px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 border-l-4 font-medium`;
-            toast.innerHTML = `
+                toast.className = `fixed top-4 right-4 ${colors[ type ]} px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 border-l-4 font-medium`;
+                toast.innerHTML = `
                 <div class="flex items-center">
                     <div class="flex-shrink-0 mr-3">
-                        ${icons[type]}
+                        ${icons[ type ]}
                     </div>
                     <div class="text-sm font-medium">${message}</div>
                 </div>
             `;
 
-            document.body.appendChild(toast);
+                document.body.appendChild(toast);
 
-            // Animate in
-            setTimeout(() => toast.style.transform = 'translateX(0)', 10);
+                // Animate in
+                setTimeout(() => toast.style.transform = 'translateX(0)', 10);
 
-            // Animate out and remove
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        },
+                // Animate out and remove
+                setTimeout(() =>
+                {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            },
 
-        // Method to preview current color schemes (for development)
-        previewColors() {
-            if (typeof ColorSchemeManager !== 'undefined') {
-                ColorSchemeManager.previewAllSchemes();
-            } else {
-                console.log('ColorSchemeManager not loaded');
-            }
-        },
+            // Method to preview current color schemes (for development)
+            previewColors()
+            {
+                if (typeof ColorSchemeManager !== 'undefined')
+                {
+                    ColorSchemeManager.previewAllSchemes();
+                } else
+                {
+                    console.log('ColorSchemeManager not loaded');
+                }
+            },
 
-        // Method to get current chart mappings (for development)
-        getChartMappings() {
-            if (typeof ChartConfig !== 'undefined') {
-                console.log('Current chart mappings for Gig Economy:');
-                const gigEconomyEndpoints = [
-                    'gig-types', 'university-support', 'university-programs', 
-                    'program-effectiveness', 'gig-motivations', 'skill-acquisition',
-                    'gig-challenges', 'support-needed', 'monthly-income', 'job-preference'
-                ];
-                
-                gigEconomyEndpoints.forEach(endpoint => {
-                    const scheme = ChartConfig.chartMappings[endpoint] || 'default';
-                    console.log(`${endpoint}: ${scheme}`);
-                });
+            // Method to get current chart mappings (for development)
+            getChartMappings()
+            {
+                if (typeof ChartConfig !== 'undefined')
+                {
+                    console.log('Current chart mappings for Gig Economy:');
+                    const gigEconomyEndpoints = [
+                        'gig-types', 'university-support', 'university-programs',
+                        'program-effectiveness', 'gig-motivations', 'skill-acquisition',
+                        'gig-challenges', 'support-needed', 'monthly-income', 'job-preference'
+                    ];
+
+                    gigEconomyEndpoints.forEach(endpoint =>
+                    {
+                        const scheme = ChartConfig.chartMappings[ endpoint ] || 'default';
+                        console.log(`${endpoint}: ${scheme}`);
+                    });
+                }
             }
         }
     }
-}
 
-// Make dashboard available globally for development/debugging
-window.gigEconomyDashboard = gigEconomyDashboard;
+    // Make dashboard available globally for development/debugging
+    window.gigEconomyDashboard = gigEconomyDashboard;
 
-// Auto-initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Add debug capabilities if in development mode
-    if (window.location.search.includes('debug=true')) {
-        console.log('Gig Economy Debug mode enabled');
-        // You can call dashboard.previewColors() or dashboard.getChartMappings() in console
-    }
-});
+    // Auto-initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function ()
+    {
+        // Add debug capabilities if in development mode
+        if (window.location.search.includes('debug=true'))
+        {
+            console.log('Gig Economy Debug mode enabled');
+            // You can call dashboard.previewColors() or dashboard.getChartMappings() in console
+        }
+    });
 </script>
 
 {% endblock %}
