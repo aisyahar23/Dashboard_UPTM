@@ -356,6 +356,16 @@
                 <!-- Tooltip -->
             </a>
 
+             <a href="/demografi"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                :class="sidebarCollapsed ? 'justify-center' : ''">
+                <div
+                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-users text-sm"></i>
+                </div>
+                <span class="sidebar-text" x-show="!sidebarCollapsed">Demografi & Latar Belakang Akademik</span>
+            </a>
+
             <a href="/sosioekonomi"
                 class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
@@ -363,27 +373,7 @@
                     class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
                     <i class="fas fa-coins text-sm"></i>
                 </div>
-                <span class="sidebar-text" x-show="!sidebarCollapsed">Sosioekonomi</span>
-            </a>
-
-            <a href="/demografi"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
-                :class="sidebarCollapsed ? 'justify-center' : ''">
-                <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-users text-sm"></i>
-                </div>
-                <span class="sidebar-text" x-show="!sidebarCollapsed">Demografi</span>
-            </a>
-
-            <a href="/industri-gaji"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
-                :class="sidebarCollapsed ? 'justify-center' : ''">
-                <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-briefcase text-sm"></i>
-                </div>
-                <span class="sidebar-text" x-show="!sidebarCollapsed">Sektor, Industri & Gaji Graduan</span>
+                <span class="sidebar-text" x-show="!sidebarCollapsed">Sosioeknomi Graduan</span>
             </a>
 
             <a href="/status-pekerjaan"
@@ -397,6 +387,19 @@
                     Pengajian</span>
             </a>
 
+
+            <a href="/sektor-gaji"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                :class="sidebarCollapsed ? 'justify-center' : ''">
+                <div
+                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-briefcase text-sm"></i>
+                </div>
+                <span class="sidebar-text" x-show="!sidebarCollapsed">Sektor, Industri & Gaji Graduan</span>
+            </a>
+
+            
+
             <a href="/faktor-graduan"
                 class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
@@ -406,6 +409,16 @@
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Faktor Mempengaruhi Kebolehpasaran
                     Graduan</span>
+            </a>
+
+            <a href="/graduan-bidang"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                :class="sidebarCollapsed ? 'justify-center' : ''">
+                <div
+                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-external-link-alt text-sm"></i>
+                </div>
+                <span class="sidebar-text" x-show="!sidebarCollapsed">Graduan Mengikut Bidang dan Tahun Graduasi</span>
             </a>
 
             <a href="/graduan-luar"

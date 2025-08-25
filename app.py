@@ -3,12 +3,13 @@ from config.settings import Config
 from blueprints.sosioekonomi import sosioekonomi_bp
 from blueprints.demografi import demografi_bp
 from blueprints.analytics import analytics_bp
-from blueprints.industri_gaji import industri_gaji_bp
+from blueprints.industri_gaji import sektor_gaji_bp
 from blueprints.graduanluar import graduanluar_bp
 from blueprints.intern import intern_bp
 from blueprints.gig_economy import gig_economy_bp
 from blueprints.faktor_graduan import faktor_graduan_bp
 from blueprints.statuspekerjaan import status_pekerjaan_bp
+from blueprints.graduanbidang import graduan_bidang_bp
 
 
 def create_app():
@@ -18,12 +19,13 @@ def create_app():
     # Register blueprints
     app.register_blueprint(sosioekonomi_bp, url_prefix='/sosioekonomi')
     app.register_blueprint(demografi_bp, url_prefix='/demografi')
-    app.register_blueprint(industri_gaji_bp, url_prefix='/industri-gaji')
+    app.register_blueprint(sektor_gaji_bp, url_prefix='/sektor-gaji')
     app.register_blueprint(graduanluar_bp, url_prefix='/graduan-luar')
     app.register_blueprint(intern_bp, url_prefix='/intern')
     app.register_blueprint(gig_economy_bp, url_prefix='/gig-economy')
     app.register_blueprint(faktor_graduan_bp, url_prefix='/faktor-graduan')
     app.register_blueprint(status_pekerjaan_bp, url_prefix='/status-pekerjaan')
+    app.register_blueprint(graduan_bidang_bp, url_prefix='/graduan-bidang')  
     app.register_blueprint(analytics_bp, url_prefix='/api')
 
     

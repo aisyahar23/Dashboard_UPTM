@@ -1,4 +1,4 @@
-// Enhanced Chart Configuration with improved horizontal and stacked bar designs
+// Enhanced Chart Configuration with improved area chart support and sosioekonomi chart types
 
 // Enhanced Global Chart Configuration
 const ChartConfig = {
@@ -38,9 +38,10 @@ const ChartConfig = {
         // Enhanced colors for vertical bar charts
         verticalBar: {
             colors: [
-                '#1f2937', '#374151', '#4b5563', '#6b7280', '#9ca3af',
-                '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe',
-                '#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fed7d7'
+                '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4',
+                '#84cc16', '#f97316', '#ec4899', '#6366f1', '#14b8a6', '#eab308',
+                '#f43f5e', '#8b5a2b', '#64748b', '#7c3aed', '#dc2626', '#059669',
+                '#d97706', '#be185d', '#0891b2', '#65a30d', '#ea580c', '#4f46e5'
             ],
             name: 'Vertical Bar Colors'
         },
@@ -56,7 +57,29 @@ const ChartConfig = {
             name: 'Enhanced Pie Colors'
         },
 
-        // NEW: Enhanced colors for multiple bar charts (employability factors)
+        // Enhanced colors for area charts
+        area: {
+            colors: [
+                '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', 
+                '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6366f1'
+            ],
+            gradients: [
+                ['#3b82f6', '#93c5fd'], ['#10b981', '#6ee7b7'], ['#f59e0b', '#fcd34d'],
+                ['#ef4444', '#f87171'], ['#8b5cf6', '#c4b5fd']
+            ],
+            name: 'Area Chart Colors'
+        },
+
+        // Enhanced colors for line charts
+        line: {
+            colors: [
+                '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', 
+                '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6366f1'
+            ],
+            name: 'Line Chart Colors'
+        },
+
+        // Enhanced colors for multiple bar charts (employability factors)
         multipleBar: {
             colors: [
                 '#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6',
@@ -64,6 +87,32 @@ const ChartConfig = {
                 '#dc2626', '#ea580c', '#ca8a04', '#16a34a', '#2563eb'
             ],
             name: 'Multiple Bar Colors'
+        },
+
+        // NEW: Sosioekonomi specific color schemes
+        sosioekonomiIncome: {
+            colors: [
+                '#10b981', '#22c55e', '#4ade80', '#86efac', '#bbf7d0',
+                '#065f46', '#047857', '#059669', '#0d9488', '#14b8a6'
+            ],
+            name: 'Sosioekonomi Income Colors'
+        },
+
+        sosioekonomiFinancing: {
+            colors: [
+                '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe',
+                '#1e40af', '#2563eb', '#1d4ed8', '#1e3a8a', '#312e81'
+            ],
+            name: 'Sosioekonomi Financing Colors'
+        },
+
+        sosioekonomiOccupation: {
+            colors: [
+                '#f59e0b', '#fbbf24', '#fcd34d', '#fde68a', '#fef3c7',
+                '#d97706', '#f59e0b', '#eab308', '#ca8a04', '#a16207',
+                '#92400e', '#78350f', '#451a03'
+            ],
+            name: 'Sosioekonomi Occupation Colors'
         }
     },
 
@@ -78,11 +127,6 @@ const ChartConfig = {
             maxBarThickness: 35,
             categoryPercentage: 0.8,
             barPercentage: 0.85,
-            // Add subtle shadow effect
-            shadowOffsetX: 3,
-            shadowOffsetY: 3,
-            shadowBlur: 6,
-            shadowColor: 'rgba(0, 0, 0, 0.1)'
         },
         
         // Enhanced stacked bar template
@@ -128,7 +172,7 @@ const ChartConfig = {
             cutout: '0%'
         },
 
-        // NEW: Enhanced multiple bar template for employability factors
+        // Enhanced multiple bar template for employability factors
         enhancedMultipleBar: {
             borderRadius: 4,
             borderWidth: 1,
@@ -228,8 +272,24 @@ class EnhancedChartFactory {
             case 'multiple':
                 scheme = ChartConfig.colorSchemes.multipleBar;
                 break;
+            case 'area':
+                scheme = ChartConfig.colorSchemes.area;
+                break;
+            case 'line':
+                scheme = ChartConfig.colorSchemes.line;
+                break;
+            // NEW: Sosioekonomi specific chart types
+            case 'sosioekonomi-income':
+                scheme = ChartConfig.colorSchemes.sosioekonomiIncome;
+                break;
+            case 'sosioekonomi-financing':
+                scheme = ChartConfig.colorSchemes.sosioekonomiFinancing;
+                break;
+            case 'sosioekonomi-occupation':
+                scheme = ChartConfig.colorSchemes.sosioekonomiOccupation;
+                break;
             default:
-                scheme = ChartConfig.colorSchemes.horizontalBar;
+                scheme = ChartConfig.colorSchemes.verticalBar;
         }
         
         // Extend colors if needed
@@ -258,6 +318,28 @@ class EnhancedChartFactory {
             
             return gradient;
         });
+    }
+
+    // Create enhanced area gradient
+    static createAreaGradient(ctx, color, chartArea) {
+        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+        
+        // Convert hex to rgba if needed
+        let rgbaColor = color;
+        if (color.startsWith('#')) {
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            rgbaColor = `rgba(${r}, ${g}, ${b}`;
+        } else if (color.startsWith('rgb(')) {
+            rgbaColor = color.replace('rgb(', 'rgba(').replace(')', '');
+        }
+
+        gradient.addColorStop(0, rgbaColor + ', 0.8)');
+        gradient.addColorStop(0.5, rgbaColor + ', 0.4)');
+        gradient.addColorStop(1, rgbaColor + ', 0.05)');
+        
+        return gradient;
     }
 
     // Utility to lighten colors
@@ -562,7 +644,7 @@ class EnhancedChartFactory {
         });
     }
 
-    // NEW: Enhanced Multiple Bar Chart for employability factors
+    // Enhanced Multiple Bar Chart for employability factors
     static createMultipleBarChart(ctx, data, options = {}) {
         const colors = this.getColorsForChartType('multiple-bar', data.datasets.length);
         const template = ChartConfig.styleTemplates.enhancedMultipleBar;
@@ -693,27 +775,48 @@ class EnhancedChartFactory {
         });
     }
 
-    // Enhanced Line Chart (includes Area Chart support)
+    // Enhanced Line Chart with Area Chart support (FIXED AND IMPROVED)
     static createLineChart(ctx, data, chartType = 'line', options = {}) {
-        const colors = this.getColorsForChartType('line', data.datasets.length);
-        const backgroundColors = colors.map(color => color.replace('1)', '0.1)'));
-
+        const colors = this.getColorsForChartType(chartType === 'area' ? 'area' : 'line', data.datasets.length);
+        
         const enhancedData = {
             ...data,
-            datasets: data.datasets.map((dataset, index) => ({
-                ...dataset,
-                backgroundColor: dataset.backgroundColor || backgroundColors[index % backgroundColors.length],
-                borderColor: dataset.borderColor || colors[index % colors.length],
-                pointBorderColor: dataset.pointBorderColor || colors[index % colors.length],
-                pointHoverBorderColor: dataset.pointHoverBorderColor || colors[index % colors.length],
-                pointBackgroundColor: dataset.pointBackgroundColor || '#ffffff',
-                pointHoverBackgroundColor: dataset.pointHoverBackgroundColor || '#ffffff',
-                fill: dataset.fill !== undefined ? dataset.fill : (chartType === 'area'),
-                tension: dataset.tension !== undefined ? dataset.tension : 0.4,
-                pointRadius: dataset.pointRadius !== undefined ? dataset.pointRadius : 4,
-                pointHoverRadius: dataset.pointHoverRadius !== undefined ? dataset.pointHoverRadius : 6,
-                borderWidth: dataset.borderWidth !== undefined ? dataset.borderWidth : 3
-            }))
+            datasets: data.datasets.map((dataset, index) => {
+                const color = colors[index % colors.length];
+                const isAreaChart = dataset.fill !== undefined ? dataset.fill : (chartType === 'area');
+                
+                // Create gradient for area charts
+                let backgroundColor = dataset.backgroundColor;
+                if (isAreaChart && ctx.chart && ctx.chart.chartArea) {
+                    backgroundColor = this.createAreaGradient(ctx, color, ctx.chart.chartArea);
+                } else if (isAreaChart) {
+                    // Fallback gradient creation
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                    gradient.addColorStop(0, color.replace(')', ', 0.8)').replace('rgb', 'rgba'));
+                    gradient.addColorStop(0.5, color.replace(')', ', 0.4)').replace('rgb', 'rgba'));
+                    gradient.addColorStop(1, color.replace(')', ', 0.05)').replace('rgb', 'rgba'));
+                    backgroundColor = gradient;
+                }
+
+                return {
+                    ...dataset,
+                    backgroundColor: backgroundColor,
+                    borderColor: dataset.borderColor || color,
+                    pointBorderColor: dataset.pointBorderColor || color,
+                    pointHoverBorderColor: dataset.pointHoverBorderColor || color,
+                    pointBackgroundColor: dataset.pointBackgroundColor || '#ffffff',
+                    pointHoverBackgroundColor: dataset.pointHoverBackgroundColor || '#ffffff',
+                    pointBorderWidth: 3,
+                    pointHoverBorderWidth: 4,
+                    fill: isAreaChart,
+                    tension: dataset.tension !== undefined ? dataset.tension : 0.4,
+                    pointRadius: dataset.pointRadius !== undefined ? dataset.pointRadius : 6,
+                    pointHoverRadius: dataset.pointHoverRadius !== undefined ? dataset.pointHoverRadius : 8,
+                    borderWidth: dataset.borderWidth !== undefined ? dataset.borderWidth : 4,
+                    borderCapStyle: 'round',
+                    borderJoinStyle: 'round'
+                }
+            })
         };
 
         return new Chart(ctx, {
@@ -722,6 +825,25 @@ class EnhancedChartFactory {
             options: {
                 ...ChartConfig.globalOptions,
                 ...options,
+                layout: {
+                    padding: {
+                        top: 20,
+                        right: 20,
+                        bottom: 20,
+                        left: 20
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0.4
+                    },
+                    point: {
+                        radius: 6,
+                        hoverRadius: 8,
+                        borderWidth: 3,
+                        hoverBorderWidth: 4
+                    }
+                },
                 plugins: {
                     ...ChartConfig.globalOptions.plugins,
                     legend: {
@@ -734,10 +856,26 @@ class EnhancedChartFactory {
                             padding: 20,
                             font: {
                                 size: 12,
-                                weight: '500',
+                                weight: '600',
                                 family: "'Inter', 'Segoe UI', sans-serif"
                             },
                             color: '#374151'
+                        }
+                    },
+                    tooltip: {
+                        ...ChartConfig.globalOptions.plugins.tooltip,
+                        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        cornerRadius: 15,
+                        padding: 20,
+                        displayColors: true,
+                        boxPadding: 10,
+                        usePointStyle: true,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label || 'Bilangan'}: ${context.parsed.y.toLocaleString()} responden`;
+                            }
                         }
                     },
                     ...options.plugins
@@ -752,14 +890,14 @@ class EnhancedChartFactory {
                         },
                         ticks: { 
                             font: { 
-                                size: 12, 
-                                weight: '500',
+                                size: 11, 
+                                weight: '600',
                                 family: "'Inter', 'Segoe UI', sans-serif"
                             },
                             color: '#6b7280',
-                            maxRotation: 0,
+                            maxRotation: 45,
                             minRotation: 0,
-                            padding: 8
+                            padding: 12
                         },
                         border: {
                             display: false
@@ -767,6 +905,7 @@ class EnhancedChartFactory {
                     },
                     y: {
                         beginAtZero: true,
+                        grace: '10%',
                         grid: { 
                             color: 'rgba(0,0,0,0.04)', 
                             drawBorder: false,
@@ -774,12 +913,12 @@ class EnhancedChartFactory {
                         },
                         ticks: { 
                             font: { 
-                                size: 12, 
-                                weight: '500',
+                                size: 11, 
+                                weight: '600',
                                 family: "'Inter', 'Segoe UI', sans-serif"
                             },
                             color: '#6b7280',
-                            padding: 12,
+                            padding: 15,
                             callback: function(value) {
                                 return value.toLocaleString();
                             }
@@ -789,6 +928,14 @@ class EnhancedChartFactory {
                         }
                     },
                     ...options.scales
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                animation: {
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
                 }
             }
         });
@@ -1033,4 +1180,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-console.log('Enhanced Chart Configuration System with Multiple Bar Chart support loaded!');
+console.log('Enhanced Chart Configuration System with Sosioekonomi support loaded!');a
