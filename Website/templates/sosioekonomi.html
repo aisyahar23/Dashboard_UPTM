@@ -649,258 +649,71 @@
                     this.kpis = await response.json();
                 } catch (error) {
                     console.error('Error loading summary:', error);
-                    this.kpis = {
-                        total_records: 0,
-                        avg_income_range: 'N/A',
-                        high_income_rate: 0,
-                        loan_financing_rate: 0,
-                        advantage_rate: 0
-                    };
+                    this.kpis = { total_records: 0, scholarship_rate: 0, loan_rate: 0, family_funding_rate: 0 };
                 }
             },
 
-            async loadHouseholdIncomeChart() {
-                try {
+            async loadIncomeDistribution()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/sosioekonomi/api/household-income?${params}`);
+                    const response = await fetch(`/sosioekonomi/api/income-distribution?${params}`);
                     const data = await response.json();
 
-                    this.safeDestroyChart('householdIncome');
+                    safeDestroyChart('income');
 
-                    const canvas = document.getElementById('householdIncomeChart');
-                    if (canvas) {
+                    const canvas = document.getElementById('incomeChart');
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.householdIncome = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'household-income', {
+                        if (ctx)
+                        {
+                            window.globalCharts.income = ChartFactory.createBarChart(ctx, data, {
                                 plugins: {
-                                    legend: {
-                                        position: 'top',
-                                        labels: {
-                                            color: '#4A5568',
-                                            font: {
-                                                size: 12
-                                            },
-                                            generateLabels: function (chart)
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context)
                                             {
-                                                const original = Chart.defaults.plugins.legend.labels.generateLabels;
-                                                const labels = original.call(this, chart);
-
-                                                // Wrap long legend labels
-                                                labels.forEach(label =>
-                                                {
-                                                    if (label.text && label.text.length > 20)
-                                                    {
-                                                        const words = label.text.split(' ');
-                                                        const lines = [];
-                                                        let currentLine = '';
-
-                                                        words.forEach(word =>
-                                                        {
-                                                            if ((currentLine + word).length > 20 && currentLine !== '')
-                                                            {
-                                                                lines.push(currentLine.trim());
-                                                                currentLine = word + ' ';
-                                                            } else
-                                                            {
-                                                                currentLine += word + ' ';
-                                                            }
-                                                        });
-
-                                                        if (currentLine.trim() !== '')
-                                                        {
-                                                            lines.push(currentLine.trim());
-                                                        }
-
-                                                        label.text = lines;
-                                                    }
-                                                });
-
-                                                return labels;
+                                                return `Respondents: ${context.parsed.y}`;
                                             }
-                                        }
-                                    },
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 10 }
-                                        }
-                                    },
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Bilangan Responden'
                                         }
                                     }
                                 }
                             });
                         }
                     }
-                } catch (error) {
-                    console.error('Error loading household income chart:', error);
+                } catch (error)
+                {
+                    console.error('Error loading income distribution:', error);
                 }
             },
 
-            async loadEducationFinancingChart() {
-                try {
+            async loadFinancingMethods()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/sosioekonomi/api/education-financing?${params}`);
+                    const response = await fetch(`/sosioekonomi/api/financing-methods?${params}`);
                     const data = await response.json();
 
-                    this.safeDestroyChart('educationFinancing');
+                    safeDestroyChart('financing');
 
-                    const canvas = document.getElementById('educationFinancingChart');
-                    if (canvas) {
+                    const canvas = document.getElementById('financingChart');
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.educationFinancing = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'education-financing', {
+                        if (ctx)
+                        {
+                            window.globalCharts.financing = ChartFactory.createPieChart(ctx, data, {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function(context) {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 10 },
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 20) {
-                                                    return label.substring(0, 17) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        grid: {
-                                            color: '#E2E8F0'
-                                        },
-                                        ticks: {
-                                            color: '#718096',
-                                            maxRotation: 0, // Set to 0 to prevent rotation
-                                            minRotation: 0, // Set to 0 to prevent rotation
-                                            font: {
-                                                size: 11
-                                            },
-                                            callback: function (value, index)
+                                            label: function (context)
                                             {
-                                                const label = this.getLabelForValue(value);
-                                                // Split long labels into multiple lines
-                                                if (label.length > 15)
-                                                {
-                                                    // Split by spaces and create multiple lines
-                                                    const words = label.split(' ');
-                                                    const lines = [];
-                                                    let currentLine = '';
-
-                                                    words.forEach(word =>
-                                                    {
-                                                        if ((currentLine + word).length > 15 && currentLine !== '')
-                                                        {
-                                                            lines.push(currentLine.trim());
-                                                            currentLine = word + ' ';
-                                                        } else
-                                                        {
-                                                            currentLine += word + ' ';
-                                                        }
-                                                    });
-
-                                                    if (currentLine.trim() !== '')
-                                                    {
-                                                        lines.push(currentLine.trim());
-                                                    }
-
-                                                    return lines;
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: '#E2E8F0'
-                                        },
-                                        ticks: {
-                                            color: '#718096'
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading education financing chart:', error);
-                }
-            },
-
-            async loadFatherOccupationChart() {
-                try {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/sosioekonomi/api/father-occupation-by-income?${params}`);
-                    const data = await response.json();
-
-                    this.safeDestroyChart('fatherOccupation');
-
-                    const canvas = document.getElementById('fatherOccupationChart');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.fatherOccupation = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'father-occupation', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: true,
-                                        position: 'top',
-                                        labels: {
-                                            font: { size: 10 }
-                                        }
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        stacked: true,
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 9 },
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 15) {
-                                                    return label.substring(0, 12) + '...';
-                                                }
-                                                return label;
+                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                                return `${context.label}: ${context.parsed} (${percentage}%)`;
                                             }
                                         }
                                     },
@@ -912,185 +725,39 @@
                             });
                         }
                     }
-                } catch (error) {
-                    console.error('Error loading father occupation chart:', error);
+                } catch (error)
+                {
+                    console.error('Error loading financing methods:', error);
                 }
             },
 
-            async loadMotherOccupationChart() {
-                try {
+            async loadParentOccupation()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/sosioekonomi/api/mother-occupation-by-income?${params}`);
+                    const response = await fetch(`/sosioekonomi/api/parent-occupation?${params}`);
                     const data = await response.json();
 
-                    this.safeDestroyChart('motherOccupation');
+                    safeDestroyChart('parentOccupation');
 
-                    const canvas = document.getElementById('motherOccupationChart');
-                    if (canvas) {
+                    const canvas = document.getElementById('parentOccupationChart');
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.motherOccupation = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'mother-occupation', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: true,
-                                        position: 'top',
-                                        labels: {
-                                            font: { size: 9 }
-                                        }
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        stacked: true,
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 8 },
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 12) {
-                                                    return label.substring(0, 9) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true
-                                    }
-                                }
-                            });
+                        if (ctx)
+                        {
+                            window.globalCharts.parentOccupation = ChartFactory.createStackedBarChart(ctx, data);
                         }
                     }
-                } catch (error) {
-                    console.error('Error loading mother occupation chart:', error);
+                } catch (error)
+                {
+                    console.error('Error loading parent occupation:', error);
                 }
             },
 
-            async loadFinancingAdvantageChart() {
-                try {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/sosioekonomi/api/financing-job-advantage?${params}`);
-                    const data = await response.json();
-
-                    this.safeDestroyChart('financingAdvantage');
-
-                    const canvas = document.getElementById('financingAdvantageChart');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.financingAdvantage = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'financing-advantage', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: true,
-                                        position: 'top'
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        stacked: true,
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 10 },
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 25) {
-                                                    return label.substring(0, 22) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true
-                                    }
-                                }
-                            });
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading financing advantage chart:', error);
-                }
-            },
-
-            async loadDebtImpactChart() {
-                try {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/sosioekonomi/api/debt-impact-career?${params}`);
-                    const data = await response.json();
-
-                    this.safeDestroyChart('debtImpact');
-
-                    const canvas = document.getElementById('debtImpactChart');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.debtImpact = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'debt-impact', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 0,
-                                            font: { size: 10 },
-                                            callback: function(value, index) {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 15) {
-                                                    return label.substring(0, 12) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading debt impact chart:', error);
-                }
-            },
-
-            safeDestroyChart(chartName) {
-                if (window.globalCharts && window.globalCharts[chartName]) {
-                    try {
-                        window.globalCharts[chartName].destroy();
-                        delete window.globalCharts[chartName];
-                    } catch (error) {
-                        console.warn(`Error destroying chart ${chartName}:`, error);
-                    }
-                }
-            },
-
-            buildFilterParams() {
+            buildFilterParams()
+            {
                 const params = new URLSearchParams();
                 Object.entries(this.filters).forEach(([key, values]) => {
                     if (Array.isArray(values) && values.length > 0) {
