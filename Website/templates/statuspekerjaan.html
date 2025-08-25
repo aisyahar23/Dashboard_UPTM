@@ -202,8 +202,7 @@
                 <button @click="refreshData()"
                     class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400"
                     :disabled="loading">
-                    <i class="fas fa-sync-alt text-primary-700 text-[10px]"
-                        :class="{ 'animate-spin': loading }"></i>
+                    <i class="fas fa-sync-alt text-primary-700 text-[10px]" :class="{ 'animate-spin': loading }"></i>
                     <span class="font-semibold text-primary-700 text-[10px]">Muat Semula</span>
                 </button>
             </div>
@@ -425,7 +424,7 @@
 
         <!-- Time to First Job - Enhanced Area Chart -->
         <div
-            class="col-span-12 lg:col-span-7 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-all duration-300">
+            class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-all duration-300">
             <div class="px-8 py-6 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
@@ -464,7 +463,7 @@
 
         <!-- Current Job Types - Bar Chart -->
         <div
-            class="col-span-12 lg:col-span-5 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+            class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
             <div class="px-6 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
@@ -651,6 +650,39 @@
             delay(ms)
             {
                 return new Promise(resolve => setTimeout(resolve, ms));
+            },
+
+            // Helper to wrap text into multiple lines based on max characters per line
+            wrapLabel(label, maxCharsPerLine = 15)
+            {
+                if (!label) return '';
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                for (const word of words)
+                {
+                    // If word itself is longer than max, split it
+                    if (word.length > maxCharsPerLine)
+                    {
+                        while (word.length > maxCharsPerLine)
+                        {
+                            lines.push(word.substring(0, maxCharsPerLine));
+                            word = word.substring(maxCharsPerLine);
+                        }
+                        currentLine = word;
+                    } else if ((currentLine + ' ' + word).length <= maxCharsPerLine)
+                    {
+                        currentLine += (currentLine ? ' ' : '') + word;
+                    } else
+                    {
+                        if (currentLine) lines.push(currentLine);
+                        currentLine = word;
+                    }
+                }
+                if (currentLine) lines.push(currentLine);
+
+                return lines;
             },
 
             async loadSummary()
@@ -882,39 +914,60 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.currentJobTypes = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'current-job-types', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context)
-                                            {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
+
+                            // Preprocess labels using the wrapLabel helper
+                            const chartData = {
+                                ...data,
+                                labels: data.labels.map(label => this.wrapLabel(label, 15)) // Adjust 15 to control line length
+                            };
+
+                            window.globalCharts.currentJobTypes = EnhancedChartFactory.createChart(
+                                ctx,
+                                'vertical-bar',
+                                chartData,
+                                'current-job-types',
+                                {
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context)
+                                                {
+                                                    return `Bilangan: ${context.parsed.y.toLocaleString()}`;
+                                                }
+                                            }
+                                        },
+                                        legend: {
+                                            display: false
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            ticks: {
+                                                maxRotation: 0,      // Keep labels horizontal
+                                                minRotation: 0,
+                                                font: { size: 9 },
+                                                autoSkip: false,     // Show all labels (optional)
+                                                // Multiline labels are handled via wrapped string array
+                                            },
+                                            grid: {
+                                                display: false       // Improves readability
+                                            }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Bilangan Responden'
                                             }
                                         }
                                     },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 0,
-                                            minRotation: 0,
-                                            font: { size: 9 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 20)
-                                                {
-                                                    return label.substring(0, 17) + '...';
-                                                }
-                                                return label;
-                                            }
+                                    layout: {
+                                        padding: {
+                                            bottom: 30            // Make room for multiline labels
                                         }
                                     }
                                 }
-                            });
+                            );
                         }
                     }
                 } catch (error)

@@ -495,12 +495,12 @@
                     </div>
                     <div class="flex space-x-3">
                         <button @click="refreshChart('field-of-study')"
-                            class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
+                            class="p-3 h-12 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
                             <i
                                 class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-transform duration-300"></i>
                         </button>
                         <a href="/demografi/table" target="_blank"
-                            class="px-4 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all text-sm font-medium transform hover:scale-105">
+                            class="h-12 px-4 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all text-sm font-medium transform hover:scale-105">
                             <i class="fas fa-external-link-alt mr-2"></i>Lihat Maklumat Penuh
                         </a>
                     </div>
@@ -783,46 +783,91 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            // USE STANDARDIZED CHART TYPE
-                            window.globalCharts.institutionCategory = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'institution-category', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context)
-                                            {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 11 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 25)
+                            window.globalCharts.institutionCategory = EnhancedChartFactory.createChart(
+                                ctx,
+                                'vertical-bar',
+                                data,
+                                'institution-category',
+                                {
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context)
                                                 {
-                                                    return label.substring(0, 22) + '...';
+                                                    return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                                 }
-                                                return label;
+                                            }
+                                        },
+                                        legend: {
+                                            display: false
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            ticks: {
+                                                // Remove rotation
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                font: { size: 11 },
+                                                // Wrap long labels into multiple lines
+                                                callback: function (value)
+                                                {
+                                                    const label = this.getLabelForValue(value);
+                                                    if (!label) return '';
+
+                                                    const maxWidth = 20; // Max characters per line
+                                                    const lines = [];
+                                                    let line = '';
+
+                                                    const words = label.split(' ');
+
+                                                    for (const word of words)
+                                                    {
+                                                        if ((line + word).length <= maxWidth)
+                                                        {
+                                                            line += (line ? ' ' : '') + word;
+                                                        } else
+                                                        {
+                                                            if (line) lines.push(line);
+                                                            if (word.length > maxWidth)
+                                                            {
+                                                                // Break long word into chunks
+                                                                for (let i = 0; i < word.length; i += maxWidth)
+                                                                {
+                                                                    lines.push(word.slice(i, i + maxWidth));
+                                                                }
+                                                                line = '';
+                                                            } else
+                                                            {
+                                                                line = word;
+                                                            }
+                                                        }
+                                                    }
+
+                                                    if (line) lines.push(line);
+
+                                                    return lines;
+                                                },
+                                                // Increase line height to accommodate multiline labels
+                                                padding: 10
+                                            }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Bilangan Responden'
                                             }
                                         }
                                     },
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Bilangan Responden'
+                                    // Optional: Increase bottom padding to ensure space for multiline labels
+                                    layout: {
+                                        padding: {
+                                            bottom: 20
                                         }
                                     }
                                 }
-                            });
+                            );
                         }
                     }
                 } catch (error)
@@ -848,7 +893,6 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            // USE STANDARDIZED CHART TYPE
                             window.globalCharts.fieldOfStudy = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'field-of-study', {
                                 plugins: {
                                     tooltip: {
@@ -866,17 +910,54 @@
                                 scales: {
                                     x: {
                                         ticks: {
-                                            maxRotation: 45,
+                                            // Remove rotation
+                                            maxRotation: 0,
+                                            minRotation: 0,
                                             font: { size: 10 },
-                                            callback: function (value, index)
+
+                                            // Wrap long labels into multiple lines
+                                            callback: function (value)
                                             {
                                                 const label = this.getLabelForValue(value);
-                                                if (label && label.length > 30)
+                                                if (!label) return '';
+
+                                                // Split label into lines of max ~20 characters
+                                                const charsPerLine = 11;
+                                                const lines = [];
+                                                let line = '';
+
+                                                for (const word of label.split(' '))
                                                 {
-                                                    return label.substring(0, 27) + '...';
+                                                    if ((line + word).length <= charsPerLine)
+                                                    {
+                                                        line += (line ? ' ' : '') + word;
+                                                    } else
+                                                    {
+                                                        if (line) lines.push(line);
+                                                        if (word.length > charsPerLine)
+                                                        {
+                                                            // Handle very long words by splitting them
+                                                            for (let i = 0; i < word.length; i += charsPerLine)
+                                                            {
+                                                                lines.push(word.slice(i, i + charsPerLine));
+                                                            }
+                                                        } else
+                                                        {
+                                                            line = word;
+                                                        }
+                                                    }
                                                 }
-                                                return label;
-                                            }
+                                                if (line) lines.push(line);
+
+                                                return lines;
+                                            },
+
+                                            // Increase spacing if needed to accommodate multiline labels
+                                            padding: 10
+                                        },
+                                        // Optional: prevent labels from being skipped if too many
+                                        grid: {
+                                            display: false // improves readability for dense labels
                                         }
                                     },
                                     y: {
@@ -885,6 +966,13 @@
                                             display: true,
                                             text: 'Bilangan Responden'
                                         }
+                                    }
+                                },
+
+                                // Increase bottom padding to allow space for multiline labels
+                                layout: {
+                                    padding: {
+                                        bottom: 30
                                     }
                                 }
                             });

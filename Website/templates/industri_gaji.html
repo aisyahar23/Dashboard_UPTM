@@ -222,8 +222,7 @@
                 <button @click="refreshData()"
                     class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400"
                     :disabled="loading">
-                    <i class="fas fa-sync-alt text-primary-700 text-[10px]"
-                        :class="{ 'animate-spin': loading }"></i>
+                    <i class="fas fa-sync-alt text-primary-700 text-[10px]" :class="{ 'animate-spin': loading }"></i>
                     <span class="font-semibold text-primary-700 text-[10px]">Muat Semula</span>
                 </button>
             </div>
@@ -839,46 +838,60 @@
                             {
 
                                 window.globalCharts = window.globalCharts || {};
-                                window.globalCharts.salaryByEducation = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'salary-by-education', {
-                                    plugins: {
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function (context)
-                                                {
-                                                    return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
-                                                }
-                                            }
-                                        }
-                                    },
-                                    scales: {
-                                        x: {
-                                            title: {
-                                                display: true,
-                                                text: 'Tahap Pendidikan'
-                                            },
-                                            ticks: {
-                                                font: { size: 10 },
-                                                maxRotation: 0,
-                                                callback: function (value, index)
-                                                {
-                                                    const label = this.getLabelForValue(value);
-                                                    if (label && label.length > 15)
+
+                                // Wrap labels using helper
+                                const chartData = {
+                                    ...data,
+                                    labels: data.labels.map(label => this.wrapLabel(label, 18)) // Adjust line length as needed
+                                };
+
+                                window.globalCharts.salaryByEducation = EnhancedChartFactory.createChart(
+                                    ctx,
+                                    'enhanced-stacked-bar',
+                                    chartData,
+                                    'salary-by-education',
+                                    {
+                                        plugins: {
+                                            tooltip: {
+                                                callbacks: {
+                                                    label: function (context)
                                                     {
-                                                        return label.substring(0, 12) + '...';
+                                                        return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
                                                     }
-                                                    return label;
                                                 }
                                             }
                                         },
-                                        y: {
-                                            beginAtZero: true,
-                                            title: {
-                                                display: true,
-                                                text: 'Bilangan Responden'
+                                        scales: {
+                                            x: {
+                                                title: {
+                                                    display: true,
+                                                    text: 'Tahap Pendidikan'
+                                                },
+                                                ticks: {
+                                                    font: { size: 10 },
+                                                    maxRotation: 0,
+                                                    minRotation: 0,
+                                                    autoSkip: false // Prevent skipping any labels
+                                                },
+                                                grid: {
+                                                    display: false
+                                                }
+                                            },
+                                            y: {
+                                                beginAtZero: true,
+                                                title: {
+                                                    display: true,
+                                                    text: 'Bilangan Responden'
+                                                }
+                                            }
+                                        },
+                                        layout: {
+                                            padding: {
+                                                bottom: 30 // Accommodate multiline labels
                                             }
                                         }
                                     }
-                                });
+                                );
                             } else
                             {
                                 // Show error message on canvas
@@ -1063,6 +1076,43 @@
                 }
             },
 
+            wrapLabel(label, maxCharsPerLine = 15)
+            {
+                if (!label) return '';
+                const words = label.toString().split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                for (const word of words)
+                {
+                    const testLine = currentLine ? `${currentLine} ${word}` : word;
+
+                    if (testLine.length <= maxCharsPerLine)
+                    {
+                        currentLine = testLine;
+                    } else
+                    {
+                        if (currentLine) lines.push(currentLine);
+                        // If word is longer than maxCharsPerLine, split it
+                        if (word.length > maxCharsPerLine)
+                        {
+                            let splitWord = '';
+                            for (let i = 0; i < word.length; i += maxCharsPerLine)
+                            {
+                                lines.push(word.slice(i, i + maxCharsPerLine));
+                            }
+                            currentLine = '';
+                        } else
+                        {
+                            currentLine = word;
+                        }
+                    }
+                }
+
+                if (currentLine) lines.push(currentLine);
+                return lines;
+            },
+
             async loadSalaryCommensurateChart()
             {
                 try
@@ -1080,46 +1130,59 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.salaryCommensurate = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'salary-commensurate', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context)
-                                            {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 0,
-                                            minRotation: 0,
-                                            font: { size: 10 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 12)
+
+                            // Wrap labels using helper
+                            const chartData = {
+                                ...data,
+                                labels: data.labels.map(label => this.wrapLabel(label, 12)) // Shorter lines due to likely longer labels
+                            };
+
+                            window.globalCharts.salaryCommensurate = EnhancedChartFactory.createChart(
+                                ctx,
+                                'vertical-bar',
+                                chartData,
+                                'salary-commensurate',
+                                {
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context)
                                                 {
-                                                    return label.substring(0, 9) + '...';
+                                                    return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                                 }
-                                                return label;
+                                            }
+                                        },
+                                        legend: {
+                                            display: false
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            ticks: {
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                font: { size: 10 },
+                                                autoSkip: false
+                                            },
+                                            grid: {
+                                                display: false
+                                            }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Bilangan'
                                             }
                                         }
                                     },
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Bilangan'
+                                    layout: {
+                                        padding: {
+                                            bottom: 10
                                         }
                                     }
                                 }
-                            });
+                            );
                         }
                     }
                 } catch (error)

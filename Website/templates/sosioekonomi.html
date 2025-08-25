@@ -729,6 +729,39 @@
                 }
             },
 
+            // Helper to wrap text into multiple lines based on max characters per line
+            wrapLabel(label, maxCharsPerLine = 15)
+            {
+                if (!label) return '';
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                for (const word of words)
+                {
+                    // If word itself is longer than max, split it
+                    if (word.length > maxCharsPerLine)
+                    {
+                        while (word.length > maxCharsPerLine)
+                        {
+                            lines.push(word.substring(0, maxCharsPerLine));
+                            word = word.substring(maxCharsPerLine);
+                        }
+                        currentLine = word;
+                    } else if ((currentLine + ' ' + word).length <= maxCharsPerLine)
+                    {
+                        currentLine += (currentLine ? ' ' : '') + word;
+                    } else
+                    {
+                        if (currentLine) lines.push(currentLine);
+                        currentLine = word;
+                    }
+                }
+                if (currentLine) lines.push(currentLine);
+
+                return lines;
+            },
+
             async loadHouseholdIncomeChart()
             {
                 try
@@ -747,24 +780,9 @@
                         {
                             window.globalCharts = window.globalCharts || {};
 
-                            // Preprocess labels to wrap long text
-                            const wrappedLabels = data.labels.map(label =>
-                            {
-                                // Customize the max characters per line
-                                const maxCharsPerLine = 10;
-                                let wrapped = '';
-                                for (let i = 0; i < label.length; i += maxCharsPerLine)
-                                {
-                                    wrapped += label.substr(i, maxCharsPerLine);
-                                    if (i + maxCharsPerLine < label.length) wrapped += '\n';
-                                }
-                                return wrapped;
-                            });
-
-                            // Create a new data object with wrapped labels
                             const chartData = {
                                 ...data,
-                                labels: wrappedLabels
+                                labels: data.labels.map(label => this.wrapLabel(label, 15))
                             };
 
                             window.globalCharts.householdIncome = EnhancedChartFactory.createChart(
@@ -776,30 +794,20 @@
                                     plugins: {
                                         tooltip: {
                                             callbacks: {
-                                                label: function (context)
-                                                {
-                                                    return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                                }
+                                                label: context => `Bilangan: ${context.parsed.y.toLocaleString()}`
                                             }
                                         },
-                                        legend: {
-                                            display: false
-                                        }
+                                        legend: { display: false }
                                     },
                                     scales: {
                                         x: {
                                             ticks: {
-                                                maxRotation: 0,  // No rotation
+                                                maxRotation: 0,
                                                 minRotation: 0,
                                                 font: { size: 10 },
-                                                // Optional: align center or top to prevent crowding
-                                                autoSkip: false,
-                                                textStrokeWidth: 1
+                                                autoSkip: false
                                             },
-                                            // Ensure grid lines and layout accommodate wrapped labels
-                                            grid: {
-                                                display: false
-                                            }
+                                            grid: { display: false }
                                         },
                                         y: {
                                             beginAtZero: true,
@@ -809,12 +817,7 @@
                                             }
                                         }
                                     },
-                                    // Increase bottom padding to make room for multiline labels
-                                    layout: {
-                                        padding: {
-                                            bottom: 20
-                                        }
-                                    }
+                                    layout: { padding: { bottom: 30 } }
                                 }
                             );
                         }
@@ -842,38 +845,47 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.educationFinancing = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'education-financing', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context)
-                                            {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
+
+                            const chartData = {
+                                ...data,
+                                labels: data.labels.map(label => this.wrapLabel(label, 14))
+                            };
+
+                            window.globalCharts.educationFinancing = EnhancedChartFactory.createChart(
+                                ctx,
+                                'vertical-bar',
+                                chartData,
+                                'education-financing',
+                                {
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: context => `Bilangan: ${context.parsed.y.toLocaleString()}`
+                                            }
+                                        },
+                                        legend: { display: false }
+                                    },
+                                    scales: {
+                                        x: {
+                                            ticks: {
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                font: { size: 10 },
+                                                autoSkip: false
+                                            },
+                                            grid: { display: false }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Bilangan Responden'
                                             }
                                         }
                                     },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 10 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 20)
-                                                {
-                                                    return label.substring(0, 17) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    }
+                                    layout: { padding: { bottom: 30 } }
                                 }
-                            });
+                            );
                         }
                     }
                 } catch (error)
@@ -899,47 +911,53 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.fatherOccupation = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'father-occupation', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context)
-                                            {
-                                                return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
+
+                            const chartData = {
+                                ...data,
+                                labels: data.labels.map(label => this.wrapLabel(label, 12))
+                            };
+
+                            window.globalCharts.fatherOccupation = EnhancedChartFactory.createChart(
+                                ctx,
+                                'enhanced-stacked-bar',
+                                chartData,
+                                'father-occupation',
+                                {
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: context => `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`
+                                            }
+                                        },
+                                        legend: {
+                                            display: true,
+                                            position: 'top',
+                                            labels: { font: { size: 10 } }
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            stacked: true,
+                                            ticks: {
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                font: { size: 9 },
+                                                autoSkip: false
+                                            },
+                                            grid: { display: false }
+                                        },
+                                        y: {
+                                            stacked: true,
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Bilangan Responden'
                                             }
                                         }
                                     },
-                                    legend: {
-                                        display: true,
-                                        position: 'top',
-                                        labels: {
-                                            font: { size: 10 }
-                                        }
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        stacked: true,
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 9 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 15)
-                                                {
-                                                    return label.substring(0, 12) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true
-                                    }
+                                    layout: { padding: { bottom: 30 } }
                                 }
-                            });
+                            );
                         }
                     }
                 } catch (error)
@@ -965,47 +983,53 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.motherOccupation = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'mother-occupation', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context)
-                                            {
-                                                return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
+
+                            const chartData = {
+                                ...data,
+                                labels: data.labels.map(label => this.wrapLabel(label, 10))
+                            };
+
+                            window.globalCharts.motherOccupation = EnhancedChartFactory.createChart(
+                                ctx,
+                                'enhanced-stacked-bar',
+                                chartData,
+                                'mother-occupation',
+                                {
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: context => `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`
+                                            }
+                                        },
+                                        legend: {
+                                            display: true,
+                                            position: 'top',
+                                            labels: { font: { size: 9 } }
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            stacked: true,
+                                            ticks: {
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                font: { size: 8 },
+                                                autoSkip: false
+                                            },
+                                            grid: { display: false }
+                                        },
+                                        y: {
+                                            stacked: true,
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Bilangan Responden'
                                             }
                                         }
                                     },
-                                    legend: {
-                                        display: true,
-                                        position: 'top',
-                                        labels: {
-                                            font: { size: 9 }
-                                        }
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        stacked: true,
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 8 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 12)
-                                                {
-                                                    return label.substring(0, 9) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true
-                                    }
+                                    layout: { padding: { bottom: 35 } } // Slightly more padding
                                 }
-                            });
+                            );
                         }
                     }
                 } catch (error)
@@ -1031,44 +1055,52 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.financingAdvantage = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'financing-advantage', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context)
-                                            {
-                                                return `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`;
+
+                            const chartData = {
+                                ...data,
+                                labels: data.labels.map(label => this.wrapLabel(label, 14))
+                            };
+
+                            window.globalCharts.financingAdvantage = EnhancedChartFactory.createChart(
+                                ctx,
+                                'enhanced-stacked-bar',
+                                chartData,
+                                'financing-advantage',
+                                {
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: context => `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`
+                                            }
+                                        },
+                                        legend: {
+                                            display: true,
+                                            position: 'top'
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            stacked: true,
+                                            ticks: {
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                font: { size: 10 },
+                                                autoSkip: false
+                                            },
+                                            grid: { display: false }
+                                        },
+                                        y: {
+                                            stacked: true,
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Bilangan Responden'
                                             }
                                         }
                                     },
-                                    legend: {
-                                        display: true,
-                                        position: 'top'
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        stacked: true,
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 10 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 25)
-                                                {
-                                                    return label.substring(0, 22) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true
-                                    }
+                                    layout: { padding: { bottom: 30 } }
                                 }
-                            });
+                            );
                         }
                     }
                 } catch (error)
@@ -1094,38 +1126,47 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.debtImpact = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'debt-impact', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context)
-                                            {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
+
+                            const chartData = {
+                                ...data,
+                                labels: data.labels.map(label => this.wrapLabel(label, 13))
+                            };
+
+                            window.globalCharts.debtImpact = EnhancedChartFactory.createChart(
+                                ctx,
+                                'vertical-bar',
+                                chartData,
+                                'debt-impact',
+                                {
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: context => `Bilangan: ${context.parsed.y.toLocaleString()}`
+                                            }
+                                        },
+                                        legend: { display: false }
+                                    },
+                                    scales: {
+                                        x: {
+                                            ticks: {
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                font: { size: 10 },
+                                                autoSkip: false
+                                            },
+                                            grid: { display: false }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Bilangan Responden'
                                             }
                                         }
                                     },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 0,
-                                            font: { size: 10 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 15)
-                                                {
-                                                    return label.substring(0, 12) + '...';
-                                                }
-                                                return label;
-                                            }
-                                        }
-                                    }
+                                    layout: { padding: { bottom: 30 } }
                                 }
-                            });
+                            );
                         }
                     }
                 } catch (error)

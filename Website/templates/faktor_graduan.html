@@ -902,50 +902,61 @@
                         const ctx = canvas.getContext('2d');
                         if (ctx)
                         {
-                            // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.professionalCertificates = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'professional-certificates', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context)
-                                            {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Bilangan Responden',
-                                            font: { size: 11, weight: '600' }
-                                        }
-                                    },
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 0,  // Keep text straight
-                                            minRotation: 0,  // Keep text straight
-                                            font: { size: 10 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                // Truncate long labels
-                                                if (label && label.length > 12)
+
+                            // Wrap labels using helper
+                            const chartData = {
+                                ...data,
+                                labels: data.labels.map(label => this.wrapLabel(label, 12)) // Shorter lines due to likely longer labels
+                            };
+
+                            window.globalCharts.professionalCertificates = EnhancedChartFactory.createChart(
+                                ctx,
+                                'vertical-bar',
+                                chartData,
+                                'professional-certificates',
+                                {
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context)
                                                 {
-                                                    return label.substring(0, 9) + '...';
+                                                    return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                                 }
-                                                return label;
                                             }
+                                        },
+                                        legend: {
+                                            display: false
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Bilangan Responden',
+                                                font: { size: 11, weight: '600' }
+                                            }
+                                        },
+                                        x: {
+                                            ticks: {
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                font: { size: 10 },
+                                                autoSkip: false
+                                            },
+                                            grid: {
+                                                display: false
+                                            }
+                                        }
+                                    },
+                                    layout: {
+                                        padding: {
+                                            bottom: 10 // Slightly more padding if labels are very long
                                         }
                                     }
                                 }
-                            });
+                            );
                         }
                     }
                 } catch (error)
@@ -970,50 +981,61 @@
                         const ctx = canvas.getContext('2d');
                         if (ctx)
                         {
-                            // Use Enhanced Chart Factory for vertical bar chart
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.employerRequirements = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'employer-requirements', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context)
-                                            {
-                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Bilangan Responden',
-                                            font: { size: 11, weight: '600' }
-                                        }
-                                    },
-                                    x: {
-                                        ticks: {
-                                            maxRotation: 0,  // Keep text straight
-                                            minRotation: 0,  // Keep text straight
-                                            font: { size: 10 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                // Truncate long labels
-                                                if (label && label.length > 15)
+
+                            // Wrap labels using helper
+                            const chartData = {
+                                ...data,
+                                labels: data.labels.map(label => this.wrapLabel(label, 14)) // Adjust based on expected label length
+                            };
+
+                            window.globalCharts.employerRequirements = EnhancedChartFactory.createChart(
+                                ctx,
+                                'vertical-bar',
+                                chartData,
+                                'employer-requirements',
+                                {
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context)
                                                 {
-                                                    return label.substring(0, 12) + '...';
+                                                    return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                                 }
-                                                return label;
                                             }
+                                        },
+                                        legend: {
+                                            display: false
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Bilangan Responden',
+                                                font: { size: 11, weight: '600' }
+                                            }
+                                        },
+                                        x: {
+                                            ticks: {
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                font: { size: 10 },
+                                                autoSkip: false // Prevent label skipping for dense charts
+                                            },
+                                            grid: {
+                                                display: false
+                                            }
+                                        }
+                                    },
+                                    layout: {
+                                        padding: {
+                                            bottom: 10 // Make space for multiline labels
                                         }
                                     }
                                 }
-                            });
+                            );
                         }
                     }
                 } catch (error)
@@ -1145,6 +1167,42 @@
                 {
                     console.error('Error loading additional skills chart:', error);
                 }
+            },
+
+            wrapLabel(label, maxCharsPerLine = 15)
+            {
+                if (!label) return '';
+                const words = label.toString().split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                for (const word of words)
+                {
+                    const testLine = currentLine ? `${currentLine} ${word}` : word;
+
+                    if (testLine.length <= maxCharsPerLine)
+                    {
+                        currentLine = testLine;
+                    } else
+                    {
+                        if (currentLine) lines.push(currentLine);
+                        // Handle very long words
+                        if (word.length > maxCharsPerLine)
+                        {
+                            for (let i = 0; i < word.length; i += maxCharsPerLine)
+                            {
+                                lines.push(word.slice(i, i + maxCharsPerLine));
+                            }
+                            currentLine = '';
+                        } else
+                        {
+                            currentLine = word;
+                        }
+                    }
+                }
+
+                if (currentLine) lines.push(currentLine);
+                return lines;
             },
 
             safeDestroyChart(chartName)
