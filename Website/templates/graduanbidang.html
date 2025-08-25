@@ -18,31 +18,30 @@
                 <img src="{{ url_for('static', filename='img/5.IKEB.jpg') }}" alt="Logo IKEB"
                     style="width: auto; height: 27px;">
             </div>
-            
+
             <!-- Button Section -->
             <div class="flex flex-row space-x-4 px-6">
                 <!-- Enhanced Filters Dropdown -->
                 <div class="relative" x-data="{ open: false }" @click.away="open = false">
                     <button @click.stop="open = !open"
-                        class="button-style flex items-center px-3 py-2 rounded-lg transition-all duration-200 shadow-lg border-[1.5px] border-primary-200 hover:border-primary-400 bg-white hover:bg-primary-50 group">
-                        <i class="fas fa-filter text-primary-700 text-xs mr-2 group-hover:text-primary-800"></i>
-                        <span class="font-semibold text-primary-700 text-xs group-hover:text-primary-800">Penapisan</span>
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400">
+                        <i class="fas fa-filter text-primary-700 text-[10px]"></i>
+                        <span class="font-semibold text-primary-700 text-[10px]">Penapisan</span>
                         <div x-show="activeFiltersCount > 0" x-transition
-                            class="bg-primary-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold ml-2"
+                            class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold ml-2"
                             x-text="activeFiltersCount"></div>
-                        <i class="fas fa-chevron-down text-primary-600 text-xs ml-2 transition-transform duration-200"
-                           :class="{ 'rotate-180': open }"></i>
+                        <i class="fas fa-chevron-down text-primary-600 text-[10px] transition-transform duration-200"
+                            :class="{ 'rotate-180': open }"></i>
                     </button>
 
                     <!-- Enhanced Filter Dropdown -->
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-200"
-                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
-                         class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <div x-show="open" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
+                        class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
                         <div class="px-6 py-5">
                             <!-- Header -->
                             <div class="flex items-center justify-between mb-5">
@@ -65,14 +64,19 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Tahun Graduasi
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.graduation_year.length > 0" x-text="`${filters.graduation_year.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.graduation_year.length > 0"
+                                            x-text="`${filters.graduation_year.length} dipilih`"></span>
                                     </label>
-                                    <div class="grid grid-cols-4 gap-2 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+                                    <div
+                                        class="grid grid-cols-4 gap-2 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
                                         <template x-for="year in availableFilters.graduation_years || []">
-                                            <label class="flex items-center p-2 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
+                                            <label
+                                                class="flex items-center p-2 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
                                                 <input type="checkbox" :value="year" x-model="filters.graduation_year"
                                                     class="rounded border-blue-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0">
-                                                <span class="ml-2 text-sm font-medium text-gray-700" x-text="year"></span>
+                                                <span class="ml-2 text-sm font-medium text-gray-700"
+                                                    x-text="year"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -82,14 +86,17 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-venus-mars mr-2 text-purple-500"></i>Jantina
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.gender.length > 0" x-text="`${filters.gender.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.gender.length > 0"
+                                            x-text="`${filters.gender.length} dipilih`"></span>
                                     </label>
                                     <div class="grid grid-cols-2 gap-3">
                                         <template x-for="gender in availableFilters.genders || []">
-                                            <label class="flex items-center p-3 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
+                                            <label
+                                                class="flex items-center p-3 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
                                                 <input type="checkbox" :value="gender" x-model="filters.gender"
                                                     class="rounded border-purple-300 text-purple-600 focus:ring-purple-500 focus:ring-offset-0">
-                                                <span class="ml-3 text-sm font-medium text-gray-700" x-text="gender"></span>
+                                                <span class="ml-3 text-sm font-medium text-gray-700"
+                                                    x-text="gender"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -99,14 +106,19 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-university mr-2 text-green-500"></i>Institusi
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.institution.length > 0" x-text="`${filters.institution.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.institution.length > 0"
+                                            x-text="`${filters.institution.length} dipilih`"></span>
                                     </label>
                                     <div class="max-h-36 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
                                         <template x-for="institution in availableFilters.institutions || []">
-                                            <label class="flex items-center p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm transition-colors">
-                                                <input type="checkbox" :value="institution" x-model="filters.institution"
+                                            <label
+                                                class="flex items-center p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm transition-colors">
+                                                <input type="checkbox" :value="institution"
+                                                    x-model="filters.institution"
                                                     class="rounded border-green-300 text-green-600 focus:ring-green-500 focus:ring-offset-0">
-                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="institution"></span>
+                                                <span class="ml-3 font-medium text-gray-700 leading-tight"
+                                                    x-text="institution"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -116,14 +128,18 @@
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-graduation-cap mr-2 text-indigo-500"></i>Bidang Pengajian
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.field_of_study.length > 0" x-text="`${filters.field_of_study.length} dipilih`"></span>
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.field_of_study.length > 0"
+                                            x-text="`${filters.field_of_study.length} dipilih`"></span>
                                     </label>
                                     <div class="max-h-36 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
                                         <template x-for="field in availableFilters.fields_of_study || []">
-                                            <label class="flex items-center p-2 rounded-md hover:bg-indigo-50 cursor-pointer text-sm transition-colors">
+                                            <label
+                                                class="flex items-center p-2 rounded-md hover:bg-indigo-50 cursor-pointer text-sm transition-colors">
                                                 <input type="checkbox" :value="field" x-model="filters.field_of_study"
                                                     class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
-                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="field"></span>
+                                                <span class="ml-3 font-medium text-gray-700 leading-tight"
+                                                    x-text="field"></span>
                                             </label>
                                         </template>
                                     </div>
@@ -144,25 +160,25 @@
                 <!-- Enhanced Export Button -->
                 <div class="relative" x-data="{ open: false }" @click.away="open = false">
                     <button @click.stop="open = !open"
-                        class="button-style-fulll-blue flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 shadow-lg group transform hover:scale-105">
-                        <i class="fas fa-download text-sm mr-2 group-hover:animate-bounce"></i>
-                        <span class="font-semibold text-sm">Eksport</span>
-                        <i class="fas fa-chevron-down text-sm ml-2 transition-transform duration-200"
-                           :class="{ 'rotate-180': open }"></i>
+                        class="button-style2 flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 shadow-lg group transform hover:scale-105F">
+                        <i class="fas fa-download text-[10px] mr-2 group-hover:animate-bounce"></i>
+                        <span class="font-semibold text-[10px]">Eksport</span>
+                        <i class="fas fa-chevron-down text-[10px] ml-2 transition-transform duration-200"
+                            :class="{ 'rotate-180': open }"></i>
                     </button>
 
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
-                         class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
+                        class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
                         <div class="py-2">
                             <button @click="exportData('csv'); open = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
-                                <i class="fas fa-file-csv text-emerald-600 text-lg group-hover:scale-110 transition-transform"></i>
+                                <i
+                                    class="fas fa-file-csv text-emerald-600 text-lg group-hover:scale-110 transition-transform"></i>
                                 <div>
                                     <div class="font-semibold text-gray-900">CSV Format</div>
                                     <div class="text-xs text-gray-500">Fail nilai dipisahkan koma</div>
@@ -170,7 +186,8 @@
                             </button>
                             <button @click="exportData('excel'); open = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors group">
-                                <i class="fas fa-file-excel text-blue-600 text-lg group-hover:scale-110 transition-transform"></i>
+                                <i
+                                    class="fas fa-file-excel text-blue-600 text-lg group-hover:scale-110 transition-transform"></i>
                                 <div>
                                     <div class="font-semibold text-gray-900">Excel Format</div>
                                     <div class="text-xs text-gray-500">Fail Microsoft Excel</div>
@@ -182,27 +199,29 @@
 
                 <!-- Enhanced Refresh Button -->
                 <button @click="refreshData()"
-                    class="button-style flex items-center px-4 py-2 rounded-lg transition-all duration-200 shadow-lg border-[1.5px] border-primary-200 hover:border-primary-400 bg-white hover:bg-primary-50 group transform hover:scale-105"
+                    class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400"
                     :disabled="loading">
-                    <i class="fas fa-sync-alt text-primary-700 text-sm mr-2 group-hover:text-primary-800"
+                    <i class="fas fa-sync-alt text-primary-700 text-[10px]"
                         :class="{ 'animate-spin': loading }"></i>
-                    <span class="text-sm text-primary-700 font-semibold group-hover:text-primary-800">Muat Semula</span>
+                    <span class="font-semibold text-primary-700 text-[10px]">Muat Semula</span>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Enhanced Title Section -->
-    <div class="bg-gradient-to-br from-purple-700 via-purple-600 to-indigo-500 rounded-3xl p-8 shadow-2xl border border-purple-800/20 relative overflow-hidden">
+    <div
+        class="bg-gradient-to-br from-purple-700 via-purple-600 to-indigo-500 rounded-3xl p-8 shadow-2xl border border-purple-800/20 relative overflow-hidden">
         <!-- Background decoration -->
         <div class="absolute inset-0 bg-gradient-to-r from-purple-700/20 to-transparent"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
         <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
-        
+
         <div class="relative flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
             <div class="flex items-center space-x-6">
                 <!-- Enhanced Icon -->
-                <div class="w-20 h-20 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white/20 border border-white/30">
+                <div
+                    class="w-20 h-20 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white/20 border border-white/30">
                     <i class="fas fa-chart-bar text-white text-3xl drop-shadow-lg"></i>
                 </div>
 
@@ -239,14 +258,16 @@
 
     <!-- Enhanced Main Content - Bento Grid Layout -->
     <div class="grid grid-cols-12 gap-6 auto-rows-auto">
-        
+
         <!-- Enhanced KPI Cards Row -->
         <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Total Records -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div
+                class="flex flex-col justify-between gap-y-2 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                    <div class="flex items-start space-x-4">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-users text-xl text-blue-600"></i>
                         </div>
                         <div>
@@ -255,17 +276,19 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Bilangan graduan keseluruhan
+                <div class="text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Bilangan Responden
                 </div>
             </div>
 
             <!-- Total Years -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div
+                class="flex flex-col justify-between gap-y-2 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-calendar-alt text-xl text-green-600"></i>
                         </div>
                         <div>
@@ -274,17 +297,19 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
+                <div class="text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
                     Bilangan tahun graduasi
                 </div>
             </div>
 
             <!-- Total Fields -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div
+                class="flex flex-col justify-between gap-y-2 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-graduation-cap text-xl text-purple-600"></i>
                         </div>
                         <div>
@@ -293,17 +318,19 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
+                <div class="text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
                     Bilangan bidang pengajian
                 </div>
             </div>
 
             <!-- Most Recent Year -->
-            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div
+                class="flex flex-col justify-between gap-y-2 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-star text-xl text-orange-600"></i>
                         </div>
                         <div>
@@ -312,15 +339,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
+                <div class="text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
                     Tahun graduasi terbaru
                 </div>
             </div>
         </div>
 
         <!-- Main Chart - Field by Year Distribution -->
-        <div class="col-span-12 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
+        <div
+            class="col-span-12 flex flex-col justify-between gap-y-2 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
             <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
@@ -328,12 +356,14 @@
                             <i class="fas fa-chart-bar text-primary-600 mr-3"></i>
                             Taburan Bidang Pengajian Mengikut Tahun Graduasi
                         </h3>
-                        <p class="text-gray-600 text-sm mt-1">Carta stacked bar menunjukkan agihan bidang pengajian untuk setiap tahun</p>
+                        <p class="text-gray-600 text-sm mt-1">Carta stacked bar menunjukkan agihan bidang pengajian
+                            untuk setiap tahun</p>
                     </div>
                     <div class="flex space-x-3">
                         <button @click="refreshChart('field-by-year')"
                             class="p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors group">
-                            <i class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-all duration-300"></i>
+                            <i
+                                class="fas fa-refresh text-primary-600 group-hover:text-primary-700 group-hover:rotate-180 transition-all duration-300"></i>
                         </button>
                         <a href="/graduan-bidang/table" target="_blank"
                             class="px-4 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all text-sm font-medium transform hover:scale-105">
@@ -347,7 +377,8 @@
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4">
+                            </div>
                             <div class="text-gray-700 font-medium">Memuatkan carta bidang pengajian...</div>
                         </div>
                     </div>
@@ -361,7 +392,8 @@
 
 {% block scripts %}
 <script>
-    function graduanBidangDashboard() {
+    function graduanBidangDashboard()
+    {
         return {
             loading: false,
             dataLoaded: false,
@@ -376,7 +408,8 @@
             availableFilters: {},
             activeFiltersCount: 0,
 
-            init() {
+            init()
+            {
                 console.log('Initializing graduan bidang dashboard...');
                 if (this.isInitialized) return;
                 this.isInitialized = true;
@@ -385,74 +418,89 @@
                 this.updateActiveFiltersCount();
             },
 
-            waitForEnhancedChart() {
-                if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined') {
+            waitForEnhancedChart()
+            {
+                if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined')
+                {
                     setTimeout(() => this.waitForEnhancedChart(), 100);
                     return;
                 }
                 this.loadData();
             },
 
-            async loadAvailableFilters() {
-                try {
+            async loadAvailableFilters()
+            {
+                try
+                {
                     const response = await fetch('/graduan-bidang/api/filters/available');
                     const data = await response.json();
 
                     this.availableFilters = {
-                        graduation_years: data['Tahun graduasi '] || data['Tahun graduasi anda?'] || [],
-                        genders: data['Jantina anda?'] || [],
-                        institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || [],
-                        fields_of_study: data['Bidang pengajian utama '] || data['Bidang pengajian'] || data['Program pengajian yang anda ikuti?'] || []
+                        graduation_years: data[ 'Tahun graduasi ' ] || data[ 'Tahun graduasi anda?' ] || [],
+                        genders: data[ 'Jantina anda?' ] || [],
+                        institutions: data[ 'Institusi pendidikan MARA yang anda hadiri?' ] || [],
+                        fields_of_study: data[ 'Bidang pengajian utama ' ] || data[ 'Bidang pengajian' ] || data[ 'Program pengajian yang anda ikuti?' ] || []
                     };
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading filters:', error);
                 }
             },
 
-            async loadData() {
+            async loadData()
+            {
                 if (this.loading) return;
 
                 this.loading = true;
 
-                try {
+                try
+                {
                     await this.loadSummary();
                     await this.delay(200);
                     await this.loadFieldByYearChart();
                     this.dataLoaded = true;
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading dashboard data:', error);
                     this.showToast('Error loading data: ' + error.message, 'error');
-                } finally {
+                } finally
+                {
                     this.loading = false;
                 }
             },
 
-            delay(ms) {
+            delay(ms)
+            {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
 
-            async loadSummary() {
-                try {
+            async loadSummary()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/graduan-bidang/api/summary?${params}`);
-                    
-                    if (!response.ok) {
+
+                    if (!response.ok)
+                    {
                         const errorText = await response.text();
                         console.error('Summary API error:', response.status, errorText);
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
-                    
+
                     const data = await response.json();
-                    
-                    if (data.error) {
+
+                    if (data.error)
+                    {
                         console.error('Summary data error:', data.error);
                         throw new Error(data.error);
                     }
-                    
+
                     this.kpis = data;
                     console.log('Loaded summary data:', data);
-                    
-                } catch (error) {
+
+                } catch (error)
+                {
                     console.error('Error loading summary:', error);
                     this.kpis = {
                         total_records: 0,
@@ -465,8 +513,10 @@
                 }
             },
 
-            async loadFieldByYearChart() {
-                try {
+            async loadFieldByYearChart()
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/graduan-bidang/api/field-by-year?${params}`);
                     const data = await response.json();
@@ -476,26 +526,32 @@
                     this.safeDestroyChart('fieldByYear');
 
                     const canvas = document.getElementById('fieldByYearChart');
-                    if (canvas) {
+                    if (canvas)
+                    {
                         const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        if (ctx)
+                        {
                             // Check if we have valid data
-                            if (data.labels && data.labels.length > 0 && 
-                                !data.labels.includes('No Data Available') && 
-                                !data.labels.includes('Column Not Found') && 
-                                !data.labels.includes('Error')) {
-                                
+                            if (data.labels && data.labels.length > 0 &&
+                                !data.labels.includes('No Data Available') &&
+                                !data.labels.includes('Column Not Found') &&
+                                !data.labels.includes('Error'))
+                            {
+
                                 window.globalCharts = window.globalCharts || {};
                                 window.globalCharts.fieldByYear = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'field-by-year', {
                                     plugins: {
                                         tooltip: {
                                             callbacks: {
-                                                label: function(context) {
+                                                label: function (context)
+                                                {
                                                     return `${context.dataset.label}: ${context.parsed.y.toLocaleString()} graduan`;
                                                 },
-                                                afterLabel: function(context) {
-                                                    const total = context.chart.data.datasets.reduce((sum, dataset) => {
-                                                        return sum + (dataset.data[context.dataIndex] || 0);
+                                                afterLabel: function (context)
+                                                {
+                                                    const total = context.chart.data.datasets.reduce((sum, dataset) =>
+                                                    {
+                                                        return sum + (dataset.data[ context.dataIndex ] || 0);
                                                     }, 0);
                                                     const percentage = total > 0 ? ((context.parsed.y / total) * 100).toFixed(1) : '0.0';
                                                     return `Peratus: ${percentage}%`;
@@ -530,47 +586,58 @@
                                                 }
                                             },
                                             ticks: {
-                                                callback: function(value) {
+                                                callback: function (value)
+                                                {
                                                     return value.toLocaleString();
                                                 }
                                             }
                                         }
                                     }
                                 });
-                            } else {
+                            } else
+                            {
                                 // Show error message on canvas
                                 console.log('No valid data for field by year chart, showing error');
-                                this.showChartError('fieldByYearChart', data.debug ? 
-                                    `Tiada data: ${data.debug.year_column_found || 'Column Tahun'} / ${data.debug.field_column_found || 'Column Bidang'}` : 
+                                this.showChartError('fieldByYearChart', data.debug ?
+                                    `Tiada data: ${data.debug.year_column_found || 'Column Tahun'} / ${data.debug.field_column_found || 'Column Bidang'}` :
                                     'Tiada data bidang dan tahun tersedia');
                             }
                         }
                     }
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Error loading field by year chart:', error);
                     this.showChartError('fieldByYearChart', 'Ralat memuatkan data bidang dan tahun');
                 }
             },
 
-            safeDestroyChart(chartName) {
-                if (window.globalCharts && window.globalCharts[chartName]) {
-                    try {
-                        window.globalCharts[chartName].destroy();
-                        delete window.globalCharts[chartName];
-                    } catch (error) {
+            safeDestroyChart(chartName)
+            {
+                if (window.globalCharts && window.globalCharts[ chartName ])
+                {
+                    try
+                    {
+                        window.globalCharts[ chartName ].destroy();
+                        delete window.globalCharts[ chartName ];
+                    } catch (error)
+                    {
                         console.warn(`Error destroying chart ${chartName}:`, error);
                     }
                 }
             },
 
-            showChartError(chartId, message) {
+            showChartError(chartId, message)
+            {
                 const canvas = document.getElementById(chartId);
-                if (canvas) {
+                if (canvas)
+                {
                     const container = canvas.parentElement;
-                    if (container) {
+                    if (container)
+                    {
                         // Remove existing error messages
                         const existingError = container.querySelector('.chart-error-message');
-                        if (existingError) {
+                        if (existingError)
+                        {
                             existingError.remove();
                         }
 
@@ -584,17 +651,20 @@
                             </div>
                         `;
                         container.appendChild(errorDiv);
-                        
+
                         // Hide the canvas
                         canvas.style.display = 'none';
                     }
                 }
             },
 
-            buildFilterParams() {
+            buildFilterParams()
+            {
                 const params = new URLSearchParams();
-                Object.entries(this.filters).forEach(([key, values]) => {
-                    if (Array.isArray(values) && values.length > 0) {
+                Object.entries(this.filters).forEach(([ key, values ]) =>
+                {
+                    if (Array.isArray(values) && values.length > 0)
+                    {
                         const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
                             key === 'gender' ? 'Jantina anda?' :
                                 key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' :
@@ -605,14 +675,16 @@
                 return params.toString();
             },
 
-            applyFilters() {
+            applyFilters()
+            {
                 this.updateActiveFiltersCount();
                 this.dataLoaded = false;
                 this.loadData();
                 this.showToast('Penapis berjaya diterapkan', 'success');
             },
 
-            clearAllFilters() {
+            clearAllFilters()
+            {
                 this.filters = {
                     graduation_year: [],
                     gender: [],
@@ -625,41 +697,52 @@
                 this.showToast('Semua penapis dikosongkan', 'info');
             },
 
-            updateActiveFiltersCount() {
-                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
+            updateActiveFiltersCount()
+            {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
+                {
                     return count + (Array.isArray(filter) ? filter.length : 0);
                 }, 0);
             },
 
-            async refreshData() {
+            async refreshData()
+            {
                 this.dataLoaded = false;
                 await this.loadData();
                 this.showToast('Data berjaya dimuat semula', 'success');
             },
 
-            async refreshChart(chartType) {
-                if (chartType === 'field-by-year') {
+            async refreshChart(chartType)
+            {
+                if (chartType === 'field-by-year')
+                {
                     await this.loadFieldByYearChart();
                 }
                 this.showToast(`Graf ${chartType} dimuat semula`, 'success');
             },
 
-            async exportData(format) {
-                try {
+            async exportData(format)
+            {
+                try
+                {
                     const params = this.buildFilterParams();
                     const url = `/graduan-bidang/api/export?format=${format}&${params}`;
                     window.open(url, '_blank');
                     this.showToast(`Mengeksport data sebagai ${format.toUpperCase()}...`, 'info');
-                } catch (error) {
+                } catch (error)
+                {
                     console.error('Export error:', error);
                     this.showToast('Eksport gagal', 'error');
                 }
             },
 
-            showToast(message, type = 'info') {
-                if (typeof showToast !== 'undefined') {
+            showToast(message, type = 'info')
+            {
+                if (typeof showToast !== 'undefined')
+                {
                     showToast(message, type);
-                } else {
+                } else
+                {
                     console.log(`${type.toUpperCase()}: ${message}`);
                 }
             }
@@ -670,17 +753,24 @@
     window.globalCharts = window.globalCharts || {};
 
     // Safe dropdown state management (no problematic event listeners)
-    function closeAllDropdowns() {
-        document.querySelectorAll('[x-data]').forEach(element => {
-            try {
-                if (element._x_dataStack) {
-                    element._x_dataStack.forEach(data => {
-                        if (data.open !== undefined) {
+    function closeAllDropdowns()
+    {
+        document.querySelectorAll('[x-data]').forEach(element =>
+        {
+            try
+            {
+                if (element._x_dataStack)
+                {
+                    element._x_dataStack.forEach(data =>
+                    {
+                        if (data.open !== undefined)
+                        {
                             data.open = false;
                         }
                     });
                 }
-            } catch (e) {
+            } catch (e)
+            {
                 // Silently handle any Alpine.js state access errors
             }
         });
@@ -693,7 +783,8 @@
     window.addEventListener('hashchange', closeAllDropdowns);
 
     // Close dropdowns when DOM changes (navigation in dynamic apps)
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function ()
+    {
         // Close any existing dropdowns on page load
         setTimeout(closeAllDropdowns, 100);
     });
