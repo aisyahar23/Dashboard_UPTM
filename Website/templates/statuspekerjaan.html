@@ -353,14 +353,14 @@
         <!-- Employment Status - Pie Chart -->
         <div
             class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
-            <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+            <div class="px-6 py-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
                             <i class="fas fa-chart-pie text-primary-600 mr-3"></i>
                             Taburan Status Pekerjaan
                         </h3>
-                        <p class="text-gray-600 text-sm mt-1">Status pekerjaan semasa graduan</p>
+                        <p class="text-gray-600 text-[10px] mt-1">Status pekerjaan semasa graduan</p>
                     </div>
                     <div class="flex space-x-2">
                         <button @click="refreshChart('employment-status')"
@@ -389,14 +389,14 @@
         <!-- Current Job Status - Bar Chart -->
         <div
             class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
-            <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+            <div class="px-6 py-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
                             <i class="fas fa-chart-bar text-primary-600 mr-3"></i>
                             Jenis Pekerjaan Semasa
                         </h3>
-                        <p class="text-gray-600 text-sm mt-1">Responden yang sedang bekerja</p>
+                        <p class="text-gray-600 text-[10px] mt-1">Responden yang sedang bekerja</p>
                     </div>
                     <div class="flex space-x-2">
                         <button @click="refreshChart('job-status')"
@@ -425,17 +425,17 @@
         <!-- Time to First Job - Enhanced Area Chart -->
         <div
             class="col-span-12 lg:col-span-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-all duration-300">
-            <div class="px-8 py-6 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-b border-gray-200">
+            <div class="px-6 py-3 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
                             <div
-                                class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-3">
-                                <i class="fas fa-chart-area text-white text-sm"></i>
+                                class="mr-3">
+                                <i class="fas fa-chart-area text-primary-600 text-sm"></i>
                             </div>
                             Masa Mendapat Pekerjaan Pertama
                         </h3>
-                        <p class="text-gray-600 text-sm mt-1">Tempoh selepas tamat pengajian hingga mendapat kerja</p>
+                        <p class="text-gray-600 text-[10px] mt-1">Tempoh selepas tamat pengajian hingga mendapat kerja</p>
                     </div>
                     <div class="flex space-x-2">
                         <button @click="refreshChart('time-to-job')"
@@ -500,14 +500,14 @@
         <!-- Job Finding Factors - Bar Chart -->
         <div
             class="col-span-12 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden group hover:shadow-3xl transition-shadow duration-300">
-            <div class="px-8 py-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+            <div class="px-6 py-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
                             <i class="fas fa-search text-primary-600 mr-3"></i>
                             Faktor Utama Mendapat Pekerjaan
                         </h3>
-                        <p class="text-gray-600 text-sm mt-1">Saluran dan cara mendapat pekerjaan (dikategorikan)</p>
+                        <p class="text-gray-600 text-[10px] mt-1">Saluran dan cara mendapat pekerjaan (dikategorikan)</p>
                     </div>
                     <div class="flex space-x-3">
                         <button @click="openTableModal('Job Finding Factors')"
