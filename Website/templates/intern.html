@@ -257,9 +257,8 @@
             </div>
         </div>
         <!-- End Main Content -->
-
         <!-- Internship Participation - 6 cols -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden h-fit">
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -274,9 +273,8 @@
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Maklumat Lanjut
                             </div>
                         </div>
@@ -284,18 +282,17 @@
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
                             <button @click="refreshChart('internship')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-refresh text-xs"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="px-6 py-10">
+            <div class="px-6 py-10 flex-1">
                 <div class="h-48 relative">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
@@ -311,7 +308,7 @@
         </div>
 
         <!-- How Internship Helped - 6 cols -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden h-fit">
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -326,9 +323,8 @@
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Maklumat Lanjut
                             </div>
                         </div>
@@ -336,18 +332,17 @@
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
                             <button @click="refreshChart('benefits')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-refresh text-xs"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="px-6 py-10">
+            <div class="px-6 py-10 flex-1">
                 <div class="h-48 relative">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
@@ -363,7 +358,7 @@
         </div>
 
         <!-- Reasons for No Internship - 6 cols -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden h-fit">
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -377,9 +372,8 @@
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Maklumat Lanjut
                             </div>
                         </div>
@@ -387,18 +381,17 @@
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
                             <button @click="refreshChart('reasons')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-refresh text-xs"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="px-6 py-10">
+            <div class="px-6 py-10 flex-1">
                 <div class="h-48 relative">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
@@ -413,8 +406,57 @@
             </div>
         </div>
 
-        <!-- Employment Challenges - 6 cols -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden h-fit">
+        <!-- Grouped Challenges Analysis - 6 cols -->
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-md font-bold">Analisis Kategori Cabaran</h3>
+                        <p class="text-gray-500 text-[10px]">Cabaran pekerjaan dikumpulkan mengikut kategori</p>
+                    </div>
+                    <div class="flex space-x-1">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="openTableModal('Grouped Challenges')"
+                                class="flex items-center justify-center w-8 h-8 p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="flex flex-row items-center relative group">
+                            <a href="/intern/table" target="_blank"
+                                class="flex items-center p-2 w-8 h-8 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all text-sm font-medium transform hover:scale-105 justify-center">
+                                <i class="fas fa-external-link-alt text-xs"></i>
+                            </a>
+                            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none 
+                        transition-opacity duration-200 whitespace-nowrap">
+                                Maklumat Penuh
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 flex-1">
+                <div class="h-60 relative">
+                    <div x-show="loading"
+                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
+                        <div class="text-center">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4">
+                            </div>
+                            <div class="text-gray-600 font-medium">Memuatkan...</div>
+                        </div>
+                    </div>
+                    <canvas id="groupedChallengesChart" class="max-w-100 h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employment Challenges - Full width -->
+        <div class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -428,9 +470,8 @@
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Maklumat Lanjut
                             </div>
                         </div>
@@ -438,19 +479,18 @@
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
                             <button @click="refreshChart('challenges')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-refresh text-xs"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="px-6 py-10">
-                <div class="h-48 relative">
+            <div class="px-6 py-10 flex-1">
+                <div class="h-96 relative">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
@@ -460,59 +500,6 @@
                         </div>
                     </div>
                     <canvas id="challengesChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Grouped Challenges Analysis - Full width -->
-        <div class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden h-fit">
-            <div class="px-6 py-3 text-black border-b border-gray-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-bold">Analisis Kategori Cabaran</h3>
-                        <p class="text-gray-500 text-[10px]">Cabaran pekerjaan dikumpulkan mengikut kategori</p>
-                    </div>
-                    <div class="flex space-x-3">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
-                            <button @click="openTableModal('Grouped Challenges')"
-                                class="flex items-center justify-center w-9 h-8 p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table text-xs"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Maklumat Lanjut
-                            </div>
-                        </div>
-                        <div class="flex flex-row items-center relative group">
-                            <div>
-                                <a href="/intern/table" target="_blank" class="inline-block px-3 py-2 text-sm font-semibold bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-lg 
-                                          hover:from-secondary-600 hover:to-secondary-700 transform hover:scale-105 
-                                          transition-transform duration-200 ease-out" title="Buka Halaman">
-                                    <i class="fas fa-external-link-alt text-xs mr-2"></i>Lihat Paparan Penuh
-                                </a>
-                            </div>
-                            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none 
-                                transition-opacity duration-200 whitespace-nowrap">
-                                Buka Halaman
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-40 py-4">
-                <div class="h-96 relative">
-                    <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
-                        <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4">
-                            </div>
-                            <div class="text-gray-600 font-medium">Memuatkan...</div>
-                        </div>
-                    </div>
-                    <canvas id="groupedChallengesChart" class="max-w-100 h-full"></canvas>
                 </div>
             </div>
         </div>

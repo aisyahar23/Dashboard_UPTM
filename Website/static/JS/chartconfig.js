@@ -7,11 +7,22 @@ const ChartConfig = {
         // Enhanced colors for horizontal bar charts
         horizontalBar: {
             colors: [
-                '#1e40af', '#3b82f6', '#60a5fa', '#93c5fd',
-                '#fca5a5 ', '#f87171', '#ef4444', '#dc2626',
-                '#3a1c71', '#5e2977', '#8747a1', '#b678c8',
-                '#059669', '#10b981', '#34d399', '#6ee7b7',
-                '#d97706', '#f59e0b', '#fbbf24', '#fcd34d',
+                '#ed1c24',
+                '#9c354d',
+                '#56423e',
+                '#bea6a1',
+                '#3a001e',
+                '#a5378b',
+                '#cc0068',
+                '#9c4f00',
+                '#d28433'
+
+
+                // '#00606d',
+                // '#0097a1',
+                // '#2d8b00',
+                // '#005800',
+
             ],
             name: 'Horizontal Bar Colors'
         },
@@ -19,22 +30,26 @@ const ChartConfig = {
         // Enhanced colors for stacked bar charts
         stackedBar: {
             colors: [
-                '#1e40af', '#3b82f6', '#60a5fa', '#93c5fd',
-                '#fca5a5 ', '#f87171', '#ef4444', '#dc2626',
-                '#3a1c71', '#5e2977', '#8747a1', '#b678c8',
+                // '#ED1C24', '#D80164', '#A5378B', '#664C92',
+                // '#354F7C ', '#2F4858', '#009096', '#00904E',
+                // '#198A00', '#7D7C00', '#BE5E00', 
+                '#ed1c24',
+                '#d80164',
+                '#9c354d',
+                '#bea6a1',
+                '#664c92',
             ],
-            backgrounds: [
-                'rgba(37, 99, 235, 0.1)', 'rgba(220, 38, 38, 0.1)', 'rgba(22, 163, 74, 0.1)',
-                'rgba(234, 88, 12, 0.1)', 'rgba(147, 51, 234, 0.1)', 'rgba(8, 145, 178, 0.1)'
-            ],
+            // backgrounds: [
+            //     'rgba(37, 99, 235, 0.1)', 'rgba(220, 38, 38, 0.1)', 'rgba(22, 163, 74, 0.1)',
+            //     'rgba(234, 88, 12, 0.1)', 'rgba(147, 51, 234, 0.1)', 'rgba(8, 145, 178, 0.1)'
+            // ],
             name: 'Stacked Bar Colors'
         },
 
         // Enhanced colors for vertical bar charts
         verticalBar: {
             colors: [
-                '#1d4f90', '#2066a8', '#8ec1da', '#cde1ec',
-                '#f6d6c2', '#d47264', '#ae282c', '#7f1d1d'
+                '#ed1c24', '#56423e', '#bea6a1', '#0097a1', '#00606d', '#4993a1' , '#627b81'
             ],
             name: 'Vertical Bar Colors'
         },
@@ -42,8 +57,7 @@ const ChartConfig = {
         // Enhanced colors for pie charts
         enhancedPie: {
             colors: [
-                '#296899', '#274754', '#cc7700', '#e8c468', '#ba454d', '#7f1d1d', '#1d4f90'
-            ],
+                '#2159a2', '#a6abbd', '#9c354d', '#d6697e', '#727787' ],
             name: 'Enhanced Pie Colors'
         },
 
@@ -476,7 +490,7 @@ class EnhancedChartFactory
                     ...ChartConfig.globalOptions.plugins,
                     legend: {
                         display: true,
-                        position: 'right',
+                        position: 'bottom',
                         align: 'center',
                         labels: {
                             usePointStyle: true,
