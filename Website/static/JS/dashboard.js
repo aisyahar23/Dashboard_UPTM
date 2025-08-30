@@ -1,35 +1,39 @@
 // Simple Toast notification function
-function showToast(message, type = 'info') {
+function showToast(message, type = 'info')
+{
     const container = document.getElementById('toastContainer') || createToastContainer();
     const toast = document.createElement('div');
-    
+
     const colors = {
         success: 'bg-green-500 text-white',
         error: 'bg-red-500 text-white',
         info: 'bg-blue-500 text-white'
     };
-    
-    toast.className = `${colors[type]} px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full opacity-0 flex items-center space-x-3 min-w-80`;
+
+    toast.className = `${colors[ type ]} px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full opacity-0 flex items-center space-x-3 min-w-80`;
     toast.innerHTML = `
         <span class="font-medium">${message}</span>
         <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white">
             <i class="fas fa-times"></i>
         </button>
     `;
-    
+
     container.appendChild(toast);
-    
-    requestAnimationFrame(() => {
+
+    requestAnimationFrame(() =>
+    {
         toast.classList.remove('translate-x-full', 'opacity-0');
     });
-    
-    setTimeout(() => {
+
+    setTimeout(() =>
+    {
         toast.classList.add('translate-x-full', 'opacity-0');
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
 
-function createToastContainer() {
+function createToastContainer()
+{
     const container = document.createElement('div');
     container.id = 'toastContainer';
     container.className = 'fixed top-4 right-4 z-50 space-y-2';
@@ -38,23 +42,26 @@ function createToastContainer() {
 }
 
 // Modal functions
-async function openModal(title, endpoint) {
+async function openModal(title, endpoint)
+{
     const modal = document.getElementById('tableModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
-    
+
     modalTitle.textContent = title;
     modalBody.innerHTML = '<div class="flex items-center justify-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div></div>';
-    
+
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-    
-    try {
+
+    try
+    {
         const response = await fetch(endpoint);
         const data = await response.json();
-        
-        if (data.data && data.data.length > 0) {
-            const headers = Object.keys(data.data[0]);
+
+        if (data.data && data.data.length > 0)
+        {
+            const headers = Object.keys(data.data[ 0 ]);
             modalBody.innerHTML = `
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -72,7 +79,7 @@ async function openModal(title, endpoint) {
                                 <tr class="hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
                                     ${headers.map(header => `
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            ${row[header] || ''}
+                                            ${row[ header ] || ''}
                                         </td>
                                     `).join('')}
                                 </tr>
@@ -84,35 +91,43 @@ async function openModal(title, endpoint) {
                     Showing first 50 of ${data.data.length} records
                 </div>
             `;
-        } else {
+        } else
+        {
             modalBody.innerHTML = '<div class="text-center py-8 text-gray-500">No data available</div>';
         }
-    } catch (error) {
+    } catch (error)
+    {
         modalBody.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data</div>';
         console.error('Error loading table data:', error);
     }
 }
 
-function closeModal() {
+function closeModal()
+{
     const modal = document.getElementById('tableModal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
 }
 
 // Chart Factory Class - More robust version
-class ChartFactory {
-    static createBarChart(ctx, data, options = {}) {
-        if (typeof Chart === 'undefined') {
+class ChartFactory
+{
+    static createBarChart(ctx, data, options = {})
+    {
+        if (typeof Chart === 'undefined')
+        {
             console.error('Chart.js is not loaded');
             return null;
         }
-        
-        if (!ctx) {
+
+        if (!ctx)
+        {
             console.error('Canvas context is null');
             return null;
         }
-        
-        try {
+
+        try
+        {
             return new Chart(ctx, {
                 type: 'bar',
                 data: data,
@@ -129,7 +144,7 @@ class ChartFactory {
                         }
                     },
                     scales: {
-                        y: { 
+                        y: {
                             beginAtZero: true,
                             grid: {
                                 color: 'rgba(0,0,0,0.1)'
@@ -147,24 +162,29 @@ class ChartFactory {
                     ...options
                 }
             });
-        } catch (error) {
+        } catch (error)
+        {
             console.error('Error creating bar chart:', error);
             return null;
         }
     }
-    
-    static createPieChart(ctx, data, options = {}) {
-        if (typeof Chart === 'undefined') {
+
+    static createPieChart(ctx, data, options = {})
+    {
+        if (typeof Chart === 'undefined')
+        {
             console.error('Chart.js is not loaded');
             return null;
         }
-        
-        if (!ctx) {
+
+        if (!ctx)
+        {
             console.error('Canvas context is null');
             return null;
         }
-        
-        try {
+
+        try
+        {
             return new Chart(ctx, {
                 type: 'doughnut',
                 data: data,
@@ -193,24 +213,29 @@ class ChartFactory {
                     ...options
                 }
             });
-        } catch (error) {
+        } catch (error)
+        {
             console.error('Error creating pie chart:', error);
             return null;
         }
     }
-    
-    static createStackedBarChart(ctx, data, options = {}) {
-        if (typeof Chart === 'undefined') {
+
+    static createStackedBarChart(ctx, data, options = {})
+    {
+        if (typeof Chart === 'undefined')
+        {
             console.error('Chart.js is not loaded');
             return null;
         }
-        
-        if (!ctx) {
+
+        if (!ctx)
+        {
             console.error('Canvas context is null');
             return null;
         }
-        
-        try {
+
+        try
+        {
             return new Chart(ctx, {
                 type: 'bar',
                 data: data,
@@ -218,13 +243,13 @@ class ChartFactory {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        x: { 
+                        x: {
                             stacked: true,
                             grid: {
                                 display: false
                             }
                         },
-                        y: { 
+                        y: {
                             stacked: true,
                             beginAtZero: true,
                             grid: {
@@ -253,7 +278,8 @@ class ChartFactory {
                     ...options
                 }
             });
-        } catch (error) {
+        } catch (error)
+        {
             console.error('Error creating stacked bar chart:', error);
             return null;
         }
@@ -264,32 +290,46 @@ class ChartFactory {
 window.globalCharts = {};
 
 // Utility function to safely destroy and recreate charts
-function safeDestroyChart(chartId) {
-    if (window.globalCharts[chartId]) {
-        try {
-            window.globalCharts[chartId].destroy();
-        } catch (e) {
+function safeDestroyChart(chartId)
+{
+    if (window.globalCharts[ chartId ])
+    {
+        try
+        {
+            window.globalCharts[ chartId ].destroy();
+        } catch (e)
+        {
             console.warn(`Warning destroying chart ${chartId}:`, e);
         }
-        delete window.globalCharts[chartId];
+        delete window.globalCharts[ chartId ];
     }
 }
 
 // Highlight active navigation item based on current URL
-document.addEventListener('DOMContentLoaded', function() {
-  const navItems = document.querySelectorAll('.nav-item');
-  const currentPath = window.location.pathname; // Gets current URL path 
+document.addEventListener('DOMContentLoaded', function ()
+{
+    const navItems = document.querySelectorAll('.nav-item');
+    const currentPath = window.location.pathname;
 
-  navItems.forEach(item => {
-    const itemPath = item.getAttribute('href') + '/';
-    
-    console.log(`Checking nav item: ${itemPath} against current path: ${currentPath}`);
-    // Check if current URL matches the nav item's href
-    if (currentPath === itemPath) {
-      item.classList.add('bg-white'); // Active state (same as hover)
-      item.classList.add('text-primary-700');  
-    }
-  });
+    navItems.forEach(item =>
+    {
+        const itemHref = item.getAttribute('href');
+
+        console.log(`Checking nav item: ${itemHref} against current path: ${currentPath}`);
+
+        // Special handling for root path
+        if (itemHref === '/' && currentPath === '/')
+        {
+            item.classList.add('bg-white');
+            item.classList.add('text-primary-700');
+        }
+        // For other paths, check if current path starts with the item href
+        else if (itemHref !== '/' && currentPath.startsWith(itemHref))
+        {
+            item.classList.add('bg-white');
+            item.classList.add('text-primary-700');
+        }
+    });
 });
 
 // Make functions globally available
