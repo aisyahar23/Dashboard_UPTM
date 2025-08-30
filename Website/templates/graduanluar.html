@@ -30,8 +30,6 @@
                         <div x-show="activeFiltersCount > 0"
                             class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
                             x-text="activeFiltersCount"></div>
-                        <i class="fas fa-chevron-down text-primary-600 text-xs transition-transform duration-200"
-                            :class="{ 'rotate-180': open }"></i>
                     </button>
 
                     <!-- Enhanced Filter Dropdown -->
@@ -139,11 +137,9 @@
                 <!-- Enhanced Export Button -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click.stop="open = !open"
-                        class="button-style2 flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 shadow-lg group transform hover:scale-105">
-                        <i class="fas fa-download mr-2 group-hover:animate-bounce text-[10px]"></i>
+                        class="button-style-fulll-blue flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-md transition-all duration-200 shadow-lg shadow-primary-700/30 group transform hover:scale-105">
+                        <i class="fas fa-download group-hover:animate-bounce text-[10px]"></i>
                         <span class="font-semibold text-[10px]">Eksport</span>
-                        <i class="fas fa-chevron-down ml-2 transition-transform duration-200 text-[10px]"
-                            :class="{ 'rotate-180': open }"></i>
                     </button>
 
                     <div x-show="open" x-transition:enter="transition ease-out duration-200"
@@ -330,7 +326,7 @@
 
         <!-- Enhanced Main Reasons Chart - Horizontal Bar -->
         <div class="col-span-12 lg:col-span-8 bg-white rounded-2xl shadow-xl border overflow-hidden">
-            <div class="px-6 py-3 text-black border-b border-gray-300">
+            <div class="px-6 py-3 border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-md font-bold text-gray-900 flex items-center">
@@ -473,7 +469,10 @@
                                 <a href="/graduan-luar/table" target="_blank" class="inline-block px-3 py-2 text-sm font-semibold bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg 
                                           hover:from-primary-600 hover:to-primary-700 transform hover:scale-105 
                                           transition-transform duration-200 ease-out" title="Buka Halaman">
-                                    <i class="fas fa-external-link-alt text-xs mr-2"></i>Lihat Maklumat Penuh
+                                    <i class="fas fa-external-link-alt text-xs mr-2"></i>
+                                    <span class="text-xs">
+                                        Lihat Maklumat Penuh
+                                    </span>
                                 </a>
                             </div>
                             <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
