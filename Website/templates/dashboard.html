@@ -4,35 +4,36 @@
 
 {% block content %}
 <div x-data="dashboardData()" x-init="init()" class="bg-gray-50 min-h-screen">
-    
+
     <!-- Bar Navigasi Atas -->
-    <nav class="bg-white border-b border-gray-200 px-6 py-4">
+    <nav class="bg-white border-b border-gray-200 px-4 py-2">
         <div class="flex items-center justify-between max-w-full">
             <!-- Bahagian Logo -->
             <div class="flex items-center space-x-6">
-                <div class="flex items-center space-x-3">
-                    <img src="{{ url_for('static', filename='img/1. UPTM.png') }}" alt="UPTM" class="h-10 w-auto">
-                    <div class="h-8 w-px bg-gray-300"></div>
-                    <img src="{{ url_for('static', filename='img/2.MARA 2.png') }}" alt="MARA" class="h-10 w-auto">
-                    <div class="h-8 w-px bg-gray-300"></div>
-                    <img src="{{ url_for('static', filename='img/3.KKWK.png') }}" alt="KKWK" class="h-10 w-auto">
-                    <div class="h-8 w-px bg-gray-300"></div>
-                    <img src="{{ url_for('static', filename='img/4.KPTM.png') }}" alt="KPTM" class="h-10 w-auto">
-                    <div class="h-8 w-px bg-gray-300"></div>
-                    <img src="{{ url_for('static', filename='img/5.IKEB.jpg') }}" alt="IKEB" class="h-9 w-auto">
-                </div>
-                <div class="border-l border-gray-300 pl-6">
-                    <h1 class="text-lg font-bold text-gray-900">Platform Analitik Graduan</h1>
-                    <p class="text-xs text-gray-600 uppercase tracking-wide">Repositori Data & Kecerdasan Buatan</p>
+                <div class="px-4 space-x-4 flex flex-row items-center">
+                    <img src="{{ url_for('static', filename='img/1. UPTM.png') }}" alt="Logo UPTM"
+                        style="width: auto; height: 30px;">
+                    <img src="{{ url_for('static', filename='img/2.MARA 2.png') }}" alt="Logo MARA"
+                        style="width: auto; height: 30px;">
+                    <img src="{{ url_for('static', filename='img/3.KKWK.png') }}" alt="Logo KKWK"
+                        style="width: auto; height: 30px;">
+                    <img src="{{ url_for('static', filename='img/4.KPTM.png') }}" alt="Logo KPTM"
+                        style="width: auto; height: 30px;">
+                    <img src="{{ url_for('static', filename='img/5.IKEB.jpg') }}" alt="Logo IKEB"
+                        style="width: auto; height: 27px;">
                 </div>
             </div>
 
             <!-- Navigasi Kanan -->
-            <div class="flex items-center space-x-6">
+            <div class="flex items-end space-x-6">
 
-                
+                <div class="border-l border-gray-300 pl-6">
+                    <h1 class="text-lg font-bold text-gray-900">Platform Analitik Graduan</h1>
+                    <p class="text-xs text-gray-600 uppercase tracking-wide">Repositori Data & Kecerdasan Buatan</p>
+                </div>
                 <div class="flex items-center space-x-3 pl-4 border-l border-gray-300">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center" style="background: linear-gradient(45deg, #16509e, #ed1c24);">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center"
+                        style="background: linear-gradient(45deg, #16509e, #ed1c24);">
                         <i class="fas fa-user text-white text-sm"></i>
                     </div>
                     <div class="text-sm">
@@ -51,33 +52,37 @@
     <div class="px-6 py-16 bg-white border-b border-gray-200">
         <div class="max-w-full text-center">
             <div class="mb-10">
-                <div class="mb-6">
-                    <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-sm font-medium mb-6">
+                <!-- <div class="mb-6">
+                    <div
+                        class="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-sm font-medium mb-6">
                         <i class="fas fa-star mr-2"></i>
                         Sistem Analitik Terkini
                     </div>
-                </div>
+                </div> -->
                 <h1 class="text-5xl font-bold text-gray-900 mb-6">Selamat Datang ke Hub Analitik Anda</h1>
-                <p class="text-xl text-gray-600 mb-8 max-w-4xl mx-auto">Segala yang anda perlukan untuk memahami kejayaan graduan dan mendorong kecemerlangan institusi MARA</p>
-                
+                <p class="text-xl text-gray-600 mb-8 max-w-4xl mx-auto">Segala yang anda perlukan untuk memahami
+                    kejayaan graduan dan mendorong kecemerlangan institusi MARA</p>
+
                 <div class="flex items-center justify-center space-x-8 text-sm text-gray-500 mb-10">
-                    <div class="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-lg">
+                    <div class="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-lg">
                         <i class="fas fa-check-circle" style="color: #16509e;"></i>
-                        <span>data nyata</span>
+                        <span>Data Nyata</span>
                     </div>
-                    <div class="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-lg">
+                    <div class="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-lg">
                         <i class="fas fa-users" style="color: #16509e;"></i>
-                        <span>39 rekod graduan</span>
+                        <span>39 Rekod Graduan</span>
                     </div>
                 </div>
             </div>
-            
+
             <div class="flex justify-center space-x-6">
-                <button class="px-8 py-4 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-xl font-semibold transition-all duration-200 flex items-center">
+                <button
+                    class="px-8 py-4 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-xl font-semibold transition-all duration-200 flex items-center">
                     <i class="fas fa-download mr-3"></i>
                     Muat Turun Laporan
                 </button>
-                <button class="px-8 py-4 text-white rounded-xl font-semibold transition-all duration-200 hover:shadow-lg flex items-center" style="background-color: #16509e;">
+                <button
+                    class="px-8 py-4 text-white rounded-xl font-semibold transition-all duration-200 bg-blue-600 hover:shadow-lg hover:bg-blue-700 flex items-center">
                     <i class="fas fa-rocket mr-3"></i>
                     Mula Terokai Data
                 </button>
@@ -94,38 +99,49 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-full">
             <!-- Jumlah Graduan -->
-            <div class="bg-white p-10 hover:shadow-xl transition-all duration-300 rounded-2xl text-center border border-gray-100 group">
-                <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #f0f4ff, #e0e9ff);">
+            <div
+                class="bg-white p-10 hover:shadow-xl transition-all duration-300 rounded-2xl text-center border border-gray-100 group">
+                <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                    style="background: linear-gradient(135deg, #f0f4ff, #e0e9ff);">
                     <i class="fas fa-graduation-cap text-3xl" style="color: #16509e;"></i>
                 </div>
                 <div class="text-5xl font-bold text-gray-900 mb-3" x-text="kpis.totalGraduates">39</div>
                 <div class="text-sm font-bold text-gray-600 uppercase tracking-wider mb-3">Jumlah Graduan</div>
-                <div class="text-sm text-green-600 font-semibold bg-green-50 px-3 py-1 rounded-full inline-block">+12.5% pertumbuhan tahun ini</div>
+                <div class="text-sm text-green-600 font-semibold bg-green-50 px-3 py-1 rounded-full inline-block">+12.5%
+                    pertumbuhan tahun ini</div>
             </div>
 
             <!-- Kadar Pekerjaan -->
-            <div class="bg-white p-10 hover:shadow-xl transition-all duration-300 rounded-2xl text-center border border-gray-100 group">
-                <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #f0fff0, #e6ffe6);">
+            <div
+                class="bg-white p-10 hover:shadow-xl transition-all duration-300 rounded-2xl text-center border border-gray-100 group">
+                <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                    style="background: linear-gradient(135deg, #f0fff0, #e6ffe6);">
                     <i class="fas fa-briefcase text-3xl text-green-600"></i>
                 </div>
                 <div class="text-5xl font-bold text-gray-900 mb-3" x-text="kpis.employmentRate">84.2%</div>
                 <div class="text-sm font-bold text-gray-600 uppercase tracking-wider mb-3">Kadar Pekerjaan</div>
-                <div class="text-sm text-green-600 font-semibold bg-green-50 px-3 py-1 rounded-full inline-block">Melebihi sasaran</div>
+                <div class="text-sm text-green-600 font-semibold bg-green-50 px-3 py-1 rounded-full inline-block">
+                    Melebihi sasaran</div>
             </div>
 
             <!-- Kesepadanan Bidang -->
-            <div class="bg-white p-10 hover:shadow-xl transition-all duration-300 rounded-2xl text-center border border-gray-100 group">
-                <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #fef2f2, #fee2e2);">
-                    <i class="fas fa-target text-3xl" style="color: #ed1c24;"></i>
+            <div
+                class="bg-white p-10 hover:shadow-xl transition-all duration-300 rounded-2xl text-center border border-gray-100 group">
+                <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                    style="background: linear-gradient(135deg, #fef2f2, #fee2e2);">
+                    <i class="fas fa-university text-3xl" style="color: #ed1c24;"></i>
                 </div>
                 <div class="text-5xl font-bold text-gray-900 mb-3">71.3%</div>
                 <div class="text-sm font-bold text-gray-600 uppercase tracking-wider mb-3">Bekerja Dalam Bidang</div>
-                <div class="text-sm font-semibold px-3 py-1 rounded-full inline-block" style="color: #ed1c24; background-color: #fef2f2;">Ruang penambahbaikan</div>
+                <div class="text-sm font-semibold px-3 py-1 rounded-full inline-block"
+                    style="color: #ed1c24; background-color: #fef2f2;">Ruang penambahbaikan</div>
             </div>
 
             <!-- Kesediaan Kerjaya -->
-            <div class="bg-white p-10 hover:shadow-xl transition-all duration-300 rounded-2xl text-center border border-gray-100 group">
-                <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff);">
+            <div
+                class="bg-white p-10 hover:shadow-xl transition-all duration-300 rounded-2xl text-center border border-gray-100 group">
+                <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                    style="background: linear-gradient(135deg, #faf5ff, #f3e8ff);">
                     <i class="fas fa-rocket text-3xl text-purple-600"></i>
                 </div>
                 <div class="flex items-baseline justify-center mb-3">
@@ -133,7 +149,8 @@
                     <span class="text-xl text-gray-600 ml-2">bulan</span>
                 </div>
                 <div class="text-sm font-bold text-gray-600 uppercase tracking-wider mb-3">Masa Untuk Bekerja</div>
-                <div class="text-sm text-green-600 font-semibold bg-green-50 px-3 py-1 rounded-full inline-block">Semakin pantas</div>
+                <div class="text-sm text-green-600 font-semibold bg-green-50 px-3 py-1 rounded-full inline-block">
+                    Semakin pantas</div>
             </div>
         </div>
     </div>
@@ -149,37 +166,44 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
                 <!-- Kemahiran Teknikal -->
                 <div class="text-center group">
-                    <div class="w-28 h-28 mx-auto mb-8 flex items-center justify-center rounded-3xl group-hover:scale-110 transition-all duration-300" style="background: linear-gradient(135deg, #f0f4ff, #e0e9ff);">
+                    <div class="w-28 h-28 mx-auto mb-8 flex items-center justify-center rounded-3xl group-hover:scale-110 transition-all duration-300"
+                        style="background: linear-gradient(135deg, #f0f4ff, #e0e9ff);">
                         <i class="fas fa-laptop-code text-4xl" style="color: #16509e;"></i>
                     </div>
                     <div class="text-4xl font-bold text-gray-900 mb-3">89%</div>
                     <div class="font-bold text-gray-700 mb-3 text-lg">Kemahiran Teknikal</div>
-                    <div class="text-sm text-gray-600 leading-relaxed">Pengaturcaraan, kecekapan perisian, dan literasi digital</div>
+                    <div class="text-sm text-gray-600 leading-relaxed">Pengaturcaraan, kecekapan perisian, dan literasi
+                        digital</div>
                 </div>
 
                 <!-- Latihan Industri -->
                 <div class="text-center group">
-                    <div class="w-28 h-28 mx-auto mb-8 flex items-center justify-center rounded-3xl group-hover:scale-110 transition-all duration-300" style="background: linear-gradient(135deg, #f0fff0, #e6ffe6);">
+                    <div class="w-28 h-28 mx-auto mb-8 flex items-center justify-center rounded-3xl group-hover:scale-110 transition-all duration-300"
+                        style="background: linear-gradient(135deg, #f0fff0, #e6ffe6);">
                         <i class="fas fa-handshake text-4xl text-green-600"></i>
                     </div>
                     <div class="text-4xl font-bold text-gray-900 mb-3">76%</div>
                     <div class="font-bold text-gray-700 mb-3 text-lg">Latihan Industri</div>
-                    <div class="text-sm text-gray-600 leading-relaxed">Internship, praktikum, dan pengalaman dunia sebenar</div>
+                    <div class="text-sm text-gray-600 leading-relaxed">Internship, praktikum, dan pengalaman dunia
+                        sebenar</div>
                 </div>
 
                 <!-- Komunikasi -->
                 <div class="text-center group">
-                    <div class="w-28 h-28 mx-auto mb-8 flex items-center justify-center rounded-3xl group-hover:scale-110 transition-all duration-300" style="background: linear-gradient(135deg, #fef2f2, #fee2e2);">
+                    <div class="w-28 h-28 mx-auto mb-8 flex items-center justify-center rounded-3xl group-hover:scale-110 transition-all duration-300"
+                        style="background: linear-gradient(135deg, #fef2f2, #fee2e2);">
                         <i class="fas fa-comments text-4xl" style="color: #ed1c24;"></i>
                     </div>
                     <div class="text-4xl font-bold text-gray-900 mb-3">71%</div>
                     <div class="font-bold text-gray-700 mb-3 text-lg">Komunikasi</div>
-                    <div class="text-sm text-gray-600 leading-relaxed">Kemahiran bahasa, pembentangan, dan interpersonal</div>
+                    <div class="text-sm text-gray-600 leading-relaxed">Kemahiran bahasa, pembentangan, dan interpersonal
+                    </div>
                 </div>
 
                 <!-- Rangkaian Profesional -->
                 <div class="text-center group">
-                    <div class="w-28 h-28 mx-auto mb-8 flex items-center justify-center rounded-3xl group-hover:scale-110 transition-all duration-300" style="background: linear-gradient(135deg, #fffbeb, #fef3c7);">
+                    <div class="w-28 h-28 mx-auto mb-8 flex items-center justify-center rounded-3xl group-hover:scale-110 transition-all duration-300"
+                        style="background: linear-gradient(135deg, #fffbeb, #fef3c7);">
                         <i class="fas fa-network-wired text-4xl text-yellow-600"></i>
                     </div>
                     <div class="text-4xl font-bold text-gray-900 mb-3">64%</div>
@@ -189,7 +213,8 @@
 
                 <!-- Pensijilan -->
                 <div class="text-center group">
-                    <div class="w-28 h-28 mx-auto mb-8 flex items-center justify-center rounded-3xl group-hover:scale-110 transition-all duration-300" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff);">
+                    <div class="w-28 h-28 mx-auto mb-8 flex items-center justify-center rounded-3xl group-hover:scale-110 transition-all duration-300"
+                        style="background: linear-gradient(135deg, #faf5ff, #f3e8ff);">
                         <i class="fas fa-certificate text-4xl text-purple-600"></i>
                     </div>
                     <div class="text-4xl font-bold text-gray-900 mb-3">58%</div>
@@ -199,7 +224,8 @@
             </div>
 
             <!-- Skor Keseluruhan -->
-            <div class="mt-16 p-8 rounded-2xl text-center" style="background: linear-gradient(135deg, #f0f4ff, #e0e9ff);">
+            <div class="mt-16 p-8 rounded-2xl text-center"
+                style="background: linear-gradient(135deg, #f0f4ff, #e0e9ff);">
                 <div class="flex items-center justify-center space-x-4">
                     <i class="fas fa-trophy text-3xl" style="color: #16509e;"></i>
                     <div>
@@ -216,14 +242,17 @@
         <div class="bg-white p-16 rounded-2xl shadow-lg border border-gray-100">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold text-gray-900 mb-6">Prestasi Program Akademik</h2>
-                <p class="text-xl text-gray-600">Bagaimana bidang pengajian yang berbeza berprestasi dalam pasaran kerja</p>
+                <p class="text-xl text-gray-600">Bagaimana bidang pengajian yang berbeza berprestasi dalam pasaran kerja
+                </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 <!-- Kejuruteraan -->
-                <div class="p-10 rounded-2xl border-2 border-blue-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300" style="background: linear-gradient(135deg, #f0f4ff, rgba(240, 244, 255, 0.3));">
+                <div class="p-10 rounded-2xl border-2 border-blue-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300"
+                    style="background: linear-gradient(135deg, #f0f4ff, rgba(240, 244, 255, 0.3));">
                     <div class="flex items-center justify-between mb-8">
-                        <div class="w-16 h-16 flex items-center justify-center rounded-2xl" style="background-color: #16509e;">
+                        <div class="w-16 h-16 flex items-center justify-center rounded-2xl"
+                            style="background-color: #16509e;">
                             <i class="fas fa-cogs text-white text-2xl"></i>
                         </div>
                         <div class="text-right">
@@ -232,7 +261,8 @@
                         </div>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-3">Kejuruteraan & Teknologi</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">Kadar pekerjaan tertinggi dengan permintaan industri yang kuat</p>
+                    <p class="text-gray-600 mb-6 leading-relaxed">Kadar pekerjaan tertinggi dengan permintaan industri
+                        yang kuat</p>
                     <div class="space-y-3">
                         <div class="flex justify-between text-sm">
                             <span class="font-medium">Kadar Pekerjaan</span>
@@ -246,9 +276,11 @@
                 </div>
 
                 <!-- IT & Sains Komputer -->
-                <div class="p-10 rounded-2xl border-2 border-red-100 hover:border-red-200 hover:shadow-lg transition-all duration-300" style="background: linear-gradient(135deg, #fef2f2, rgba(254, 242, 242, 0.3));">
+                <div class="p-10 rounded-2xl border-2 border-red-100 hover:border-red-200 hover:shadow-lg transition-all duration-300"
+                    style="background: linear-gradient(135deg, #fef2f2, rgba(254, 242, 242, 0.3));">
                     <div class="flex items-center justify-between mb-8">
-                        <div class="w-16 h-16 flex items-center justify-center rounded-2xl" style="background-color: #ed1c24;">
+                        <div class="w-16 h-16 flex items-center justify-center rounded-2xl"
+                            style="background-color: #ed1c24;">
                             <i class="fas fa-laptop-code text-white text-2xl"></i>
                         </div>
                         <div class="text-right">
@@ -257,7 +289,8 @@
                         </div>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-3">IT & Sains Komputer</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">Bidang yang berkembang pesat dengan prospek gaji yang cemerlang</p>
+                    <p class="text-gray-600 mb-6 leading-relaxed">Bidang yang berkembang pesat dengan prospek gaji yang
+                        cemerlang</p>
                     <div class="space-y-3">
                         <div class="flex justify-between text-sm">
                             <span class="font-medium">Kadar Pekerjaan</span>
@@ -271,7 +304,8 @@
                 </div>
 
                 <!-- Perniagaan & Pengurusan -->
-                <div class="p-10 rounded-2xl border-2 border-green-100 hover:border-green-200 hover:shadow-lg transition-all duration-300" style="background: linear-gradient(135deg, #f0fff0, rgba(240, 255, 240, 0.3));">
+                <div class="p-10 rounded-2xl border-2 border-green-100 hover:border-green-200 hover:shadow-lg transition-all duration-300"
+                    style="background: linear-gradient(135deg, #f0fff0, rgba(240, 255, 240, 0.3));">
                     <div class="flex items-center justify-between mb-8">
                         <div class="w-16 h-16 bg-green-600 flex items-center justify-center rounded-2xl">
                             <i class="fas fa-chart-line text-white text-2xl"></i>
@@ -282,7 +316,8 @@
                         </div>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-3">Perniagaan & Pengurusan</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">Kemahiran serba boleh dengan peluang kerjaya yang pelbagai</p>
+                    <p class="text-gray-600 mb-6 leading-relaxed">Kemahiran serba boleh dengan peluang kerjaya yang
+                        pelbagai</p>
                     <div class="space-y-3">
                         <div class="flex justify-between text-sm">
                             <span class="font-medium">Kadar Pekerjaan</span>
@@ -308,39 +343,50 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
                 <!-- Peluang Pertumbuhan -->
-                <div class="text-center p-10 rounded-2xl hover:shadow-lg transition-all duration-300" style="background: linear-gradient(135deg, #f0f4ff, #e0e9ff);">
-                    <div class="w-24 h-24 mx-auto mb-8 flex items-center justify-center rounded-full" style="background-color: #16509e;">
+                <div class="text-center p-10 rounded-2xl hover:shadow-lg transition-all duration-300"
+                    style="background: linear-gradient(135deg, #f0f4ff, #e0e9ff);">
+                    <div class="w-24 h-24 mx-auto mb-8 flex items-center justify-center rounded-full"
+                        style="background-color: #16509e;">
                         <i class="fas fa-trending-up text-4xl text-white"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-6">Peluang Pertumbuhan</h3>
-                    <p class="text-gray-700 mb-8 leading-relaxed">Bidang Kejuruteraan dan IT menunjukkan kadar pekerjaan 15% lebih tinggi. Pertimbangkan untuk mengembangkan program teknikal dan kerjasama industri.</p>
-                    <a href="/demografi" class="inline-flex items-center font-bold hover:underline text-lg" style="color: #16509e;">
+                    <p class="text-gray-700 mb-8 leading-relaxed">Bidang Kejuruteraan dan IT menunjukkan kadar pekerjaan
+                        15% lebih tinggi. Pertimbangkan untuk mengembangkan program teknikal dan kerjasama industri.</p>
+                    <a href="/demografi" class="inline-flex items-center font-bold hover:underline text-lg"
+                        style="color: #16509e;">
                         Terokai Demografi
                         <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
 
                 <!-- Kawasan Penambahbaikan -->
-                <div class="text-center p-10 rounded-2xl hover:shadow-lg transition-all duration-300" style="background: linear-gradient(135deg, #fef2f2, #fee2e2);">
-                    <div class="w-24 h-24 mx-auto mb-8 flex items-center justify-center rounded-full" style="background-color: #ed1c24;">
+                <div class="text-center p-10 rounded-2xl hover:shadow-lg transition-all duration-300"
+                    style="background: linear-gradient(135deg, #fef2f2, #fee2e2);">
+                    <div class="w-24 h-24 mx-auto mb-8 flex items-center justify-center rounded-full"
+                        style="background-color: #ed1c24;">
                         <i class="fas fa-target text-4xl text-white"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-6">Kawasan Fokus</h3>
-                    <p class="text-gray-700 mb-8 leading-relaxed">28.7% graduan bekerja di luar bidang mereka. Perkukuhkan bimbingan kerjaya, penjajaran industri, dan program padanan kemahiran.</p>
-                    <a href="/graduan-luar" class="inline-flex items-center font-bold hover:underline text-lg" style="color: #ed1c24;">
+                    <p class="text-gray-700 mb-8 leading-relaxed">28.7% graduan bekerja di luar bidang mereka.
+                        Perkukuhkan bimbingan kerjaya, penjajaran industri, dan program padanan kemahiran.</p>
+                    <a href="/graduan-luar" class="inline-flex items-center font-bold hover:underline text-lg"
+                        style="color: #ed1c24;">
                         Analisis Ketidakpadanan
                         <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
 
                 <!-- Trend Masa Depan -->
-                <div class="text-center p-10 rounded-2xl hover:shadow-lg transition-all duration-300" style="background: linear-gradient(135deg, #f0fff0, #e6ffe6);">
+                <div class="text-center p-10 rounded-2xl hover:shadow-lg transition-all duration-300"
+                    style="background: linear-gradient(135deg, #f0fff0, #e6ffe6);">
                     <div class="w-24 h-24 mx-auto mb-8 bg-green-600 flex items-center justify-center rounded-full">
                         <i class="fas fa-lightbulb text-4xl text-white"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-6">Kesediaan Masa Depan</h3>
-                    <p class="text-gray-700 mb-8 leading-relaxed">Penyertaan ekonomi gig meningkat 23%. Membangunkan keusahawanan, kerja bebas, dan kemahiran transformasi digital.</p>
-                    <a href="/gig-economy" class="inline-flex items-center text-green-600 font-bold hover:underline text-lg">
+                    <p class="text-gray-700 mb-8 leading-relaxed">Penyertaan ekonomi gig meningkat 23%. Membangunkan
+                        keusahawanan, kerja bebas, dan kemahiran transformasi digital.</p>
+                    <a href="/gig-economy"
+                        class="inline-flex items-center text-green-600 font-bold hover:underline text-lg">
                         Terokai Ekonomi Gig
                         <i class="fas fa-arrow-right ml-2"></i>
                     </a>
@@ -352,21 +398,25 @@
                 <h4 class="text-2xl font-bold text-gray-900 mb-8 text-center">Langkah Seterusnya Yang Dicadangkan</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="flex items-start space-x-4">
-                        <div class="w-10 h-10 flex items-center justify-center rounded-full flex-shrink-0" style="background-color: #16509e;">
+                        <div class="w-10 h-10 flex items-center justify-center rounded-full flex-shrink-0"
+                            style="background-color: #16509e;">
                             <i class="fas fa-check text-white text-sm"></i>
                         </div>
                         <div>
                             <h5 class="font-bold text-gray-900 mb-2 text-lg">Tingkatkan Kurikulum Teknikal</h5>
-                            <p class="text-gray-600 leading-relaxed">Selaraskan kursus pengaturcaraan dan teknikal dengan keperluan industri semasa dan teknologi baru muncul.</p>
+                            <p class="text-gray-600 leading-relaxed">Selaraskan kursus pengaturcaraan dan teknikal
+                                dengan keperluan industri semasa dan teknologi baru muncul.</p>
                         </div>
                     </div>
                     <div class="flex items-start space-x-4">
-                        <div class="w-10 h-10 flex items-center justify-center rounded-full flex-shrink-0" style="background-color: #ed1c24;">
+                        <div class="w-10 h-10 flex items-center justify-center rounded-full flex-shrink-0"
+                            style="background-color: #ed1c24;">
                             <i class="fas fa-check text-white text-sm"></i>
                         </div>
                         <div>
                             <h5 class="font-bold text-gray-900 mb-2 text-lg">Perkukuh Perkhidmatan Kerjaya</h5>
-                            <p class="text-gray-600 leading-relaxed">Perluas kaunseling kerjaya, bantuan penempatan kerja, dan peluang rangkaian industri.</p>
+                            <p class="text-gray-600 leading-relaxed">Perluas kaunseling kerjaya, bantuan penempatan
+                                kerja, dan peluang rangkaian industri.</p>
                         </div>
                     </div>
                     <div class="flex items-start space-x-4">
@@ -375,16 +425,19 @@
                         </div>
                         <div>
                             <h5 class="font-bold text-gray-900 mb-2 text-lg">Kembangkan Kerjasama Industri</h5>
-                            <p class="text-gray-600 leading-relaxed">Tingkatkan program internship, kerjasama industri, dan peluang projek dunia sebenar.</p>
+                            <p class="text-gray-600 leading-relaxed">Tingkatkan program internship, kerjasama industri,
+                                dan peluang projek dunia sebenar.</p>
                         </div>
                     </div>
                     <div class="flex items-start space-x-4">
-                        <div class="w-10 h-10 bg-purple-600 flex items-center justify-center rounded-full flex-shrink-0">
+                        <div
+                            class="w-10 h-10 bg-purple-600 flex items-center justify-center rounded-full flex-shrink-0">
                             <i class="fas fa-check text-white text-sm"></i>
                         </div>
                         <div>
                             <h5 class="font-bold text-gray-900 mb-2 text-lg">Pembangunan Kemahiran Digital</h5>
-                            <p class="text-gray-600 leading-relaxed">Integrasikan keusahawanan, pemasaran digital, dan kemahiran kerja bebas ke dalam semua program.</p>
+                            <p class="text-gray-600 leading-relaxed">Integrasikan keusahawanan, pemasaran digital, dan
+                                kemahiran kerja bebas ke dalam semua program.</p>
                         </div>
                     </div>
                 </div>
@@ -397,53 +450,66 @@
         <div class="bg-white p-16 rounded-2xl shadow-lg border border-gray-100">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold text-gray-900 mb-6">Terokai Analitik Terperinci</h2>
-                <p class="text-xl text-gray-600">Menyelami lebih dalam kawasan-kawasan tertentu prestasi dan hasil graduan</p>
+                <p class="text-xl text-gray-600">Menyelami lebih dalam kawasan-kawasan tertentu prestasi dan hasil
+                    graduan</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <!-- Demografi -->
-                <a href="/demografi" class="group p-10 border-2 border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 rounded-2xl text-center">
-                    <div class="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #f0f4ff, #e0e9ff);">
+                <a href="/demografi"
+                    class="group p-10 border-2 border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 rounded-2xl text-center">
+                    <div class="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                        style="background: linear-gradient(135deg, #f0f4ff, #e0e9ff);">
                         <i class="fas fa-users text-3xl" style="color: #16509e;"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 group-hover:text-blue-700 mb-4">Analisis Demografi</h3>
-                    <p class="text-sm text-gray-600 mb-6 leading-relaxed">Umur, jantina, taburan wilayah, dan corak prestasi institusi</p>
+                    <p class="text-sm text-gray-600 mb-6 leading-relaxed">Umur, jantina, taburan wilayah, dan corak
+                        prestasi institusi</p>
                     <div class="font-bold text-lg" style="color: #16509e;">
                         Mula Analisis →
                     </div>
                 </a>
 
                 <!-- Sosioekonomi -->
-                <a href="/sosioekonomi" class="group p-10 border-2 border-gray-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 rounded-2xl text-center">
-                    <div class="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #f0fff0, #e6ffe6);">
+                <a href="/sosioekonomi"
+                    class="group p-10 border-2 border-gray-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 rounded-2xl text-center">
+                    <div class="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                        style="background: linear-gradient(135deg, #f0fff0, #e6ffe6);">
                         <i class="fas fa-coins text-3xl text-green-600"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 group-hover:text-green-700 mb-4">Impak Sosioekonomi</h3>
-                    <p class="text-sm text-gray-600 mb-6 leading-relaxed">Latar belakang keluarga, kesan pembiayaan pendidikan terhadap hasil kerjaya</p>
+                    <p class="text-sm text-gray-600 mb-6 leading-relaxed">Latar belakang keluarga, kesan pembiayaan
+                        pendidikan terhadap hasil kerjaya</p>
                     <div class="text-green-600 font-bold text-lg">
                         Terokai Impak →
                     </div>
                 </a>
 
                 <!-- Industri & Gaji -->
-                <a href="/industri-gaji" class="group p-10 border-2 border-gray-200 hover:border-red-300 hover:shadow-xl transition-all duration-300 rounded-2xl text-center">
-                    <div class="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #fef2f2, #fee2e2);">
+                <a href="/industri-gaji"
+                    class="group p-10 border-2 border-gray-200 hover:border-red-300 hover:shadow-xl transition-all duration-300 rounded-2xl text-center">
+                    <div class="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                        style="background: linear-gradient(135deg, #fef2f2, #fee2e2);">
                         <i class="fas fa-briefcase text-3xl" style="color: #ed1c24;"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 group-hover:text-red-700 mb-4">Industri & Gaji</h3>
-                    <p class="text-sm text-gray-600 mb-6 leading-relaxed">Sektor pekerjaan, julat gaji, dan trend perkembangan kerjaya</p>
+                    <p class="text-sm text-gray-600 mb-6 leading-relaxed">Sektor pekerjaan, julat gaji, dan trend
+                        perkembangan kerjaya</p>
                     <div class="font-bold text-lg" style="color: #ed1c24;">
                         Lihat Trend →
                     </div>
                 </a>
 
                 <!-- Cabaran & Latihan -->
-                <a href="/intern" class="group p-10 border-2 border-gray-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300 rounded-2xl text-center">
-                    <div class="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff);">
+                <a href="/intern"
+                    class="group p-10 border-2 border-gray-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300 rounded-2xl text-center">
+                    <div class="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                        style="background: linear-gradient(135deg, #faf5ff, #f3e8ff);">
                         <i class="fas fa-graduation-cap text-3xl text-purple-600"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 group-hover:text-purple-700 mb-4">Latihan & Cabaran</h3>
-                    <p class="text-sm text-gray-600 mb-6 leading-relaxed">Keberkesanan internship dan analisis cabaran mencari kerja</p>
+                    <p class="text-sm text-gray-600 mb-6 leading-relaxed">Keberkesanan internship dan analisis cabaran
+                        mencari kerja</p>
                     <div class="text-purple-600 font-bold text-lg">
                         Semak Analisis →
                     </div>
@@ -459,7 +525,7 @@
                 <h2 class="text-4xl font-bold mb-6">Pencapaian & Pengiktirafan</h2>
                 <p class="text-xl text-gray-300">Menerusi komitmen terhadap kecemerlangan graduan</p>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="text-center">
                     <div class="w-16 h-16 mx-auto mb-4 bg-yellow-500 rounded-full flex items-center justify-center">
@@ -468,7 +534,7 @@
                     <div class="text-2xl font-bold mb-1">Anugerah</div>
                     <div class="text-gray-300 text-sm">Institusi Terbaik</div>
                 </div>
-                
+
                 <div class="text-center">
                     <div class="w-16 h-16 mx-auto mb-4 bg-blue-500 rounded-full flex items-center justify-center">
                         <i class="fas fa-star text-white text-2xl"></i>
@@ -476,7 +542,7 @@
                     <div class="text-2xl font-bold mb-1">5 Bintang</div>
                     <div class="text-gray-300 text-sm">Penilaian Majikan</div>
                 </div>
-                
+
                 <div class="text-center">
                     <div class="w-16 h-16 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center">
                         <i class="fas fa-certificate text-white text-2xl"></i>
@@ -484,7 +550,7 @@
                     <div class="text-2xl font-bold mb-1">ISO 9001</div>
                     <div class="text-gray-300 text-sm">Pensijilan Kualiti</div>
                 </div>
-                
+
                 <div class="text-center">
                     <div class="w-16 h-16 mx-auto mb-4 bg-purple-500 rounded-full flex items-center justify-center">
                         <i class="fas fa-medal text-white text-2xl"></i>
@@ -498,70 +564,79 @@
 </div>
 
 <script>
-function dashboardData() {
-    return {
-        currentDate: '',
-        lastUpdated: '',
-        kpis: {
-            totalGraduates: '39',
-            employmentRate: '84.2%',
-            fieldMismatch: '28.7%',
-            avgTimeToEmployment: '3.2'
-        },
-        
-        init() {
-            this.updateDateTime();
-            
-            setInterval(() => {
+    function dashboardData()
+    {
+        return {
+            currentDate: '',
+            lastUpdated: '',
+            kpis: {
+                totalGraduates: '39',
+                employmentRate: '84.2%',
+                fieldMismatch: '28.7%',
+                avgTimeToEmployment: '3.2'
+            },
+
+            init()
+            {
                 this.updateDateTime();
-            }, 60000);
-        },
-        
-        updateDateTime() {
-            const now = new Date();
-            this.currentDate = now.toLocaleDateString('ms-MY', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-            });
-            
-            this.lastUpdated = now.toLocaleTimeString('ms-MY', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+
+                setInterval(() =>
+                {
+                    this.updateDateTime();
+                }, 60000);
+            },
+
+            updateDateTime()
+            {
+                const now = new Date();
+                this.currentDate = now.toLocaleDateString('ms-MY', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+
+                this.lastUpdated = now.toLocaleTimeString('ms-MY', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
         }
     }
-}
 </script>
 {% endblock %}
 
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Papan Pemuka Selamat Datang berjaya dimuatkan');
-    
-    // Animate elements on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
+    document.addEventListener('DOMContentLoaded', function ()
+    {
+        console.log('Papan Pemuka Selamat Datang berjaya dimuatkan');
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) =>
+        {
+            entries.forEach(entry =>
+            {
+                if (entry.isIntersecting)
+                {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.group, .bg-white').forEach(el =>
+        {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
         });
-    }, observerOptions);
-    
-    // Observe all cards and sections
-    document.querySelectorAll('.group, .bg-white').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
     });
-});
 </script>
 {% endblock %}
