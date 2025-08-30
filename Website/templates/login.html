@@ -191,7 +191,6 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
-        
         .gradient-primary {
             background: linear-gradient(135deg, #074e7e 0%, #0f6ba8 100%);
         }
@@ -330,11 +329,37 @@
             scroll-behavior: smooth;
         }
 
+        /* Error message styles */
+        .error-message {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-top: 16px;
+            font-weight: 500;
+            display: none;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-top: 16px;
+            font-weight: 500;
+            display: none;
+        }
+
     </style>
 </head>
 <body class="corporate-bg">
-    
-    
     
     <!-- Main Content -->
     <div class="z-10 relative bg-white/50 backdrop-blur-lg">
@@ -382,7 +407,6 @@
 
                 <!-- Main Content -->
                 <div class="relative z-10 text-center text-white px-8 max-w-2xl animate-fade-in-up mt-10">
-
                     
                     <!-- Hero Title -->
                     <h1 class="text-5xl lg:text-5xl font-bold mb-1 leading-tight">
@@ -480,102 +504,150 @@
             </div>
 
             <!-- Right Side - Enhanced Login Form -->
-             <div class="relative flex items-center justify-center bg-white min-h-screen">
-    <div class="w-full max-w-lg mt-12">
-        <div class="glass-card rounded-3xl shadow-lg p-10 relative overflow-hidden bg-white">
-            <!-- Form Header -->
-            <div class="relative text-center mb-10">
-                <!-- Logo and Header -->
-                <div class="text-center mb-8">
-                    <!-- Main Logo -->
-                    <div class="mb-8">
-                        <img src="https://www.uptm.edu.my/images/logo/LOGO_UPTM_no_bg_baru1.png" alt="UPTM Logo" class="h-20 w-auto max-w-[150px] mx-auto object-contain logo-glow">
-                        <div class="mt-3 text-sm font-semibold text-blue-600 uppercase tracking-wider">
-                            Universiti Poly-Tech Malaysia
-                        </div>
-                    </div>
+            <div class="relative flex items-center justify-center bg-white min-h-screen">
+                <div class="w-full max-w-lg mt-12">
+                    <div class="glass-card rounded-3xl shadow-lg p-10 relative overflow-hidden bg-white">
+                        <!-- Form Header -->
+                        <div class="relative text-center mb-10">
+                            <!-- Logo and Header -->
+                            <div class="text-center mb-8">
+                                <!-- Main Logo -->
+                                <div class="mb-8">
+                                    <img src="https://www.uptm.edu.my/images/logo/LOGO_UPTM_no_bg_baru1.png" alt="UPTM Logo" class="h-20 w-auto max-w-[150px] mx-auto object-contain logo-glow">
+                                    <div class="mt-3 text-sm font-semibold text-blue-600 uppercase tracking-wider">
+                                        Universiti Poly-Tech Malaysia
+                                    </div>
+                                </div>
 
-                   <!-- Collaboration Logos (Closer and Well-Organized) -->
-<!-- Collaboration Logos (Closer and Well-Organized) -->
-<!-- Collaboration Logos (Closer and Well-Organized) -->
-<div class="flex justify-center gap-8 items-center mb-6 px-4">
-    <img src="../static/img/2.MARA 2.png" alt="Logo MARA" style="height:30px;">
-    <img src="../static/img/3.KKWK.png" alt="Logo KKWK" style="height:30px;">
-    <img src="../static/img/4.KPTM.png" alt="Logo KPTM" style="height:30px;">
-    <img src="../static/img/5.IKEB.jpg" alt="Logo IKEB" style="height:27px;">
-</div>
+                                <!-- Collaboration Logos -->
+                                <div class="flex justify-center gap-8 items-center mb-6 px-4">
+                                    <img src="../static/img/2.MARA 2.png" alt="Logo MARA" style="height:30px;">
+                                    <img src="../static/img/3.KKWK.png" alt="Logo KKWK" style="height:30px;">
+                                    <img src="../static/img/4.KPTM.png" alt="Logo KPTM" style="height:30px;">
+                                    <img src="../static/img/5.IKEB.jpg" alt="Logo IKEB" style="height:27px;">
+                                </div>
 
+                                <!-- Collaboration Message -->
+                                <p class="text-gray-700 text-lg font-medium">dalam kerjasama UPTM, IKEB, dan AIBIG</p>
+                                <div class="w-24 h-1 bg-gray-300 mx-auto mt-4 rounded-full"></div>
 
-
-
-                    <!-- Collaboration Message -->
-                    <p class="text-gray-700 text-lg font-medium">dalam kerjasama UPTM, IKEB, dan AIBIG</p>
-                    <div class="w-24 h-1 bg-gray-300 mx-auto mt-4 rounded-full"></div>
-
-                    <h2 class="text-3xl font-bold text-gray-900 mb-3">Selamat Datang Kembali</h2>
-                    <p class="text-gray-600">Akses papan analitik anda</p>
-                </div>
-
-                <!-- Login Form -->
-                <form class="space-y-6" id="loginForm">
-                    <!-- Email Field -->
-                    <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
-                        <label class="block text-sm font-bold text-gray-700 mb-3">Alamat Emel</label>
-                        <div class="relative group">
-                            <input type="email" class="w-full px-6 py-4 bg-white border-2 border-gray-300 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-300" placeholder="Masukkan emel anda" required>
-                            <div class="absolute inset-y-0 right-0 pr-6 flex items-center">
-                                <svg class="h-5 w-5 text-gray-400 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
-                                </svg>
+                                <h2 class="text-3xl font-bold text-gray-900 mb-3">Selamat Datang Kembali</h2>
+                                <p class="text-gray-600">Akses papan analitik anda</p>
                             </div>
+
+                            <!-- Login Form -->
+                            <form class="space-y-6" id="loginForm">
+                                <!-- Email Field -->
+                                <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                                    <label class="block text-sm font-bold text-gray-700 mb-3">Alamat Emel</label>
+                                    <div class="relative group">
+                                        <input type="email" id="email" class="w-full px-6 py-4 bg-white border-2 border-gray-300 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-300" placeholder="Masukkan emel anda" required>
+                                        <div class="absolute inset-y-0 right-0 pr-6 flex items-center">
+                                            <svg class="h-5 w-5 text-gray-400 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Password Field -->
+                                <div class="animate-fade-in-up" style="animation-delay: 0.4s;">
+                                    <label class="block text-sm font-bold text-gray-700 mb-3">Katalaluan</label>
+                                    <div class="relative group">
+                                        <input type="password" id="password" class="w-full px-6 py-4 bg-white border-2 border-gray-300 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-300" placeholder="Masukkan katalaluan anda" required>
+                                        <button type="button" class="absolute inset-y-0 right-0 pr-6 flex items-center hover:scale-110 transition-transform" id="togglePassword">
+                                            <svg class="h-5 w-5 text-gray-400 hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Options -->
+                                <div class="flex items-center justify-between animate-fade-in-up" style="animation-delay: 0.6s;">
+                                    <label class="flex items-center cursor-pointer group">
+                                        <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4">
+                                        <span class="ml-3 text-sm text-gray-600 font-medium">Ingatkan saya</span>
+                                    </label>
+                                    <a href="#" class="text-sm font-semibold text-primary hover:text-primary-light transition-colors">
+                                        Perlukan bantuan?
+                                    </a>
+                                </div>
+
+                                <!-- Login Button -->
+                                <button type="submit" class="w-full bg-primary text-white font-bold py-4 px-8 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 shadow-xl hover:bg-primary-dark transition-all duration-300" id="loginButton">
+                                    <div class="flex items-center justify-center space-x-3">
+                                        <span>Akses Papan Pemuka</span>
+                                        <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                <!-- Messages -->
+                                <div id="errorMessage" class="error-message"></div>
+                                <div id="successMessage" class="success-message"></div>
+                            </form>
+
+
                         </div>
                     </div>
-
-                    <!-- Password Field -->
-                    <div class="animate-fade-in-up" style="animation-delay: 0.4s;">
-                        <label class="block text-sm font-bold text-gray-700 mb-3">Katalaluan</label>
-                        <div class="relative group">
-                            <input type="password" id="password" class="w-full px-6 py-4 bg-white border-2 border-gray-300 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition-all duration-300" placeholder="Masukkan katalaluan anda" required>
-                            <button type="button" class="absolute inset-y-0 right-0 pr-6 flex items-center hover:scale-110 transition-transform" id="togglePassword">
-                                <svg class="h-5 w-5 text-gray-400 hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Options -->
-                    <div class="flex items-center justify-between animate-fade-in-up" style="animation-delay: 0.6s;">
-                        <label class="flex items-center cursor-pointer group">
-                            <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4">
-                            <span class="ml-3 text-sm text-gray-600 font-medium">Ingatkan saya</span>
-                        </label>
-                        <a href="#" class="text-sm font-semibold text-primary hover:text-primary-light transition-colors">
-                            Perlukan bantuan?
-                        </a>
-                    </div>
-
-                    <!-- Login Button -->
-                    <button type="submit" class="w-full bg-primary text-white font-bold py-4 px-8 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 shadow-xl hover:bg-primary-dark transition-all duration-300" id="loginButton">
-                        <div class="flex items-center justify-center space-x-3">
-                            <span>Akses Papan Pemuka</span>
-                            <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                            </svg>
-                        </div>
-                    </button>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
-
-            
         </div>
     </div>
 
     <script>
+        // USER ACCOUNTS DATABASE
+        // Note: In production, this should be handled by a secure backend
+        const userAccounts = {
+            // Admin Account
+            'uptmXaibig@gmail.com': {
+                password: 'dashboard2025@',
+                role: 'admin',
+                name: 'Administrator UPTM',
+                dashboard: '/dashboard',
+                permissions: ['full_access', 'user_management', 'analytics', 'reports']
+            },
+            
+            // Faculty Account
+            'faculty@uptm.edu.my': {
+                password: 'faculty123',
+                role: 'faculty',
+                name: 'Faculty Member',
+                dashboard: '/dashboard',
+                permissions: ['analytics', 'reports', 'student_data']
+            },
+            
+            // Student Services Account
+            'student@uptm.edu.my': {
+                password: 'student123',
+                role: 'student_services',
+                name: 'Student Services',
+                dashboard: '/dashboard',
+                permissions: ['student_data', 'basic_reports']
+            },
+            
+            // IKEB Partner Account
+            'ikeb@ikeb.org.my': {
+                password: 'ikeb2025',
+                role: 'partner',
+                name: 'IKEB Representative',
+                dashboard: '/dashboard',
+                permissions: ['analytics', 'employment_data']
+            },
+            
+            // AIBIG Account
+            'admin@aibig.com': {
+                password: 'aibig2025',
+                role: 'aibig_admin',
+                name: 'AIBIG Administrator',
+                dashboard: '/dashboard',
+                permissions: ['full_access', 'system_management', 'analytics']
+            }
+        };
+
         // Password toggle functionality
         document.getElementById('togglePassword').addEventListener('click', function() {
             const passwordInput = document.getElementById('password');
@@ -596,37 +668,125 @@
             }
         });
 
-        // Enhanced form submission
+        // Enhanced Authentication System
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
             const button = document.getElementById('loginButton');
             const originalContent = button.innerHTML;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
             
+            // Hide previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Validate inputs
+            if (!email || !password) {
+                showError('Sila masukkan emel dan katalaluan');
+                return;
+            }
+            
+            // Show loading state
             button.innerHTML = `
                 <div class="flex items-center justify-center space-x-3">
                     <div class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Authenticating...</span>
+                    <span>Mengesahkan...</span>
                 </div>
             `;
             button.disabled = true;
             
+            // Simulate authentication delay (remove in production)
             setTimeout(() => {
+                authenticateUser(email, password, button, originalContent);
+            }, 1500);
+        });
+
+        function authenticateUser(email, password, button, originalContent) {
+            const user = userAccounts[email];
+            
+            if (user && user.password === password) {
+                // Successful login - direct redirect
                 button.innerHTML = `
                     <div class="flex items-center justify-center space-x-3">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
-                        <span>Welcome!</span>
+                        <span>Mengalihkan...</span>
                     </div>
                 `;
                 
+                // Store user session (in production, use secure tokens)
+                const userSession = {
+                    email: email,
+                    role: user.role,
+                    name: user.name,
+                    permissions: user.permissions,
+                    loginTime: new Date().toISOString()
+                };
+                
+                // In production, store in secure HTTP-only cookies
+                console.log('User Session:', userSession);
+                
+                // Direct redirect to dashboard
                 setTimeout(() => {
-                    button.innerHTML = originalContent;
-                    button.disabled = false;
-                }, 2000);
-            }, 2000);
-        });
+                    window.location.href = '/dashboard';
+                }, 1000);
+                
+            } else {
+                // Failed login
+                button.innerHTML = `
+                    <div class="flex items-center justify-center space-x-3">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        <span>Kelayakan tidak sah!</span>
+                    </div>
+                `;
+                
+                button.style.background = 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)';
+                
+                showError('Emel atau katalaluan tidak sah. Sila cuba lagi.');
+                
+                // Reset after 3 seconds
+                setTimeout(() => {
+                    resetForm(button, originalContent);
+                }, 3000);
+            }
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+        }
+
+        function resetForm(button, originalContent) {
+            button.innerHTML = originalContent;
+            button.disabled = false;
+            button.style.background = '';
+            
+            // Clear form
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            
+            // Hide messages
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
 
         // Enhanced input interactions
         const inputs = document.querySelectorAll('input');
@@ -642,15 +802,11 @@
             });
         });
 
-        // Smooth scroll for mobile navigation
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.classList.add('backdrop-blur-xl');
-            } else {
-                header.classList.remove('backdrop-blur-xl');
-            }
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('UPTM Graduate Analytics Platform Loaded');
         });
+
     </script>
 </body>
 </html>
