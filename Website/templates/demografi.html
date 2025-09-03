@@ -68,7 +68,7 @@
                                     </label>
                                     <div
                                         class="grid grid-cols-4 gap-2 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
-                                        <template x-for="year in availableFilters.graduation_years || []">
+                                        <template x-for="year in availableFilters.graduation_years || []" :key="year">
                                             <label
                                                 class="flex items-center p-2 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
                                                 <input type="checkbox" :value="year" x-model="filters.graduation_year"
@@ -77,6 +77,10 @@
                                                     x-text="year"></span>
                                             </label>
                                         </template>
+                                        <div x-show="!availableFilters.graduation_years || availableFilters.graduation_years.length === 0" 
+                                             class="col-span-4 text-center text-gray-500 text-sm py-2">
+                                            Tiada data tersedia
+                                        </div>
                                     </div>
                                 </div>
 
@@ -87,16 +91,20 @@
                                         <span class="ml-auto text-xs text-gray-500" x-show="filters.gender.length > 0"
                                             x-text="`${filters.gender.length} dipilih`"></span>
                                     </label>
-                                    <div class="grid grid-cols-2 gap-2 w-8 h-8">
-                                        <template x-for="gender in availableFilters.genders || []">
+                                    <div class="grid grid-cols-1 gap-2">
+                                        <template x-for="gender in availableFilters.genders || []" :key="gender">
                                             <label
-                                                class="flex items-center p-2 w-8 h-8 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
+                                                class="flex items-center p-2 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
                                                 <input type="checkbox" :value="gender" x-model="filters.gender"
                                                     class="rounded border-purple-300 text-purple-600 focus:ring-purple-500 focus:ring-offset-0">
                                                 <span class="ml-3 text-sm font-medium text-gray-700"
                                                     x-text="gender"></span>
                                             </label>
                                         </template>
+                                        <div x-show="!availableFilters.genders || availableFilters.genders.length === 0" 
+                                             class="text-center text-gray-500 text-sm py-2">
+                                            Tiada data tersedia
+                                        </div>
                                     </div>
                                 </div>
 
@@ -109,7 +117,7 @@
                                             x-text="`${filters.age_group.length} dipilih`"></span>
                                     </label>
                                     <div class="space-y-2">
-                                        <template x-for="age in availableFilters.age_groups || []">
+                                        <template x-for="age in availableFilters.age_groups || []" :key="age">
                                             <label
                                                 class="flex items-center p-2 rounded-md hover:bg-orange-50 cursor-pointer text-sm transition-colors">
                                                 <input type="checkbox" :value="age" x-model="filters.age_group"
@@ -118,6 +126,10 @@
                                                     x-text="age"></span>
                                             </label>
                                         </template>
+                                        <div x-show="!availableFilters.age_groups || availableFilters.age_groups.length === 0" 
+                                             class="text-center text-gray-500 text-sm py-2">
+                                            Tiada data tersedia
+                                        </div>
                                     </div>
                                 </div>
 
@@ -130,7 +142,7 @@
                                             x-text="`${filters.institution.length} dipilih`"></span>
                                     </label>
                                     <div class="max-h-36 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
-                                        <template x-for="institution in availableFilters.institutions || []">
+                                        <template x-for="institution in availableFilters.institutions || []" :key="institution">
                                             <label
                                                 class="flex items-center p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm transition-colors">
                                                 <input type="checkbox" :value="institution"
@@ -140,6 +152,10 @@
                                                     x-text="institution"></span>
                                             </label>
                                         </template>
+                                        <div x-show="!availableFilters.institutions || availableFilters.institutions.length === 0" 
+                                             class="text-center text-gray-500 text-sm py-2">
+                                            Tiada data tersedia
+                                        </div>
                                     </div>
                                 </div>
 
@@ -152,7 +168,7 @@
                                             x-text="`${filters.field_of_study.length} dipilih`"></span>
                                     </label>
                                     <div class="max-h-40 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
-                                        <template x-for="field in availableFilters.fields_of_study || []">
+                                        <template x-for="field in availableFilters.fields_of_study || []" :key="field">
                                             <label
                                                 class="flex items-center p-2 rounded-md hover:bg-indigo-50 cursor-pointer text-sm transition-colors">
                                                 <input type="checkbox" :value="field" x-model="filters.field_of_study"
@@ -161,6 +177,10 @@
                                                     x-text="field"></span>
                                             </label>
                                         </template>
+                                        <div x-show="!availableFilters.fields_of_study || availableFilters.fields_of_study.length === 0" 
+                                             class="text-center text-gray-500 text-sm py-2">
+                                            Tiada data tersedia
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -260,7 +280,7 @@
                         <div class="text-sm text-white flex items-center space-x-2">
                             <span x-show="dataLoaded && !loading" class="flex items-center gap-x-1">
                                 <i class="fas fa-users mr-1"></i>
-                                <strong x-text="kpis.total_records || 0"></strong> Responden Dianalisis
+                                <strong x-text="kpis.total_records ? kpis.total_records : '0'"></strong> Responden Dianalisis
                             </span>
                             <span x-show="loading" class="flex items-center">
                                 <i class="fas fa-spinner fa-spin mr-2"></i>
@@ -289,7 +309,7 @@
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Perempuan</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.female_rate || 0) + '%'"></div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.female_rate ? kpis.female_rate + '%' : '0%'"></div>
                         </div>
                     </div>
                 </div>
@@ -311,7 +331,7 @@
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Kumpulan Umur Utama</div>
                             <div class="text-lg font-bold text-gray-900 leading-tight"
-                                x-text="kpis.most_common_age || 'N/A'"></div>
+                                x-text="kpis.most_common_age ? kpis.most_common_age : 'N/A'"></div>
                         </div>
                     </div>
                 </div>
@@ -332,7 +352,7 @@
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">UPTM</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.uptm_rate || 0) + '%'"></div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.uptm_rate ? kpis.uptm_rate + '%' : '0%'"></div>
                         </div>
                     </div>
                 </div>
@@ -353,8 +373,7 @@
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Kejuruteraan</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.engineering_rate || 0) + '%'">
-                            </div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.engineering_rate ? kpis.engineering_rate + '%' : '0%'"></div>
                         </div>
                     </div>
                 </div>

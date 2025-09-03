@@ -11,7 +11,7 @@ from blueprints.faktor_graduan import faktor_graduan_bp
 from blueprints.statuspekerjaan import status_pekerjaan_bp
 from blueprints.graduanbidang import graduan_bidang_bp
 from blueprints.dashboard import dashboard_bp
-
+from blueprints.alldata import alldata_bp
 
 def create_app():
     app = Flask(__name__, template_folder='Website/templates', static_folder='Website/static')
@@ -29,6 +29,7 @@ def create_app():
     app.register_blueprint(graduan_bidang_bp, url_prefix='/graduan-bidang')  
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(analytics_bp, url_prefix='/api')
+    app.register_blueprint(alldata_bp, url_prefix='/alldata')
 
     
     @app.route('/')

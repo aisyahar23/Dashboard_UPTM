@@ -1,0 +1,848 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div x-data="allDataDashboard()" x-init="init()" class="px-6 pb-6 space-y-6 bg-white min-h-screen">
+    <!-- Header Section -->
+    <div class="relative">
+        <div class="flex flex-row border-b border-gray-300 justify-between py-4 -mx-6">
+            <!-- Logo -->
+            <div class="px-4 space-x-4 flex flex-row items-center">
+                <img src="{{ url_for('static', filename='img/1. UPTM.png') }}" alt="Logo UPTM"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/2.MARA 2.png') }}" alt="Logo MARA"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/3.KKWK.png') }}" alt="Logo KKWK"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/4.KPTM.png') }}" alt="Logo KPTM"
+                    style="width: auto; height: 30px;">
+                <img src="{{ url_for('static', filename='img/5.IKEB.jpg') }}" alt="Logo IKEB"
+                    style="width: auto; height: 27px;">
+            </div>
+
+            <!-- Button Section -->
+            <div class="flex flex-row space-x-4 px-6">
+                <!-- Section Selector Dropdown -->
+                <div class="relative" x-data="{ openSection: false }" 
+                     @click.away="openSection = false"
+                     @close-all-dropdowns.window="openSection = false">
+                    <button @click.stop="openSection = !openSection"
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-purple-400">
+                        <i class="fas fa-layer-group text-purple-700 text-[10px]"></i>
+                        <span class="font-semibold text-purple-700 text-[10px]" 
+                              x-text="currentSection ? (sections[currentSection]?.name || 'Semua Data') : 'Semua Data'"></span>
+                        <i class="fas fa-chevron-down text-purple-700 text-[8px] ml-2"></i>
+                    </button>
+
+                    <div x-show="openSection" x-transition
+                        class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden max-h-96 overflow-y-auto">
+                        <div class="px-6 py-5">
+                            <div class="flex items-center justify-between mb-5">
+                                <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                                    <i class="fas fa-layer-group text-purple-600 mr-2"></i>
+                                    Pilih Bahagian Data
+                                </h3>
+                            </div>
+
+                            <!-- All Data Option -->
+                            <button @click="selectSection(''); openSection = false"
+                                class="w-full text-left px-4 py-3 text-sm hover:bg-purple-50 flex items-center space-x-3 transition-colors group rounded-lg mb-2"
+                                :class="{ 'bg-purple-100 border-purple-300': currentSection === '' }">
+                                <i class="fas fa-database text-purple-600"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900">Semua Data</div>
+                                    <div class="text-xs text-gray-500">Paparkan semua data dari soal selidik</div>
+                                </div>
+                            </button>
+
+                            <!-- Section Options -->
+                            <template x-for="[key, section] in Object.entries(sections)" :key="key">
+                                <button @click="selectSection(key); openSection = false"
+                                    class="w-full text-left px-4 py-3 text-sm hover:bg-purple-50 flex items-start space-x-3 transition-colors group rounded-lg mb-2"
+                                    :class="{ 'bg-purple-100 border-purple-300': currentSection === key }">
+                                    <i class="fas fa-chart-bar text-purple-600 mt-1"></i>
+                                    <div>
+                                        <div class="font-semibold text-gray-900" x-text="section.name"></div>
+                                        <div class="text-xs text-gray-500 leading-tight" x-text="section.description"></div>
+                                    </div>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Filters Dropdown -->
+                <div class="relative" x-data="{ openFilter: false }" 
+                     @click.away="openFilter = false"
+                     @close-all-dropdowns.window="openFilter = false">
+                    <button @click.stop="openFilter = !openFilter"
+                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400">
+                        <i class="fas fa-filter text-primary-700 text-[10px]"></i>
+                        <span class="font-semibold text-primary-700 text-[10px]">Penapisan</span>
+                        <div x-show="activeFiltersCount > 0" x-transition
+                            class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold ml-2"
+                            x-text="activeFiltersCount"></div>
+                    </button>
+
+                    <!-- Enhanced Filter Dropdown -->
+                    <div x-show="openFilter" x-transition
+                        class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden max-h-96 overflow-y-auto">
+                        <div class="px-6 py-5">
+                            <!-- Header -->
+                            <div class="flex items-center justify-between mb-5">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                                        <i class="fas fa-filter text-primary-600 mr-2"></i>
+                                        Tapis Maklumat
+                                    </h3>
+                                    <p class="text-sm text-gray-500 mt-1">Pilih kriteria untuk menapis data</p>
+                                </div>
+                                <button @click="clearAllFilters(); openFilter = false"
+                                    class="text-red-500 hover:text-red-700 text-sm font-semibold px-3 py-1 rounded-lg hover:bg-red-50 transition-colors">
+                                    <i class="fas fa-times-circle mr-1"></i>Kosongkan
+                                </button>
+                            </div>
+
+                            <!-- Filter Options -->
+                            <div class="space-y-5">
+                                <!-- Graduation Year -->
+                                <div class="filter-section">
+                                    <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
+                                        <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Tahun Graduasi
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.graduation_year.length > 0"
+                                            x-text="`${filters.graduation_year.length} dipilih`"></span>
+                                    </label>
+                                    <div class="grid grid-cols-4 gap-2 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+                                        <template x-for="year in (availableFilters.graduation_years || [])" :key="year">
+                                            <label class="flex items-center p-2 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
+                                                <input type="checkbox" :value="year" x-model="filters.graduation_year"
+                                                    class="rounded border-blue-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0">
+                                                <span class="ml-2 text-sm font-medium text-gray-700" x-text="year"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Gender -->
+                                <div class="filter-section">
+                                    <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
+                                        <i class="fas fa-venus-mars mr-2 text-purple-500"></i>Jantina
+                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.gender.length > 0"
+                                            x-text="`${filters.gender.length} dipilih`"></span>
+                                    </label>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <template x-for="gender in (availableFilters.genders || [])" :key="gender">
+                                            <label class="flex items-center p-3 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
+                                                <input type="checkbox" :value="gender" x-model="filters.gender"
+                                                    class="rounded border-purple-300 text-purple-600 focus:ring-purple-500 focus:ring-offset-0">
+                                                <span class="ml-3 text-sm font-medium text-gray-700" x-text="gender"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Institution -->
+                                <div class="filter-section">
+                                    <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
+                                        <i class="fas fa-university mr-2 text-green-500"></i>Institusi
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.institution.length > 0"
+                                            x-text="`${filters.institution.length} dipilih`"></span>
+                                    </label>
+                                    <div class="max-h-36 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
+                                        <template x-for="institution in (availableFilters.institutions || [])" :key="institution">
+                                            <label class="flex items-center p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm transition-colors">
+                                                <input type="checkbox" :value="institution"
+                                                    x-model="filters.institution"
+                                                    class="rounded border-green-300 text-green-600 focus:ring-green-500 focus:ring-offset-0">
+                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="institution"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Field of Study -->
+                                <div class="filter-section">
+                                    <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
+                                        <i class="fas fa-graduation-cap mr-2 text-indigo-500"></i>Bidang Pengajian
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.field_of_study.length > 0"
+                                            x-text="`${filters.field_of_study.length} dipilih`"></span>
+                                    </label>
+                                    <div class="max-h-36 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
+                                        <template x-for="field in (availableFilters.fields_of_study || [])" :key="field">
+                                            <label class="flex items-center p-2 rounded-md hover:bg-indigo-50 cursor-pointer text-sm transition-colors">
+                                                <input type="checkbox" :value="field" x-model="filters.field_of_study"
+                                                    class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="field"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Employment Status -->
+                                <div class="filter-section">
+                                    <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
+                                        <i class="fas fa-briefcase mr-2 text-orange-500"></i>Status Pekerjaan
+                                        <span class="ml-auto text-xs text-gray-500"
+                                            x-show="filters.employment_status.length > 0"
+                                            x-text="`${filters.employment_status.length} dipilih`"></span>
+                                    </label>
+                                    <div class="max-h-32 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
+                                        <template x-for="status in (availableFilters.employment_status || [])" :key="status">
+                                            <label class="flex items-center p-2 rounded-md hover:bg-orange-50 cursor-pointer text-sm transition-colors">
+                                                <input type="checkbox" :value="status" x-model="filters.employment_status"
+                                                    class="rounded border-orange-300 text-orange-600 focus:ring-orange-500 focus:ring-offset-0">
+                                                <span class="ml-3 font-medium text-gray-700 leading-tight" x-text="status"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Apply Button -->
+                            <div class="mt-6 pt-4 border-t border-gray-200">
+                                <button @click="applyFilters(); openFilter = false"
+                                    class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-bold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg transform hover:scale-[1.02]">
+                                    <i class="fas fa-search mr-2"></i>Terapkan Penapis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Export Button -->
+                <div class="relative" x-data="{ openExport: false }" 
+                     @click.away="openExport = false"
+                     @close-all-dropdowns.window="openExport = false">
+                    <button @click.stop="openExport = !openExport"
+                        class="button-style-fulll-blue flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-md transition-all duration-200 shadow-lg shadow-primary-700/30 group transform hover:scale-105">
+                        <i class="fas fa-download text-[10px] group-hover:animate-bounce"></i>
+                        <span class="font-semibold text-[10px]">Eksport</span>
+                    </button>
+
+                    <div x-show="openExport" x-transition
+                        class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                        <div class="py-2">
+                            <button @click="exportData('csv'); openExport = false"
+                                class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
+                                <i class="fas fa-file-csv text-emerald-600 text-lg group-hover:scale-110 transition-transform"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900">CSV Format</div>
+                                    <div class="text-xs text-gray-500">Fail nilai dipisahkan koma</div>
+                                </div>
+                            </button>
+                            <button @click="exportData('excel'); openExport = false"
+                                class="w-full text-left px-4 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors group">
+                                <i class="fas fa-file-excel text-blue-600 text-lg group-hover:scale-110 transition-transform"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-900">Excel Format</div>
+                                    <div class="text-xs text-gray-500">Fail Microsoft Excel</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Refresh Button -->
+                <button @click="refreshData()"
+                    class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400"
+                    :disabled="loading">
+                    <i class="fas fa-sync-alt text-primary-700 text-[10px]" :class="{ 'animate-spin': loading }"></i>
+                    <span class="font-semibold text-primary-700 text-[10px]">Muat Semula</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Title Section -->
+    <div class="blue-purple-gradient rounded-3xl p-8 shadow-2xl border border-purple-800/20 relative overflow-hidden">
+        <!-- Background decoration -->
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-700/20 to-transparent"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
+
+        <div class="relative flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+            <div class="flex items-center space-x-6">
+                <!-- Enhanced Icon -->
+                <div class="w-20 h-20 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white/20 border border-white/30">
+                    <i class="fas fa-database text-white text-3xl drop-shadow-lg"></i>
+                </div>
+
+                <!-- Enhanced Text -->
+                <div>
+                    <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg">
+                        <span x-text="currentSection ? (sections[currentSection]?.name || 'Semua Data Soal Selidik') : 'Semua Data Soal Selidik'"></span>
+                    </h1>
+                    <p class="text-white text-lg leading-relaxed">
+                        <span x-text="currentSection ? (sections[currentSection]?.description || 'Paparan komprehensif semua data dari soal selidik graduan') : 'Paparan komprehensif semua data dari soal selidik graduan'"></span>
+                    </p>
+
+                    <!-- Enhanced Status Row -->
+                    <div class="flex items-center mt-4 space-x-8">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg"></div>
+                            <span class="text-sm font-medium text-green-200">Analisis Langsung</span>
+                        </div>
+                        <div class="text-sm text-white flex items-center space-x-2">
+                            <span x-show="dataLoaded && !loading" class="flex items-center gap-x-1">
+                                <i class="fas fa-table mr-1"></i>
+                                <strong x-text="summary.total_records || 0"></strong> Rekod Dipaparkan
+                            </span>
+                            <span x-show="loading" class="flex items-center">
+                                <i class="fas fa-spinner fa-spin mr-2"></i>
+                                Memproses Data...
+                            </span>
+                        </div>
+                        <div class="text-sm text-white flex items-center space-x-2" x-show="currentSection">
+                            <i class="fas fa-columns mr-1"></i>
+                            <span x-text="(sectionSummary.columns_available && sectionSummary.columns_available.length) || 0"></span> Lajur Tersedia
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Main Content -->
+    <div class="grid grid-cols-12 gap-6">
+        <!-- Summary Cards -->
+        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Total Records -->
+            <div class="flex flex-col justify-between gap-y-2 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-database text-xl text-blue-600"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-600 font-medium">Jumlah Rekod</div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="summary.total_records || 0"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    <span x-text="currentSection ? 'Rekod untuk bahagian ini' : 'Semua rekod dalam dataset'"></span>
+                </div>
+            </div>
+
+            <!-- Year Range -->
+            <div class="flex flex-col justify-between gap-y-2 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-calendar-alt text-xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-600 font-medium">Tahun Graduasi</div>
+                            <div class="text-2xl font-bold text-gray-900" x-text="summary.year_range || 'N/A'"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Julat tahun graduasi
+                </div>
+            </div>
+
+            <!-- Institutions -->
+            <div class="flex flex-col justify-between gap-y-2 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-university text-xl text-purple-600"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-600 font-medium">Institusi</div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="summary.total_institutions || 0"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Bilangan institusi berbeza
+                </div>
+            </div>
+
+            <!-- Employment Rate -->
+            <div class="flex flex-col justify-between gap-y-2 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-briefcase text-xl text-orange-600"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-600 font-medium">Kadar Pekerjaan</div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="(summary.employment_rate || 0) + '%'"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Peratus graduan bekerja
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden hover:shadow-3xl transition-shadow duration-300">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-table text-primary-600 mr-3"></i>
+                            <span x-text="currentSection ? ((sections[currentSection]?.name || 'Data') + ' - Jadual Data') : 'Jadual Data Lengkap'"></span>
+                        </h3>
+                        <p class="text-gray-600 text-[10px] mt-1">
+                            <span x-text="currentSection ? ('Paparan data untuk bahagian ' + (sections[currentSection]?.name || 'ini')) : 'Paparan semua data dari soal selidik'"></span>
+                        </p>
+                    </div>
+
+                    <!-- Search Box -->
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" 
+                                   x-model="searchQuery" 
+                                   @input="debounceSearch()"
+                                   placeholder="Cari dalam data..." 
+                                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                        </div>
+                        
+                        <!-- Per Page Selector -->
+                        <select x-model="perPage" @change="loadTableData()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                            <option value="25">25 per halaman</option>
+                            <option value="50">50 per halaman</option>
+                            <option value="100">100 per halaman</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <!-- Loading State -->
+                <div x-show="loading" class="flex items-center justify-center py-16">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
+                        <div class="text-gray-700 font-medium">Memuatkan data...</div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <table x-show="!loading && tableData.data && tableData.data.length > 0" class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <template x-for="column in (tableData.columns || [])" :key="column">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" 
+                                    x-text="column"></th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <template x-for="(row, index) in (tableData.data || [])" :key="index">
+                            <tr class="hover:bg-gray-50">
+                                <template x-for="column in (tableData.columns || [])" :key="column">
+                                    <td class="px-6 py-4 whitespace-normal text-sm text-gray-900 max-w-xs">
+                                        <div class="truncate" :title="row[column] || '-'" x-text="row[column] || '-'"></div>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+
+                <!-- No Data State -->
+                <div x-show="!loading && (!tableData.data || tableData.data.length === 0)" class="text-center py-16">
+                    <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Tiada Data Ditemui</h3>
+                    <p class="text-gray-500">Cuba ubah kriteria penapisan atau muat semula data</p>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div x-show="!loading && tableData.pagination && tableData.pagination.pages > 1" class="px-6 py-4 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        Menunjukkan <strong x-text="((tableData.pagination.page - 1) * tableData.pagination.per_page) + 1"></strong>
+                        hingga <strong x-text="Math.min(tableData.pagination.page * tableData.pagination.per_page, tableData.pagination.total)"></strong>
+                        daripada <strong x-text="tableData.pagination.total"></strong> rekod
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button @click="changePage(tableData.pagination.page - 1)"
+                                :disabled="tableData.pagination.page <= 1"
+                                class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Sebelum
+                        </button>
+                        
+                        <template x-for="page in getPaginationPages()" :key="page">
+                            <button @click="changePage(page)"
+                                    :class="page === tableData.pagination.page ? 'bg-primary-600 text-white' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'"
+                                    class="px-3 py-2 text-sm font-medium rounded-md" x-text="page">
+                            </button>
+                        </template>
+                        
+                        <button @click="changePage(tableData.pagination.page + 1)"
+                                :disabled="tableData.pagination.page >= tableData.pagination.pages"
+                                class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Seterusnya
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function allDataDashboard() {
+        return {
+            loading: false,
+            dataLoaded: false,
+            isInitialized: false,
+            currentSection: '',
+            sections: {},
+            summary: {
+                total_records: 0,
+                gender_distribution: {},
+                year_range: 'N/A',
+                total_institutions: 0,
+                employment_rate: 0,
+                fields_of_study_count: 0
+            },
+            sectionSummary: {},
+            tableData: {
+                data: [],
+                columns: [],
+                pagination: { page: 1, per_page: 50, total: 0, pages: 0 }
+            },
+            searchQuery: '',
+            perPage: 50,
+            currentPage: 1,
+            searchTimeout: null,
+            filters: {
+                graduation_year: [],
+                gender: [],
+                institution: [],
+                field_of_study: [],
+                employment_status: []
+            },
+            availableFilters: {
+                graduation_years: [],
+                genders: [],
+                institutions: [],
+                fields_of_study: [],
+                employment_status: []
+            },
+            activeFiltersCount: 0,
+
+            init() {
+                console.log('Initializing all data dashboard...');
+                if (this.isInitialized) return;
+                this.isInitialized = true;
+                
+                this.loadSections();
+                this.loadAvailableFilters();
+                this.loadData();
+                this.updateActiveFiltersCount();
+            },
+
+            async loadSections() {
+                try {
+                    const response = await fetch('/alldata/api/sections');
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    this.sections = await response.json();
+                    console.log('Sections loaded:', this.sections);
+                } catch (error) {
+                    console.error('Error loading sections:', error);
+                    this.showToast('Ralat memuatkan senarai bahagian', 'error');
+                }
+            },
+
+            async loadAvailableFilters() {
+                try {
+                    const response = await fetch('/alldata/api/filters/available');
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const data = await response.json();
+                    
+                    console.log('Raw filter data received:', data);
+
+                    // Handle column name variations with trailing spaces
+                    this.availableFilters = {
+                        graduation_years: data['Tahun graduasi anda?'] || data['Tahun graduasi anda? '] || [],
+                        genders: data['Jantina anda?'] || data['Jantina anda? '] || [],
+                        institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || [],
+                        fields_of_study: data['Bidang pengajian utama anda?'] || data['Bidang pengajian utama anda? '] || [],
+                        employment_status: data['Adakah anda kini bekerja?'] || []
+                    };
+                    
+                    console.log('Processed filters:', this.availableFilters);
+                } catch (error) {
+                    console.error('Error loading filters:', error);
+                    this.showToast('Ralat memuatkan pilihan penapisan', 'error');
+                }
+            },
+
+            async loadData() {
+                if (this.loading) return;
+                this.loading = true;
+
+                // Close all dropdowns when loading data
+                this.closeAllDropdowns();
+
+                try {
+                    await Promise.all([
+                        this.loadSummary(),
+                        this.loadTableData()
+                    ]);
+                    
+                    if (this.currentSection) {
+                        await this.loadSectionSummary();
+                    }
+                    
+                    this.dataLoaded = true;
+                } catch (error) {
+                    console.error('Error loading dashboard data:', error);
+                    this.showToast('Ralat memuatkan data: ' + error.message, 'error');
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            async loadSummary() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/alldata/api/summary?${params}`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    this.summary = await response.json();
+                    console.log('Summary loaded:', this.summary);
+                } catch (error) {
+                    console.error('Error loading summary:', error);
+                    this.summary = {
+                        total_records: 0,
+                        gender_distribution: {},
+                        year_range: 'N/A',
+                        total_institutions: 0,
+                        employment_rate: 0,
+                        fields_of_study_count: 0
+                    };
+                }
+            },
+
+            async loadSectionSummary() {
+                if (!this.currentSection) return;
+                
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/alldata/api/section-summary/${this.currentSection}?${params}`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    this.sectionSummary = await response.json();
+                    console.log('Section summary loaded:', this.sectionSummary);
+                } catch (error) {
+                    console.error('Error loading section summary:', error);
+                    this.sectionSummary = {};
+                }
+            },
+
+            async loadTableData() {
+                try {
+                    const params = this.buildFilterParams();
+                    params.set('page', this.currentPage.toString());
+                    params.set('per_page', this.perPage.toString());
+                    params.set('search', this.searchQuery);
+                    
+                    if (this.currentSection) {
+                        params.set('section', this.currentSection);
+                    }
+
+                    const response = await fetch(`/alldata/api/table-data?${params.toString()}`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    this.tableData = await response.json();
+                    console.log('Table data loaded:', this.tableData);
+                } catch (error) {
+                    console.error('Error loading table data:', error);
+                    this.tableData = {
+                        data: [],
+                        columns: [],
+                        pagination: { page: 1, per_page: 50, total: 0, pages: 0 }
+                    };
+                }
+            },
+
+            selectSection(section) {
+                console.log('Selecting section:', section);
+                this.currentSection = section;
+                this.currentPage = 1;
+                this.searchQuery = '';
+                this.dataLoaded = false;
+                
+                // Close all dropdowns when changing section
+                this.closeAllDropdowns();
+                
+                this.loadData();
+                this.showToast(
+                    section ? `Beralih ke bahagian: ${this.sections[section]?.name}` : 'Beralih ke semua data', 
+                    'info'
+                );
+            },
+
+            buildFilterParams() {
+                const params = new URLSearchParams();
+                Object.entries(this.filters).forEach(([key, values]) => {
+                    if (Array.isArray(values) && values.length > 0) {
+                        // Map to correct column names (handling trailing spaces)
+                        let paramKey;
+                        if (key === 'graduation_year') {
+                            // Try both variations - the API will handle both
+                            paramKey = 'Tahun graduasi anda? ';  // With trailing space (from Colab)
+                        } else if (key === 'gender') {
+                            paramKey = 'Jantina anda? ';  // With trailing space
+                        } else if (key === 'institution') {
+                            paramKey = 'Institusi pendidikan MARA yang anda hadiri?';
+                        } else if (key === 'field_of_study') {
+                            paramKey = 'Bidang pengajian utama anda? ';  // With trailing space
+                        } else if (key === 'employment_status') {
+                            paramKey = 'Adakah anda kini bekerja?';
+                        } else {
+                            paramKey = key;
+                        }
+                        
+                        values.forEach(value => params.append(paramKey, value));
+                    }
+                });
+                return params;
+            },
+
+            applyFilters() {
+                this.updateActiveFiltersCount();
+                this.currentPage = 1;
+                this.dataLoaded = false;
+                
+                // Close all dropdowns when applying filters
+                this.closeAllDropdowns();
+                
+                this.loadData();
+                this.showToast('Penapis berjaya diterapkan', 'success');
+            },
+
+            clearAllFilters() {
+                this.filters = {
+                    graduation_year: [],
+                    gender: [],
+                    institution: [],
+                    field_of_study: [],
+                    employment_status: []
+                };
+                this.updateActiveFiltersCount();
+                this.currentPage = 1;
+                this.dataLoaded = false;
+                
+                // Close all dropdowns when clearing filters
+                this.closeAllDropdowns();
+                
+                this.loadData();
+                this.showToast('Semua penapis dikosongkan', 'info');
+            },
+
+            updateActiveFiltersCount() {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
+                    return count + (Array.isArray(filter) ? filter.length : 0);
+                }, 0);
+            },
+
+            debounceSearch() {
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => {
+                    this.currentPage = 1;
+                    this.loadTableData();
+                }, 500);
+            },
+
+            changePage(page) {
+                if (page >= 1 && page <= (this.tableData.pagination?.pages || 0)) {
+                    this.currentPage = page;
+                    this.loadTableData();
+                }
+            },
+
+            getPaginationPages() {
+                const pages = [];
+                const current = this.tableData.pagination?.page || 1;
+                const total = this.tableData.pagination?.pages || 0;
+                
+                if (total <= 0) return pages;
+                
+                // Always show first page
+                pages.push(1);
+                
+                // Show pages around current page
+                for (let i = Math.max(2, current - 2); i <= Math.min(total - 1, current + 2); i++) {
+                    if (!pages.includes(i)) pages.push(i);
+                }
+                
+                // Always show last page
+                if (total > 1 && !pages.includes(total)) pages.push(total);
+                
+                return pages;
+            },
+
+            async refreshData() {
+                this.dataLoaded = false;
+                
+                // Close all dropdowns when refreshing data
+                this.closeAllDropdowns();
+                
+                await this.loadData();
+                this.showToast('Data berjaya dimuat semula', 'success');
+            },
+
+            closeAllDropdowns() {
+                // Use Alpine.js approach to close dropdowns by dispatching custom events
+                // This ensures all dropdowns in child x-data components are closed
+                const event = new CustomEvent('close-dropdowns');
+                document.dispatchEvent(event);
+                
+                // Also set a flag that child components can listen to
+                this.$dispatch('close-all-dropdowns');
+            },
+
+            async exportData(format) {
+                try {
+                    const params = this.buildFilterParams();
+                    if (this.currentSection) {
+                        params.set('section', this.currentSection);
+                    }
+                    const url = `/alldata/api/export?format=${format}&${params.toString()}`;
+                    window.open(url, '_blank');
+                    
+                    const sectionText = this.currentSection ? (this.sections[this.currentSection]?.name || 'data') : 'semua data';
+                    this.showToast(`Mengeksport ${sectionText} sebagai ${format.toUpperCase()}...`, 'info');
+                } catch (error) {
+                    console.error('Export error:', error);
+                    this.showToast('Eksport gagal', 'error');
+                }
+            },
+
+            showToast(message, type = 'info') {
+                if (typeof showToast !== 'undefined') {
+                    showToast(message, type);
+                } else {
+                    console.log(`${type.toUpperCase()}: ${message}`);
+                }
+            }
+        }
+    }
+
+    // Enhanced global management - avoid chart conflicts
+    window.globalCharts = window.globalCharts || {};
+    
+    // Initialize after DOM is ready and Alpine.js is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait for Alpine.js to be ready
+        setTimeout(() => {
+            console.log('DOM ready, Alpine.js should be initialized');
+        }, 100);
+    });
+</script>
+{% endblock %}
