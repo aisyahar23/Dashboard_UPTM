@@ -19,7 +19,7 @@ def create_app():
     app.config.from_object(Config)
     
     # Initialize static files - ensure they exist
-    static_js_path = os.path.join(app.static_folder, 'js')
+    static_js_path = os.path.join(app.static_folder, 'JS')
     if not os.path.exists(static_js_path):
         os.makedirs(static_js_path, exist_ok=True)
         print(f"Created static JS directory: {static_js_path}")
