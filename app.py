@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+import os
 from config.settings import Config
 from blueprints.sosioekonomi import sosioekonomi_bp
 from blueprints.demografi import demografi_bp
@@ -17,6 +18,19 @@ def create_app():
     app = Flask(__name__, template_folder='Website/templates', static_folder='Website/static')
     app.config.from_object(Config)
     
+    # Initialize static files - ensure they exist
+    static_js_path = os.path.join(app.static_folder, 'js')
+    if not os.path.exists(static_js_path):
+        os.makedirs(static_js_path, exist_ok=True)
+        print(f"Created static JS directory: {static_js_path}")
+    
+    # Check if critical files exist
+    required_files = ['chartconfig.js', 'dashboard.js']
+    for file in required_files:
+        file_path = os.path.join(static_js_path, file)
+        if not os.path.exists(file_path):
+            print(f"WARNING: Missing static file: {file_path}")
+    
     # Register blueprints
     app.register_blueprint(sosioekonomi_bp, url_prefix='/sosioekonomi')
     app.register_blueprint(demografi_bp, url_prefix='/demografi')
@@ -31,14 +45,12 @@ def create_app():
     app.register_blueprint(analytics_bp, url_prefix='/api')
     app.register_blueprint(alldata_bp, url_prefix='/alldata')
 
-    
     @app.route('/')
     def dashboard():
         return render_template('login.html')
     
     return app
 
-# Create the app instance for Gunicorn - THIS IS THE KEY LINE!
 app = create_app()
 
 if __name__ == '__main__':
