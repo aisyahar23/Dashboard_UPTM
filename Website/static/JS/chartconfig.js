@@ -38,6 +38,8 @@ const ChartConfig = {
                 '#9c354d',
                 '#bea6a1',
                 '#664c92',
+                '#9b89b4',
+                '#b0a8b9'
             ],
             // backgrounds: [
             //     'rgba(37, 99, 235, 0.1)', 'rgba(220, 38, 38, 0.1)', 'rgba(22, 163, 74, 0.1)',
