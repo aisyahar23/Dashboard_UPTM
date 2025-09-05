@@ -21,8 +21,8 @@
 
             <!-- Button Section -->
             <div class="flex flex-row space-x-4 px-6">
-                <!-- Enhanced Filters Dropdown -->
-                <div class="relative" x-data="{ open: false }">
+                <!-- Enhanced Filters Dropdown - FIXED -->
+                <div class="relative" x-data="{ open: false }" x-init="open = false">
                     <button @click.stop="open = !open"
                         class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400">
                         <i class="fas fa-filter text-primary-700 text-[10px]"></i>
@@ -33,13 +33,16 @@
                     </button>
 
                     <!-- Enhanced Filter Dropdown -->
-                    <div x-show="open" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" @click.away="open = false"
-                        class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <div x-show="open" 
+                         x-cloak
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" 
+                         @click.away="open = false"
+                         class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
                         <div class="px-6 py-5">
                             <!-- Header -->
                             <div class="flex items-center justify-between mb-5">
@@ -58,7 +61,7 @@
 
                             <!-- Filter Options -->
                             <div class="space-y-5">
-                                <!-- Graduation Year -->
+                                <!-- Graduation Year - FIXED -->
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
                                         <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Tahun Graduasi
@@ -66,9 +69,8 @@
                                             x-show="filters.graduation_year.length > 0"
                                             x-text="`${filters.graduation_year.length} dipilih`"></span>
                                     </label>
-                                    <div
-                                        class="grid grid-cols-4 gap-2 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
-                                        <template x-for="year in availableFilters.graduation_years || []">
+                                    <div class="grid grid-cols-4 gap-2 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+                                        <template x-for="year in availableFilters.graduation_years || []" :key="year">
                                             <label
                                                 class="flex items-center p-2 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
                                                 <input type="checkbox" :value="year" x-model="filters.graduation_year"
@@ -88,7 +90,7 @@
                                             x-text="`${filters.gender.length} dipilih`"></span>
                                     </label>
                                     <div class="grid grid-cols-2 gap-3">
-                                        <template x-for="gender in availableFilters.genders || []">
+                                        <template x-for="gender in availableFilters.genders || []" :key="gender">
                                             <label
                                                 class="flex items-center p-3 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
                                                 <input type="checkbox" :value="gender" x-model="filters.gender"
@@ -109,7 +111,7 @@
                                             x-text="`${filters.institution.length} dipilih`"></span>
                                     </label>
                                     <div class="max-h-36 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
-                                        <template x-for="institution in availableFilters.institutions || []">
+                                        <template x-for="institution in availableFilters.institutions || []" :key="institution">
                                             <label
                                                 class="flex items-center p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm transition-colors">
                                                 <input type="checkbox" :value="institution"
@@ -134,21 +136,24 @@
                     </div>
                 </div>
 
-                <!-- Enhanced Export Button -->
-                <div class="relative" x-data="{ open: false }">
+                <!-- Enhanced Export Button - FIXED -->
+                <div class="relative" x-data="{ open: false }" x-init="open = false">
                     <button @click.stop="open = !open"
                         class="button-style-fulll-blue flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-md transition-all duration-200 shadow-lg shadow-primary-700/30 group transform hover:scale-105">
                         <i class="fas fa-download group-hover:animate-bounce text-[10px]"></i>
                         <span class="font-semibold text-[10px]">Eksport</span>
                     </button>
 
-                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" @click.away="open = false"
-                        class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <div x-show="open" 
+                         x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" 
+                         @click.away="open = false"
+                         class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
                         <div class="py-2">
                             <button @click="exportData('csv'); open = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
@@ -301,25 +306,25 @@
                 </div>
             </div>
 
-            <!-- Enhanced Better Prospects -->
+            <!-- UPDATED: Private Sector Rate - REPLACED Better Prospects -->
             <div
                 class="bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div
-                            class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                            <i class="fas fa-chart-line text-center text-xl text-green-600 w-16"></i>
+                            class="w-14 h-14 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-building text-xl text-emerald-600"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-gray-600 font-medium">Masa Depan Lebih Baik</div>
+                            <div class="text-sm text-gray-600 font-medium">Sektor Swasta</div>
                             <div class="text-3xl font-bold text-gray-900"
-                                x-text="(kpis.better_prospects_rate || 0) + '%'"></div>
+                                x-text="(kpis.private_sector_rate || 0) + '%'"></div>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4 text-xs text-gray-500 flex items-center">
                     <i class="fas fa-info-circle mr-2"></i>
-                    Prospek kerjaya lebih baik
+                    Graduan bekerja di sektor swasta
                 </div>
             </div>
         </div>
@@ -337,9 +342,10 @@
                         </p>
                     </div>
                     <div class="flex space-x-1">
+                        <!-- TABLE ICON ADDED -->
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Reasons Analysis')"
+                            <button @click="openChartModal('reasons', 'Sebab Utama Bekerja di Luar Bidang')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -392,9 +398,10 @@
                         <p class="text-gray-500 text-[10px] mt-1">Agihan pekerjaan semasa</p>
                     </div>
                     <div class="flex space-x-1">
+                        <!-- TABLE ICON ADDED -->
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Job Types')"
+                            <button @click="openChartModal('jobtypes', 'Agihan Jenis Pekerjaan')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -449,10 +456,10 @@
                             peralihan kerjaya</p>
                     </div>
                     <div class="flex space-x-3">
-                        <!-- Table Modal Button -->
+                        <!-- TABLE ICON ADDED -->
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Institution Analysis')"
+                            <button @click="openChartModal('institution', 'Analisis Institusi vs Sebab')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -499,447 +506,454 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Click outside handler to close dropdowns -->
-    <script>
-        document.addEventListener('click', function (event)
-        {
-            // Close all dropdowns when clicking outside
-            const dropdowns = document.querySelectorAll('[x-data*="open"]');
-            dropdowns.forEach(dropdown =>
-            {
-                if (!dropdown.contains(event.target))
-                {
-                    Alpine.store('dropdowns', { open: false });
+<!-- Add CSS to prevent dropdown flash -->
+<style>
+[x-cloak] { 
+    display: none !important; 
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function graduanLuarDashboard() {
+        return {
+            loading: false,
+            dataLoaded: false,
+            kpis: {},
+            isInitialized: false,
+            filters: {
+                graduation_year: [],
+                gender: [],
+                institution: []
+            },
+            availableFilters: {
+                graduation_years: [],
+                genders: [],
+                institutions: []
+            },
+            activeFiltersCount: 0,
+
+            init() {
+                console.log('Initializing enhanced graduan luar dashboard...');
+                if (this.isInitialized) return;
+                this.isInitialized = true;
+                
+                // Force close all dropdowns on init - FIXED
+                this.$nextTick(() => {
+                    document.querySelectorAll('[x-data*="open"]').forEach(el => {
+                        if (el.__x && el.__x.$data.open !== undefined) {
+                            el.__x.$data.open = false;
+                        }
+                    });
+                });
+                
+                this.waitForEnhancedChart();
+                this.loadAvailableFilters();
+                this.updateActiveFiltersCount();
+            },
+
+            waitForEnhancedChart() {
+                if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined') {
+                    setTimeout(() => this.waitForEnhancedChart(), 100);
+                    return;
                 }
-            });
-        });
-    </script>
-    {% endblock %}
+                this.loadData();
+            },
 
-    {% block scripts %}
-    <script>
-        function graduanLuarDashboard()
-        {
-            return {
-                loading: false,
-                dataLoaded: false,
-                kpis: {},
-                isInitialized: false,
-                filters: {
+            async loadAvailableFilters() {
+                try {
+                    console.log('Loading available filters...');
+                    const response = await fetch('/graduan-luar/api/filters/available');
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Raw filter data received:', data);
+
+                    // FIXED: Proper mapping of filter data
+                    this.availableFilters = {
+                        graduation_years: data['Tahun graduasi anda?'] || [],
+                        genders: data['Jantina anda?'] || [],
+                        institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || []
+                    };
+                    
+                    console.log('Processed available filters:', this.availableFilters);
+                    console.log('Graduation years count:', this.availableFilters.graduation_years.length);
+                    
+                } catch (error) {
+                    console.error('Error loading filters:', error);
+                    // Set empty defaults on error
+                    this.availableFilters = {
+                        graduation_years: [],
+                        genders: [],
+                        institutions: []
+                    };
+                }
+            },
+
+            async loadData() {
+                if (this.loading) return;
+
+                this.loading = true;
+                console.log('Loading dashboard data with filters:', this.filters);
+
+                try {
+                    await this.loadSummary();
+                    await this.delay(300);
+                    await this.loadReasonsChart();
+                    await this.delay(300);
+                    await this.loadJobTypesChart();
+                    await this.delay(300);
+                    await this.loadInstitutionReasonsChart();
+
+                    this.dataLoaded = true;
+                } catch (error) {
+                    console.error('Error loading dashboard data:', error);
+                    this.showToast('Error loading data: ' + error.message, 'error');
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            },
+
+            // FIXED: Better filter parameter building
+            buildFilterParams() {
+                const params = new URLSearchParams();
+                
+                console.log('Building filter params from:', this.filters);
+                
+                // Map frontend filter keys to backend column names
+                const filterMapping = {
+                    'graduation_year': 'Tahun graduasi anda?',
+                    'gender': 'Jantina anda?',
+                    'institution': 'Institusi pendidikan MARA yang anda hadiri?'
+                };
+                
+                Object.entries(this.filters).forEach(([key, values]) => {
+                    if (Array.isArray(values) && values.length > 0) {
+                        const backendKey = filterMapping[key] || key;
+                        console.log(`Mapping ${key} -> ${backendKey} with values:`, values);
+                        values.forEach(value => {
+                            params.append(backendKey, value);
+                        });
+                    }
+                });
+                
+                const paramString = params.toString();
+                console.log('Final filter params:', paramString);
+                return paramString;
+            },
+
+            async loadSummary() {
+                try {
+                    const params = this.buildFilterParams();
+                    const url = `/graduan-luar/api/summary${params ? '?' + params : ''}`;
+                    console.log('Loading summary from:', url);
+                    
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Failed to load summary');
+                    
+                    const data = await response.json();
+                    console.log('Summary data received:', data);
+                    this.kpis = data;
+                } catch (error) {
+                    console.error('Error loading summary:', error);
+                    this.kpis = {
+                        total_records: 0,
+                        mismatch_rate: 0,
+                        opportunity_rate: 0,
+                        private_sector_rate: 0
+                    };
+                }
+            },
+
+            async loadReasonsChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/graduan-luar/api/reasons-distribution${params ? '?' + params : ''}`);
+                    const data = await response.json();
+
+                    this.safeDestroyChart('reasons');
+
+                    const canvas = document.getElementById('reasonsChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            window.globalCharts = window.globalCharts || {};
+                            window.globalCharts.reasons = EnhancedChartFactory.createBarChart(ctx, data, 'horizontal-bar', {
+                                indexAxis: 'y',
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                return `Bilangan: ${context.parsed.x.toLocaleString()}`;
+                                            }
+                                        }
+                                    },
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.06)',
+                                            drawBorder: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 11,
+                                                weight: '500'
+                                            },
+                                            callback: function (value) {
+                                                return value.toLocaleString();
+                                            }
+                                        }
+                                    },
+                                    y: {
+                                        grid: { display: false },
+                                        ticks: {
+                                            font: {
+                                                size: 10,
+                                                weight: '500'
+                                            },
+                                            color: '#6b7280'
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading reasons chart:', error);
+                }
+            },
+
+            async loadJobTypesChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/graduan-luar/api/job-types${params ? '?' + params : ''}`);
+                    const data = await response.json();
+
+                    this.safeDestroyChart('jobTypes');
+
+                    const canvas = document.getElementById('jobTypesChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            window.globalCharts = window.globalCharts || {};
+                            window.globalCharts.jobTypes = EnhancedChartFactory.createPieChart(ctx, data, 'enhanced-pie', {
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 10,
+                                            font: { size: 10, weight: '500' },
+                                            usePointStyle: true
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                                return `${context.label}: ${context.parsed.toLocaleString()} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading job types chart:', error);
+                }
+            },
+
+            async loadInstitutionReasonsChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/graduan-luar/api/institution-reasons${params ? '?' + params : ''}`);
+                    const data = await response.json();
+
+                    this.safeDestroyChart('institutionReasons');
+
+                    const canvas = document.getElementById('institutionReasonsChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            window.globalCharts = window.globalCharts || {};
+                            window.globalCharts.institutionReasons = EnhancedChartFactory.createStackedBarChart(ctx, data, 'enhanced-stacked-bar', {
+                                indexAxis: 'y',
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                return `${context.dataset.label}: ${context.parsed.x.toLocaleString()}`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        stacked: true,
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.06)',
+                                            drawBorder: false
+                                        }
+                                    },
+                                    y: {
+                                        stacked: true,
+                                        grid: { display: false },
+                                        ticks: {
+                                            font: {
+                                                size: 10,
+                                                weight: '500'
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading institution reasons chart:', error);
+                }
+            },
+
+            safeDestroyChart(chartName) {
+                if (window.globalCharts && window.globalCharts[chartName]) {
+                    try {
+                        window.globalCharts[chartName].destroy();
+                        delete window.globalCharts[chartName];
+                    } catch (error) {
+                        console.warn(`Error destroying chart ${chartName}:`, error);
+                    }
+                }
+            },
+
+            // FIXED: Apply filters with proper debugging
+            applyFilters() {
+                console.log('Applying filters:', this.filters);
+                this.updateActiveFiltersCount();
+                this.dataLoaded = false;
+                
+                // Force close dropdown
+                document.querySelectorAll('[x-data*="open"]').forEach(el => {
+                    if (el.__x && el.__x.$data.open !== undefined) {
+                        el.__x.$data.open = false;
+                    }
+                });
+                
+                this.loadData();
+                this.showToast('Penapis berjaya diterapkan', 'success');
+            },
+
+            clearAllFilters() {
+                console.log('Clearing all filters');
+                this.filters = {
                     graduation_year: [],
                     gender: [],
                     institution: []
-                },
-                availableFilters: {},
-                activeFiltersCount: 0,
-
-                init()
-                {
-                    console.log('Initializing enhanced graduan luar dashboard...');
-                    if (this.isInitialized) return;
-                    this.isInitialized = true;
-                    this.waitForEnhancedChart();
-                    this.loadAvailableFilters();
-                    this.updateActiveFiltersCount();
-                },
-
-                waitForEnhancedChart()
-                {
-                    if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined')
-                    {
-                        setTimeout(() => this.waitForEnhancedChart(), 100);
-                        return;
+                };
+                this.updateActiveFiltersCount();
+                this.dataLoaded = false;
+                
+                // Force close dropdown
+                document.querySelectorAll('[x-data*="open"]').forEach(el => {
+                    if (el.__x && el.__x.$data.open !== undefined) {
+                        el.__x.$data.open = false;
                     }
-                    this.loadData();
-                },
+                });
+                
+                this.loadData();
+                this.showToast('Semua penapis dikosongkan', 'info');
+            },
 
-                async loadAvailableFilters()
-                {
-                    try
-                    {
-                        const response = await fetch('/graduan-luar/api/filters/available');
-                        const data = await response.json();
+            updateActiveFiltersCount() {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
+                    return count + (Array.isArray(filter) ? filter.length : 0);
+                }, 0);
+                console.log('Active filters count:', this.activeFiltersCount);
+            },
 
-                        this.availableFilters = {
-                            graduation_years: data[ 'Tahun graduasi anda?' ] || [],
-                            genders: data[ 'Jantina anda?' ] || [],
-                            institutions: data[ 'Institusi pendidikan MARA yang anda hadiri?' ] || []
-                        };
-                    } catch (error)
-                    {
-                        console.error('Error loading filters:', error);
-                    }
-                },
+            async refreshData() {
+                this.dataLoaded = false;
+                await this.loadData();
+                this.showToast('Data berjaya dimuat semula', 'success');
+            },
 
-                async loadData()
-                {
-                    if (this.loading) return;
+            async refreshChart(chartType) {
+                if (chartType === 'reasons') {
+                    await this.loadReasonsChart();
+                } else if (chartType === 'jobtypes') {
+                    await this.loadJobTypesChart();
+                } else if (chartType === 'institution') {
+                    await this.loadInstitutionReasonsChart();
+                }
+                this.showToast(`Graf ${chartType} dimuat semula`, 'success');
+            },
 
-                    this.loading = true;
+            // ADDED: Chart modal function
+            openChartModal(chartType, title) {
+                const params = this.buildFilterParams();
+                const endpoint = `/graduan-luar/api/table-data${params ? '?' + params : ''}`;
+                
+                console.log('Opening chart modal:', { chartType, title, endpoint });
+                
+                if (typeof openChartModal !== 'undefined') {
+                    openChartModal(chartType, title, endpoint);
+                } else {
+                    console.error('openChartModal function not available');
+                }
+            },
 
-                    try
-                    {
-                        await this.loadSummary();
-                        await this.delay(300);
-                        await this.loadReasonsChart();
-                        await this.delay(300);
-                        await this.loadJobTypesChart();
-                        await this.delay(300);
-                        await this.loadInstitutionReasonsChart();
-
-                        this.dataLoaded = true;
-                    } catch (error)
-                    {
-                        console.error('Error loading dashboard data:', error);
-                        this.showToast('Error loading data: ' + error.message, 'error');
-                    } finally
-                    {
-                        this.loading = false;
-                    }
-                },
-
-                delay(ms)
-                {
-                    return new Promise(resolve => setTimeout(resolve, ms));
-                },
-
-                async loadSummary()
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const response = await fetch(`/graduan-luar/api/summary?${params}`);
-                        if (!response.ok) throw new Error('Failed to load summary');
-                        this.kpis = await response.json();
-                    } catch (error)
-                    {
-                        console.error('Error loading summary:', error);
-                        this.kpis = {
-                            total_records: 0,
-                            mismatch_rate: 0,
-                            opportunity_rate: 0,
-                            better_prospects_rate: 0
-                        };
-                    }
-                },
-
-                async loadReasonsChart()
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const response = await fetch(`/graduan-luar/api/reasons-distribution?${params}`);
-                        const data = await response.json();
-
-                        this.safeDestroyChart('reasons');
-
-                        const canvas = document.getElementById('reasonsChart');
-                        if (canvas)
-                        {
-                            const ctx = canvas.getContext('2d');
-                            if (ctx)
-                            {
-                                // Use Enhanced Chart Factory for horizontal bar chart
-                                window.globalCharts = window.globalCharts || {};
-                                window.globalCharts.reasons = EnhancedChartFactory.createBarChart(ctx, data, 'horizontal-bar', {
-                                    indexAxis: 'y',
-                                    plugins: {
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function (context)
-                                                {
-                                                    return `Bilangan: ${context.parsed.x.toLocaleString()}`;
-                                                }
-                                            }
-                                        },
-                                        legend: {
-                                            display: false
-                                        }
-                                    },
-                                    scales: {
-                                        x: {
-                                            beginAtZero: true,
-                                            grid: {
-                                                color: 'rgba(0,0,0,0.06)',
-                                                drawBorder: false
-                                            },
-                                            ticks: {
-                                                font: {
-                                                    size: 11,
-                                                    weight: '500'
-                                                },
-                                                callback: function (value)
-                                                {
-                                                    return value.toLocaleString();
-                                                }
-                                            }
-                                        },
-                                        y: {
-                                            grid: { display: false },
-                                            ticks: {
-                                                font: {
-                                                    size: 10,
-                                                    weight: '500'
-                                                },
-                                                color: '#6b7280'
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    } catch (error)
-                    {
-                        console.error('Error loading reasons chart:', error);
-                    }
-                },
-
-                async loadJobTypesChart()
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const response = await fetch(`/graduan-luar/api/job-types?${params}`);
-                        const data = await response.json();
-
-                        this.safeDestroyChart('jobTypes');
-
-                        const canvas = document.getElementById('jobTypesChart');
-                        if (canvas)
-                        {
-                            const ctx = canvas.getContext('2d');
-                            if (ctx)
-                            {
-                                // Use Enhanced Chart Factory for pie chart
-                                window.globalCharts = window.globalCharts || {};
-                                window.globalCharts.jobTypes = EnhancedChartFactory.createPieChart(ctx, data, 'enhanced-pie', {
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                            position: 'bottom',
-                                            labels: {
-                                                padding: 10,
-                                                font: { size: 10, weight: '500' },
-                                                usePointStyle: true
-                                            }
-                                        },
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function (context)
-                                                {
-                                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                                    return `${context.label}: ${context.parsed.toLocaleString()} (${percentage}%)`;
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-
-                        }
-                    } catch (error)
-                    {
-                        console.error('Error loading job types chart:', error);
-                    }
-                },
-
-                async loadInstitutionReasonsChart()
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const response = await fetch(`/graduan-luar/api/institution-reasons?${params}`);
-                        const data = await response.json();
-
-                        this.safeDestroyChart('institutionReasons');
-
-                        const canvas = document.getElementById('institutionReasonsChart');
-                        if (canvas)
-                        {
-                            const ctx = canvas.getContext('2d');
-                            if (ctx)
-                            {
-                                // Use Enhanced Chart Factory for stacked bar chart
-                                window.globalCharts = window.globalCharts || {};
-                                window.globalCharts.institutionReasons = EnhancedChartFactory.createStackedBarChart(ctx, data, 'enhanced-stacked-bar', {
-                                    indexAxis: 'y',  // Horizontal stacked bars
-                                    plugins: {
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function (context)
-                                                {
-                                                    return `${context.dataset.label}: ${context.parsed.x.toLocaleString()}`;
-                                                }
-                                            }
-                                        }
-                                    },
-                                    scales: {
-                                        x: {
-                                            stacked: true,
-                                            beginAtZero: true,
-                                            grid: {
-                                                color: 'rgba(0,0,0,0.06)',
-                                                drawBorder: false
-                                            }
-                                        },
-                                        y: {
-                                            stacked: true,
-                                            grid: { display: false },
-                                            ticks: {
-                                                font: {
-                                                    size: 10,
-                                                    weight: '500'
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    } catch (error)
-                    {
-                        console.error('Error loading institution reasons chart:', error);
-                    }
-                },
-
-                safeDestroyChart(chartName)
-                {
-                    if (window.globalCharts && window.globalCharts[ chartName ])
-                    {
-                        try
-                        {
-                            window.globalCharts[ chartName ].destroy();
-                            delete window.globalCharts[ chartName ];
-                        } catch (error)
-                        {
-                            console.warn(`Error destroying chart ${chartName}:`, error);
-                        }
-                    }
-                },
-
-                buildFilterParams()
-                {
-                    const params = new URLSearchParams();
-                    Object.entries(this.filters).forEach(([ key, values ]) =>
-                    {
-                        if (Array.isArray(values) && values.length > 0)
-                        {
-                            const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
-                                key === 'gender' ? 'Jantina anda?' :
-                                    key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' : key;
-                            values.forEach(value => params.append(paramKey, value));
-                        }
-                    });
-                    return params.toString();
-                },
-
-                applyFilters()
-                {
-                    this.updateActiveFiltersCount();
-                    this.dataLoaded = false;
-                    this.loadData();
-                    this.showToast('Penapis berjaya diterapkan', 'success');
-                },
-
-                clearAllFilters()
-                {
-                    this.filters = {
-                        graduation_year: [],
-                        gender: [],
-                        institution: []
-                    };
-                    this.updateActiveFiltersCount();
-                    this.dataLoaded = false;
-                    this.loadData();
-                    this.showToast('Semua penapis dikosongkan', 'info');
-                },
-
-                updateActiveFiltersCount()
-                {
-                    this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
-                    {
-                        return count + (Array.isArray(filter) ? filter.length : 0);
-                    }, 0);
-                },
-
-                async refreshData()
-                {
-                    this.dataLoaded = false;
-                    await this.loadData();
-                    this.showToast('Data berjaya dimuat semula', 'success');
-                },
-
-                async refreshChart(chartType)
-                {
-                    if (chartType === 'reasons')
-                    {
-                        await this.loadReasonsChart();
-                    } else if (chartType === 'jobtypes')
-                    {
-                        await this.loadJobTypesChart();
-                    } else if (chartType === 'institution')
-                    {
-                        await this.loadInstitutionReasonsChart();
-                    }
-                    this.showToast(`Graf ${chartType} dimuat semula`, 'success');
-                },
-
-                async exportData(format)
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const url = `/graduan-luar/api/export?format=${format}&${params}`;
-                        window.open(url, '_blank');
-                        this.showToast(`Mengeksport data sebagai ${format.toUpperCase()}...`, 'info');
-                    } catch (error)
-                    {
-                        console.error('Export error:', error);
-                        this.showToast('Eksport gagal', 'error');
-                    }
-                },
-
-                openTableModal(title)
-                {
+            async exportData(format) {
+                try {
                     const params = this.buildFilterParams();
-                    if (typeof openModal !== 'undefined')
-                    {
-                        openModal(title, `/graduan-luar/api/table-data?${params}`);
-                    }
-                },
+                    const url = `/graduan-luar/api/export?format=${format}${params ? '&' + params : ''}`;
+                    window.open(url, '_blank');
+                    this.showToast(`Mengeksport data sebagai ${format.toUpperCase()}...`, 'info');
+                } catch (error) {
+                    console.error('Export error:', error);
+                    this.showToast('Eksport gagal', 'error');
+                }
+            },
 
-                showToast(message, type = 'info')
-                {
-                    // Enhanced toast notification
-                    if (typeof showToast !== 'undefined')
-                    {
-                        showToast(message, type);
-                    } else
-                    {
-                        console.log(`${type.toUpperCase()}: ${message}`);
-                    }
+            showToast(message, type = 'info') {
+                if (typeof showToast !== 'undefined') {
+                    showToast(message, type);
+                } else {
+                    console.log(`${type.toUpperCase()}: ${message}`);
                 }
             }
         }
+    }
 
-        // Enhanced global chart management
-        window.globalCharts = window.globalCharts || {};
+    // Enhanced global chart management
+    window.globalCharts = window.globalCharts || {};
 
-        function safeDestroyChart(chartName)
-        {
-            if (window.globalCharts && window.globalCharts[ chartName ])
-            {
-                try
-                {
-                    window.globalCharts[ chartName ].destroy();
-                    delete window.globalCharts[ chartName ];
-                } catch (error)
-                {
-                    console.warn(`Error destroying chart ${chartName}:`, error);
-                }
+    function safeDestroyChart(chartName) {
+        if (window.globalCharts && window.globalCharts[chartName]) {
+            try {
+                window.globalCharts[chartName].destroy();
+                delete window.globalCharts[chartName];
+            } catch (error) {
+                console.warn(`Error destroying chart ${chartName}:`, error);
             }
         }
-    </script>
-    {% endblock %}
+    }
+</script>
+{% endblock %}

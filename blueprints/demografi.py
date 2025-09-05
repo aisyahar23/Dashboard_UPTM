@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from collections import Counter
 import numpy as np
+import re
 
 demografi_bp = Blueprint('demografi', __name__)
 
@@ -13,39 +14,96 @@ EXCEL_FILE_PATH = 'data/Questionnaire.xlsx'
 df = load_excel_data(EXCEL_FILE_PATH)
 data_processor = DataProcessor(df)
 
+# Print debug info on startup
+print("="*50)
+print("DEMOGRAFI ROUTES DEBUG INFO")
+print("="*50)
+print(f"Data loaded. Shape: {df.shape}")
+print(f"Columns: {len(df.columns)}")
+
+# Check key columns for demografi
+key_columns = [
+    'Tahun graduasi anda?',
+    'Umur anda?',
+    'Jantina anda?',
+    'Institusi pendidikan MARA yang anda hadiri?',
+    'Bidang pengajian utama anda?'
+]
+
+for col in key_columns:
+    if col in df.columns:
+        non_null = df[col].notna().sum()
+        print(f"✓ {col}: {non_null}/{len(df)} non-null values")
+        # Show sample values
+        sample_values = df[col].dropna().unique()[:3]
+        print(f"    Sample values: {list(sample_values)}")
+    else:
+        print(f"✗ {col}: NOT FOUND")
+
+print("="*50)
+
+def debug_filter_application(df_original, filters):
+    """Debug filter application step by step for demografi"""
+    print(f"\n=== DEMOGRAFI FILTER DEBUG ===")
+    print(f"Original data shape: {df_original.shape}")
+    print(f"Filters received: {filters}")
+    
+    df_result = df_original.copy()
+    
+    for column, values in filters.items():
+        if not values or len(values) == 0:
+            continue
+            
+        print(f"\nApplying filter: {column} = {values}")
+        print(f"Column exists: {column in df_result.columns}")
+        
+        if column in df_result.columns:
+            print(f"Before filter - rows: {len(df_result)}")
+            print(f"Column data type: {df_result[column].dtype}")
+            print(f"Unique values in column: {list(df_result[column].unique())[:5]}...")
+            print(f"Looking for values: {values}")
+            
+            # Convert filter values to match column data type
+            if df_result[column].dtype in ['int64', 'float64']:
+                try:
+                    converted_values = []
+                    for v in values:
+                        if isinstance(v, (int, float)):
+                            converted_values.append(v)
+                        else:
+                            converted_values.append(int(float(v)))
+                    print(f"Converted filter values to numbers: {converted_values}")
+                    df_result = df_result[df_result[column].isin(converted_values)]
+                except Exception as e:
+                    print(f"Number conversion failed: {e}, using string matching")
+                    df_result = df_result[df_result[column].astype(str).isin([str(v) for v in values])]
+            else:
+                # String matching
+                df_result = df_result[df_result[column].isin(values)]
+            
+            print(f"After filter - rows: {len(df_result)}")
+            
+            if len(df_result) == 0:
+                print("WARNING: Filter eliminated all rows!")
+                break
+        else:
+            print(f"WARNING: Column {column} not found!")
+    
+    print(f"Final filtered shape: {df_result.shape}")
+    print("=== END DEMOGRAFI FILTER DEBUG ===\n")
+    
+    return df_result
+
 @demografi_bp.route('/')
 def index():
     """Main demografi dashboard page"""
     return render_template('demografi.html')
 
-@demografi_bp.route('/api/test')
-def api_test():
-    """Test endpoint to verify the blueprint is working"""
-    try:
-        # Debug column names
-        all_columns = list(df.columns) if not df.empty else []
-        
-        # Check for similar column names
-        relevant_patterns = ['Tahun', 'Umur', 'Jantina', 'Institusi', 'Bidang']
-        matching_columns = {}
-        
-        for pattern in relevant_patterns:
-            matching_columns[pattern] = [col for col in all_columns if pattern.lower() in col.lower()]
-        
-        return jsonify({
-            'status': 'success',
-            'message': 'Demografi API is working',
-            'total_records': len(df),
-            'all_columns': all_columns,
-            'matching_columns': matching_columns,
-            'sample_data': df.head(2).to_dict('records') if not df.empty else []
-        })
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e),
-            'total_records': 0
-        }), 500
+@demografi_bp.route('/table')
+def table_view():
+    return render_template('data_table.html', 
+                         page_title='Demographics & Academic Background Data Table',
+                         api_endpoint='/demografi/api/table-data')
 
 @demografi_bp.route('/api/summary')
 def api_summary():
@@ -61,12 +119,12 @@ def api_summary():
         
         print(f"All filters for summary: {filters}")
         
-        filtered_processor = data_processor.apply_filters(filters)
-        filtered_df = filtered_processor.filtered_df
+        # Use debug filter application
+        df_filtered = debug_filter_application(data_processor.df, filters)
+        total_records = len(df_filtered)
         
-        total_records = len(filtered_df)
         print(f"Total records after filtering: {total_records}")
-        print(f"Available columns: {list(filtered_df.columns)}")
+        print(f"Available columns: {list(df_filtered.columns)}")
         
         # Initialize default values
         male_rate = 0
@@ -98,14 +156,14 @@ def api_summary():
         gender_column = None
         
         for col in gender_columns:
-            if col in filtered_df.columns:
+            if col in df_filtered.columns:
                 gender_column = col
                 print(f"Found gender column: '{gender_column}'")
                 break
         
-        if gender_column and gender_column in filtered_df.columns:
+        if gender_column and gender_column in df_filtered.columns:
             # Clean and standardize gender data
-            gender_data = filtered_df[gender_column].dropna().astype(str).str.strip()
+            gender_data = df_filtered[gender_column].dropna().astype(str).str.strip()
             gender_counts = gender_data.value_counts()
             print(f"Gender counts: {gender_counts.to_dict()}")
             
@@ -137,13 +195,13 @@ def api_summary():
         age_column = None
         
         for col in age_columns:
-            if col in filtered_df.columns:
+            if col in df_filtered.columns:
                 age_column = col
                 print(f"Found age column: '{age_column}'")
                 break
         
-        if age_column and age_column in filtered_df.columns:
-            age_data = filtered_df[age_column].dropna().astype(str).str.strip()
+        if age_column and age_column in df_filtered.columns:
+            age_data = df_filtered[age_column].dropna().astype(str).str.strip()
             age_counts = age_data.value_counts()
             print(f"Age counts: {age_counts.to_dict()}")
             
@@ -174,12 +232,12 @@ def api_summary():
         institution_column = None
         
         for col in institution_columns:
-            if col in filtered_df.columns:
+            if col in df_filtered.columns:
                 institution_column = col
                 print(f"Found institution column: '{institution_column}'")
                 break
         
-        if institution_column and institution_column in filtered_df.columns:
+        if institution_column and institution_column in df_filtered.columns:
             def categorize_institution(cell):
                 if pd.isnull(cell):
                     return None
@@ -191,7 +249,7 @@ def api_summary():
                 else:
                     return 'Other'
             
-            institution_categories = filtered_df[institution_column].apply(categorize_institution)
+            institution_categories = df_filtered[institution_column].apply(categorize_institution)
             institution_counts = institution_categories.value_counts()
             print(f"Institution counts: {institution_counts.to_dict()}")
             
@@ -214,12 +272,12 @@ def api_summary():
         field_column = None
         
         for col in field_columns:
-            if col in filtered_df.columns:
+            if col in df_filtered.columns:
                 field_column = col
                 print(f"Found field column: '{field_column}'")
                 break
         
-        if field_column and field_column in filtered_df.columns:
+        if field_column and field_column in df_filtered.columns:
             # Define the mapping for grouping fields of study
             field_of_study_mapping = {
                 'Kejuruteraan & Teknologi': 'Engineering Environment',
@@ -256,7 +314,7 @@ def api_summary():
                 cell_str = str(cell).strip()
                 return field_of_study_mapping.get(cell_str, 'Other')
             
-            field_categories = filtered_df[field_column].apply(group_field_of_study)
+            field_categories = df_filtered[field_column].apply(group_field_of_study)
             field_counts = field_categories.value_counts()
             print(f"Field counts: {field_counts.to_dict()}")
             
@@ -304,6 +362,47 @@ def api_summary():
             'engineering_rate': 0
         }), 500
 
+# Centralized Chart Data Formatter
+class ChartDataFormatter:
+    @staticmethod
+    def format_pie_chart(data_series, title="Distribution"):
+        return {
+            'labels': data_series.index.tolist(),
+            'datasets': [{
+                'label': title,
+                'data': data_series.values.tolist()
+            }]
+        }
+    
+    @staticmethod  
+    def format_bar_chart(data_series, title="Chart", sort_desc=True):
+        if sort_desc:
+            data_series = data_series.sort_values(ascending=False)
+        
+        return {
+            'labels': data_series.index.tolist(),
+            'datasets': [{
+                'label': title,
+                'data': data_series.values.tolist()
+            }]
+        }
+        
+    @staticmethod
+    def format_stacked_bar_chart(grouped_data, title="Stacked Chart"):
+        datasets = []
+        for column in grouped_data.columns:
+            datasets.append({
+                'label': str(column),
+                'data': [int(val) for val in grouped_data[column].values.tolist()]
+            })
+        
+        return {
+            'labels': [str(label) for label in grouped_data.index.tolist()],
+            'datasets': datasets
+        }
+
+formatter = ChartDataFormatter()
+
 @demografi_bp.route('/api/age-by-graduation-year')
 def api_age_by_graduation_year():
     """Get age distribution by graduation year - enhanced-stacked-bar (STANDARDIZED)"""
@@ -317,10 +416,10 @@ def api_age_by_graduation_year():
         
         print(f"Age-by-year filters: {filters}")
         
-        filtered_processor = data_processor.apply_filters(filters)
-        filtered_df = filtered_processor.filtered_df
+        # Use debug filter application
+        df_filtered = debug_filter_application(data_processor.df, filters)
         
-        print(f"Age-by-year filtered data shape: {filtered_df.shape}")
+        print(f"Age-by-year filtered data shape: {df_filtered.shape}")
         
         # Try multiple possible column names
         year_columns = ['Tahun graduasi anda?', 'Tahun graduasi anda? ', 'Tahun graduasi anda']
@@ -331,41 +430,35 @@ def api_age_by_graduation_year():
         
         # Find the correct column names
         for col in year_columns:
-            if col in filtered_df.columns:
+            if col in df_filtered.columns:
                 year_column = col
                 break
                 
         for col in age_columns:
-            if col in filtered_df.columns:
+            if col in df_filtered.columns:
                 age_column = col
                 break
         
-        print(f"Available columns: {list(filtered_df.columns)}")
+        print(f"Available columns: {list(df_filtered.columns)}")
         print(f"Year column found: {year_column}")
         print(f"Age column found: {age_column}")
         
         if year_column is None or age_column is None:
-            print("Column not found - available columns:", list(filtered_df.columns))
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'label': 'No Data',
-                    'data': [1]
-                }]
-            })
+            print("Column not found - available columns:", list(df_filtered.columns))
+            return jsonify(formatter.format_stacked_bar_chart(
+                pd.DataFrame([1], index=['No Data'], columns=['No Data']),
+                "Age by Graduation Year"
+            ))
         
         # Clean data first
-        clean_df = filtered_df[[year_column, age_column]].copy()
+        clean_df = df_filtered[[year_column, age_column]].copy()
         clean_df = clean_df.dropna()
         
         if clean_df.empty:
-            return jsonify({
-                'labels': ['No Data'],
-                'datasets': [{
-                    'label': 'No Data',
-                    'data': [1]
-                }]
-            })
+            return jsonify(formatter.format_stacked_bar_chart(
+                pd.DataFrame([1], index=['No Data'], columns=['No Data']),
+                "Age by Graduation Year"
+            ))
         
         # Group by graduation year and age (EXACT COLAB REPLICATION)
         grouped_data = clean_df.groupby([year_column, age_column]).size().unstack(fill_value=0)
@@ -374,27 +467,12 @@ def api_age_by_graduation_year():
         print(f"Grouped data:\n{grouped_data}")
         
         if grouped_data.empty:
-            return jsonify({
-                'labels': ['No Data'],
-                'datasets': [{
-                    'label': 'No Data',
-                    'data': [1]
-                }]
-            })
+            return jsonify(formatter.format_stacked_bar_chart(
+                pd.DataFrame([1], index=['No Data'], columns=['No Data']),
+                "Age by Graduation Year"
+            ))
         
-        # Prepare datasets for stacked bar chart (STANDARDIZED FORMAT)
-        datasets = []
-        for age_group in grouped_data.columns:
-            datasets.append({
-                'label': str(age_group),
-                'data': [int(val) for val in grouped_data[age_group].values.tolist()]
-            })
-        
-        chart_data = {
-            'labels': [str(label) for label in grouped_data.index.tolist()],
-            'datasets': datasets
-        }
-        
+        chart_data = formatter.format_stacked_bar_chart(grouped_data, "Age by Graduation Year")
         print(f"Chart data: {chart_data}")
         return jsonify(chart_data)
         
@@ -402,14 +480,10 @@ def api_age_by_graduation_year():
         print(f"Error in age by graduation year endpoint: {str(e)}")
         import traceback
         print(f"Full traceback: {traceback.format_exc()}")
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error'],
-            'datasets': [{
-                'label': 'Error',
-                'data': [1]
-            }]
-        }), 500
+        return jsonify(formatter.format_stacked_bar_chart(
+            pd.DataFrame([1], index=['Error'], columns=['Error']),
+            "Error"
+        )), 500
 
 @demografi_bp.route('/api/gender-distribution')
 def api_gender_distribution():
@@ -424,10 +498,10 @@ def api_gender_distribution():
         
         print(f"Gender distribution filters: {filters}")
         
-        filtered_processor = data_processor.apply_filters(filters)
-        filtered_df = filtered_processor.filtered_df
+        # Use debug filter application
+        df_filtered = debug_filter_application(data_processor.df, filters)
         
-        print(f"Gender distribution filtered data shape: {filtered_df.shape}")
+        print(f"Gender distribution filtered data shape: {df_filtered.shape}")
         
         # Try multiple possible column names
         gender_columns = ['Jantina anda?', 'Jantina anda? ', 'Jantina anda']
@@ -435,34 +509,28 @@ def api_gender_distribution():
         
         # Find the correct column name
         for col in gender_columns:
-            if col in filtered_df.columns:
+            if col in df_filtered.columns:
                 gender_column = col
                 break
         
-        print(f"Available columns: {list(filtered_df.columns)}")
+        print(f"Available columns: {list(df_filtered.columns)}")
         print(f"Gender column found: {gender_column}")
         
         if gender_column is None:
-            print("Gender column not found - available columns:", list(filtered_df.columns))
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'label': 'Jantina',
-                    'data': [1]
-                }]
-            })
+            print("Gender column not found - available columns:", list(df_filtered.columns))
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Gender Distribution"
+            ))
         
         # Clean data first
-        gender_data = filtered_df[gender_column].dropna()
+        gender_data = df_filtered[gender_column].dropna()
         
         if gender_data.empty:
-            return jsonify({
-                'labels': ['No Gender Data'],
-                'datasets': [{
-                    'label': 'Jantina',
-                    'data': [1]
-                }]
-            })
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([1], index=['No Gender Data']),
+                "Gender Distribution"
+            ))
         
         # Get gender distribution counts (EXACT COLAB REPLICATION)
         gender_counts = gender_data.value_counts()
@@ -470,23 +538,12 @@ def api_gender_distribution():
         print(f"Gender counts: {gender_counts}")
         
         if gender_counts.empty:
-            return jsonify({
-                'labels': ['No Gender Data'],
-                'datasets': [{
-                    'label': 'Jantina',
-                    'data': [1]
-                }]
-            })
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([1], index=['No Gender Data']),
+                "Gender Distribution"
+            ))
         
-        # STANDARDIZED PIE CHART FORMAT
-        chart_data = {
-            'labels': [str(label) for label in gender_counts.index.tolist()],
-            'datasets': [{
-                'label': 'Taburan Jantina',
-                'data': [int(val) for val in gender_counts.values.tolist()]
-            }]
-        }
-        
+        chart_data = formatter.format_pie_chart(gender_counts, "Gender Distribution")
         print(f"Chart data: {chart_data}")
         return jsonify(chart_data)
         
@@ -494,14 +551,10 @@ def api_gender_distribution():
         print(f"Error in gender distribution endpoint: {str(e)}")
         import traceback
         print(f"Full traceback: {traceback.format_exc()}")
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error'],
-            'datasets': [{
-                'label': 'Error',
-                'data': [1]
-            }]
-        }), 500
+        return jsonify(formatter.format_pie_chart(
+            pd.Series([1], index=['Error']),
+            "Error"
+        )), 500
 
 @demografi_bp.route('/api/institution-category')
 def api_institution_category():
@@ -516,10 +569,10 @@ def api_institution_category():
         
         print(f"Institution category filters: {filters}")
         
-        filtered_processor = data_processor.apply_filters(filters)
-        filtered_df = filtered_processor.filtered_df
+        # Use debug filter application
+        df_filtered = debug_filter_application(data_processor.df, filters)
         
-        print(f"Institution category filtered data shape: {filtered_df.shape}")
+        print(f"Institution category filtered data shape: {df_filtered.shape}")
         
         # Try multiple possible column names
         institution_columns = [
@@ -531,22 +584,19 @@ def api_institution_category():
         
         # Find the correct column name
         for col in institution_columns:
-            if col in filtered_df.columns:
+            if col in df_filtered.columns:
                 institution_column = col
                 break
         
-        print(f"Available columns: {list(filtered_df.columns)}")
+        print(f"Available columns: {list(df_filtered.columns)}")
         print(f"Institution column found: {institution_column}")
         
         if institution_column is None:
-            print("Institution column not found - available columns:", list(filtered_df.columns))
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'label': 'Institusi',
-                    'data': [1]
-                }]
-            })
+            print("Institution column not found - available columns:", list(df_filtered.columns))
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Institution Categories"
+            ))
         
         # Apply categorization function (EXACT COLAB REPLICATION)
         def categorize_institution(cell):
@@ -561,32 +611,21 @@ def api_institution_category():
                 return 'Other'
         
         # Apply categorization to the filtered data
-        filtered_df_copy = filtered_df.copy()
-        filtered_df_copy['Institution_Category'] = filtered_df_copy[institution_column].apply(categorize_institution)
+        df_filtered_copy = df_filtered.copy()
+        df_filtered_copy['Institution_Category'] = df_filtered_copy[institution_column].apply(categorize_institution)
         
         # Get institution category counts
-        institution_counts = filtered_df_copy['Institution_Category'].dropna().value_counts()
+        institution_counts = df_filtered_copy['Institution_Category'].dropna().value_counts()
         
         print(f"Institution counts: {institution_counts}")
         
         if institution_counts.empty:
-            return jsonify({
-                'labels': ['No Institution Data'],
-                'datasets': [{
-                    'label': 'Institusi',
-                    'data': [1]
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Institution Data']),
+                "Institution Categories"
+            ))
         
-        # STANDARDIZED VERTICAL BAR CHART FORMAT
-        chart_data = {
-            'labels': [str(label) for label in institution_counts.index.tolist()],
-            'datasets': [{
-                'label': 'Bilangan Responden',
-                'data': [int(val) for val in institution_counts.values.tolist()]
-            }]
-        }
-        
+        chart_data = formatter.format_bar_chart(institution_counts, "Institution Categories", sort_desc=True)
         print(f"Chart data: {chart_data}")
         return jsonify(chart_data)
         
@@ -594,14 +633,10 @@ def api_institution_category():
         print(f"Error in institution category endpoint: {str(e)}")
         import traceback
         print(f"Full traceback: {traceback.format_exc()}")
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error'],
-            'datasets': [{
-                'label': 'Error',
-                'data': [1]
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error']),
+            "Error"
+        )), 500
 
 @demografi_bp.route('/api/field-of-study')
 def api_field_of_study():
@@ -616,10 +651,10 @@ def api_field_of_study():
         
         print(f"Field of study filters: {filters}")
         
-        filtered_processor = data_processor.apply_filters(filters)
-        filtered_df = filtered_processor.filtered_df
+        # Use debug filter application
+        df_filtered = debug_filter_application(data_processor.df, filters)
         
-        print(f"Field of study filtered data shape: {filtered_df.shape}")
+        print(f"Field of study filtered data shape: {df_filtered.shape}")
         
         # Try multiple possible column names
         field_columns = [
@@ -631,22 +666,19 @@ def api_field_of_study():
         
         # Find the correct column name
         for col in field_columns:
-            if col in filtered_df.columns:
+            if col in df_filtered.columns:
                 field_column = col
                 break
         
-        print(f"Available columns: {list(filtered_df.columns)}")
+        print(f"Available columns: {list(df_filtered.columns)}")
         print(f"Field column found: {field_column}")
         
         if field_column is None:
-            print("Field column not found - available columns:", list(filtered_df.columns))
-            return jsonify({
-                'labels': ['No Data Available'],
-                'datasets': [{
-                    'label': 'Bidang Pengajian',
-                    'data': [1]
-                }]
-            })
+            print("Field column not found - available columns:", list(df_filtered.columns))
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Field of Study"
+            ))
         
         # EXACT COLAB REPLICATION - Field of study mapping
         field_of_study_mapping = {
@@ -687,33 +719,22 @@ def api_field_of_study():
             return field_of_study_mapping.get(cell_str, 'Other')
         
         # Create a copy and apply grouping
-        filtered_df_copy = filtered_df.copy()
-        filtered_df_copy['Bidang_pengajian'] = filtered_df_copy[field_column].apply(group_field_of_study)
+        df_filtered_copy = df_filtered.copy()
+        df_filtered_copy['Bidang_pengajian'] = df_filtered_copy[field_column].apply(group_field_of_study)
         
         # Get field of study counts
-        field_counts = filtered_df_copy['Bidang_pengajian'].dropna().value_counts()
+        field_counts = df_filtered_copy['Bidang_pengajian'].dropna().value_counts()
         
-        print(f"Field of study sample values: {filtered_df_copy[field_column].head()}")
+        print(f"Field of study sample values: {df_filtered_copy[field_column].head()}")
         print(f"Field counts: {field_counts}")
         
         if field_counts.empty:
-            return jsonify({
-                'labels': ['No Field Data'],
-                'datasets': [{
-                    'label': 'Bidang Pengajian',
-                    'data': [1]
-                }]
-            })
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Field Data']),
+                "Field of Study"
+            ))
         
-        # STANDARDIZED VERTICAL BAR CHART FORMAT
-        chart_data = {
-            'labels': [str(label) for label in field_counts.index.tolist()],
-            'datasets': [{
-                'label': 'Bilangan Responden',
-                'data': [int(val) for val in field_counts.values.tolist()]
-            }]
-        }
-        
+        chart_data = formatter.format_bar_chart(field_counts, "Field of Study", sort_desc=True)
         print(f"Chart data: {chart_data}")
         return jsonify(chart_data)
         
@@ -721,14 +742,10 @@ def api_field_of_study():
         print(f"Error in field of study endpoint: {str(e)}")
         import traceback
         print(f"Full traceback: {traceback.format_exc()}")
-        return jsonify({
-            'error': str(e),
-            'labels': ['Error Loading Field Data'],
-            'datasets': [{
-                'label': 'Error',
-                'data': [1]
-            }]
-        }), 500
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Field Data']),
+            "Error"
+        )), 500
 
 @demografi_bp.route('/api/table-data')
 def api_table_data():
@@ -744,7 +761,8 @@ def api_table_data():
         
         print(f"Table data filters: {filters}")
         
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use debug filter application
+        df_filtered = debug_filter_application(data_processor.df, filters)
         
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 50))
@@ -752,20 +770,51 @@ def api_table_data():
         
         # Define relevant columns for demografi
         relevant_columns = [
-            'Tahun graduasi anda? ',
-            'Umur anda? ',
-            'Jantina anda? ',
-            'Institusi pendidikan MARA yang anda hadiri? ',
-            'Bidang pengajian utama anda? ',
-            'Program pengajian yang anda ikuti? '
+            'Tahun graduasi anda?',
+            'Umur anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Bidang pengajian utama anda?',
+            'Program pengajian yang anda ikuti?'
         ]
         
-        available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
+        available_columns = [col for col in relevant_columns if col in df_filtered.columns]
         
-        data = filtered_processor.get_table_data(page, per_page, search, available_columns)
+        # Manual pagination and search implementation
+        if search:
+            search_mask = df_filtered[available_columns].astype(str).apply(
+                lambda x: x.str.contains(search, case=False, na=False)
+            ).any(axis=1)
+            df_filtered = df_filtered[search_mask]
+        
+        total_records = len(df_filtered)
+        total_pages = (total_records + per_page - 1) // per_page
+        
+        # Apply pagination
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+        df_page = df_filtered[available_columns].iloc[start_idx:end_idx]
+        
+        # Convert to records
+        records = df_page.to_dict('records')
+        
+        data = {
+            'data': records,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': total_records,
+                'pages': total_pages
+            },
+            'columns': available_columns
+        }
+        
         return jsonify(data)
         
     except Exception as e:
+        print(f"TABLE DATA ERROR: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'error': str(e),
             'data': [],
@@ -792,32 +841,28 @@ def api_export():
         
         print(f"All filters for export: {filters}")
         
-        # Apply filters to get filtered data
-        filtered_processor = data_processor.apply_filters(filters)
-        filtered_df = filtered_processor.filtered_df
+        # Use debug filter application
+        df_filtered = debug_filter_application(data_processor.df, filters)
         
-        print(f"Filtered data shape: {filtered_df.shape}")
+        print(f"Filtered data shape: {df_filtered.shape}")
         
-        if filtered_df.empty:
+        if df_filtered.empty:
             print("No data after filtering")
             return jsonify({'error': 'No data available for export'}), 400
         
         # Define relevant columns for export
         relevant_columns = [
             'Timestamp',
-            'Tahun graduasi anda? ',
-            'Umur anda? ',
-            'Jantina anda? ',
-            'Institusi pendidikan MARA yang anda hadiri? ',
-            'Bidang pengajian utama anda? ',
-            'Program pengajian yang anda ikuti? '
+            'Tahun graduasi anda?',
+            'Umur anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Bidang pengajian utama anda?',
+            'Program pengajian yang anda ikuti?'
         ]
         
         # Get only available columns
-        available_columns = []
-        for col in relevant_columns:
-            if col in filtered_df.columns:
-                available_columns.append(col)
+        available_columns = [col for col in relevant_columns if col in df_filtered.columns]
         
         print(f"Available columns for export: {available_columns}")
         
@@ -825,34 +870,32 @@ def api_export():
             return jsonify({'error': 'No relevant columns found for export'}), 400
         
         # Select only relevant columns
-        export_df = filtered_df[available_columns].copy()
+        export_df = df_filtered[available_columns].copy()
         
         # Generate export data based on format
+        buffer = io.BytesIO()
+        
         if format_type == 'csv':
-            output = io.StringIO()
-            export_df.to_csv(output, index=False, encoding='utf-8')
-            data = output.getvalue().encode('utf-8')
+            export_df.to_csv(buffer, index=False, encoding='utf-8')
             mimetype = 'text/csv'
             filename = f'demografi_data_{len(export_df)}_records.csv'
             
         elif format_type == 'excel':
-            output = io.BytesIO()
-            with pd.ExcelWriter(output, engine='openpyxl') as writer:
-                export_df.to_excel(writer, sheet_name='Demografi Data', index=False)
-            data = output.getvalue()
+            export_df.to_excel(buffer, index=False, engine='openpyxl')
             mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             filename = f'demografi_data_{len(export_df)}_records.xlsx'
             
         else:
-            # JSON format
-            data = export_df.to_json(orient='records', indent=2).encode('utf-8')
+            export_df.to_json(buffer, orient='records', indent=2)
             mimetype = 'application/json'
             filename = f'demografi_data_{len(export_df)}_records.json'
         
-        print(f"Export successful: {format_type}, {len(export_df)} records, {len(data)} bytes")
+        buffer.seek(0)
+        
+        print(f"Export successful: {format_type}, {len(export_df)} records, {len(buffer.getvalue())} bytes")
         
         return send_file(
-            io.BytesIO(data),
+            buffer,
             mimetype=mimetype,
             as_attachment=True,
             download_name=filename
@@ -864,23 +907,51 @@ def api_export():
         print(f"Full traceback: {traceback.format_exc()}")
         return jsonify({'error': str(e)}), 500
 
+def extract_graduation_year(val):
+    """Enhanced graduation year extraction"""
+    if pd.isna(val):
+        return None
+    
+    val_str = str(val).strip()
+    
+    # Method 1: Direct number
+    try:
+        clean_val = val_str.replace(',', '').replace('.0', '')
+        if clean_val.isdigit():
+            year = int(clean_val)
+            if 1990 <= year <= 2030:
+                return year
+    except:
+        pass
+    
+    # Method 2: Extract 4-digit years using regex
+    year_pattern = r'\b(19|20)\d{2}\b'
+    matches = re.findall(year_pattern, val_str)
+    if matches:
+        for match in matches:
+            year = int(match)
+            if 1990 <= year <= 2030:
+                return year
+    
+    return None
+
 @demografi_bp.route('/api/filters/available')
 def api_available_filters():
-    """Get available filter options for demografi data"""
+    """Get available filter options for demografi data with enhanced debugging"""
     try:
         sample_df = data_processor.df
         filters = {}
         
+        print(f"\n=== DEMOGRAFI FILTERS DEBUG ===")
         print(f"All available columns: {list(sample_df.columns)}")
         
         # Define the exact column names that should be used for filtering
-        # These should match what the frontend sends
         filter_mappings = {
-            'Tahun graduasi anda? ': ['Tahun graduasi anda?', 'Tahun graduasi anda? ', 'Tahun graduasi anda'],
-            'Jantina anda? ': ['Jantina anda?', 'Jantina anda? ', 'Jantina anda'],
-            'Umur anda? ': ['Umur anda?', 'Umur anda? ', 'Umur anda'],
-            'Institusi pendidikan MARA yang anda hadiri? ': ['Institusi pendidikan MARA yang anda hadiri?', 'Institusi pendidikan MARA yang anda hadiri? ', 'Institusi pendidikan MARA yang anda hadiri'],
-            'Bidang pengajian utama anda? ': ['Bidang pengajian utama anda?', 'Bidang pengajian utama anda? ', 'Bidang pengajian utama anda'],
+            'Tahun graduasi anda?': ['Tahun graduasi anda?', 'Tahun graduasi anda? ', 'Tahun graduasi anda'],
+            'Jantina anda?': ['Jantina anda?', 'Jantina anda? ', 'Jantina anda'],
+            'Umur anda?': ['Umur anda?', 'Umur anda? ', 'Umur anda'],
+            'Institusi pendidikan MARA yang anda hadiri?': ['Institusi pendidikan MARA yang anda hadiri?', 'Institusi pendidikan MARA yang anda hadiri? ', 'Institusi pendidikan MARA yang anda hadiri'],
+            'Bidang pengajian utama anda?': ['Bidang pengajian utama anda?', 'Bidang pengajian utama anda? ', 'Bidang pengajian utama anda'],
         }
         
         for expected_key, possible_columns in filter_mappings.items():
@@ -891,16 +962,49 @@ def api_available_filters():
                     break
             
             if found_column:
-                unique_values = sample_df[found_column].dropna().unique().tolist()
-                if isinstance(unique_values[0] if unique_values else None, (int, float)):
-                    unique_values = sorted(unique_values)
+                non_null_data = sample_df[found_column].dropna()
+                print(f"\nProcessing filter '{expected_key}' from column '{found_column}':")
+                print(f"  Non-null values: {len(non_null_data)}/{len(sample_df)}")
+                
+                if len(non_null_data) == 0:
+                    filters[expected_key] = []
+                    continue
+                
+                unique_values = non_null_data.unique()
+                print(f"  Unique values: {len(unique_values)}")
+                
+                # Special handling for graduation year
+                if 'Tahun graduasi' in expected_key or 'graduasi' in expected_key.lower():
+                    processed_years = set()
+                    for val in unique_values:
+                        if pd.notna(val):
+                            year = extract_graduation_year(val)
+                            if year:
+                                processed_years.add(year)
+                    
+                    final_years = sorted(list(processed_years))
+                    filters[expected_key] = final_years
+                    print(f"  Graduation years processed: {final_years}")
+                    
+                elif isinstance(unique_values[0] if len(unique_values) > 0 else None, (int, float)):
+                    # Other numeric columns
+                    unique_values = sorted([val for val in unique_values if pd.notna(val)])
+                    filters[expected_key] = unique_values
+                    print(f"  Numeric values: {len(unique_values)} items")
                 else:
-                    unique_values = sorted([str(val) for val in unique_values])
-                filters[expected_key] = unique_values
-                print(f"Found filter '{expected_key}' in column '{found_column}': {len(unique_values)} values")
+                    # String columns
+                    unique_values = sorted([str(val) for val in unique_values if pd.notna(val) and str(val).strip()])
+                    filters[expected_key] = unique_values
+                    print(f"  String values: {len(unique_values)} items")
+                    print(f"  Sample: {unique_values[:3]}...")
+                    
             else:
                 print(f"Column not found for filter '{expected_key}'")
                 filters[expected_key] = []
+        
+        print(f"\n=== FINAL FILTER SUMMARY ===")
+        for col, values in filters.items():
+            print(f"  {col}: {len(values)} values")
         
         return jsonify(filters)
         

@@ -1,7 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div x-data="sektorGajiDashboard()" x-init="init()" class="px-6 pb-6 space-y-6 bg-white min-h-screen">
+<!-- Prevent layout shift during load -->
+<style>
+    /* Prevent any flashing/shifting during load */
+    [x-cloak] { display: none !important; }
+    
+    /* Ensure stable layout */
+    .dashboard-container {
+        min-height: 100vh;
+        width: 100%;
+    }
+    /* Prevent filter dropdown from flashing */
+    [x-data] [x-show] {
+        transition-delay: 0.1s;
+    }
+</style>
+
+<div x-data="sektorGajiDashboard()" x-init="init()" x-cloak class="dashboard-container px-6 pb-6 space-y-6 bg-white min-h-screen">
     <!-- Header Section -->
     <div class="relative">
         <div class="flex flex-row border-b border-gray-300 justify-between py-4 -mx-6">
@@ -23,23 +39,25 @@
             <div class="flex flex-row space-x-4 px-6">
                 <!-- Enhanced Filters Dropdown -->
                 <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                    <button @click.stop="open = !open"
+                    <button @click="open = !open"
                         class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400">
                         <i class="fas fa-filter text-primary-700 text-[10px]"></i>
-                        <span class="font-semibold text-primary-700 text-[10px]">Penapisan</span>
+                        <span class="font-semibold text-primary-700 text-[10px] ml-1">Penapisan</span>
                         <div x-show="activeFiltersCount > 0" x-transition
-                            class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
+                            class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold ml-2"
                             x-text="activeFiltersCount"></div>
                     </button>
 
                     <!-- Enhanced Filter Dropdown -->
-                    <div x-show="open" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
-                        class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
+                         class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+                         style="display: none;">
                         <div class="px-6 py-5">
                             <!-- Header -->
                             <div class="flex items-center justify-between mb-5">
@@ -57,7 +75,7 @@
                             </div>
 
                             <!-- Filter Options -->
-                            <div class="space-y-5">
+                            <div class="space-y-4">
                                 <!-- Graduation Year -->
                                 <div class="filter-section">
                                     <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
@@ -178,19 +196,21 @@
 
                 <!-- Enhanced Export Button -->
                 <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                    <button @click.stop="open = !open"
+                    <button @click="open = !open"
                         class="button-style-fulll-blue flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-md transition-all duration-200 shadow-lg shadow-primary-700/30 group transform hover:scale-105">
                         <i class="fas fa-download text-[10px] group-hover:animate-bounce"></i>
-                        <span class="font-semibold text-[10px]">Eksport</span>
+                        <span class="font-semibold text-[10px] ml-1">Eksport</span>
                     </button>
 
-                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
-                        class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
+                         class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+                         style="display: none;">
                         <div class="py-2">
                             <button @click="exportData('csv'); open = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
@@ -219,7 +239,7 @@
                     class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400"
                     :disabled="loading">
                     <i class="fas fa-sync-alt text-primary-700 text-[10px]" :class="{ 'animate-spin': loading }"></i>
-                    <span class="font-semibold text-primary-700 text-[10px]">Muat Semula</span>
+                    <span class="font-semibold text-primary-700 text-[10px] ml-1">Muat Semula</span>
                 </button>
             </div>
         </div>
@@ -272,7 +292,6 @@
         </div>
     </div>
 
-    <!-- Enhanced Main Content - Bento Grid Layout -->
     <!-- Enhanced Main Content - Bento Grid Layout -->
     <div class="grid grid-cols-12 gap-6 auto-rows-auto">
 
@@ -379,15 +398,22 @@
                         <p class="text-gray-600 text-[10px] mt-1">Julat gaji berdasarkan bidang pengajian</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Salary by Field', buildTableEndpoint())"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="refreshChart('salary-field')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -422,15 +448,22 @@
                         <p class="text-gray-600 text-[10px] mt-1">Julat gaji berdasarkan tahap pendidikan</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="refreshChart('salary-education'')"
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Salary by Education', buildTableEndpoint())"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-table text-xs"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="refreshChart('salary-education')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -465,15 +498,22 @@
                         <p class="text-gray-600 text-xs mt-1">Taburan sektor pekerjaan</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Employment Sectors', buildTableEndpoint())"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="refreshChart('employment-sectors')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -508,15 +548,22 @@
                         <p class="text-gray-600 text-[10px] mt-1">Julat gaji berdasarkan sektor industri</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Salary by Industry', buildTableEndpoint())"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="refreshChart('salary-industry')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -553,15 +600,22 @@
                         </p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Expected vs Current Salary', buildTableEndpoint())"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="refreshChart('expected-current')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -596,15 +650,22 @@
                         <p class="text-gray-600 text-xs mt-1">Gaji sesuai dengan kelulusan</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Salary Commensurate', buildTableEndpoint())"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="refreshChart('salary-commensurate')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -629,21 +690,6 @@
     </div>
 </div>
 
-<!-- Click outside handler to close dropdowns -->
-<script>
-    document.addEventListener('click', function (event)
-    {
-        // Close all dropdowns when clicking outside
-        const dropdowns = document.querySelectorAll('[x-data*="open"]');
-        dropdowns.forEach(dropdown =>
-        {
-            if (!dropdown.contains(event.target))
-            {
-                Alpine.store('dropdowns', { open: false });
-            }
-        });
-    });
-</script>
 {% endblock %}
 
 {% block scripts %}
@@ -693,12 +739,14 @@
                     const data = await response.json();
 
                     this.availableFilters = {
-                        graduation_years: data[ 'Tahun graduasi anda?' ] || [],
-                        genders: data[ 'Jantina anda?' ] || [],
-                        fields_of_study: data[ 'Bidang pengajian' ] || [],
-                        education_levels: data[ 'Tahap pendidikan tertinggi' ] || [],
-                        employment_sectors: data[ 'Apakah sektor pekerjaan anda?' ] || []
+                        graduation_years: data['Tahun graduasi anda?'] || [],
+                        genders: data['Jantina anda?'] || [],
+                        fields_of_study: data['Bidang pengajian'] || [],
+                        education_levels: data['Tahap pendidikan tertinggi'] || [],
+                        employment_sectors: data['Apakah sektor pekerjaan anda?'] || []
                     };
+                    
+                    console.log('Available filters loaded:', this.availableFilters);
                 } catch (error)
                 {
                     console.error('Error loading filters:', error);
@@ -750,30 +798,22 @@
                 try
                 {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/sektor-gaji/api/summary?${params}`);
-
-                    if (!response.ok)
-                    {
+                    const url = `/sektor-gaji/api/summary?${params}`;
+                    console.log('Loading summary from:', url);
+                    
+                    const response = await fetch(url);
+                    if (!response.ok) {
                         const errorText = await response.text();
                         console.error('Summary API error:', response.status, errorText);
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        throw new Error(`Failed to load summary: ${response.status}`);
                     }
-
+                    
                     const data = await response.json();
-
-                    if (data.error)
-                    {
-                        console.error('Summary data error:', data.error);
-                        throw new Error(data.error);
-                    }
-
+                    console.log('Summary data received:', data);
                     this.kpis = data;
-                    console.log('Loaded summary data:', data);
-
                 } catch (error)
                 {
                     console.error('Error loading summary:', error);
-                    // Set default values on error
                     this.kpis = {
                         total_records: 0,
                         avg_salary_range: 'N/A',
@@ -783,7 +823,7 @@
                         private_sector_rate: 0,
                         most_common_field: 'N/A'
                     };
-                    this.showToast('Ralat memuatkan ringkasan data', 'error');
+                    this.showToast('Error loading summary data', 'error');
                 }
             },
 
@@ -792,8 +832,16 @@
                 try
                 {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/sektor-gaji/api/salary-by-field?${params}`);
+                    const url = `/sektor-gaji/api/salary-by-field?${params}`;
+                    console.log('Loading salary by field from:', url);
+                    
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`Failed to load salary by field: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
+                    console.log('Salary by field data:', data);
 
                     this.safeDestroyChart('salaryByField');
 
@@ -849,6 +897,7 @@
                 } catch (error)
                 {
                     console.error('Error loading salary by field chart:', error);
+                    this.showToast(`Error loading salary by field: ${error.message}`, 'error');
                 }
             },
 
@@ -857,10 +906,18 @@
                 try
                 {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/sektor-gaji/api/salary-by-education?${params}`);
+                    const url = `/sektor-gaji/api/salary-by-education?${params}`;
+                    console.log('Loading salary by education from:', url);
+                    
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Education API error:', response.status, errorText);
+                        throw new Error(`Failed to load salary by education: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
-
-                    console.log('Salary by education data:', data); // Debug log
+                    console.log('Salary by education data:', data);
 
                     this.safeDestroyChart('salaryByEducation');
 
@@ -882,7 +939,7 @@
                                 // Wrap labels using helper
                                 const chartData = {
                                     ...data,
-                                    labels: data.labels.map(label => this.wrapLabel(label, 18)) // Adjust line length as needed
+                                    labels: data.labels.map(label => this.wrapLabel(label, 18))
                                 };
 
                                 window.globalCharts.salaryByEducation = EnhancedChartFactory.createChart(
@@ -911,7 +968,7 @@
                                                     font: { size: 10 },
                                                     maxRotation: 0,
                                                     minRotation: 0,
-                                                    autoSkip: false // Prevent skipping any labels
+                                                    autoSkip: false
                                                 },
                                                 grid: {
                                                     display: false
@@ -927,14 +984,14 @@
                                         },
                                         layout: {
                                             padding: {
-                                                bottom: 30 // Accommodate multiline labels
+                                                bottom: 30
                                             }
                                         }
                                     }
                                 );
+                                console.log('Education chart created successfully');
                             } else
                             {
-                                // Show error message on canvas
                                 console.log('No valid data for education chart, showing error');
                                 this.showChartError('salaryByEducationChart', 'Tiada data pendidikan tersedia');
                             }
@@ -944,6 +1001,7 @@
                 {
                     console.error('Error loading salary by education chart:', error);
                     this.showChartError('salaryByEducationChart', 'Ralat memuatkan data pendidikan');
+                    this.showToast(`Error loading education chart: ${error.message}`, 'error');
                 }
             },
 
@@ -1133,10 +1191,8 @@
                     } else
                     {
                         if (currentLine) lines.push(currentLine);
-                        // If word is longer than maxCharsPerLine, split it
                         if (word.length > maxCharsPerLine)
                         {
-                            let splitWord = '';
                             for (let i = 0; i < word.length; i += maxCharsPerLine)
                             {
                                 lines.push(word.slice(i, i + maxCharsPerLine));
@@ -1174,7 +1230,7 @@
                             // Wrap labels using helper
                             const chartData = {
                                 ...data,
-                                labels: data.labels.map(label => this.wrapLabel(label, 12)) // Shorter lines due to likely longer labels
+                                labels: data.labels.map(label => this.wrapLabel(label, 12))
                             };
 
                             window.globalCharts.salaryCommensurate = EnhancedChartFactory.createChart(
@@ -1249,19 +1305,35 @@
             buildFilterParams()
             {
                 const params = new URLSearchParams();
-                Object.entries(this.filters).forEach(([ key, values ]) =>
-                {
-                    if (Array.isArray(values) && values.length > 0)
-                    {
-                        const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
-                            key === 'gender' ? 'Jantina anda?' :
-                                key === 'field_of_study' ? 'Bidang pengajian' :
-                                    key === 'education_level' ? 'Tahap pendidikan tertinggi' :
-                                        key === 'employment_sector' ? 'Apakah sektor pekerjaan anda?' : key;
-                        values.forEach(value => params.append(paramKey, value));
+                
+                // Fixed mapping - ensure exact column names are used
+                const filterMapping = {
+                    graduation_year: 'Tahun graduasi anda?',
+                    gender: 'Jantina anda?',
+                    field_of_study: 'Bidang pengajian',
+                    education_level: 'Tahap pendidikan tertinggi',
+                    employment_sector: 'Apakah sektor pekerjaan anda?'
+                };
+                
+                Object.entries(this.filters).forEach(([key, values]) => {
+                    if (Array.isArray(values) && values.length > 0) {
+                        const paramKey = filterMapping[key] || key;
+                        values.forEach(value => {
+                            // Convert graduation year to string to match backend expectations
+                            const finalValue = key === 'graduation_year' ? String(value) : String(value);
+                            params.append(paramKey, finalValue);
+                        });
                     }
                 });
+                
+                console.log('Filter params built:', params.toString());
+                console.log('Current filters:', this.filters);
                 return params.toString();
+            },
+
+            buildTableEndpoint() {
+                const params = this.buildFilterParams();
+                return `/sektor-gaji/api/table-data?${params}`;
             },
 
             applyFilters()
@@ -1341,12 +1413,13 @@
                 }
             },
 
-            openTableModal(title)
+            openTableModal(title, endpoint)
             {
-                const params = this.buildFilterParams();
-                if (typeof openModal !== 'undefined')
-                {
-                    openModal(title, `/sektor-gaji/api/table-data?${params}`);
+                if (typeof window.modalManagerInstance !== 'undefined' && window.modalManagerInstance) {
+                    window.modalManagerInstance.openModal(title, endpoint);
+                } else {
+                    console.error('Modal manager not available');
+                    this.showToast('Modal manager tidak tersedia', 'error');
                 }
             },
 
@@ -1358,7 +1431,6 @@
                     const container = canvas.parentElement;
                     if (container)
                     {
-                        // Remove existing error messages
                         const existingError = container.querySelector('.chart-error-message');
                         if (existingError)
                         {
@@ -1375,12 +1447,11 @@
                             </div>
                         `;
                         container.appendChild(errorDiv);
-
-                        // Hide the canvas
                         canvas.style.display = 'none';
                     }
                 }
             },
+
             showToast(message, type = 'info')
             {
                 if (typeof showToast !== 'undefined')
@@ -1411,115 +1482,5 @@
             }
         }
     }
-
-    // FIXED: Safe dropdown state management (removed problematic unload events)
-    let dropdownStates = new Map();
-
-    // Close all dropdowns function
-    function closeAllDropdowns()
-    {
-        document.querySelectorAll('[x-data]').forEach(element =>
-        {
-            try
-            {
-                if (element._x_dataStack)
-                {
-                    element._x_dataStack.forEach(data =>
-                    {
-                        if (data.open !== undefined)
-                        {
-                            data.open = false;
-                        }
-                    });
-                }
-            } catch (e)
-            {
-                // Silently handle any Alpine.js state access errors
-            }
-        });
-        dropdownStates.clear();
-    }
-
-    // Close dropdowns on safe navigation events only
-    window.addEventListener('beforeunload', closeAllDropdowns);
-    window.addEventListener('pagehide', closeAllDropdowns);
-    // Removed 'unload' event listener to avoid permissions policy violation
-
-    // Close dropdowns on navigation (for SPAs)
-    if (typeof window.navigation !== 'undefined')
-    {
-        window.navigation.addEventListener('navigate', closeAllDropdowns);
-    }
-
-    // Close dropdowns on popstate (back/forward buttons)
-    window.addEventListener('popstate', closeAllDropdowns);
-
-    // Close dropdowns on hash change
-    window.addEventListener('hashchange', closeAllDropdowns);
-
-    // Close dropdowns when DOM changes (navigation in dynamic apps)
-    document.addEventListener('DOMContentLoaded', function ()
-    {
-        // Close any existing dropdowns on page load
-        setTimeout(closeAllDropdowns, 100);
-
-        // Monitor for navigation changes
-        const observer = new MutationObserver(function (mutations)
-        {
-            let shouldCloseDropdowns = false;
-
-            mutations.forEach(function (mutation)
-            {
-                if (mutation.type === 'childList')
-                {
-                    // Check if significant DOM changes occurred (likely navigation)
-                    if (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0)
-                    {
-                        mutation.addedNodes.forEach(node =>
-                        {
-                            if (node.nodeType === 1 && (node.tagName === 'DIV' || node.tagName === 'SECTION'))
-                            {
-                                shouldCloseDropdowns = true;
-                            }
-                        });
-                    }
-                }
-            });
-
-            if (shouldCloseDropdowns)
-            {
-                setTimeout(closeAllDropdowns, 50);
-            }
-        });
-
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-
-        // Additional safety: periodically check and close orphaned dropdowns
-        setInterval(() =>
-        {
-            document.querySelectorAll('[x-data]').forEach(element =>
-            {
-                try
-                {
-                    if (element._x_dataStack)
-                    {
-                        element._x_dataStack.forEach(data =>
-                        {
-                            if (data.open && !element.isConnected)
-                            {
-                                data.open = false;
-                            }
-                        });
-                    }
-                } catch (e)
-                {
-                    // Silently handle any errors
-                }
-            });
-        }, 5000);
-    });
 </script>
 {% endblock %}

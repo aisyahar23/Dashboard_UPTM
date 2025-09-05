@@ -204,6 +204,7 @@
 
     <!-- Main Content -->
     <div class="grid grid-cols-12 gap-6 auto-rows-auto">
+        <!-- FIXED KPI SECTION - Now showing 4 KPIs properly -->
         <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             <!-- Total Respondents -->
             <div
@@ -223,8 +224,8 @@
             <div
                 class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
                 <div class="flex flex-row justify-start">
-                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-graduation-cap text-lg text-[#074e7e]"></i>
+                    <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-graduation-cap text-lg text-green-600"></i>
                     </div>
                     <div class="text-left ml-4">
                         <div class="text-sm text-gray-500">Kadar Latihan Industri</div>
@@ -261,7 +262,8 @@
                 </div>
             </div>
         </div>
-        <!-- End Main Content -->
+
+        <!-- FIXED CHART SECTIONS -->
         <!-- Internship Participation - 6 cols -->
         <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
             <div class="px-6 py-3 text-black border-b border-gray-300">
@@ -274,7 +276,7 @@
                     <div class="flex space-x-1">
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
-                            <button @click="openTableModal('Internship Data')"
+                            <button @click="openChartModal('internship-participation', 'Penyertaan Latihan Industri')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -325,7 +327,7 @@
                     <div class="flex space-x-1">
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
-                            <button @click="openTableModal('Benefits Data')"
+                            <button @click="openChartModal('internship-benefits', 'Manfaat Latihan Industri')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -375,7 +377,7 @@
                     <div class="flex space-x-1">
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
-                            <button @click="openTableModal('No Internship Data')"
+                            <button @click="openChartModal('no-internship-reasons', 'Sebab Tiada Latihan Industri')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -414,7 +416,7 @@
             </div>
         </div>
 
-        <!-- Grouped Challenges Analysis - 6 cols -->
+        <!-- FIXED Grouped Challenges Analysis - 6 cols with refresh button -->
         <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
@@ -425,13 +427,25 @@
                     <div class="flex space-x-1">
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
-                            <button @click="openTableModal('Grouped Challenges')"
+                            <button @click="openChartModal('grouped-challenges', 'Analisis Kategori Cabaran')"
                                 class="flex items-center justify-center w-8 h-8 p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
                             <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
         bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="refreshChart('grouped')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i
+                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
                             </div>
                         </div>
                         <div class="flex flex-row items-center relative group">
@@ -474,7 +488,7 @@
                     <div class="flex space-x-1">
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
-                            <button @click="openTableModal('Challenges Data')"
+                            <button @click="openChartModal('employment-challenges', 'Cabaran Pekerjaan')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -513,756 +527,655 @@
             </div>
         </div>
     </div>
-    {% endblock %}
+</div>
+{% endblock %}
 
-    {% block scripts %}
-    <script>
-        function internDashboard()
-        {
-            return {
-                loading: false,
-                dataLoaded: false,
-                kpis: {},
-                isInitialized: false,
-                filters: {
+{% block scripts %}
+<!-- Load Modal Manager -->
+<script src="{{ url_for('static', filename='js/modal-manager.js') }}"></script>
+
+<script>
+    function internDashboard() {
+        return {
+            loading: false,
+            dataLoaded: false,
+            kpis: {},
+            isInitialized: false,
+            filters: {
+                graduation_year: [],
+                gender: [],
+                institution: []
+            },
+            availableFilters: {},
+            activeFiltersCount: 0,
+            charts: {}, // Store chart instances
+
+            init() {
+                console.log('Initializing intern dashboard...');
+                if (this.isInitialized) return;
+                this.isInitialized = true;
+                this.waitForChart();
+                this.loadAvailableFilters();
+            },
+
+            waitForChart() {
+                // Wait for both Chart.js and our centralized config to load
+                if (typeof Chart === 'undefined' ||
+                    typeof EnhancedChartFactory === 'undefined' ||
+                    typeof ChartConfig === 'undefined') {
+                    setTimeout(() => this.waitForChart(), 100);
+                    return;
+                }
+                console.log('Chart libraries loaded, initializing dashboard...');
+                this.loadData();
+            },
+
+            async loadAvailableFilters() {
+                try {
+                    const response = await fetch('/intern/api/filters/available');
+                    const data = await response.json();
+
+                    console.log('Raw filter data received:', data);
+
+                    this.availableFilters = {
+                        graduation_years: data['Tahun graduasi anda?'] || [],
+                        genders: data['Jantina anda?'] || [],
+                        institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || []
+                    };
+
+                    console.log('Processed availableFilters:', this.availableFilters);
+
+                    // Debug graduation years specifically
+                    console.log('Graduation years found:', this.availableFilters.graduation_years);
+
+                } catch (error) {
+                    console.error('Error loading filters:', error);
+                }
+            },
+
+            // New method to open chart-specific modals
+            openChartModal(chartType, title) {
+                const params = this.buildFilterParams();
+                const endpoint = `/intern/api/table-data?${params}`;
+
+                // Use the global function from modal-manager.js with error handling
+                if (typeof window.openChartModal === 'function') {
+                    window.openChartModal(chartType, title, endpoint);
+                } else {
+                    console.error('Modal manager not loaded. Opening fallback table view.');
+                    // Fallback - open in new window
+                    window.open(`/intern/table?${params}`, '_blank');
+                }
+            },
+
+            async loadData() {
+                if (this.loading) return;
+
+                this.loading = true;
+
+                try {
+                    await this.loadSummary();
+                    await this.delay(150);
+                    await this.loadInternshipChart();
+                    await this.delay(150);
+                    await this.loadBenefitsChart();
+                    await this.delay(150);
+                    await this.loadReasonsChart();
+                    await this.delay(150);
+                    await this.loadChallengesChart();
+                    await this.delay(150);
+                    await this.loadGroupedChallengesChart();
+
+                    this.dataLoaded = true;
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    this.showToast('Error loading data: ' + error.message, 'error');
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            },
+
+            async loadSummary() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/intern/api/summary?${params}`);
+                    if (!response.ok) throw new Error('Failed to load summary');
+                    this.kpis = await response.json();
+                } catch (error) {
+                    console.error('Error loading summary:', error);
+                    this.kpis = {
+                        total_records: 0,
+                        internship_rate: 0,
+                        no_experience_rate: 0,
+                        market_competition_rate: 0
+                    };
+                }
+            },
+
+            async loadInternshipChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/intern/api/internship-participation?${params}`);
+                    const data = await response.json();
+
+                    // Destroy existing chart if it exists
+                    if (this.charts.internship) {
+                        this.charts.internship.destroy();
+                    }
+
+                    const canvas = document.getElementById('internshipChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            // Use centralized chart factory with endpoint-based color scheme
+                            this.charts.internship = EnhancedChartFactory.createChart(
+                                ctx,
+                                'pie',
+                                data,
+                                'internship-participation',
+                                {
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'bottom',
+                                            labels: {
+                                                padding: 15,
+                                                font: { size: 11 }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading internship chart:', error);
+                }
+            },
+
+            async loadBenefitsChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/intern/api/internship-benefits?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.benefits) {
+                        this.charts.benefits.destroy();
+                    }
+
+                    const canvas = document.getElementById('benefitsChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            // Use centralized chart factory - colors automatically applied
+                            this.charts.benefits = EnhancedChartFactory.createChart(
+                                ctx,
+                                'bar',
+                                data,
+                                'internship-benefits',
+                                {
+                                    indexAxis: 'y', // Horizontal bar chart
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.04)',
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                callback: function (value) {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                padding: 8,
+                                                callback: function (value, index) {
+                                                    const label = this.getLabelForValue(value);
+
+                                                    // Always return something, even if it's just the original label
+                                                    if (!label) return '';
+
+                                                    // Check for "/" first and split there
+                                                    if (label.includes('/')) {
+                                                        const slashIndex = label.indexOf('/');
+                                                        const firstLine = label.substring(0, slashIndex + 1); // Include the "/"
+                                                        const secondLine = label.substring(slashIndex + 1);   // Everything after "/"
+                                                        return [firstLine, secondLine];
+                                                    }
+
+                                                    // Split long labels into multiple lines (threshold for y-axis can be higher)
+                                                    if (label.length > 25) {
+                                                        // Try to split at word boundaries first
+                                                        const words = label.split(' ');
+
+                                                        if (words.length >= 2) {
+                                                            // For multiple words, find a good break point
+                                                            let firstLine = '';
+                                                            let secondLine = '';
+                                                            let currentLength = 0;
+
+                                                            for (let i = 0; i < words.length; i++) {
+                                                                if (currentLength + words[i].length + 1 <= Math.floor(label.length / 2) && i < words.length - 1) {
+                                                                    firstLine += (firstLine ? ' ' : '') + words[i];
+                                                                    currentLength += words[i].length + 1;
+                                                                } else {
+                                                                    secondLine = words.slice(i).join(' ');
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            if (firstLine && secondLine) {
+                                                                return [firstLine, secondLine];
+                                                            }
+                                                        } else {
+                                                            // For single long words, split at middle
+                                                            const mid = Math.floor(label.length / 2);
+                                                            return [label.substring(0, mid), label.substring(mid)];
+                                                        }
+                                                    }
+
+                                                    // Return original label if short enough
+                                                    return label;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading benefits chart:', error);
+                }
+            },
+
+            async loadReasonsChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/intern/api/no-internship-reasons?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.reasons) {
+                        this.charts.reasons.destroy();
+                    }
+
+                    const canvas = document.getElementById('reasonsChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            this.charts.reasons = EnhancedChartFactory.createChart(
+                                ctx,
+                                'bar',
+                                data,
+                                'no-internship-reasons',
+                                {
+                                    indexAxis: 'y', // Horizontal bar chart
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.04)',
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                callback: function (value) {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                padding: 8,
+                                                callback: function (value, index) {
+                                                    const label = this.getLabelForValue(value);
+
+                                                    // Always return something, even if it's just the original label
+                                                    if (!label) return '';
+
+                                                    // Check for "/" first and split there
+                                                    if (label.includes('/')) {
+                                                        const slashIndex = label.indexOf('/');
+                                                        const firstLine = label.substring(0, slashIndex + 1); // Include the "/"
+                                                        const secondLine = label.substring(slashIndex + 1);   // Everything after "/"
+                                                        return [firstLine, secondLine];
+                                                    }
+
+                                                    // Split long labels into multiple lines (threshold for y-axis can be higher)
+                                                    if (label.length > 25) {
+                                                        // Try to split at word boundaries first
+                                                        const words = label.split(' ');
+
+                                                        if (words.length >= 2) {
+                                                            // For multiple words, find a good break point
+                                                            let firstLine = '';
+                                                            let secondLine = '';
+                                                            let currentLength = 0;
+
+                                                            for (let i = 0; i < words.length; i++) {
+                                                                if (currentLength + words[i].length + 1 <= Math.floor(label.length / 2) && i < words.length - 1) {
+                                                                    firstLine += (firstLine ? ' ' : '') + words[i];
+                                                                    currentLength += words[i].length + 1;
+                                                                } else {
+                                                                    secondLine = words.slice(i).join(' ');
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            if (firstLine && secondLine) {
+                                                                return [firstLine, secondLine];
+                                                            }
+                                                        } else {
+                                                            // For single long words, split at middle
+                                                            const mid = Math.floor(label.length / 2);
+                                                            return [label.substring(0, mid), label.substring(mid)];
+                                                        }
+                                                    }
+
+                                                    // Return original label if short enough
+                                                    return label;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading reasons chart:', error);
+                }
+            },
+
+            async loadChallengesChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/intern/api/employment-challenges?${params}`);
+                    const data = await response.json();
+
+                    if (this.charts.challenges) {
+                        this.charts.challenges.destroy();
+                    }
+
+                    const canvas = document.getElementById('challengesChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            this.charts.challenges = EnhancedChartFactory.createChart(
+                                ctx,
+                                'bar',
+                                data,
+                                'employment-challenges',
+                                {
+                                    indexAxis: 'y',
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.04)',
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                callback: function (value) {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 9 },
+                                                padding: 8
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading challenges chart:', error);
+                }
+            },
+
+            async loadGroupedChallengesChart() {
+                try {
+                    console.log('Loading grouped challenges chart...');
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/intern/api/grouped-challenges?${params}`);
+                    const data = await response.json();
+                    
+                    console.log('Grouped challenges data received:', data);
+
+                    if (this.charts.groupedChallenges) {
+                        this.charts.groupedChallenges.destroy();
+                    }
+
+                    const canvas = document.getElementById('groupedChallengesChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            this.charts.groupedChallenges = EnhancedChartFactory.createChart(
+                                ctx,
+                                'bar',
+                                data,
+                                'grouped-challenges',
+                                {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 10, weight: '500' },
+                                                color: '#374151',
+                                                maxRotation: 0, // Remove rotation
+                                                minRotation: 0, // Ensure no rotation
+                                                padding: 8,
+                                                callback: function (value, index) {
+                                                    const label = this.getLabelForValue(value);
+
+                                                    // Always return something, even if it's just the original label
+                                                    if (!label) return '';
+
+                                                    // Check for "/" first and split there
+                                                    if (label.includes('/')) {
+                                                        const slashIndex = label.indexOf('/');
+                                                        const firstLine = label.substring(0, slashIndex + 1); // Include the "/"
+                                                        const secondLine = label.substring(slashIndex + 1);   // Everything after "/"
+                                                        return [firstLine, secondLine];
+                                                    }
+
+                                                    // Split long labels into multiple lines
+                                                    if (label.length > 8) {
+                                                        // Try to split at word boundaries first
+                                                        const words = label.split(' ');
+
+                                                        if (words.length >= 2) {
+                                                            // For multiple words, split roughly in half
+                                                            const mid = Math.floor(words.length / 2);
+                                                            const firstLine = words.slice(0, mid).join(' ');
+                                                            const secondLine = words.slice(mid).join(' ');
+                                                            return [firstLine, secondLine];
+                                                        } else {
+                                                            // For single long words, split at middle
+                                                            const mid = Math.floor(label.length / 2);
+                                                            return [label.substring(0, mid), label.substring(mid)];
+                                                        }
+                                                    }
+
+                                                    // Return original label if short enough
+                                                    return label;
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.04)',
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                font: { size: 10 },
+                                                color: '#6b7280',
+                                                callback: function (value) {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            );
+                            console.log('Grouped challenges chart created successfully');
+                        }
+                    } else {
+                        console.error('Canvas element not found: groupedChallengesChart');
+                    }
+                } catch (error) {
+                    console.error('Error loading grouped challenges chart:', error);
+                }
+            },
+
+            buildFilterParams() {
+                const params = new URLSearchParams();
+                Object.entries(this.filters).forEach(([key, values]) => {
+                    if (Array.isArray(values) && values.length > 0) {
+                        const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
+                            key === 'gender' ? 'Jantina anda?' :
+                                key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' : key;
+                        values.forEach(value => params.append(paramKey, value));
+                    }
+                });
+                return params.toString();
+            },
+
+            applyFilters() {
+                this.updateActiveFiltersCount();
+                this.dataLoaded = false;
+                this.loadData();
+                this.showToast('Filters applied', 'success');
+            },
+
+            clearAllFilters() {
+                this.filters = {
                     graduation_year: [],
                     gender: [],
                     institution: []
-                },
-                availableFilters: {},
-                activeFiltersCount: 0,
-                charts: {}, // Store chart instances
+                };
+                this.updateActiveFiltersCount();
+                this.dataLoaded = false;
+                this.loadData();
+                this.showToast('Filters cleared', 'info');
+            },
 
-                init()
-                {
-                    console.log('Initializing intern dashboard...');
-                    if (this.isInitialized) return;
-                    this.isInitialized = true;
-                    this.waitForChart();
-                    this.loadAvailableFilters();
-                },
+            updateActiveFiltersCount() {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
+                    return count + (Array.isArray(filter) ? filter.length : 0);
+                }, 0);
+            },
 
-                waitForChart()
-                {
-                    // Wait for both Chart.js and our centralized config to load
-                    if (typeof Chart === 'undefined' ||
-                        typeof EnhancedChartFactory === 'undefined' ||
-                        typeof ChartConfig === 'undefined')
-                    {
-                        setTimeout(() => this.waitForChart(), 100);
-                        return;
-                    }
-                    console.log('Chart libraries loaded, initializing dashboard...');
-                    this.loadData();
-                },
+            async refreshData() {
+                this.dataLoaded = false;
+                await this.loadData();
+                this.showToast('Data refreshed', 'success');
+            },
 
-                async loadAvailableFilters()
-                {
-                    try
-                    {
-                        const response = await fetch('/intern/api/filters/available');
-                        const data = await response.json();
-
-                        this.availableFilters = {
-                            graduation_years: data[ 'Tahun graduasi anda?' ] || [],
-                            genders: data[ 'Jantina anda?' ] || [],
-                            institutions: data[ 'Institusi pendidikan MARA yang anda hadiri?' ] || []
-                        };
-                    } catch (error)
-                    {
-                        console.error('Error loading filters:', error);
-                    }
-                },
-
-                async loadData()
-                {
-                    if (this.loading) return;
-
-                    this.loading = true;
-
-                    try
-                    {
-                        await this.loadSummary();
-                        await this.delay(150);
+            async refreshChart(chartType) {
+                try {
+                    if (chartType === 'internship') {
                         await this.loadInternshipChart();
-                        await this.delay(150);
+                    } else if (chartType === 'benefits') {
                         await this.loadBenefitsChart();
-                        await this.delay(150);
+                    } else if (chartType === 'reasons') {
                         await this.loadReasonsChart();
-                        await this.delay(150);
+                    } else if (chartType === 'challenges') {
                         await this.loadChallengesChart();
-                        await this.delay(150);
+                    } else if (chartType === 'grouped') {
                         await this.loadGroupedChallengesChart();
-
-                        this.dataLoaded = true;
-                    } catch (error)
-                    {
-                        console.error('Error loading data:', error);
-                        this.showToast('Error loading data: ' + error.message, 'error');
-                    } finally
-                    {
-                        this.loading = false;
                     }
-                },
+                    this.showToast('Chart refreshed', 'success');
+                } catch (error) {
+                    console.error('Error refreshing chart:', error);
+                    this.showToast('Error refreshing chart', 'error');
+                }
+            },
 
-                delay(ms)
-                {
-                    return new Promise(resolve => setTimeout(resolve, ms));
-                },
-
-                async loadSummary()
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const response = await fetch(`/intern/api/summary?${params}`);
-                        if (!response.ok) throw new Error('Failed to load summary');
-                        this.kpis = await response.json();
-                    } catch (error)
-                    {
-                        console.error('Error loading summary:', error);
-                        this.kpis = {
-                            total_records: 0,
-                            internship_rate: 0,
-                            no_experience_rate: 0,
-                            market_competition_rate: 0
-                        };
-                    }
-                },
-
-                async loadInternshipChart()
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const response = await fetch(`/intern/api/internship-participation?${params}`);
-                        const data = await response.json();
-
-                        // Destroy existing chart if it exists
-                        if (this.charts.internship)
-                        {
-                            this.charts.internship.destroy();
-                        }
-
-                        const canvas = document.getElementById('internshipChart');
-                        if (canvas)
-                        {
-                            const ctx = canvas.getContext('2d');
-                            if (ctx)
-                            {
-                                // Use centralized chart factory with endpoint-based color scheme
-                                this.charts.internship = EnhancedChartFactory.createChart(
-                                    ctx,
-                                    'pie',
-                                    data,
-                                    'internship-participation',
-                                    {
-                                        plugins: {
-                                            legend: {
-                                                display: true,
-                                                position: 'bottom',
-                                                labels: {
-                                                    padding: 15,
-                                                    font: { size: 11 }
-                                                }
-                                            }
-                                        }
-                                    }
-                                );
-                            }
-                        }
-                    } catch (error)
-                    {
-                        console.error('Error loading internship chart:', error);
-                    }
-                },
-
-                async loadBenefitsChart()
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const response = await fetch(`/intern/api/internship-benefits?${params}`);
-                        const data = await response.json();
-
-                        if (this.charts.benefits)
-                        {
-                            this.charts.benefits.destroy();
-                        }
-
-                        const canvas = document.getElementById('benefitsChart');
-                        if (canvas)
-                        {
-                            const ctx = canvas.getContext('2d');
-                            if (ctx)
-                            {
-                                // Use centralized chart factory - colors automatically applied
-                                this.charts.benefits = EnhancedChartFactory.createChart(
-                                    ctx,
-                                    'bar',
-                                    data,
-                                    'internship-benefits',
-                                    {
-                                        indexAxis: 'y', // Horizontal bar chart
-                                        scales: {
-                                            x: {
-                                                beginAtZero: true,
-                                                grid: {
-                                                    color: 'rgba(0,0,0,0.04)',
-                                                    drawBorder: false
-                                                },
-                                                ticks: {
-                                                    font: { size: 10 },
-                                                    callback: function (value)
-                                                    {
-                                                        return value.toLocaleString();
-                                                    }
-                                                }
-                                            },
-                                            y: {
-                                                grid: { display: false },
-                                                ticks: {
-                                                    font: { size: 10 },
-                                                    padding: 8,
-                                                    callback: function (value, index)
-                                                    {
-                                                        const label = this.getLabelForValue(value);
-
-                                                        // Always return something, even if it's just the original label
-                                                        if (!label) return '';
-
-                                                        // Check for "/" first and split there
-                                                        if (label.includes('/'))
-                                                        {
-                                                            const slashIndex = label.indexOf('/');
-                                                            const firstLine = label.substring(0, slashIndex + 1); // Include the "/"
-                                                            const secondLine = label.substring(slashIndex + 1);   // Everything after "/"
-                                                            return [ firstLine, secondLine ];
-                                                        }
-
-                                                        // Split long labels into multiple lines (threshold for y-axis can be higher)
-                                                        if (label.length > 25)
-                                                        {
-                                                            // Try to split at word boundaries first
-                                                            const words = label.split(' ');
-
-                                                            if (words.length >= 2)
-                                                            {
-                                                                // For multiple words, find a good break point
-                                                                let firstLine = '';
-                                                                let secondLine = '';
-                                                                let currentLength = 0;
-
-                                                                for (let i = 0; i < words.length; i++)
-                                                                {
-                                                                    if (currentLength + words[ i ].length + 1 <= Math.floor(label.length / 2) && i < words.length - 1)
-                                                                    {
-                                                                        firstLine += (firstLine ? ' ' : '') + words[ i ];
-                                                                        currentLength += words[ i ].length + 1;
-                                                                    } else
-                                                                    {
-                                                                        secondLine = words.slice(i).join(' ');
-                                                                        break;
-                                                                    }
-                                                                }
-
-                                                                if (firstLine && secondLine)
-                                                                {
-                                                                    return [ firstLine, secondLine ];
-                                                                }
-                                                            } else
-                                                            {
-                                                                // For single long words, split at middle
-                                                                const mid = Math.floor(label.length / 2);
-                                                                return [ label.substring(0, mid), label.substring(mid) ];
-                                                            }
-                                                        }
-
-                                                        // Return original label if short enough
-                                                        return label;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                );
-                            }
-                        }
-                    } catch (error)
-                    {
-                        console.error('Error loading benefits chart:', error);
-                    }
-                },
-
-                async loadReasonsChart()
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const response = await fetch(`/intern/api/no-internship-reasons?${params}`);
-                        const data = await response.json();
-
-                        if (this.charts.reasons)
-                        {
-                            this.charts.reasons.destroy();
-                        }
-
-                        const canvas = document.getElementById('reasonsChart');
-                        if (canvas)
-                        {
-                            const ctx = canvas.getContext('2d');
-                            if (ctx)
-                            {
-                                this.charts.reasons = EnhancedChartFactory.createChart(
-                                    ctx,
-                                    'bar',
-                                    data,
-                                    'no-internship-reasons',
-                                    {
-                                        indexAxis: 'y', // Horizontal bar chart
-                                        scales: {
-                                            x: {
-                                                beginAtZero: true,
-                                                grid: {
-                                                    color: 'rgba(0,0,0,0.04)',
-                                                    drawBorder: false
-                                                },
-                                                ticks: {
-                                                    font: { size: 10 },
-                                                    callback: function (value)
-                                                    {
-                                                        return value.toLocaleString();
-                                                    }
-                                                }
-                                            },
-                                            y: {
-                                                grid: { display: false },
-                                                ticks: {
-                                                    font: { size: 10 },
-                                                    padding: 8,
-                                                    callback: function (value, index)
-                                                    {
-                                                        const label = this.getLabelForValue(value);
-
-                                                        // Always return something, even if it's just the original label
-                                                        if (!label) return '';
-
-                                                        // Check for "/" first and split there
-                                                        if (label.includes('/'))
-                                                        {
-                                                            const slashIndex = label.indexOf('/');
-                                                            const firstLine = label.substring(0, slashIndex + 1); // Include the "/"
-                                                            const secondLine = label.substring(slashIndex + 1);   // Everything after "/"
-                                                            return [ firstLine, secondLine ];
-                                                        }
-
-                                                        // Split long labels into multiple lines (threshold for y-axis can be higher)
-                                                        if (label.length > 25)
-                                                        {
-                                                            // Try to split at word boundaries first
-                                                            const words = label.split(' ');
-
-                                                            if (words.length >= 2)
-                                                            {
-                                                                // For multiple words, find a good break point
-                                                                let firstLine = '';
-                                                                let secondLine = '';
-                                                                let currentLength = 0;
-
-                                                                for (let i = 0; i < words.length; i++)
-                                                                {
-                                                                    if (currentLength + words[ i ].length + 1 <= Math.floor(label.length / 2) && i < words.length - 1)
-                                                                    {
-                                                                        firstLine += (firstLine ? ' ' : '') + words[ i ];
-                                                                        currentLength += words[ i ].length + 1;
-                                                                    } else
-                                                                    {
-                                                                        secondLine = words.slice(i).join(' ');
-                                                                        break;
-                                                                    }
-                                                                }
-
-                                                                if (firstLine && secondLine)
-                                                                {
-                                                                    return [ firstLine, secondLine ];
-                                                                }
-                                                            } else
-                                                            {
-                                                                // For single long words, split at middle
-                                                                const mid = Math.floor(label.length / 2);
-                                                                return [ label.substring(0, mid), label.substring(mid) ];
-                                                            }
-                                                        }
-
-                                                        // Return original label if short enough
-                                                        return label;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                );
-                            }
-                        }
-                    } catch (error)
-                    {
-                        console.error('Error loading reasons chart:', error);
-                    }
-                },
-
-                async loadChallengesChart()
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const response = await fetch(`/intern/api/employment-challenges?${params}`);
-                        const data = await response.json();
-
-                        if (this.charts.challenges)
-                        {
-                            this.charts.challenges.destroy();
-                        }
-
-                        const canvas = document.getElementById('challengesChart');
-                        if (canvas)
-                        {
-                            const ctx = canvas.getContext('2d');
-                            if (ctx)
-                            {
-                                this.charts.challenges = EnhancedChartFactory.createChart(
-                                    ctx,
-                                    'bar',
-                                    data,
-                                    'employment-challenges',
-                                    {
-                                        indexAxis: 'y',
-                                        scales: {
-                                            x: {
-                                                beginAtZero: true,
-                                                grid: {
-                                                    color: 'rgba(0,0,0,0.04)',
-                                                    drawBorder: false
-                                                },
-                                                ticks: {
-                                                    font: { size: 10 },
-                                                    callback: function (value)
-                                                    {
-                                                        return value.toLocaleString();
-                                                    }
-                                                }
-                                            },
-                                            y: {
-                                                grid: { display: false },
-                                                ticks: {
-                                                    font: { size: 9 },
-                                                    padding: 8
-                                                }
-                                            }
-                                        }
-                                    }
-                                );
-                            }
-                        }
-                    } catch (error)
-                    {
-                        console.error('Error loading challenges chart:', error);
-                    }
-                },
-
-                async loadGroupedChallengesChart()
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const response = await fetch(`/intern/api/grouped-challenges?${params}`);
-                        const data = await response.json();
-
-                        if (this.charts.groupedChallenges)
-                        {
-                            this.charts.groupedChallenges.destroy();
-                        }
-
-                        const canvas = document.getElementById('groupedChallengesChart');
-                        if (canvas)
-                        {
-                            const ctx = canvas.getContext('2d');
-                            if (ctx)
-                            {
-                                this.charts.groupedChallenges = EnhancedChartFactory.createChart(
-                                    ctx,
-                                    'bar',
-                                    data,
-                                    'grouped-challenges',
-                                    {
-                                        responsive: true,
-                                        maintainAspectRatio: false,
-                                        scales: {
-                                            x: {
-                                                grid: { display: false },
-                                                ticks: {
-                                                    font: { size: 10, weight: '500' },
-                                                    color: '#374151',
-                                                    maxRotation: 0, // Remove rotation
-                                                    minRotation: 0, // Ensure no rotation
-                                                    padding: 8,
-                                                    callback: function (value, index)
-                                                    {
-                                                        const label = this.getLabelForValue(value);
-
-                                                        // Always return something, even if it's just the original label
-                                                        if (!label) return '';
-
-                                                        // Check for "/" first and split there
-                                                        if (label.includes('/'))
-                                                        {
-                                                            const slashIndex = label.indexOf('/');
-                                                            const firstLine = label.substring(0, slashIndex + 1); // Include the "/"
-                                                            const secondLine = label.substring(slashIndex + 1);   // Everything after "/"
-                                                            return [ firstLine, secondLine ];
-                                                        }
-
-                                                        // Split long labels into multiple lines
-                                                        if (label.length > 8)
-                                                        {
-                                                            // Try to split at word boundaries first
-                                                            const words = label.split(' ');
-
-                                                            if (words.length >= 2)
-                                                            {
-                                                                // For multiple words, split roughly in half
-                                                                const mid = Math.floor(words.length / 2);
-                                                                const firstLine = words.slice(0, mid).join(' ');
-                                                                const secondLine = words.slice(mid).join(' ');
-                                                                return [ firstLine, secondLine ];
-                                                            } else
-                                                            {
-                                                                // For single long words, split at middle
-                                                                const mid = Math.floor(label.length / 2);
-                                                                return [ label.substring(0, mid), label.substring(mid) ];
-                                                            }
-                                                        }
-
-                                                        // Return original label if short enough
-                                                        return label;
-                                                    }
-                                                }
-                                            },
-                                            y: {
-                                                beginAtZero: true,
-                                                grid: {
-                                                    color: 'rgba(0,0,0,0.04)',
-                                                    drawBorder: false
-                                                },
-                                                ticks: {
-                                                    font: { size: 10 },
-                                                    color: '#6b7280',
-                                                    callback: function (value)
-                                                    {
-                                                        return value.toLocaleString();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                );
-                            }
-                        }
-                    } catch (error)
-                    {
-                        console.error('Error loading grouped challenges chart:', error);
-                    }
-                },
-
-                buildFilterParams()
-                {
-                    const params = new URLSearchParams();
-                    Object.entries(this.filters).forEach(([ key, values ]) =>
-                    {
-                        if (Array.isArray(values) && values.length > 0)
-                        {
-                            const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
-                                key === 'gender' ? 'Jantina anda?' :
-                                    key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' : key;
-                            values.forEach(value => params.append(paramKey, value));
-                        }
-                    });
-                    return params.toString();
-                },
-
-                applyFilters()
-                {
-                    this.updateActiveFiltersCount();
-                    this.dataLoaded = false;
-                    this.loadData();
-                    this.showToast('Filters applied', 'success');
-                },
-
-                clearAllFilters()
-                {
-                    this.filters = {
-                        graduation_year: [],
-                        gender: [],
-                        institution: []
-                    };
-                    this.updateActiveFiltersCount();
-                    this.dataLoaded = false;
-                    this.loadData();
-                    this.showToast('Filters cleared', 'info');
-                },
-
-                updateActiveFiltersCount()
-                {
-                    this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
-                    {
-                        return count + (Array.isArray(filter) ? filter.length : 0);
-                    }, 0);
-                },
-
-                async refreshData()
-                {
-                    this.dataLoaded = false;
-                    await this.loadData();
-                    this.showToast('Data refreshed', 'success');
-                },
-
-                async refreshChart(chartType)
-                {
-                    try
-                    {
-                        if (chartType === 'internship')
-                        {
-                            await this.loadInternshipChart();
-                        } else if (chartType === 'benefits')
-                        {
-                            await this.loadBenefitsChart();
-                        } else if (chartType === 'reasons')
-                        {
-                            await this.loadReasonsChart();
-                        } else if (chartType === 'challenges')
-                        {
-                            await this.loadChallengesChart();
-                        } else if (chartType === 'grouped')
-                        {
-                            await this.loadGroupedChallengesChart();
-                        }
-                        this.showToast('Chart refreshed', 'success');
-                    } catch (error)
-                    {
-                        console.error('Error refreshing chart:', error);
-                        this.showToast('Error refreshing chart', 'error');
-                    }
-                },
-
-                async exportData(format)
-                {
-                    try
-                    {
-                        const params = this.buildFilterParams();
-                        const url = `/intern/api/export?format=${format}&${params}`;
-                        window.open(url, '_blank');
-                        this.showToast(`Exporting ${format.toUpperCase()}...`, 'info');
-                    } catch (error)
-                    {
-                        console.error('Export error:', error);
-                        this.showToast('Export failed', 'error');
-                    }
-                },
-
-                openTableModal(title)
-                {
+            async exportData(format) {
+                try {
                     const params = this.buildFilterParams();
-                    if (typeof openModal === 'function')
-                    {
-                        openModal(title, `/intern/api/table-data?${params}`);
-                    } else
-                    {
-                        // Fallback - open in new window
-                        window.open(`/intern/table?${params}`, '_blank');
-                    }
-                },
+                    const url = `/intern/api/export?format=${format}&${params}`;
+                    window.open(url, '_blank');
+                    this.showToast(`Exporting ${format.toUpperCase()}...`, 'info');
+                } catch (error) {
+                    console.error('Export error:', error);
+                    this.showToast('Export failed', 'error');
+                }
+            },
 
-                showToast(message, type = 'info')
-                {
-                    // Create toast notification
-                    const toast = document.createElement('div');
-                    const colors = {
-                        success: 'bg-emerald-500 text-white border-emerald-600',
-                        error: 'bg-red-500 text-white border-red-600',
-                        info: 'bg-blue-500 text-white border-blue-600',
-                        warning: 'bg-amber-500 text-white border-amber-600'
-                    };
+            showToast(message, type = 'info') {
+                // Create toast notification
+                const toast = document.createElement('div');
+                const colors = {
+                    success: 'bg-emerald-500 text-white border-emerald-600',
+                    error: 'bg-red-500 text-white border-red-600',
+                    info: 'bg-blue-500 text-white border-blue-600',
+                    warning: 'bg-amber-500 text-white border-amber-600'
+                };
 
-                    const icons = {
-                        success: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>',
-                        error: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>',
-                        info: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>',
-                        warning: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>'
-                    };
+                const icons = {
+                    success: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>',
+                    error: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>',
+                    info: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>',
+                    warning: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>'
+                };
 
-                    toast.className = `fixed top-4 right-4 ${colors[ type ]} px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 border-l-4 font-medium`;
-                    toast.innerHTML = `
+                toast.className = `fixed top-4 right-4 ${colors[type]} px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 border-l-4 font-medium`;
+                toast.innerHTML = `
                 <div class="flex items-center">
                     <div class="flex-shrink-0 mr-3">
-                        ${icons[ type ]}
+                        ${icons[type]}
                     </div>
                     <div class="text-sm font-medium">${message}</div>
                 </div>
             `;
 
-                    document.body.appendChild(toast);
+                document.body.appendChild(toast);
 
-                    // Animate in
-                    setTimeout(() => toast.style.transform = 'translateX(0)', 10);
+                // Animate in
+                setTimeout(() => toast.style.transform = 'translateX(0)', 10);
 
-                    // Animate out and remove
-                    setTimeout(() =>
-                    {
-                        toast.style.opacity = '0';
-                        toast.style.transform = 'translateX(100%)';
-                        setTimeout(() => toast.remove(), 300);
-                    }, 3500);
-                },
-
-                // Method to preview current color schemes (for development)
-                previewColors()
-                {
-                    if (typeof ColorSchemeManager !== 'undefined')
-                    {
-                        ColorSchemeManager.previewAllSchemes();
-                    } else
-                    {
-                        console.log('ColorSchemeManager not loaded');
-                    }
-                },
-
-                // Method to get current chart mappings (for development)
-                getChartMappings()
-                {
-                    if (typeof ChartConfig !== 'undefined')
-                    {
-                        console.log('Current chart mappings:');
-                        Object.entries(ChartConfig.chartMappings).forEach(([ endpoint, scheme ]) =>
-                        {
-                            console.log(`${endpoint}: ${scheme}`);
-                        });
-                    }
-                }
+                // Animate out and remove
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
             }
+        };
+    }
+
+    // Make dashboard available globally for development/debugging
+    window.internDashboard = internDashboard;
+
+    // Auto-initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add debug capabilities if in development mode
+        if (window.location.search.includes('debug=true')) {
+            console.log('Debug mode enabled');
         }
+    });
+</script>
 
-        // Make dashboard available globally for development/debugging
-        window.internDashboard = internDashboard;
-
-        // Auto-initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function ()
-        {
-            // Add debug capabilities if in development mode
-            if (window.location.search.includes('debug=true'))
-            {
-                console.log('Debug mode enabled');
-                // You can call dashboard.previewColors() or dashboard.getChartMappings() in console
-            }
-        });
-    </script>
-
-    {% endblock %}
+{% endblock %}

@@ -37,13 +37,13 @@ class EnhancedChartDataFormatter:
             'datasets': [{
                 'label': title,
                 'data': data_series.values.tolist(),
-                'chartType': 'horizontal-bar'  # Specific identifier for styling
+                'chartType': 'horizontal-bar'
             }],
             'chartConfig': {
                 'type': 'horizontal-bar',
                 'responsive': True,
                 'maintainAspectRatio': False,
-                'indexAxis': 'y',  # This makes it horizontal
+                'indexAxis': 'y',
                 'maxItems': max_items
             }
         }
@@ -114,10 +114,10 @@ class EnhancedChartDataFormatter:
         
         for i, column in enumerate(crosstab_df.columns):
             datasets.append({
-                'label': str(column)[:30] + ('...' if len(str(column)) > 30 else ''),  # Truncate long labels
+                'label': str(column)[:30] + ('...' if len(str(column)) > 30 else ''),
                 'data': crosstab_df[column].tolist(),
                 'chartType': 'enhanced-stacked-bar',
-                'stack': 'stack1'  # All datasets in same stack
+                'stack': 'stack1'
             })
         
         # For vertical charts, keep institution names shorter but readable
@@ -161,55 +161,100 @@ def api_summary():
     """Get enhanced summary statistics for graduan luar data"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        print(f"GRADUAN LUAR SUMMARY DEBUG: Received filters: {filters}")
         
+        filtered_processor = data_processor.apply_filters(filters)
         stats = filtered_processor.get_summary_stats()
         filtered_df = filtered_processor.filtered_df
         
         total_records = len(filtered_df)
+        print(f"GRADUAN LUAR SUMMARY DEBUG: Processing {total_records} records")
         
         # Enhanced KPI calculations
         reason_stats = {}
         job_type_stats = {}
+        private_sector_rate = 0
         
         if total_records > 0:
             # Enhanced reason analysis with better categorization
             reason_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
             if reason_column in filtered_df.columns:
-                reason_counts = filtered_df[reason_column].dropna().str.split(',').explode().str.strip().value_counts()
+                print(f"GRADUAN LUAR: Found reason column with {filtered_df[reason_column].dropna().shape[0]} non-null values")
+                
+                # Get all reasons and split them
+                reasons = filtered_df[reason_column].dropna()
+                all_reasons = []
+                
+                for reason_list in reasons:
+                    individual_reasons = str(reason_list).split(',')
+                    for reason in individual_reasons:
+                        clean_reason = reason.strip()
+                        if clean_reason and len(clean_reason) > 3:
+                            all_reasons.append(clean_reason)
+                
+                reason_counts = pd.Series(all_reasons).value_counts()
                 total_reasons = reason_counts.sum()
                 
-                # More comprehensive keyword matching
+                print(f"GRADUAN LUAR: Total reasons processed: {total_reasons}")
+                
+                # Enhanced keyword matching for better categorization
                 categorization = {
-                    'mismatch': ['bidang', 'field', 'tidak sesuai', 'mismatch', 'tidak berkaitan', 'berbeza'],
-                    'opportunity': ['peluang', 'opportunity', 'limited', 'terhad', 'kerja', 'job', 'tiada', 'kurang'],
-                    'prospect': ['prospek', 'prospect', 'better', 'baik', 'masa depan', 'career', 'kerjaya', 'future'],
-                    'salary': ['gaji', 'salary', 'pay', 'income', 'pendapatan', 'wang', 'money', 'bayaran'],
-                    'personal': ['minat', 'interest', 'suka', 'passion', 'hobby', 'personal', 'kegemaran']
+                    'mismatch': [
+                        'bidang', 'field', 'tidak sesuai', 'mismatch', 'tidak berkaitan', 
+                        'berbeza', 'lain bidang', 'tidak sama', 'berlainan'
+                    ],
+                    'opportunity': [
+                        'peluang', 'opportunity', 'limited', 'terhad', 'kerja', 'job', 
+                        'tiada', 'kurang', 'susah', 'sukar', 'tidak ada', 'tak ada'
+                    ],
+                    'salary': [
+                        'gaji', 'salary', 'pay', 'income', 'pendapatan', 'wang', 
+                        'money', 'bayaran', 'upah', 'remuneration', 'compensation'
+                    ],
+                    'personal': [
+                        'minat', 'interest', 'suka', 'passion', 'hobby', 'personal', 
+                        'kegemaran', 'pilihan', 'preference', 'calling'
+                    ]
                 }
                 
                 category_counts = {category: 0 for category in categorization.keys()}
                 
+                # Process each reason and categorize
                 for reason, count in reason_counts.items():
                     reason_lower = str(reason).lower()
                     for category, keywords in categorization.items():
-                        if any(keyword in reason_lower for keyword in keywords):
+                        if any(keyword.lower() in reason_lower for keyword in keywords):
                             category_counts[category] += count
                             break
                 
+                # Calculate percentages
                 reason_stats = {
                     'mismatch_rate': (category_counts['mismatch'] / total_reasons) * 100 if total_reasons > 0 else 0,
                     'opportunity_rate': (category_counts['opportunity'] / total_reasons) * 100 if total_reasons > 0 else 0,
-                    'better_prospects_rate': (category_counts['prospect'] / total_reasons) * 100 if total_reasons > 0 else 0,
                     'salary_rate': (category_counts['salary'] / total_reasons) * 100 if total_reasons > 0 else 0,
                     'personal_rate': (category_counts['personal'] / total_reasons) * 100 if total_reasons > 0 else 0
                 }
             
-            # Enhanced job type analysis
+            # Enhanced job type analysis with Private Sector Rate calculation
             job_column = 'Apakah jenis pekerjaan anda sekarang'
             if job_column in filtered_df.columns:
                 job_counts = filtered_df[job_column].value_counts()
                 most_common_job = job_counts.index[0] if len(job_counts) > 0 else 'N/A'
+                
+                # Calculate Private Sector Rate - FIXED KPI
+                private_sector_keywords = ['swasta', 'private', 'syarikat', 'company', 'korporat', 'Bekerja di luar bidang']
+                private_count = 0
+                
+                print("GRADUAN LUAR: Job types analysis:")
+                for job_type, count in job_counts.items():
+                    job_type_lower = str(job_type).lower()
+                    print(f"  '{job_type}': {count}")
+                    if any(keyword.lower() in job_type_lower for keyword in private_sector_keywords):
+                        private_count += count
+                        print(f"    -> Counted as private sector")
+                
+                private_sector_rate = (private_count / total_records) * 100 if total_records > 0 else 0
+                print(f"GRADUAN LUAR: Private sector rate: {private_sector_rate:.1f}%")
                 
                 job_type_stats = {
                     'most_common_job': most_common_job,
@@ -229,12 +274,12 @@ def api_summary():
                     'top_institutions': institution_counts.head(5).to_dict()
                 }
         
-        # Enhanced stats response
+        # Enhanced stats response with Private Sector Rate
         enhanced_stats = {
             'total_records': total_records,
             'mismatch_rate': round(reason_stats.get('mismatch_rate', 0), 1),
             'opportunity_rate': round(reason_stats.get('opportunity_rate', 0), 1),
-            'better_prospects_rate': round(reason_stats.get('better_prospects_rate', 0), 1),
+            'private_sector_rate': round(private_sector_rate, 1),  # REPLACED better_prospects_rate
             'salary_consideration_rate': round(reason_stats.get('salary_rate', 0), 1),
             'personal_interest_rate': round(reason_stats.get('personal_rate', 0), 1),
             'most_common_job': job_type_stats.get('most_common_job', 'N/A'),
@@ -243,18 +288,23 @@ def api_summary():
             'most_represented_institution': institution_stats.get('most_represented_institution', 'N/A'),
             'institution_diversity': institution_stats.get('institution_count', 0),
             'filter_applied': len([f for f in filters.values() if f]) > 0,
-            **stats  # Include original stats as well
+            **stats
         }
         
+        print(f"GRADUAN LUAR SUMMARY RESULT: {enhanced_stats}")
         return jsonify(enhanced_stats)
         
     except Exception as e:
+        print(f"GRADUAN LUAR SUMMARY ERROR: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        
         return jsonify({
             'error': str(e),
             'total_records': 0,
             'mismatch_rate': 0,
             'opportunity_rate': 0,
-            'better_prospects_rate': 0,
+            'private_sector_rate': 0,
             'salary_consideration_rate': 0
         }), 500
 
@@ -280,12 +330,11 @@ def api_reasons_distribution():
             individual_reasons = str(reasons_list).split(',')
             for reason in individual_reasons:
                 clean_reason = reason.strip()
-                if clean_reason and len(clean_reason) > 3:  # Filter out very short responses
+                if clean_reason and len(clean_reason) > 3:
                     all_reasons.append(clean_reason)
         
-        reason_counts = pd.Series(all_reasons).value_counts().head(12)  # Top 12 for better visualization
+        reason_counts = pd.Series(all_reasons).value_counts().head(12)
         
-        # Use enhanced horizontal bar formatter
         chart_data = formatter.format_horizontal_bar_chart(
             reason_counts,
             "Sebab Utama Bekerja di Luar Bidang Pengajian",
@@ -317,7 +366,6 @@ def api_job_types():
         
         job_counts = filtered_processor.filtered_df[job_column].value_counts()
         
-        # Use enhanced pie chart formatter
         chart_data = formatter.format_enhanced_pie_chart(
             job_counts,
             "Agihan Jenis Pekerjaan Semasa",
@@ -348,7 +396,6 @@ def api_institution_reasons():
                 "Institusi vs Faktor Perubahan Kerjaya"
             ))
         
-        # Enhanced data processing
         df_clean = filtered_processor.filtered_df[[institution_column, reason_column]].dropna()
         
         # Process and expand the data
@@ -360,7 +407,6 @@ def api_institution_reasons():
             for reason in reasons:
                 clean_reason = reason.strip()
                 if clean_reason and len(clean_reason) > 3:
-                    # Shorten institution names for better display
                     short_institution = institution[:20] + '...' if len(institution) > 20 else institution
                     expanded_data.append({
                         'institution': short_institution,
@@ -374,15 +420,12 @@ def api_institution_reasons():
             ))
         
         expanded_df = pd.DataFrame(expanded_data)
-        
-        # Create enhanced cross-tabulation
         crosstab = pd.crosstab(expanded_df['institution'], expanded_df['reason'])
         
-        # Use enhanced stacked bar formatter
         chart_data = formatter.format_enhanced_stacked_bar_chart(
             crosstab,
             "Institusi vs Faktor Perubahan Kerjaya",
-            orientation='horizontal'  # Make it horizontal for better label reading
+            orientation='horizontal'
         )
         
         return jsonify(chart_data)
@@ -393,14 +436,16 @@ def api_institution_reasons():
             "Error"
         )), 500
 
-# Keep existing endpoints (table, export, filters) unchanged
 @graduanluar_bp.route('/api/table-data')
 def api_table_data():
     """Get paginated table data for graduan luar"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys() 
                    if k not in ['page', 'per_page', 'search']}
+        
+        print(f"GRADUAN LUAR TABLE: Received filters: {filters}")
         filtered_processor = data_processor.apply_filters(filters)
+        print(f"GRADUAN LUAR TABLE: Filtered to {len(filtered_processor.filtered_df)} records")
         
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 50))
@@ -418,11 +463,15 @@ def api_table_data():
         ]
         
         available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
+        print(f"GRADUAN LUAR TABLE: Available columns: {available_columns}")
         
         data = filtered_processor.get_table_data(page, per_page, search, available_columns)
         return jsonify(data)
         
     except Exception as e:
+        print(f"GRADUAN LUAR TABLE ERROR: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'error': str(e),
             'data': [],
@@ -477,7 +526,7 @@ def api_export():
 
 @graduanluar_bp.route('/api/filters/available')
 def api_available_filters():
-    """Get available filter options for graduan luar data"""
+    """Get available filter options for graduan luar data - FIXED"""
     try:
         sample_df = data_processor.df
         filters = {}
@@ -490,16 +539,73 @@ def api_available_filters():
             'Apakah jenis pekerjaan anda sekarang'
         ]
         
-        for column in filter_columns:
-            if column in sample_df.columns:
-                unique_values = sample_df[column].dropna().unique().tolist()
-                if isinstance(unique_values[0] if unique_values else None, (int, float)):
-                    unique_values = sorted(unique_values)
-                else:
-                    unique_values = sorted([str(val) for val in unique_values])
-                filters[column] = unique_values
+        print("GRADUAN LUAR FILTERS DEBUG START:")
+        print(f"DataFrame shape: {sample_df.shape}")
         
+        for column in filter_columns:
+            print(f"\n--- Processing: {column} ---")
+            if column in sample_df.columns:
+                # Get non-null values
+                non_null_series = sample_df[column].dropna()
+                print(f"Non-null values: {len(non_null_series)}/{len(sample_df)}")
+                
+                if len(non_null_series) > 0:
+                    unique_values = non_null_series.unique().tolist()
+                    print(f"Unique values: {len(unique_values)}")
+                    print(f"Sample values: {unique_values[:5] if len(unique_values) > 5 else unique_values}")
+                    
+                    # Handle different data types properly
+                    if column == 'Tahun graduasi anda?' and len(unique_values) > 0:
+                        # Special handling for graduation year
+                        print("GRADUATION YEAR PROCESSING:")
+                        try:
+                            # Convert to integers if they're numeric
+                            processed_values = []
+                            for val in unique_values:
+                                try:
+                                    if pd.isna(val):
+                                        continue
+                                    # Convert to int if possible
+                                    int_val = int(float(val)) if isinstance(val, (int, float, str)) else val
+                                    processed_values.append(int_val)
+                                    print(f"  '{val}' -> {int_val}")
+                                except (ValueError, TypeError):
+                                    print(f"  '{val}' -> kept as string")
+                                    processed_values.append(str(val))
+                            
+                            processed_values = sorted(list(set(processed_values)))
+                            print(f"FINAL YEARS: {processed_values}")
+                            filters[column] = processed_values
+                        except Exception as e:
+                            print(f"Error processing graduation years: {e}")
+                            filters[column] = [str(val) for val in sorted(unique_values)]
+                    else:
+                        # Handle other columns
+                        if isinstance(unique_values[0] if unique_values else None, (int, float)):
+                            processed_values = sorted(unique_values)
+                        else:
+                            processed_values = sorted([str(val) for val in unique_values])
+                        filters[column] = processed_values
+                    
+                    print(f"Final filter values: {len(filters[column])} items")
+                else:
+                    print(f"No non-null values found")
+                    filters[column] = []
+            else:
+                print(f"COLUMN NOT FOUND: {column}")
+                filters[column] = []
+        
+        print(f"\nFILTER SUMMARY:")
+        for col, vals in filters.items():
+            print(f"  {col}: {len(vals)} values")
+            if col == 'Tahun graduasi anda?':
+                print(f"    Graduation years: {vals}")
+        
+        print(f"\nFinal filters response: {filters}")
         return jsonify(filters)
         
     except Exception as e:
+        print(f"GRADUAN LUAR FILTERS ERROR: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e), 'filters': {}}), 500

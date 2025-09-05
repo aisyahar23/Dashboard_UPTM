@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modal Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="p-8">
+        <h1 class="text-2xl font-bold mb-4">Modal Manager Test</h1>
+        
+        <!-- Test the modal manager -->
+        <button onclick="testModal()" class="bg-blue-500 text-white px-4 py-2 rounded">
+            Test Modal
+        </button>
+        
+        <!-- Simple inline modal for testing -->
+        <div id="testModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-lg max-w-md w-full p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">Test Modal</h2>
+                        <button onclick="closeTestModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="testContent">
+                        <p>This is a test modal to verify the popup functionality works.</p>
+                        <div class="mt-4">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                            <p class="text-center mt-2">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple test functions
+        function testModal() {
+            console.log('Testing modal...');
+            document.getElementById('testModal').classList.remove('hidden');
+            
+            // Simulate loading data
+            setTimeout(() => {
+                document.getElementById('testContent').innerHTML = `
+                    <h3 class="font-bold mb-2">Sample Data Table</h3>
+                    <table class="w-full border">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="border px-2 py-1">Column 1</th>
+                                <th class="border px-2 py-1">Column 2</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border px-2 py-1">Data 1</td>
+                                <td class="border px-2 py-1">Data 2</td>
+                            </tr>
+                            <tr>
+                                <td class="border px-2 py-1">Data 3</td>
+                                <td class="border px-2 py-1">Data 4</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            }, 1000);
+        }
+        
+        function closeTestModal() {
+            document.getElementById('testModal').classList.add('hidden');
+        }
+        
+        // Test if modal manager exists
+        window.addEventListener('load', function() {
+            console.log('Page loaded');
+            console.log('Modal manager available:', typeof window.openChartModal === 'function');
+            console.log('Modal instance available:', typeof window.modalManagerInstance !== 'undefined');
+        });
+    </script>
+    
+    <!-- Load your modal manager -->
+    <script src="/static/js/modal-manager.js"></script>
+</body>
+</html>

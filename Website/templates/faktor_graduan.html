@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div x-data="faktorGraduanDashboard()" x-init="init()" class="min-h-screen bg-gray-50 px-6 pb-6 space-y-6">
+
+
+<div x-data="faktorGraduanDashboard()" x-init="init()" x-cloak class="dashboard-container min-h-screen bg-gray-50 px-6 pb-6 space-y-6">
     <!-- Professional Header -->
     <div class="relative">
         <div class="flex flex-row border-b border-gray-300 justify-between py-4 -mx-6">
@@ -22,24 +24,26 @@
             <!-- Action Controls -->
             <div class="flex flex-row space-x-4 px-6">
                 <!-- Filters -->
-                <div class="relative" x-data="{ open: false }">
+                <div class="relative" x-data="{ open: false }" @click.away="open = false">
                     <button @click="open = !open"
                         class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-gray-200 bg-white text-gray-700 group transform hover:scale-105">
                         <i class="fas fa-filter text-secondary-700 text-[10px]"></i>
                         <span class="font-semibold text-secondary-700 text-[10px] ml-1">Penapisan</span>
-                        <div x-show="activeFiltersCount > 0"
+                        <div x-show="activeFiltersCount > 0" x-transition
                             class="bg-secondary-900 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold ml-2"
                             x-text="activeFiltersCount"></div>
                     </button>
 
-                    <!-- Filter Dropdown -->
-                    <div x-show="open" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" @click.away="open = false"
-                        class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <!-- Filter Dropdown - Fixed positioning and timing -->
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
+                         class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+                         style="display: none;">
                         <div class="px-6 py-5">
                             <!-- Header -->
                             <div class="flex flex-row items-start justify-between mb-5">
@@ -156,20 +160,22 @@
                 </div>
 
                 <!-- Export Button -->
-                <div class="relative" x-data="{ open: false }">
+                <div class="relative" x-data="{ open: false }" @click.away="open = false">
                     <button @click="open = !open"
                         class="button-style flex items-center bg-secondary-800 text-white px-3 h-full rounded-md hover:bg-secondary-900 transition-all duration-200 shadow-lg group transform hover:scale-105">
                         <i class="fas fa-download text-[10px] group-hover:animate-bounce"></i>
                         <span class="font-semibold text-[10px] ml-1">Eksport</span>
                     </button>
 
-                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" @click.away="open = false"
-                        class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
+                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
+                         class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+                         style="display: none;">
                         <div class="py-2">
                             <button @click="exportData('csv'); open = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
@@ -357,15 +363,22 @@
                             (Skala 1-5)</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Employability Factors', buildTableEndpoint())"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="refreshAllFactorCharts()"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -467,15 +480,22 @@
                         <p class="text-gray-500 text-[10px] mt-1">Kesan terhadap mendapat pekerjaan</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Professional Certificates', buildTableEndpoint())"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="refreshChart('certificates')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -510,27 +530,22 @@
                         <p class="text-gray-500 text-[10px] mt-1">Kelayakan tambahan yang diminta</p>
                     </div>
                     <div class="flex space-x-1">
-                        <!-- <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Employer Requirements')"
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Employer Requirements', buildTableEndpoint())"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Maklumat Lanjut
                             </div>
-                        </div> -->
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="refreshChart('requirements')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -565,27 +580,22 @@
                         <p class="text-gray-500 text-[10px] mt-1">Tahap persediaan untuk pasaran kerja</p>
                     </div>
                     <div class="flex space-x-1">
-                        <!-- <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('University Preparation')"
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('University Preparedness', buildTableEndpoint())"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Maklumat Lanjut
                             </div>
-                        </div> -->
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="refreshChart('preparedness')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -622,14 +632,12 @@
                             duga (dikategorikan)</p>
                     </div>
                     <div class="flex space-x-3">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Additional Skills')"
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openTableModal('Additional Skills', buildTableEndpoint())"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Maklumat Lanjut
                             </div>
@@ -651,7 +659,6 @@
                                 Buka Halaman
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -718,13 +725,14 @@
                     const response = await fetch('/faktor-graduan/api/filters/available');
                     const data = await response.json();
 
-
                     this.availableFilters = {
-                        graduation_years: data[ 'Tahun graduasi anda?' ] || [],
-                        genders: data[ 'Jantina anda?' ] || [],
-                        institutions: data[ 'Institusi pendidikan MARA yang anda hadiri?' ] || [],
-                        certificates: data[ 'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?' ] || []
+                        graduation_years: data['Tahun graduasi anda?'] || [],
+                        genders: data['Jantina anda?'] || [],
+                        institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || [],
+                        certificates: data['Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'] || []
                     };
+                    
+                    console.log('Available filters loaded:', this.availableFilters);
                 } catch (error)
                 {
                     console.error('Error loading filters:', error);
@@ -734,7 +742,6 @@
             async loadData()
             {
                 if (this.loading) return;
-
 
                 this.loading = true;
 
@@ -780,8 +787,30 @@
                 try
                 {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/faktor-graduan/api/employability-factor/${factorId}?${params}`);
+                    const url = `/faktor-graduan/api/employability-factor/${factorId}?${params}`;
+                    console.log(`Loading ${factorId} chart from:`, url);
+                    
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(`${factorId} API error:`, response.status, errorText);
+                        throw new Error(`Failed to load ${factorId} chart: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
+                    console.log(`${factorId} data received:`, data);
+
+                    // Validate data structure
+                    if (!data.datasets || !data.datasets[0] || !data.datasets[0].data) {
+                        console.error(`${factorId} - Invalid data structure:`, data);
+                        throw new Error(`Invalid data structure for ${factorId}`);
+                    }
+
+                    // Check if data has values
+                    const hasData = data.datasets[0].data.some(value => value > 0);
+                    if (!hasData) {
+                        console.warn(`${factorId} - No data values found:`, data.datasets[0].data);
+                    }
 
                     this.safeDestroyChart(canvasId.replace('Chart', ''));
 
@@ -843,11 +872,15 @@
                                     }
                                 }
                             });
+                            console.log(`${factorId} chart created successfully`);
                         }
+                    } else {
+                        console.error(`Canvas element not found: ${canvasId}`);
                     }
                 } catch (error)
                 {
                     console.error(`Error loading ${factorId} chart:`, error);
+                    this.showToast(`Error loading ${factorId} chart: ${error.message}`, 'error');
                 }
             },
 
@@ -886,13 +919,6 @@
                         cert_impact_rate: 0
                     };
                 }
-            },
-
-            async loadEmployabilityFactorsChart()
-            {
-                // This method is now replaced by individual factor charts
-                // Keeping for compatibility but no longer used
-                console.log('Individual factor charts are loaded separately');
             },
 
             async loadProfessionalCertificatesChart()
@@ -1232,18 +1258,33 @@
             buildFilterParams()
             {
                 const params = new URLSearchParams();
-                Object.entries(this.filters).forEach(([ key, values ]) =>
-                {
-                    if (Array.isArray(values) && values.length > 0)
-                    {
-                        const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
-                            key === 'gender' ? 'Jantina anda?' :
-                                key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' :
-                                    key === 'certificates' ? 'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?' : key;
-                        values.forEach(value => params.append(paramKey, value));
+                
+                // Fixed mapping - ensure exact column names are used
+                const filterMapping = {
+                    graduation_year: 'Tahun graduasi anda?',
+                    gender: 'Jantina anda?',
+                    institution: 'Institusi pendidikan MARA yang anda hadiri?',
+                    certificates: 'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'
+                };
+                
+                Object.entries(this.filters).forEach(([key, values]) => {
+                    if (Array.isArray(values) && values.length > 0) {
+                        const paramKey = filterMapping[key] || key;
+                        values.forEach(value => {
+                            // Ensure numeric values for graduation year
+                            const finalValue = key === 'graduation_year' ? parseInt(value) || value : value;
+                            params.append(paramKey, finalValue);
+                        });
                     }
                 });
+                
+                console.log('Filter params:', params.toString());
                 return params.toString();
+            },
+
+            buildTableEndpoint() {
+                const params = this.buildFilterParams();
+                return `/faktor-graduan/api/table-data?${params}`;
             },
 
             applyFilters()
@@ -1319,12 +1360,13 @@
                 }
             },
 
-            openTableModal(title)
+            openTableModal(title, endpoint)
             {
-                const params = this.buildFilterParams();
-                if (typeof openModal !== 'undefined')
-                {
-                    openModal(title, `/faktor-graduan/api/table-data?${params}`);
+                if (typeof window.modalManagerInstance !== 'undefined' && window.modalManagerInstance) {
+                    window.modalManagerInstance.openModal(title, endpoint);
+                } else {
+                    console.error('Modal manager not available');
+                    this.showToast('Modal manager tidak tersedia', 'error');
                 }
             },
 

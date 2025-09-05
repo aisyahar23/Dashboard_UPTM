@@ -21,25 +21,35 @@
 
             <!-- Button Section -->
             <div class="flex flex-row space-x-4 px-6">
-                <!-- Enhanced Filters Dropdown -->
-                <div class="relative" x-data="{ open: false }">
+                <!-- FIXED Filter Dropdown -->
+                <div class="relative" x-data="{ open: false }" x-cloak>
                     <button @click.stop="open = !open"
                         class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-secondary-700">
                         <i class="fas fa-filter text-secondary-900 text-[10px]"></i>
                         <span class="font-semibold text-secondary-900 text-[10px]">Penapisan</span>
-                        <div x-show="activeFiltersCount > 0" x-transition
-                            class="bg-secondary-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
-                            x-text="activeFiltersCount"></div>
+                        <div x-show="activeFiltersCount > 0" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-75"
+                             x-transition:enter-end="opacity-1 scale-100"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-1 scale-100"
+                             x-transition:leave-end="opacity-0 scale-75"
+                             class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold ml-2"
+                             x-text="activeFiltersCount" style="display: none;"></div>
                     </button>
 
-                    <!-- Enhanced Filter Dropdown -->
-                    <div x-show="open" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" @click.away="open = false"
-                        class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                    <!-- Filter Dropdown Content -->
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95 -translate-y-2"
+                         x-transition:enter-end="opacity-1 transform scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-1 transform scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 transform scale-95 -translate-y-2"
+                         @click.away="open = false"
+                         x-cloak
+                         style="display: none;"
+                         class="absolute right-0 mt-2 w-96 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
                         <div class="px-6 py-5">
                             <!-- Header -->
                             <div class="flex items-center justify-between mb-5">
@@ -51,7 +61,7 @@
                                     <p class="text-sm text-gray-500 mt-1">Pilih kriteria untuk menapis data</p>
                                 </div>
                                 <button @click="clearAllFilters(); open = false"
-                                    class="text-red-500 hover:text-red-700 text-sm font-semibold px-3 py-1 rounded-lg hover:bg-red-50 transition-colors">
+                                    class="text-[#c92427] hover:text-red-700 text-sm font-semibold px-3 py-1 rounded-lg hover:bg-red-50 transition-colors">
                                     <i class="fas fa-times-circle mr-1"></i>Kosongkan
                                 </button>
                             </div>
@@ -196,35 +206,37 @@
                     </div>
                 </div>
 
-                <!-- Enhanced Export Button -->
-                <div class="relative" x-data="{ open: false }">
+                <!-- FIXED Export Dropdown -->
+                <div class="relative" x-data="{ open: false }" x-cloak>
                     <button @click.stop="open = !open"
-                        class="button-style flex items-center bg-secondary-800 text-white px-3 h-full rounded-md hover:bg-secondary-900 transition-all duration-200 shadow-lg group transform hover:scale-105">
+                        class="button-style-fulll-red flex items-center bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-3 py-1 rounded-md transition-all duration-200 shadow-lg shadow-secondary-700/30 group transform hover:scale-105">
                         <i class="fas fa-download text-[10px] group-hover:animate-bounce"></i>
                         <span class="font-semibold text-[10px] ml-1">Eksport</span>
                     </button>
 
-                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" @click.away="open = false"
-                        class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
-                        <div class="py-2">
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95 -translate-y-2"
+                         x-transition:enter-end="opacity-1 transform scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-1 transform scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 transform scale-95 -translate-y-2"
+                         @click.away="open = false"
+                         x-cloak
+                         style="display: none;"
+                         class="absolute right-0 mt-3 w-56 bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-white/20 z-50">
+                        <div class="py-3">
                             <button @click="exportData('csv'); open = false"
-                                class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
-                                <i
-                                    class="fas fa-file-csv text-emerald-600 text-lg group-hover:scale-110 transition-transform"></i>
+                                class="w-full text-left px-6 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors">
+                                <i class="fas fa-file-csv text-emerald-600 text-lg"></i>
                                 <div>
                                     <div class="font-semibold text-gray-900">CSV Format</div>
                                     <div class="text-xs text-gray-500">Fail nilai dipisahkan koma</div>
                                 </div>
                             </button>
                             <button @click="exportData('excel'); open = false"
-                                class="w-full text-left px-4 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors group">
-                                <i
-                                    class="fas fa-file-excel text-blue-600 text-lg group-hover:scale-110 transition-transform"></i>
+                                class="w-full text-left px-6 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors">
+                                <i class="fas fa-file-excel text-blue-600 text-lg"></i>
                                 <div>
                                     <div class="font-semibold text-gray-900">Excel Format</div>
                                     <div class="text-xs text-gray-500">Fail Microsoft Excel</div>
@@ -275,16 +287,16 @@
                     <div class="flex items-center mt-4 space-x-8">
                         <div class="flex items-center space-x-3">
                             <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg"></div>
-                            <span class="text-sm font-medium text-green-200">Analisis Langsung</span>
+                            <span class="text-sm font-medium text-green-200">MAKLUMAT LANGSUNG</span>
                         </div>
                         <div class="text-sm text-white flex items-center space-x-2">
                             <span x-show="dataLoaded && !loading" class="flex items-center gap-x-1">
-                                <i class="fas fa-users mr-1"></i>
-                                <strong x-text="kpis.total_records ? kpis.total_records : '0'"></strong> Responden Dianalisis
+                                <i class="fas fa-database mr-1"></i>
+                                <strong x-text="kpis.total_records ? kpis.total_records : '0'"></strong> Rekod
                             </span>
                             <span x-show="loading" class="flex items-center">
                                 <i class="fas fa-spinner fa-spin mr-2"></i>
-                                Memproses Data...
+                                Memuatkan...
                             </span>
                         </div>
                     </div>
@@ -294,17 +306,15 @@
     </div>
 
     <!-- Enhanced Main Content - Bento Grid Layout -->
-    <div class="grid grid-cols-12 gap-6 auto-rows-auto">
+    <div class="dashboard-grid grid grid-cols-12 gap-6 auto-rows-auto">
 
         <!-- Enhanced KPI Cards Row -->
         <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Male/Female Rate -->
-            <div
-                class="flex flex-col justify-between bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <!-- Female Rate KPI -->
+            <div class="kpi-card bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div
-                            class="w-14 h-14 bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div class="w-14 h-14 bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-venus-mars text-xl text-pink-600"></i>
                         </div>
                         <div>
@@ -319,19 +329,16 @@
                 </div>
             </div>
 
-            <!-- Most Common Age -->
-            <div
-                class="flex flex-col justify-between bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <!-- Most Common Age KPI -->
+            <div class="kpi-card bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div
-                            class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-birthday-cake text-xl text-orange-600"></i>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Kumpulan Umur Utama</div>
-                            <div class="text-lg font-bold text-gray-900 leading-tight"
-                                x-text="kpis.most_common_age ? kpis.most_common_age : 'N/A'"></div>
+                            <div class="text-lg font-bold text-gray-900 leading-tight" x-text="kpis.most_common_age ? kpis.most_common_age : 'N/A'"></div>
                         </div>
                     </div>
                 </div>
@@ -341,13 +348,11 @@
                 </div>
             </div>
 
-            <!-- UPTM Rate -->
-            <div
-                class="flex flex-col justify-between bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <!-- UPTM Rate KPI -->
+            <div class="kpi-card bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div
-                            class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-university text-xl text-blue-600"></i>
                         </div>
                         <div>
@@ -362,13 +367,11 @@
                 </div>
             </div>
 
-            <!-- Engineering Rate -->
-            <div
-                class="flex flex-col justify-between bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <!-- Engineering Rate KPI -->
+            <div class="kpi-card bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div
-                            class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <div class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-cogs text-xl text-green-600"></i>
                         </div>
                         <div>
@@ -384,7 +387,7 @@
             </div>
         </div>
 
-        <!-- Age by Graduation Year - Enhanced Stacked Bar Chart -->
+        <!-- Age by Graduation Year Chart -->
         <div class="col-span-12 lg:col-span-8 bg-white rounded-2xl shadow-xl border overflow-hidden">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
@@ -393,19 +396,25 @@
                             <i class="fas fa-chart-bar text-primary-600 text-sm mr-2"></i>
                             Taburan Umur Mengikut Tahun Graduasi
                         </h3>
-                        <p class="text-gray-500 text-[10px] mt-1">Profil umur graduan berdasarkan tahun tamat pengajian
-                        </p>
+                        <p class="text-gray-500 text-[10px] mt-1">Profil umur graduan berdasarkan tahun tamat pengajian</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="openChartModal('age-by-graduation-year', 'Taburan Umur Mengikut Tahun Graduasi')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
                             <button @click="refreshChart('age-by-year')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -414,12 +423,10 @@
                 </div>
             </div>
             <div class="p-8 bg-gradient-to-br from-gray-50 to-white">
-                <div class="h-80 relative">
-                    <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                <div class="chart-container h-80 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mx-auto mb-4">
-                            </div>
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mx-auto mb-4"></div>
                             <div class="text-gray-700 font-medium">Memuatkan taburan umur...</div>
                         </div>
                     </div>
@@ -428,7 +435,7 @@
             </div>
         </div>
 
-        <!-- Gender Distribution - Pie Chart -->
+        <!-- Gender Distribution Chart -->
         <div class="col-span-12 lg:col-span-4 bg-white rounded-2xl shadow-xl border overflow-hidden">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
@@ -440,15 +447,22 @@
                         <p class="text-gray-600 text-[10px] mt-1">Komposisi responden mengikut jantina</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="openChartModal('gender-distribution', 'Taburan Jantina')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
                             <button @click="refreshChart('gender-distribution')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -457,12 +471,10 @@
                 </div>
             </div>
             <div class="p-6">
-                <div class="h-80 relative">
-                    <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                <div class="chart-container h-80 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-3">
-                            </div>
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500 mx-auto mb-3"></div>
                             <div class="text-gray-600 font-medium text-sm">Memuatkan taburan jantina...</div>
                         </div>
                     </div>
@@ -471,7 +483,7 @@
             </div>
         </div>
 
-        <!-- Institution Category - Bar Chart -->
+        <!-- Institution Category Chart -->
         <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
@@ -483,15 +495,22 @@
                         <p class="text-gray-600 text-[10px] mt-1">Taburan graduan berdasarkan kategori institusi</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="openChartModal('institution-category', 'Pengagihan Institusi Mengikut Kategori')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
                             <button @click="refreshChart('institution-category')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -500,12 +519,10 @@
                 </div>
             </div>
             <div class="p-8">
-                <div class="h-80 relative">
-                    <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                <div class="chart-container h-80 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4">
-                            </div>
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
                             <div class="text-gray-700 font-medium">Memuatkan institusi...</div>
                         </div>
                     </div>
@@ -514,7 +531,7 @@
             </div>
         </div>
 
-        <!-- Field of Study - Bar Chart -->
+        <!-- Field of Study Chart -->
         <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
@@ -523,24 +540,29 @@
                             <i class="fas fa-book text-primary-600 mr-3"></i>
                             Pengagihan Bidang Pengajian
                         </h3>
-                        <p class="text-gray-600 text-[10px] mt-1">Taburan graduan berdasarkan bidang pengajian
-                            (dikategorikan)</p>
+                        <p class="text-gray-600 text-[10px] mt-1">Taburan graduan berdasarkan bidang pengajian (dikategorikan)</p>
                     </div>
                     <div class="flex space-x-1">
-                        <div
-                            class="relative group h-fit border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
+                            <button @click="openChartModal('field-of-study', 'Pengagihan Bidang Pengajian')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-secondary-600 transition-all duration-200">
                             <button @click="refreshChart('field-of-study')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                             </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
                         </div>
-
                         <div class="flex flex-row items-center relative group">
                             <a href="/demografi/table" target="_blank"
                                 class="flex items-center p-2 w-8 h-8 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all text-sm font-medium transform hover:scale-105 justify-center">
@@ -556,12 +578,10 @@
                 </div>
             </div>
             <div class="p-8">
-                <div class="h-80 relative">
-                    <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                <div class="chart-container h-80 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
-                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4">
-                            </div>
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
                             <div class="text-gray-700 font-medium">Memuatkan bidang pengajian...</div>
                         </div>
                     </div>
@@ -571,28 +591,14 @@
         </div>
     </div>
 </div>
-
-<!-- Click outside handler to close dropdowns -->
-<script>
-    document.addEventListener('click', function (event)
-    {
-        // Close all dropdowns when clicking outside
-        const dropdowns = document.querySelectorAll('[x-data*="open"]');
-        dropdowns.forEach(dropdown =>
-        {
-            if (!dropdown.contains(event.target))
-            {
-                Alpine.store('dropdowns', { open: false });
-            }
-        });
-    });
-</script>
 {% endblock %}
 
 {% block scripts %}
+<!-- Load Modal Manager -->
+<script src="{{ url_for('static', filename='js/modal-manager.js') }}"></script>
+
 <script>
-    function demografiDashboard()
-    {
+    function demografiDashboard() {
         return {
             loading: false,
             dataLoaded: false,
@@ -608,58 +614,86 @@
             availableFilters: {},
             activeFiltersCount: 0,
 
-            init()
-            {
+            init() {
                 console.log('Initializing demografi dashboard...');
                 if (this.isInitialized) return;
                 this.isInitialized = true;
-                this.waitForEnhancedChart();
-                this.loadAvailableFilters();
-                this.updateActiveFiltersCount();
+                
+                // Prevent layout shifts immediately
+                this.$nextTick(() => {
+                    this.preventLayoutShift();
+                    this.waitForEnhancedChart();
+                    this.loadAvailableFilters();
+                    this.updateActiveFiltersCount();
+                });
             },
 
-            waitForEnhancedChart()
-            {
-                if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined')
-                {
+            preventLayoutShift() {
+                // Reserve space for charts to prevent sidebar movement
+                const chartContainers = document.querySelectorAll('.chart-container');
+                chartContainers.forEach(container => {
+                    container.style.minHeight = '320px';
+                });
+                
+                // Stabilize KPI cards
+                const kpiCards = document.querySelectorAll('.kpi-card');
+                kpiCards.forEach(card => {
+                    card.style.minHeight = '120px';
+                });
+            },
+
+            waitForEnhancedChart() {
+                if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined') {
                     setTimeout(() => this.waitForEnhancedChart(), 100);
                     return;
                 }
                 this.loadData();
             },
 
-            async loadAvailableFilters()
-            {
-                try
-                {
+            async loadAvailableFilters() {
+                try {
                     const response = await fetch('/demografi/api/filters/available');
                     const data = await response.json();
 
+                    console.log('Raw filter data received:', data);
+
                     this.availableFilters = {
-                        graduation_years: data[ 'Tahun graduasi anda? ' ] || [],
-                        genders: data[ 'Jantina anda? ' ] || [],
-                        age_groups: data[ 'Umur anda? ' ] || [],
-                        institutions: data[ 'Institusi pendidikan MARA yang anda hadiri? ' ] || [],
-                        fields_of_study: data[ 'Bidang pengajian utama anda? ' ] || []
+                        graduation_years: data['Tahun graduasi anda?'] || [],
+                        genders: data['Jantina anda?'] || [],
+                        age_groups: data['Umur anda?'] || [],
+                        institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || [],
+                        fields_of_study: data['Bidang pengajian utama anda?'] || []
                     };
-                } catch (error)
-                {
+
+                    console.log('Processed availableFilters:', this.availableFilters);
+                } catch (error) {
                     console.error('Error loading filters:', error);
                 }
             },
 
-            async loadData()
-            {
-                if (this.loading) return;
+            // Enhanced modal opening with error handling
+            openChartModal(chartType, title) {
+                const params = this.buildFilterParams();
+                const endpoint = `/demografi/api/table-data?${params}`;
 
+                if (typeof window.openChartModal === 'function') {
+                    window.openChartModal(chartType, title, endpoint);
+                } else {
+                    console.error('Modal manager not loaded. Opening fallback table view.');
+                    window.open(`/demografi/table?${params}`, '_blank');
+                }
+            },
+
+            async loadData() {
+                if (this.loading) return;
                 this.loading = true;
 
-                try
-                {
+                try {
+                    // Add delay to prevent flickering
+                    await new Promise(resolve => setTimeout(resolve, 150));
+                    
                     await this.loadSummary();
                     await this.delay(200);
-
-                    // Load all 4 charts
                     await this.loadAgeByYearChart();
                     await this.delay(200);
                     await this.loadGenderDistributionChart();
@@ -669,31 +703,25 @@
                     await this.loadFieldOfStudyChart();
 
                     this.dataLoaded = true;
-                } catch (error)
-                {
+                } catch (error) {
                     console.error('Error loading dashboard data:', error);
                     this.showToast('Error loading data: ' + error.message, 'error');
-                } finally
-                {
+                } finally {
                     this.loading = false;
                 }
             },
 
-            delay(ms)
-            {
+            delay(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
 
-            async loadSummary()
-            {
-                try
-                {
+            async loadSummary() {
+                try {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/summary?${params}`);
                     if (!response.ok) throw new Error('Failed to load summary');
                     this.kpis = await response.json();
-                } catch (error)
-                {
+                } catch (error) {
                     console.error('Error loading summary:', error);
                     this.kpis = {
                         total_records: 0,
@@ -709,10 +737,8 @@
                 }
             },
 
-            async loadAgeByYearChart()
-            {
-                try
-                {
+            async loadAgeByYearChart() {
+                try {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/age-by-graduation-year?${params}`);
                     const data = await response.json();
@@ -720,19 +746,15 @@
                     this.safeDestroyChart('ageByYear');
 
                     const canvas = document.getElementById('ageByYearChart');
-                    if (canvas)
-                    {
+                    if (canvas) {
                         const ctx = canvas.getContext('2d');
-                        if (ctx)
-                        {
+                        if (ctx) {
                             window.globalCharts = window.globalCharts || {};
-                            // USE STANDARDIZED CHART TYPE
                             window.globalCharts.ageByYear = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'age-by-year', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function (context)
-                                            {
+                                            label: function (context) {
                                                 return `${context.dataset.label}: ${context.parsed.y.toLocaleString()} responden`;
                                             }
                                         }
@@ -769,16 +791,13 @@
                             });
                         }
                     }
-                } catch (error)
-                {
+                } catch (error) {
                     console.error('Error loading age by year chart:', error);
                 }
             },
 
-            async loadGenderDistributionChart()
-            {
-                try
-                {
+            async loadGenderDistributionChart() {
+                try {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/gender-distribution?${params}`);
                     const data = await response.json();
@@ -786,19 +805,15 @@
                     this.safeDestroyChart('genderDistribution');
 
                     const canvas = document.getElementById('genderDistributionChart');
-                    if (canvas)
-                    {
+                    if (canvas) {
                         const ctx = canvas.getContext('2d');
-                        if (ctx)
-                        {
+                        if (ctx) {
                             window.globalCharts = window.globalCharts || {};
-                            // USE STANDARDIZED CHART TYPE
                             window.globalCharts.genderDistribution = EnhancedChartFactory.createChart(ctx, 'enhanced-pie', data, 'gender-distribution', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function (context)
-                                            {
+                                            label: function (context) {
                                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                                 const percentage = ((context.parsed / total) * 100).toFixed(1);
                                                 return `${context.label}: ${context.parsed.toLocaleString()} (${percentage}%)`;
@@ -809,16 +824,13 @@
                             });
                         }
                     }
-                } catch (error)
-                {
+                } catch (error) {
                     console.error('Error loading gender distribution chart:', error);
                 }
             },
 
-            async loadInstitutionCategoryChart()
-            {
-                try
-                {
+            async loadInstitutionCategoryChart() {
+                try {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/institution-category?${params}`);
                     const data = await response.json();
@@ -826,78 +838,54 @@
                     this.safeDestroyChart('institutionCategory');
 
                     const canvas = document.getElementById('institutionCategoryChart');
-                    if (canvas)
-                    {
+                    if (canvas) {
                         const ctx = canvas.getContext('2d');
-                        if (ctx)
-                        {
+                        if (ctx) {
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.institutionCategory = EnhancedChartFactory.createChart(
-                                ctx,
-                                'vertical-bar',
-                                data,
-                                'institution-category',
+                                ctx, 'vertical-bar', data, 'institution-category',
                                 {
                                     plugins: {
                                         tooltip: {
                                             callbacks: {
-                                                label: function (context)
-                                                {
+                                                label: function (context) {
                                                     return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                                 }
                                             }
                                         },
-                                        legend: {
-                                            display: false
-                                        }
+                                        legend: { display: false }
                                     },
                                     scales: {
                                         x: {
                                             ticks: {
-                                                // Remove rotation
                                                 maxRotation: 0,
                                                 minRotation: 0,
                                                 font: { size: 11 },
-                                                // Wrap long labels into multiple lines
-                                                callback: function (value)
-                                                {
+                                                callback: function (value) {
                                                     const label = this.getLabelForValue(value);
                                                     if (!label) return '';
-
-                                                    const maxWidth = 20; // Max characters per line
+                                                    const maxWidth = 20;
                                                     const lines = [];
                                                     let line = '';
-
                                                     const words = label.split(' ');
-
-                                                    for (const word of words)
-                                                    {
-                                                        if ((line + word).length <= maxWidth)
-                                                        {
+                                                    for (const word of words) {
+                                                        if ((line + word).length <= maxWidth) {
                                                             line += (line ? ' ' : '') + word;
-                                                        } else
-                                                        {
+                                                        } else {
                                                             if (line) lines.push(line);
-                                                            if (word.length > maxWidth)
-                                                            {
-                                                                // Break long word into chunks
-                                                                for (let i = 0; i < word.length; i += maxWidth)
-                                                                {
+                                                            if (word.length > maxWidth) {
+                                                                for (let i = 0; i < word.length; i += maxWidth) {
                                                                     lines.push(word.slice(i, i + maxWidth));
                                                                 }
                                                                 line = '';
-                                                            } else
-                                                            {
+                                                            } else {
                                                                 line = word;
                                                             }
                                                         }
                                                     }
-
                                                     if (line) lines.push(line);
-
                                                     return lines;
                                                 },
-                                                // Increase line height to accommodate multiline labels
                                                 padding: 10
                                             }
                                         },
@@ -909,26 +897,20 @@
                                             }
                                         }
                                     },
-                                    // Optional: Increase bottom padding to ensure space for multiline labels
                                     layout: {
-                                        padding: {
-                                            bottom: 20
-                                        }
+                                        padding: { bottom: 20 }
                                     }
                                 }
                             );
                         }
                     }
-                } catch (error)
-                {
+                } catch (error) {
                     console.error('Error loading institution category chart:', error);
                 }
             },
 
-            async loadFieldOfStudyChart()
-            {
-                try
-                {
+            async loadFieldOfStudyChart() {
+                try {
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/field-of-study?${params}`);
                     const data = await response.json();
@@ -936,78 +918,53 @@
                     this.safeDestroyChart('fieldOfStudy');
 
                     const canvas = document.getElementById('fieldOfStudyChart');
-                    if (canvas)
-                    {
+                    if (canvas) {
                         const ctx = canvas.getContext('2d');
-                        if (ctx)
-                        {
+                        if (ctx) {
                             window.globalCharts = window.globalCharts || {};
                             window.globalCharts.fieldOfStudy = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'field-of-study', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
-                                            label: function (context)
-                                            {
+                                            label: function (context) {
                                                 return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                             }
                                         }
                                     },
-                                    legend: {
-                                        display: false
-                                    }
+                                    legend: { display: false }
                                 },
                                 scales: {
                                     x: {
                                         ticks: {
-                                            // Remove rotation
                                             maxRotation: 0,
                                             minRotation: 0,
                                             font: { size: 10 },
-
-                                            // Wrap long labels into multiple lines
-                                            callback: function (value)
-                                            {
+                                            callback: function (value) {
                                                 const label = this.getLabelForValue(value);
                                                 if (!label) return '';
-
-                                                // Split label into lines of max ~20 characters
                                                 const charsPerLine = 11;
                                                 const lines = [];
                                                 let line = '';
-
-                                                for (const word of label.split(' '))
-                                                {
-                                                    if ((line + word).length <= charsPerLine)
-                                                    {
+                                                for (const word of label.split(' ')) {
+                                                    if ((line + word).length <= charsPerLine) {
                                                         line += (line ? ' ' : '') + word;
-                                                    } else
-                                                    {
+                                                    } else {
                                                         if (line) lines.push(line);
-                                                        if (word.length > charsPerLine)
-                                                        {
-                                                            // Handle very long words by splitting them
-                                                            for (let i = 0; i < word.length; i += charsPerLine)
-                                                            {
+                                                        if (word.length > charsPerLine) {
+                                                            for (let i = 0; i < word.length; i += charsPerLine) {
                                                                 lines.push(word.slice(i, i + charsPerLine));
                                                             }
-                                                        } else
-                                                        {
+                                                        } else {
                                                             line = word;
                                                         }
                                                     }
                                                 }
                                                 if (line) lines.push(line);
-
                                                 return lines;
                                             },
-
-                                            // Increase spacing if needed to accommodate multiline labels
                                             padding: 10
                                         },
-                                        // Optional: prevent labels from being skipped if too many
-                                        grid: {
-                                            display: false // improves readability for dense labels
-                                        }
+                                        grid: { display: false }
                                     },
                                     y: {
                                         beginAtZero: true,
@@ -1017,65 +974,51 @@
                                         }
                                     }
                                 },
-
-                                // Increase bottom padding to allow space for multiline labels
                                 layout: {
-                                    padding: {
-                                        bottom: 30
-                                    }
+                                    padding: { bottom: 30 }
                                 }
                             });
                         }
                     }
-                } catch (error)
-                {
+                } catch (error) {
                     console.error('Error loading field of study chart:', error);
                 }
             },
 
-            safeDestroyChart(chartName)
-            {
-                if (window.globalCharts && window.globalCharts[ chartName ])
-                {
-                    try
-                    {
-                        window.globalCharts[ chartName ].destroy();
-                        delete window.globalCharts[ chartName ];
-                    } catch (error)
-                    {
+            safeDestroyChart(chartName) {
+                if (window.globalCharts && window.globalCharts[chartName]) {
+                    try {
+                        window.globalCharts[chartName].destroy();
+                        delete window.globalCharts[chartName];
+                    } catch (error) {
                         console.warn(`Error destroying chart ${chartName}:`, error);
                     }
                 }
             },
 
-            buildFilterParams()
-            {
+            buildFilterParams() {
                 const params = new URLSearchParams();
-                Object.entries(this.filters).forEach(([ key, values ]) =>
-                {
-                    if (Array.isArray(values) && values.length > 0)
-                    {
-                        const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda? ' :
-                            key === 'gender' ? 'Jantina anda? ' :
-                                key === 'age_group' ? 'Umur anda? ' :
-                                    key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri? ' :
-                                        key === 'field_of_study' ? 'Bidang pengajian utama anda? ' : key;
+                Object.entries(this.filters).forEach(([key, values]) => {
+                    if (Array.isArray(values) && values.length > 0) {
+                        const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
+                            key === 'gender' ? 'Jantina anda?' :
+                                key === 'age_group' ? 'Umur anda?' :
+                                    key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' :
+                                        key === 'field_of_study' ? 'Bidang pengajian utama anda?' : key;
                         values.forEach(value => params.append(paramKey, value));
                     }
                 });
                 return params.toString();
             },
 
-            applyFilters()
-            {
+            applyFilters() {
                 this.updateActiveFiltersCount();
                 this.dataLoaded = false;
                 this.loadData();
                 this.showToast('Penapis berjaya diterapkan', 'success');
             },
 
-            clearAllFilters()
-            {
+            clearAllFilters() {
                 this.filters = {
                     graduation_year: [],
                     gender: [],
@@ -1089,92 +1032,79 @@
                 this.showToast('Semua penapis dikosongkan', 'info');
             },
 
-            updateActiveFiltersCount()
-            {
-                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) =>
-                {
+            updateActiveFiltersCount() {
+                this.activeFiltersCount = Object.values(this.filters).reduce((count, filter) => {
                     return count + (Array.isArray(filter) ? filter.length : 0);
                 }, 0);
             },
 
-            async refreshData()
-            {
+            async refreshData() {
                 this.dataLoaded = false;
                 await this.loadData();
                 this.showToast('Data berjaya dimuat semula', 'success');
             },
 
-            async refreshChart(chartType)
-            {
-                if (chartType === 'age-by-year')
-                {
+            async refreshChart(chartType) {
+                if (chartType === 'age-by-year') {
                     await this.loadAgeByYearChart();
-                } else if (chartType === 'gender-distribution')
-                {
+                } else if (chartType === 'gender-distribution') {
                     await this.loadGenderDistributionChart();
-                } else if (chartType === 'institution-category')
-                {
+                } else if (chartType === 'institution-category') {
                     await this.loadInstitutionCategoryChart();
-                } else if (chartType === 'field-of-study')
-                {
+                } else if (chartType === 'field-of-study') {
                     await this.loadFieldOfStudyChart();
                 }
                 this.showToast(`Graf ${chartType} dimuat semula`, 'success');
             },
 
-            async exportData(format)
-            {
-                try
-                {
+            async exportData(format) {
+                try {
                     const params = this.buildFilterParams();
                     const url = `/demografi/api/export?format=${format}&${params}`;
                     window.open(url, '_blank');
                     this.showToast(`Mengeksport data sebagai ${format.toUpperCase()}...`, 'info');
-                } catch (error)
-                {
+                } catch (error) {
                     console.error('Export error:', error);
                     this.showToast('Eksport gagal', 'error');
                 }
             },
 
-            openTableModal(title)
-            {
-                const params = this.buildFilterParams();
-                if (typeof openModal !== 'undefined')
-                {
-                    openModal(title, `/demografi/api/table-data?${params}`);
-                }
-            },
+            showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                const colors = {
+                    success: 'bg-emerald-500 text-white border-emerald-600',
+                    error: 'bg-red-500 text-white border-red-600',
+                    info: 'bg-blue-500 text-white border-blue-600',
+                    warning: 'bg-amber-500 text-white border-amber-600'
+                };
+                const icons = {
+                    success: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>',
+                    error: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>',
+                    info: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>',
+                    warning: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>'
+                };
 
-            showToast(message, type = 'info')
-            {
-                if (typeof showToast !== 'undefined')
-                {
-                    showToast(message, type);
-                } else
-                {
-                    console.log(`${type.toUpperCase()}: ${message}`);
-                }
+                toast.className = `fixed top-4 right-4 ${colors[type]} px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 border-l-4 font-medium`;
+                toast.innerHTML = `
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 mr-3">
+                        ${icons[type]}
+                    </div>
+                    <div class="text-sm font-medium">${message}</div>
+                </div>
+            `;
+
+                document.body.appendChild(toast);
+                setTimeout(() => toast.style.transform = 'translateX(0)', 10);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
             }
         }
     }
 
-    // Enhanced global chart management
     window.globalCharts = window.globalCharts || {};
-
-    function safeDestroyChart(chartName)
-    {
-        if (window.globalCharts && window.globalCharts[ chartName ])
-        {
-            try
-            {
-                window.globalCharts[ chartName ].destroy();
-                delete window.globalCharts[ chartName ];
-            } catch (error)
-            {
-                console.warn(`Error destroying chart ${chartName}:`, error);
-            }
-        }
-    }
 </script>
 {% endblock %}

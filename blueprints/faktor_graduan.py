@@ -22,9 +22,26 @@ def index():
 def api_summary():
     """Get enhanced summary statistics for employability factors"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling - get all parameters properly
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            # Convert graduation year strings back to integers if needed
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    print(f"Warning: Could not convert graduation years to int: {values}")
+                    # Keep as strings if conversion fails
+                    pass
+            filters[key] = values
+        
+        print(f"API Summary - Received filters: {filters}")
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
+        
+        print(f"Filtered data shape: {filtered_df.shape}")
         
         total_records = len(filtered_df)
         
@@ -51,6 +68,7 @@ def api_summary():
                     if len(numeric_values) > 0:
                         avg_score = numeric_values.mean()
                         factor_averages[column] = avg_score
+                        print(f"Factor {column}: {len(numeric_values)} values, avg: {avg_score}")
             
             if factor_averages:
                 highest_impact_factor = max(factor_averages, key=factor_averages.get)
@@ -97,9 +115,13 @@ def api_summary():
             'filter_applied': len([f for f in filters.values() if f]) > 0
         }
         
+        print(f"Returning enhanced stats: {enhanced_stats}")
         return jsonify(enhanced_stats)
         
     except Exception as e:
+        print(f"Error in api_summary: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
         return jsonify({
             'error': str(e),
             'total_records': 0,
@@ -116,9 +138,25 @@ def api_summary():
 def api_individual_employability_factor(factor_id):
     """Get individual employability factor analysis for separate bar charts"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            # Convert graduation year strings back to integers if needed
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    print(f"Warning: Could not convert graduation years to int: {values}")
+                    pass
+            filters[key] = values
+        
+        print(f"API Individual Factor {factor_id} - Received filters: {filters}")
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
+        
+        print(f"Individual factor {factor_id} - Filtered data shape: {filtered_df.shape}")
         
         employability_columns = {
             'industrial-training': 'Sejauh mana latihan industri/praktikal mempengaruhi kebolehpasaran anda?',
@@ -138,8 +176,10 @@ def api_individual_employability_factor(factor_id):
             }), 400
             
         column = employability_columns[factor_id]
+        print(f"Looking for column: {column}")
         
         if column not in filtered_df.columns:
+            print(f"Column not found. Available columns: {list(filtered_df.columns)}")
             return jsonify({
                 'labels': ['No Data Available'],
                 'datasets': [{
@@ -149,8 +189,13 @@ def api_individual_employability_factor(factor_id):
             })
         
         # Get value counts for scale 1-5
+        print(f"Processing column {column} with {len(filtered_df)} rows")
         values = pd.to_numeric(filtered_df[column], errors='coerce').dropna()
+        print(f"Numeric values found: {len(values)} out of {len(filtered_df)}")
+        print(f"Sample values: {values.head().tolist() if len(values) > 0 else 'None'}")
+        
         if len(values) == 0:
+            print("No numeric values found")
             return jsonify({
                 'labels': ['No Numeric Data'],
                 'datasets': [{
@@ -160,6 +205,7 @@ def api_individual_employability_factor(factor_id):
             })
             
         value_counts = values.value_counts().sort_index()
+        print(f"Value counts: {dict(value_counts)}")
         
         # Ensure we have all scale points 1-5
         labels = []
@@ -175,7 +221,9 @@ def api_individual_employability_factor(factor_id):
         for i in range(1, 6):
             labels.append(scale_labels[i])
             # Convert to int to avoid JSON serialization issues
-            data.append(int(value_counts.get(i, 0)))
+            count = int(value_counts.get(i, 0))
+            data.append(count)
+            print(f"Scale {i}: {count} responses")
         
         chart_data = {
             'labels': labels,
@@ -185,10 +233,13 @@ def api_individual_employability_factor(factor_id):
             }]
         }
         
+        print(f"Returning chart data for {factor_id}: {chart_data}")
         return jsonify(chart_data)
         
     except Exception as e:
-        print(f"Error in individual factor endpoint: {str(e)}")
+        print(f"Error in individual factor endpoint for {factor_id}: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
         return jsonify({
             'error': str(e),
             'labels': ['Error'],
@@ -202,7 +253,17 @@ def api_individual_employability_factor(factor_id):
 def api_professional_certificates():
     """Get professional certificates impact analysis - Bar Chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    pass
+            filters[key] = values
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
         
@@ -265,7 +326,17 @@ def api_professional_certificates():
 def api_employer_requirements():
     """Get employer additional requirements analysis - Bar Chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    pass
+            filters[key] = values
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
         
@@ -314,7 +385,17 @@ def api_employer_requirements():
 def api_university_preparedness():
     """Get university preparedness analysis - Bar Chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    pass
+            filters[key] = values
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
         
@@ -382,7 +463,17 @@ def api_university_preparedness():
 def api_additional_skills():
     """Get additional skills analysis with grouped categories - Horizontal Bar Chart - Exact Colab Replication"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    pass
+            filters[key] = values
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
         
@@ -505,13 +596,23 @@ def api_additional_skills():
             }]
         }), 500
 
-# Keep existing endpoints (table, export, filters)
+# Keep existing endpoints (table, export, filters) with fixed filter handling
 @faktor_graduan_bp.route('/api/table-data')
 def api_table_data():
     """Get paginated table data for faktor graduan"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() 
-                   if k not in ['page', 'per_page', 'search']}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            if key not in ['page', 'per_page', 'search']:
+                values = request.args.getlist(key)
+                if key == 'Tahun graduasi anda?':
+                    try:
+                        values = [int(float(v)) for v in values if v.strip()]
+                    except (ValueError, TypeError):
+                        pass
+                filters[key] = values
+                
         filtered_processor = data_processor.apply_filters(filters)
         
         page = int(request.args.get('page', 1))
@@ -541,6 +642,7 @@ def api_table_data():
         return jsonify(data)
         
     except Exception as e:
+        print(f"Error in table data: {str(e)}")
         return jsonify({
             'error': str(e),
             'data': [],
@@ -552,7 +654,18 @@ def api_table_data():
 def api_export():
     """Export faktor graduan data in various formats"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() if k != 'format'}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            if key != 'format':
+                values = request.args.getlist(key)
+                if key == 'Tahun graduasi anda?':
+                    try:
+                        values = [int(float(v)) for v in values if v.strip()]
+                    except (ValueError, TypeError):
+                        pass
+                filters[key] = values
+                
         filtered_processor = data_processor.apply_filters(filters)
         
         format_type = request.args.get('format', 'csv')
@@ -598,51 +711,6 @@ def api_export():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@faktor_graduan_bp.route('/api/test')
-def api_test():
-    """Test endpoint to verify the blueprint is working + get available filters"""
-    try:
-        # Test info
-        test_info = {
-            'status': 'success',
-            'message': 'Faktor Graduan API is working',
-            'available_columns': list(df.columns) if not df.empty else [],
-            'total_records': len(df)
-        }
-
-        # Build filter options
-        sample_df = data_processor.df
-        filters = {}
-        filter_columns = [
-            'Tahun graduasi anda?',
-            'Jantina anda?',
-            'Institusi pendidikan MARA yang anda hadiri?',
-            'Program pengajian yang anda ikuti?',
-            'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'
-        ]
-
-        for column in filter_columns:
-            if column in sample_df.columns:
-                unique_values = sample_df[column].dropna().unique().tolist()
-                if isinstance(unique_values[0] if unique_values else None, (int, float)):
-                    unique_values = sorted(unique_values)
-                else:
-                    unique_values = sorted([str(val) for val in unique_values])
-                filters[column] = unique_values
-
-        # Return everything together
-        return jsonify({
-            **test_info,
-            'filters': filters
-        })
-
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
-
-
 @faktor_graduan_bp.route('/api/filters/available')
 def api_available_filters():
     """Get available filter options for faktor graduan data"""
@@ -666,8 +734,10 @@ def api_available_filters():
                 else:
                     unique_values = sorted([str(val) for val in unique_values])
                 filters[column] = unique_values
+                print(f"Filter options for {column}: {unique_values}")
         
         return jsonify(filters)
         
     except Exception as e:
+        print(f"Error loading filters: {str(e)}")
         return jsonify({'error': str(e), 'filters': {}}), 500

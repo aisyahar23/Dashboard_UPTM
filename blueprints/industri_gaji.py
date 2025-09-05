@@ -18,72 +18,30 @@ def index():
     """Main sektor gaji dashboard page"""
     return render_template('industri_gaji.html')
 
-@sektor_gaji_bp.route('/api/test')
-def api_test():
-    """Test endpoint to verify the blueprint is working"""
-    # Get available columns for debugging
-    available_columns = list(df.columns) if not df.empty else []
-    
-    # Check for specific columns we need
-    salary_column = 'Berapakah julat gaji bulanan anda sekarang?'
-    education_columns = ['Tahap pendidikan tertinggi', 'Tahap pendidikan', 'Education Level', 'Pendidikan']
-    field_columns = ['Bidang pengajian', 'Field of Study', 'Bidang', 'Program pengajian yang anda ikuti?']
-    
-    # Find which columns exist
-    found_education = [col for col in education_columns if col in available_columns]
-    found_field = [col for col in field_columns if col in available_columns]
-    
-    # Search for columns containing education-related keywords
-    education_keywords = ['pendidikan', 'education', 'level', 'tahap', 'tinggi']
-    possible_education_columns = []
-    for col in available_columns:
-        col_lower = col.lower()
-        if any(keyword in col_lower for keyword in education_keywords):
-            possible_education_columns.append(col)
-    
-    # Search for columns containing field/program keywords  
-    field_keywords = ['bidang', 'field', 'program', 'pengajian', 'study', 'major']
-    possible_field_columns = []
-    for col in available_columns:
-        col_lower = col.lower()
-        if any(keyword in col_lower for keyword in field_keywords):
-            possible_field_columns.append(col)
-    
-    # Sample data for salary column if it exists
-    salary_sample = []
-    education_sample = []
-    
-    if salary_column in df.columns:
-        salary_sample = df[salary_column].dropna().unique()[:10].tolist()
-    
-    if found_education and found_education[0] in df.columns:
-        education_sample = df[found_education[0]].dropna().unique()[:10].tolist()
-    elif possible_education_columns and possible_education_columns[0] in df.columns:
-        education_sample = df[possible_education_columns[0]].dropna().unique()[:10].tolist()
-    
-    return jsonify({
-        'status': 'success',
-        'message': 'Sektor Gaji API is working',
-        'total_records': len(df),
-        'available_columns': available_columns,
-        'salary_column_exists': salary_column in available_columns,
-        'found_education_columns': found_education,
-        'found_field_columns': found_field,
-        'possible_education_columns': possible_education_columns,
-        'possible_field_columns': possible_field_columns,
-        'salary_sample_data': [str(x) for x in salary_sample],
-        'education_sample_data': [str(x) for x in education_sample],
-        'all_columns_with_education': [col for col in available_columns if 'pendidikan' in col.lower() or 'education' in col.lower()],
-        'all_columns_with_field': [col for col in available_columns if 'bidang' in col.lower() or 'field' in col.lower() or 'program' in col.lower()]
-    })
-
 @sektor_gaji_bp.route('/api/summary')
 def api_summary():
     """Get enhanced summary statistics for sektor gaji"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling - get all parameters properly
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            # Convert graduation year strings back to integers if needed
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    print(f"Warning: Could not convert graduation years to int: {values}")
+                    # Keep as strings if conversion fails
+                    pass
+            filters[key] = values
+        
+        print(f"API Summary - Received filters: {filters}")
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
+        
+        print(f"Filtered data shape: {filtered_df.shape}")
         
         total_records = len(filtered_df)
         
@@ -228,6 +186,7 @@ def api_summary():
             }
         }
         
+        print(f"Returning enhanced stats: {enhanced_stats}")
         return jsonify(enhanced_stats)
         
     except Exception as e:
@@ -249,9 +208,23 @@ def api_summary():
 def api_salary_by_field():
     """Get salary distribution by field of study - Stacked Bar Chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    pass
+            filters[key] = values
+        
+        print(f"API Salary by Field - Received filters: {filters}")
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
+        
+        print(f"Salary by field - Filtered data shape: {filtered_df.shape}")
         
         # Try multiple possible column names for field of study
         field_columns = ['Bidang pengajian', 'Field of Study', 'Bidang', 'Program pengajian yang anda ikuti?']
@@ -259,11 +232,13 @@ def api_salary_by_field():
         for col in field_columns:
             if col in filtered_df.columns:
                 field_column = col
+                print(f"Found field column: {field_column}")
                 break
         
         salary_column = 'Berapakah julat gaji bulanan anda sekarang?'
         
         if not field_column or salary_column not in filtered_df.columns:
+            print(f"Missing columns - Field: {field_column}, Salary: {salary_column in filtered_df.columns}")
             return jsonify({
                 'labels': ['No Data Available'],
                 'datasets': [{
@@ -274,6 +249,7 @@ def api_salary_by_field():
         
         # Remove NaN values and group by field and salary range
         clean_df = filtered_df[[field_column, salary_column]].dropna()
+        print(f"Clean dataframe shape: {clean_df.shape}")
         
         if clean_df.empty:
             return jsonify({
@@ -286,6 +262,7 @@ def api_salary_by_field():
         
         # Group by field and salary range
         grouped_data = clean_df.groupby([field_column, salary_column]).size().unstack(fill_value=0)
+        print(f"Grouped data shape: {grouped_data.shape}")
         
         if grouped_data.empty:
             return jsonify({
@@ -311,11 +288,14 @@ def api_salary_by_field():
             'datasets': datasets
         }
         
+        print(f"Returning field chart data: {chart_data}")
         return jsonify(chart_data)
         
     except Exception as e:
         print(f"Error in salary by field endpoint: {str(e)}")
         print(f"Available columns: {list(filtered_df.columns) if 'filtered_df' in locals() else 'No DataFrame'}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         return jsonify({
             'error': str(e),
             'labels': ['Error'],
@@ -329,9 +309,23 @@ def api_salary_by_field():
 def api_salary_by_education():
     """Get salary distribution by education level - Stacked Bar Chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    pass
+            filters[key] = values
+        
+        print(f"API Salary by Education - Received filters: {filters}")
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
+        
+        print(f"Salary by education - Filtered data shape: {filtered_df.shape}")
         
         # Try multiple possible column names for education - ENHANCED SEARCH
         education_columns = [
@@ -451,7 +445,17 @@ def api_salary_by_education():
 def api_employment_sectors():
     """Get employment sectors distribution - Pie Chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    pass
+            filters[key] = values
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
         
@@ -501,7 +505,17 @@ def api_employment_sectors():
 def api_salary_by_industry():
     """Get salary distribution by industry - Stacked Bar Chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    pass
+            filters[key] = values
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
         
@@ -568,7 +582,17 @@ def api_salary_by_industry():
 def api_expected_vs_current_salary():
     """Get expected starting salary vs current salary - Stacked Bar Chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    pass
+            filters[key] = values
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
         
@@ -635,7 +659,17 @@ def api_expected_vs_current_salary():
 def api_salary_commensurate():
     """Get salary commensurate with qualifications - Bar Chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if key == 'Tahun graduasi anda?':
+                try:
+                    values = [int(float(v)) for v in values if v.strip()]
+                except (ValueError, TypeError):
+                    pass
+            filters[key] = values
+        
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
         
@@ -681,28 +715,23 @@ def api_salary_commensurate():
             }]
         }), 500
 
-@sektor_gaji_bp.route('/api/debug/<endpoint>')
-def api_debug(endpoint):
-    """Debug endpoint to see what data is being returned"""
-    try:
-        if endpoint == 'education':
-            return api_salary_by_education()
-        elif endpoint == 'field': 
-            return api_salary_by_field()
-        elif endpoint == 'industry':
-            return api_salary_by_industry()
-        else:
-            return jsonify({'error': 'Unknown endpoint'})
-    except Exception as e:
-        return jsonify({'error': str(e), 'endpoint': endpoint})
-
-# Keep existing endpoints (table, export, filters)
+# Keep existing endpoints (table, export, filters) with fixed filter handling
 @sektor_gaji_bp.route('/api/table-data')
 def api_table_data():
     """Get paginated table data for sektor gaji"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() 
-                   if k not in ['page', 'per_page', 'search']}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            if key not in ['page', 'per_page', 'search']:
+                values = request.args.getlist(key)
+                if key == 'Tahun graduasi anda?':
+                    try:
+                        values = [int(float(v)) for v in values if v.strip()]
+                    except (ValueError, TypeError):
+                        pass
+                filters[key] = values
+        
         filtered_processor = data_processor.apply_filters(filters)
         
         page = int(request.args.get('page', 1))
@@ -729,6 +758,7 @@ def api_table_data():
         return jsonify(data)
         
     except Exception as e:
+        print(f"Error in table data: {str(e)}")
         return jsonify({
             'error': str(e),
             'data': [],
@@ -740,7 +770,18 @@ def api_table_data():
 def api_export():
     """Export sektor gaji data in various formats"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() if k != 'format'}
+        # Fixed filter handling
+        filters = {}
+        for key in request.args.keys():
+            if key != 'format':
+                values = request.args.getlist(key)
+                if key == 'Tahun graduasi anda?':
+                    try:
+                        values = [int(float(v)) for v in values if v.strip()]
+                    except (ValueError, TypeError):
+                        pass
+                filters[key] = values
+        
         filtered_processor = data_processor.apply_filters(filters)
         
         format_type = request.args.get('format', 'csv')
@@ -808,8 +849,56 @@ def api_available_filters():
                 else:
                     unique_values = sorted([str(val) for val in unique_values])
                 filters[column] = unique_values
+                print(f"Filter options for {column}: {unique_values}")
         
         return jsonify(filters)
         
     except Exception as e:
+        print(f"Error loading filters: {str(e)}")
         return jsonify({'error': str(e), 'filters': {}}), 500
+
+@sektor_gaji_bp.route('/api/test')
+def api_test():
+    """Test endpoint to verify the blueprint is working + get available filters"""
+    try:
+        # Test info
+        test_info = {
+            'status': 'success',
+            'message': 'Sektor Gaji API is working',
+            'available_columns': list(df.columns) if not df.empty else [],
+            'total_records': len(df)
+        }
+
+        # Build filter options
+        sample_df = data_processor.df
+        filters = {}
+        filter_columns = [
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Program pengajian yang anda ikuti?',
+            'Bidang pengajian',
+            'Tahap pendidikan tertinggi',
+            'Apakah sektor pekerjaan anda?'
+        ]
+
+        for column in filter_columns:
+            if column in sample_df.columns:
+                unique_values = sample_df[column].dropna().unique().tolist()
+                if isinstance(unique_values[0] if unique_values else None, (int, float)):
+                    unique_values = sorted(unique_values)
+                else:
+                    unique_values = sorted([str(val) for val in unique_values])
+                filters[column] = unique_values
+
+        # Return everything together
+        return jsonify({
+            **test_info,
+            'filters': filters
+        })
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500

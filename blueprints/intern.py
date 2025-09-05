@@ -1,9 +1,12 @@
+# Fixed intern routes with comprehensive debugging
 from flask import Blueprint, render_template, request, jsonify, send_file
 from models.data_processor import DataProcessor, load_excel_data
 import io
 import os
 import pandas as pd
 import numpy as np
+import re
+from collections import Counter
 
 intern_bp = Blueprint('intern', __name__)
 
@@ -12,25 +15,47 @@ EXCEL_FILE_PATH = 'data/Questionnaire.xlsx'
 df = load_excel_data(EXCEL_FILE_PATH)
 data_processor = DataProcessor(df)
 
-# Centralized Chart Data Formatter for consistent data structure
+# Print debug info on startup
+print("="*50)
+print("INTERN ROUTES DEBUG INFO")
+print("="*50)
+print(f"Data loaded. Shape: {df.shape}")
+print(f"Columns: {len(df.columns)}")
+
+# Check key columns
+key_columns = [
+    'Tahun graduasi anda?',
+    'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?',
+    'Jantina anda?',
+    'Institusi pendidikan MARA yang anda hadiri?',
+    'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'
+]
+
+for col in key_columns:
+    if col in df.columns:
+        non_null = df[col].notna().sum()
+        print(f"✓ {col}: {non_null}/{len(df)} non-null values")
+        if col == 'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?':
+            print(f"    Values: {df[col].value_counts().to_dict()}")
+    else:
+        print(f"✗ {col}: NOT FOUND")
+
+print("="*50)
+
+# Centralized Chart Data Formatter
 class ChartDataFormatter:
-    """Format chart data consistently for the centralized chart configuration system"""
-    
     @staticmethod
     def format_pie_chart(data_series, title="Distribution"):
-        """Format data for pie charts - compatible with centralized config"""
         return {
             'labels': data_series.index.tolist(),
             'datasets': [{
                 'label': title,
                 'data': data_series.values.tolist()
-                # Colors and styling will be applied by EnhancedChartFactory
             }]
         }
     
     @staticmethod  
     def format_bar_chart(data_series, title="Chart", sort_desc=True):
-        """Format data for bar charts - compatible with centralized config"""
         if sort_desc:
             data_series = data_series.sort_values(ascending=False)
         
@@ -39,7 +64,6 @@ class ChartDataFormatter:
             'datasets': [{
                 'label': title,
                 'data': data_series.values.tolist()
-                # Colors and styling will be applied by EnhancedChartFactory
             }]
         }
 
@@ -47,226 +71,160 @@ formatter = ChartDataFormatter()
 
 @intern_bp.route('/')
 def index():
-    """Main intern dashboard page"""
     return render_template('intern.html')
 
 @intern_bp.route('/table')
 def table_view():
-    """Table view for intern data"""
     return render_template('data_table.html', 
                          page_title='Internship & Employment Challenges Data Table',
                          api_endpoint='/intern/api/table-data')
 
-@intern_bp.route('/api/internship-participation')
-def api_internship_participation():
-    """Get internship participation data - Uses 'internship-participation' color scheme"""
-    try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+def debug_filter_application(df_original, filters):
+    """Debug filter application step by step"""
+    print(f"\n=== FILTER DEBUG ===")
+    print(f"Original data shape: {df_original.shape}")
+    print(f"Filters received: {filters}")
+    
+    df_result = df_original.copy()
+    
+    for column, values in filters.items():
+        if not values or len(values) == 0:
+            continue
+            
+        print(f"\nApplying filter: {column} = {values}")
+        print(f"Column exists: {column in df_result.columns}")
         
-        internship_column = 'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'
-        if internship_column not in filtered_processor.filtered_df.columns:
-            return jsonify(formatter.format_pie_chart(
-                pd.Series([1], index=['No Data Available']),
-                "Internship Participation"
-            ))
-        
-        participation_counts = filtered_processor.filtered_df[internship_column].value_counts()
-        
-        # Use centralized formatter - frontend will apply colors based on endpoint name
-        chart_data = formatter.format_pie_chart(
-            participation_counts,
-            "Internship Participation"
-        )
-        
-        return jsonify(chart_data)
-        
-    except Exception as e:
-        return jsonify(formatter.format_pie_chart(
-            pd.Series([1], index=['Error Loading Data']),
-            "Error"
-        )), 500
+        if column in df_result.columns:
+            print(f"Before filter - rows: {len(df_result)}")
+            print(f"Column data type: {df_result[column].dtype}")
+            print(f"Unique values in column: {df_result[column].unique()}")
+            print(f"Looking for values: {values}")
+            
+            # Convert filter values to match column data type
+            if df_result[column].dtype in ['int64', 'float64']:
+                try:
+                    converted_values = [int(float(v)) for v in values]
+                    print(f"Converted filter values to int: {converted_values}")
+                    df_result = df_result[df_result[column].isin(converted_values)]
+                except:
+                    print(f"Failed to convert values to int, using as string")
+                    df_result = df_result[df_result[column].astype(str).isin([str(v) for v in values])]
+            else:
+                # String matching
+                df_result = df_result[df_result[column].isin(values)]
+            
+            print(f"After filter - rows: {len(df_result)}")
+            
+            if len(df_result) == 0:
+                print("WARNING: Filter eliminated all rows!")
+                break
+        else:
+            print(f"WARNING: Column {column} not found!")
+    
+    print(f"Final filtered shape: {df_result.shape}")
+    print("=== END FILTER DEBUG ===\n")
+    
+    return df_result
 
-@intern_bp.route('/api/internship-benefits')
-def api_internship_benefits():
-    """Get internship benefits data - Uses 'internship-benefits' color scheme"""
+@intern_bp.route('/api/summary')
+def api_summary():
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        print(f"\nSUMMARY DEBUG: Received filters: {filters}")
         
-        # Filter to only those who completed internship
-        df_filtered = filtered_processor.filtered_df
-        df_internship = df_filtered[
-            df_filtered['Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'] != 'Tidak menjalani internship'
-        ].copy()
+        # Use debug filter application
+        df_filtered = debug_filter_application(data_processor.df, filters)
+        total_records = len(df_filtered)
         
-        benefits_column = 'Bagaimana internship membantu anda dalam mendapatkan pekerjaan?'
+        print(f"SUMMARY DEBUG: Processing {total_records} records")
         
-        if benefits_column not in df_internship.columns or df_internship.empty:
-            return jsonify(formatter.format_bar_chart(
-                pd.Series([1], index=['No Data Available']),
-                "Internship Benefits"
-            ))
-        
-        # Process comma-separated benefits
-        all_benefits = []
-        for benefits_cell in df_internship[benefits_column].dropna():
-            if pd.notna(benefits_cell):
-                benefits = [b.strip() for b in str(benefits_cell).split(',')]
-                all_benefits.extend([b for b in benefits if b])
-        
-        if not all_benefits:
-            return jsonify(formatter.format_bar_chart(
-                pd.Series([1], index=['No Benefits Data']),
-                "Internship Benefits"
-            ))
-        
-        benefits_counts = pd.Series(all_benefits).value_counts()
-        
-        # Use centralized formatter - colors will be applied by frontend
-        chart_data = formatter.format_bar_chart(
-            benefits_counts,
-            "Internship Benefits",
-            sort_desc=True
-        )
-        
-        return jsonify(chart_data)
-        
-    except Exception as e:
-        return jsonify(formatter.format_bar_chart(
-            pd.Series([1], index=['Error Loading Data']),
-            "Error"
-        )), 500
-
-@intern_bp.route('/api/no-internship-reasons')
-def api_no_internship_reasons():
-    """Get reasons for not doing internship - Uses 'no-internship-reasons' color scheme"""
-    try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
-        
-        # Filter to only those who didn't do internship
-        df_filtered = filtered_processor.filtered_df
-        df_no_internship = df_filtered[
-            df_filtered['Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'] == 'Tidak menjalani internship'
-        ].copy()
-        
-        reasons_column = 'Jika tidak menjalani internship, apakah sebab utama?'
-        
-        if reasons_column not in df_no_internship.columns or df_no_internship.empty:
-            return jsonify(formatter.format_bar_chart(
-                pd.Series([1], index=['No Data Available']),
-                "Reasons for No Internship"
-            ))
-        
-        # Process comma-separated reasons
-        all_reasons = []
-        for reasons_cell in df_no_internship[reasons_column].dropna():
-            if pd.notna(reasons_cell):
-                reasons = [r.strip() for r in str(reasons_cell).split(',')]
-                all_reasons.extend([r for r in reasons if r])
-        
-        if not all_reasons:
-            return jsonify(formatter.format_bar_chart(
-                pd.Series([1], index=['No Reasons Data']),
-                "Reasons for No Internship"
-            ))
-        
-        reasons_counts = pd.Series(all_reasons).value_counts()
-        
-        # Use centralized formatter
-        chart_data = formatter.format_bar_chart(
-            reasons_counts,
-            "Reasons for No Internship",
-            sort_desc=True
-        )
-        
-        return jsonify(chart_data)
-        
-    except Exception as e:
-        return jsonify(formatter.format_bar_chart(
-            pd.Series([1], index=['Error Loading Data']),
-            "Error"
-        )), 500
-
-@intern_bp.route('/api/employment-challenges')
-def api_employment_challenges():
-    """Get employment challenges - Uses 'employment-challenges' color scheme"""
-    try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
-        
-        challenge_column = 'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?'
-        
-        if challenge_column not in filtered_processor.filtered_df.columns:
-            return jsonify(formatter.format_bar_chart(
-                pd.Series([1], index=['No Data Available']),
-                "Employment Challenges"
-            ))
-        
-        # Apply standardized challenge mapping
-        challenge_mapping = {
-            'Tiada pengalaman kerja yang mencukupi': 'Tiada Pengalaman',
-            'Terlalu banyak persaingan dalam bidang saya': 'Persaingan',
-            'Kekurangan kemahiran yang dicari majikan': 'Kurang Kemahiran',
-            'Gaji yang ditawarkan terlalu rendah': 'Gaji Rendah',
-            'Saya tidak tahu bagaimana mencari pekerjaan yang sesuai': 'Tiada Pengetahuan',
-            'Tiada rangkaian atau hubungan yang boleh membantu saya mendapatkan pekerjaan': 'Tiada Rangkaian',
-            'Kriteria pekerjaan tidak sesuai dengan kelayakan akademik saya': 'Kelayakan Tidak Sepadan',
-            'Kebanyakan syarikat lebih memilih pekerja yang sudah berpengalaman': 'Tiada Pengalaman 2',
-            'Tiada peluang pekerjaan dalam bidang saya di kawasan tempat tinggal saya': 'Lokasi Pekerjaan',
-            'Saya perlu menjaga keluarga dan sukar untuk bekerja di luar kawasan': 'Isu Keluarga',
-            'Proses permohonan kerja terlalu kompleks atau mengambil masa yang lama': 'Proses Permohonan',
-            'Keadaan ekonomi semasa menyukarkan peluang pekerjaan': 'Ekonomi'
+        kpis = {
+            'total_records': total_records,
+            'internship_rate': 0,
+            'no_experience_rate': 0,
+            'market_competition_rate': 0
         }
         
-        # Process challenges with mapping
-        all_challenges = []
-        for challenges_cell in filtered_processor.filtered_df[challenge_column].dropna():
-            if pd.notna(challenges_cell):
-                raw_challenges = [c.strip() for c in str(challenges_cell).split(',')]
-                mapped_challenges = [challenge_mapping.get(c, c) for c in raw_challenges]
-                all_challenges.extend(mapped_challenges)
+        if total_records > 0:
+            # Internship participation rate - FIXED LOGIC
+            internship_column = 'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'
+            if internship_column in df_filtered.columns:
+                internship_counts = df_filtered[internship_column].value_counts()
+                print(f"Internship counts: {dict(internship_counts)}")
+                
+                # Count all "Ya" responses (any type of internship)
+                internship_yes = 0
+                for value, count in internship_counts.items():
+                    if pd.notna(value) and 'ya' in str(value).lower():
+                        internship_yes += count
+                        print(f"  Adding {count} from '{value}'")
+                
+                print(f"Total 'Ya' responses: {internship_yes}")
+                kpis['internship_rate'] = round((internship_yes / total_records) * 100, 1)
+            
+            # Experience challenges
+            challenge_column = 'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?'
+            if challenge_column in df_filtered.columns:
+                experience_respondents = 0
+                market_respondents = 0
+                
+                for challenges_cell in df_filtered[challenge_column].dropna():
+                    if pd.notna(challenges_cell):
+                        challenges_str = str(challenges_cell).lower()
+                        
+                        if 'pengalaman' in challenges_str or 'berpengalaman' in challenges_str:
+                            experience_respondents += 1
+                        
+                        if ('persaingan' in challenges_str or 
+                            'ekonomi' in challenges_str or 
+                            'gaji' in challenges_str):
+                            market_respondents += 1
+                
+                total_challenge_responses = len(df_filtered[challenge_column].dropna())
+                if total_challenge_responses > 0:
+                    kpis['no_experience_rate'] = round((experience_respondents / total_challenge_responses) * 100, 1)
+                    kpis['market_competition_rate'] = round((market_respondents / total_challenge_responses) * 100, 1)
         
-        if not all_challenges:
-            return jsonify(formatter.format_bar_chart(
-                pd.Series([1], index=['No Challenges Data']),
-                "Employment Challenges"
-            ))
-        
-        challenge_counts = pd.Series(all_challenges).value_counts()
-        
-        # Use centralized formatter
-        chart_data = formatter.format_bar_chart(
-            challenge_counts,
-            "Employment Challenges",
-            sort_desc=True
-        )
-        
-        return jsonify(chart_data)
+        print(f"SUMMARY RESULT: {kpis}")
+        return jsonify(kpis)
         
     except Exception as e:
-        return jsonify(formatter.format_bar_chart(
-            pd.Series([1], index=['Error Loading Data']),
-            "Error"
-        )), 500
+        print(f"SUMMARY ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'total_records': 0,
+            'internship_rate': 0,
+            'no_experience_rate': 0,
+            'market_competition_rate': 0,
+            'error': str(e)
+        }), 500
 
 @intern_bp.route('/api/grouped-challenges')
 def api_grouped_challenges():
-    """Get grouped challenges - Uses 'grouped-challenges' color scheme"""
+    """Get grouped challenges with enhanced debugging"""
     try:
+        print("\nGROUPED CHALLENGES DEBUG:")
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        print(f"Filters applied: {filters}")
+        
+        # Use debug filter application
+        df_filtered = debug_filter_application(data_processor.df, filters)
+        
+        print(f"Filtered data shape: {df_filtered.shape}")
         
         challenge_column = 'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?'
         
-        if challenge_column not in filtered_processor.filtered_df.columns:
+        if challenge_column not in df_filtered.columns:
+            print(f"ERROR: Challenge column not found")
             return jsonify(formatter.format_bar_chart(
-                pd.Series([1], index=['No Data Available']),
+                pd.Series([1], index=['Column Not Found']),
                 "Grouped Challenges"
             ))
         
-        # Apply both mapping and grouping
+        print(f"Challenge column found. Non-null values: {df_filtered[challenge_column].notna().sum()}")
+        
+        # Challenge mapping
         challenge_mapping = {
             'Tiada pengalaman kerja yang mencukupi': 'Tiada Pengalaman',
             'Terlalu banyak persaingan dalam bidang saya': 'Persaingan',
@@ -297,30 +255,233 @@ def api_grouped_challenges():
             'Ekonomi': 'Pasaran Pekerjaan'
         }
         
-        # Process and group challenges
+        # Process challenges
+        all_raw_challenges = []
+        all_mapped_challenges = []
         all_grouped_challenges = []
-        for challenges_cell in filtered_processor.filtered_df[challenge_column].dropna():
+        
+        for challenges_cell in df_filtered[challenge_column].dropna():
             if pd.notna(challenges_cell):
                 raw_challenges = [c.strip() for c in str(challenges_cell).split(',')]
-                mapped_challenges = [challenge_mapping.get(c, c) for c in raw_challenges]
+                all_raw_challenges.extend([c for c in raw_challenges if c])
+                
+                # Map challenges
+                mapped_challenges = [challenge_mapping.get(c, c) for c in raw_challenges if c]
+                all_mapped_challenges.extend(mapped_challenges)
+                
+                # Group challenges
                 grouped_challenges = [grouping_mapping.get(c, c) for c in mapped_challenges]
                 all_grouped_challenges.extend(grouped_challenges)
         
+        print(f"Raw challenges extracted: {len(all_raw_challenges)}")
+        print(f"Mapped challenges: {len(all_mapped_challenges)}")
+        print(f"Grouped challenges: {len(all_grouped_challenges)}")
+        
         if not all_grouped_challenges:
+            print("ERROR: No grouped challenges created")
             return jsonify(formatter.format_bar_chart(
                 pd.Series([1], index=['No Challenges Data']),
                 "Grouped Challenges"
             ))
         
         grouped_challenge_counts = pd.Series(all_grouped_challenges).value_counts()
+        print(f"Final grouped categories: {dict(grouped_challenge_counts)}")
         
-        # Use centralized formatter
         chart_data = formatter.format_bar_chart(
             grouped_challenge_counts,
             "Grouped Employment Challenges",
             sort_desc=True
         )
         
+        print("SUCCESS: Grouped challenges chart data created")
+        return jsonify(chart_data)
+        
+    except Exception as e:
+        print(f"GROUPED CHALLENGES ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
+
+@intern_bp.route('/api/filters/available')
+def api_available_filters():
+    """Enhanced filter debugging for graduation years"""
+    try:
+        print("\nFILTER DEBUG START:")
+        sample_df = data_processor.df
+        filters = {}
+        
+        print(f"DataFrame shape: {sample_df.shape}")
+        
+        filter_columns = [
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Program pengajian yang anda ikuti?',
+            'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'
+        ]
+        
+        for column in filter_columns:
+            print(f"\n--- Processing: {column} ---")
+            
+            if column in sample_df.columns:
+                non_null_data = sample_df[column].dropna()
+                print(f"Non-null values: {len(non_null_data)}/{len(sample_df)}")
+                
+                if len(non_null_data) == 0:
+                    filters[column] = []
+                    continue
+                
+                unique_values = non_null_data.unique()
+                print(f"Unique values: {len(unique_values)}")
+                
+                # Show sample values
+                sample_values = list(unique_values)[:5]
+                print(f"Sample values: {sample_values}")
+                
+                # Special handling for graduation year
+                if 'Tahun graduasi' in column or 'graduasi' in column.lower():
+                    print("GRADUATION YEAR PROCESSING:")
+                    processed_years = set()
+                    
+                    for val in unique_values:
+                        if pd.notna(val):
+                            year = extract_graduation_year(val)
+                            if year:
+                                processed_years.add(year)
+                                print(f"  '{val}' -> {year}")
+                            else:
+                                print(f"  '{val}' -> FAILED")
+                    
+                    final_years = sorted(list(processed_years))
+                    print(f"FINAL YEARS: {final_years}")
+                    filters[column] = final_years
+                    
+                elif isinstance(unique_values[0] if len(unique_values) > 0 else None, (int, float)):
+                    # Other numeric columns
+                    unique_values = sorted([val for val in unique_values if pd.notna(val)])
+                    filters[column] = unique_values
+                else:
+                    # String columns
+                    unique_values = sorted([str(val) for val in unique_values if pd.notna(val) and str(val).strip()])
+                    filters[column] = unique_values
+                    
+                print(f"Final filter values: {len(filters[column])} items")
+                
+            else:
+                print(f"COLUMN NOT FOUND: {column}")
+                filters[column] = []
+        
+        print(f"\nFILTER SUMMARY:")
+        for col, values in filters.items():
+            print(f"  {col}: {len(values)} values")
+            if 'graduasi' in col.lower() and values:
+                print(f"    Graduation years: {values}")
+        
+        return jsonify(filters)
+        
+    except Exception as e:
+        print(f"FILTER ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'filters': {}}), 500
+
+def extract_graduation_year(val):
+    """Enhanced graduation year extraction with debugging"""
+    if pd.isna(val):
+        return None
+    
+    val_str = str(val).strip()
+    
+    # Method 1: Direct number
+    try:
+        # Remove commas and decimal points
+        clean_val = val_str.replace(',', '').replace('.0', '')
+        if clean_val.isdigit():
+            year = int(clean_val)
+            if 1990 <= year <= 2030:
+                return year
+    except:
+        pass
+    
+    # Method 2: Extract 4-digit years using regex
+    year_pattern = r'\b(19|20)\d{2}\b'
+    matches = re.findall(year_pattern, val_str)
+    if matches:
+        for match in matches:
+            year = int(match)
+            if 1990 <= year <= 2030:
+                return year
+    
+    # Method 3: Handle decimal/float format
+    try:
+        float_val = float(val_str.replace(',', ''))
+        year = int(float_val)
+        if 1990 <= year <= 2030:
+            return year
+    except:
+        pass
+    
+    return None
+
+# Fixed internship participation with debug filter
+@intern_bp.route('/api/internship-participation')
+def api_internship_participation():
+    try:
+        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        df_filtered = debug_filter_application(data_processor.df, filters)
+        
+        internship_column = 'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'
+        if internship_column not in df_filtered.columns:
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Internship Participation"
+            ))
+        
+        participation_counts = df_filtered[internship_column].value_counts()
+        chart_data = formatter.format_pie_chart(participation_counts, "Internship Participation")
+        return jsonify(chart_data)
+        
+    except Exception as e:
+        return jsonify(formatter.format_pie_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
+
+@intern_bp.route('/api/internship-benefits')
+def api_internship_benefits():
+    try:
+        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        df_filtered = debug_filter_application(data_processor.df, filters)
+        
+        df_internship = df_filtered[
+            df_filtered['Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'] != 'Tidak menjalani internship'
+        ].copy()
+        
+        benefits_column = 'Bagaimana internship membantu anda dalam mendapatkan pekerjaan?'
+        
+        if benefits_column not in df_internship.columns or df_internship.empty:
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Internship Benefits"
+            ))
+        
+        all_benefits = []
+        for benefits_cell in df_internship[benefits_column].dropna():
+            if pd.notna(benefits_cell):
+                benefits = [b.strip() for b in str(benefits_cell).split(',')]
+                all_benefits.extend([b for b in benefits if b])
+        
+        if not all_benefits:
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Benefits Data']),
+                "Internship Benefits"
+            ))
+        
+        benefits_counts = pd.Series(all_benefits).value_counts()
+        chart_data = formatter.format_bar_chart(benefits_counts, "Internship Benefits", sort_desc=True)
         return jsonify(chart_data)
         
     except Exception as e:
@@ -329,20 +490,113 @@ def api_grouped_challenges():
             "Error"
         )), 500
 
-# Keep the existing table, export, and filters endpoints as they are
+@intern_bp.route('/api/no-internship-reasons')
+def api_no_internship_reasons():
+    try:
+        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        df_filtered = debug_filter_application(data_processor.df, filters)
+        
+        df_no_internship = df_filtered[
+            df_filtered['Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'] == 'Tidak menjalani internship'
+        ].copy()
+        
+        reasons_column = 'Jika tidak menjalani internship, apakah sebab utama?'
+        
+        if reasons_column not in df_no_internship.columns or df_no_internship.empty:
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Reasons for No Internship"
+            ))
+        
+        all_reasons = []
+        for reasons_cell in df_no_internship[reasons_column].dropna():
+            if pd.notna(reasons_cell):
+                reasons = [r.strip() for r in str(reasons_cell).split(',')]
+                all_reasons.extend([r for r in reasons if r])
+        
+        if not all_reasons:
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Reasons Data']),
+                "Reasons for No Internship"
+            ))
+        
+        reasons_counts = pd.Series(all_reasons).value_counts()
+        chart_data = formatter.format_bar_chart(reasons_counts, "Reasons for No Internship", sort_desc=True)
+        return jsonify(chart_data)
+        
+    except Exception as e:
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
+
+@intern_bp.route('/api/employment-challenges')
+def api_employment_challenges():
+    try:
+        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        df_filtered = debug_filter_application(data_processor.df, filters)
+        
+        challenge_column = 'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?'
+        
+        if challenge_column not in df_filtered.columns:
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Employment Challenges"
+            ))
+        
+        # Challenge mapping
+        challenge_mapping = {
+            'Tiada pengalaman kerja yang mencukupi': 'Tiada Pengalaman',
+            'Terlalu banyak persaingan dalam bidang saya': 'Persaingan',
+            'Kekurangan kemahiran yang dicari majikan': 'Kurang Kemahiran',
+            'Gaji yang ditawarkan terlalu rendah': 'Gaji Rendah',
+            'Saya tidak tahu bagaimana mencari pekerjaan yang sesuai': 'Tiada Pengetahuan',
+            'Tiada rangkaian atau hubungan yang boleh membantu saya mendapatkan pekerjaan': 'Tiada Rangkaian',
+            'Kriteria pekerjaan tidak sesuai dengan kelayakan akademik saya': 'Kelayakan Tidak Sepadan',
+            'Kebanyakan syarikat lebih memilih pekerja yang sudah berpengalaman': 'Tiada Pengalaman 2',
+            'Tiada peluang pekerjaan dalam bidang saya di kawasan tempat tinggal saya': 'Lokasi Pekerjaan',
+            'Saya perlu menjaga keluarga dan sukar untuk bekerja di luar kawasan': 'Isu Keluarga',
+            'Proses permohonan kerja terlalu kompleks atau mengambil masa yang lama': 'Proses Permohonan',
+            'Keadaan ekonomi semasa menyukarkan peluang pekerjaan': 'Ekonomi'
+        }
+        
+        all_challenges = []
+        for challenges_cell in df_filtered[challenge_column].dropna():
+            if pd.notna(challenges_cell):
+                raw_challenges = [c.strip() for c in str(challenges_cell).split(',')]
+                mapped_challenges = [challenge_mapping.get(c, c) for c in raw_challenges]
+                all_challenges.extend(mapped_challenges)
+        
+        if not all_challenges:
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Challenges Data']),
+                "Employment Challenges"
+            ))
+        
+        challenge_counts = pd.Series(all_challenges).value_counts()
+        chart_data = formatter.format_bar_chart(challenge_counts, "Employment Challenges", sort_desc=True)
+        return jsonify(chart_data)
+        
+    except Exception as e:
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
+
+# Keep existing table-data, export endpoints but with debug filter
 @intern_bp.route('/api/table-data')
 def api_table_data():
-    """Get paginated table data for intern"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys() 
                    if k not in ['page', 'per_page', 'search']}
-        filtered_processor = data_processor.apply_filters(filters)
+        
+        # Apply filters using debug function
+        df_filtered = debug_filter_application(data_processor.df, filters)
         
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 50))
         search = request.args.get('search', '')
         
-        # Define relevant columns for intern analysis
         relevant_columns = [
             'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?',
             'Bagaimana internship membantu anda dalam mendapatkan pekerjaan?',
@@ -353,12 +607,43 @@ def api_table_data():
             'Institusi pendidikan MARA yang anda hadiri?'
         ]
         
-        available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
+        available_columns = [col for col in relevant_columns if col in df_filtered.columns]
         
-        data = filtered_processor.get_table_data(page, per_page, search, available_columns)
+        # Manual pagination and search implementation
+        if search:
+            search_mask = df_filtered[available_columns].astype(str).apply(
+                lambda x: x.str.contains(search, case=False, na=False)
+            ).any(axis=1)
+            df_filtered = df_filtered[search_mask]
+        
+        total_records = len(df_filtered)
+        total_pages = (total_records + per_page - 1) // per_page
+        
+        # Apply pagination
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+        df_page = df_filtered[available_columns].iloc[start_idx:end_idx]
+        
+        # Convert to records
+        records = df_page.to_dict('records')
+        
+        data = {
+            'data': records,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': total_records,
+                'pages': total_pages
+            },
+            'columns': available_columns
+        }
+        
         return jsonify(data)
         
     except Exception as e:
+        print(f"TABLE DATA ERROR: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'error': str(e),
             'data': [],
@@ -368,10 +653,9 @@ def api_table_data():
 
 @intern_bp.route('/api/export')
 def api_export():
-    """Export intern data in various formats"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys() if k != 'format'}
-        filtered_processor = data_processor.apply_filters(filters)
+        df_filtered = debug_filter_application(data_processor.df, filters)
         
         format_type = request.args.get('format', 'csv')
         
@@ -387,55 +671,36 @@ def api_export():
             'Program pengajian yang anda ikuti?'
         ]
         
-        available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
+        available_columns = [col for col in relevant_columns if col in df_filtered.columns]
+        export_df = df_filtered[available_columns]
         
-        data = filtered_processor.export_data(format_type, available_columns)
+        # Create export data
+        buffer = io.BytesIO()
         
         if format_type == 'csv':
+            export_df.to_csv(buffer, index=False, encoding='utf-8')
             mimetype = 'text/csv'
             filename = 'internship_employment_challenges.csv'
         elif format_type == 'excel':
+            export_df.to_excel(buffer, index=False, engine='openpyxl')
             mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             filename = 'internship_employment_challenges.xlsx'
         else:
+            export_df.to_json(buffer, orient='records', indent=2)
             mimetype = 'application/json'
             filename = 'internship_employment_challenges.json'
         
+        buffer.seek(0)
+        
         return send_file(
-            io.BytesIO(data),
+            buffer,
             mimetype=mimetype,
             as_attachment=True,
             download_name=filename
         )
         
     except Exception as e:
+        print(f"EXPORT ERROR: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
-
-@intern_bp.route('/api/filters/available')
-def api_available_filters():
-    """Get available filter options for intern data"""
-    try:
-        sample_df = data_processor.df
-        filters = {}
-        
-        filter_columns = [
-            'Tahun graduasi anda?',
-            'Jantina anda?',
-            'Institusi pendidikan MARA yang anda hadiri?',
-            'Program pengajian yang anda ikuti?',
-            'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'
-        ]
-        
-        for column in filter_columns:
-            if column in sample_df.columns:
-                unique_values = sample_df[column].dropna().unique().tolist()
-                if isinstance(unique_values[0] if unique_values else None, (int, float)):
-                    unique_values = sorted(unique_values)
-                else:
-                    unique_values = sorted([str(val) for val in unique_values])
-                filters[column] = unique_values
-        
-        return jsonify(filters)
-        
-    except Exception as e:
-        return jsonify({'error': str(e), 'filters': {}}), 500
