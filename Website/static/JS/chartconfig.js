@@ -7,7 +7,7 @@ const ChartConfig = {
         // Enhanced colors for horizontal bar charts
         horizontalBar: {
             colors: [
-                '#ed1c24',
+                // '#ed1c24',
                 '#9c354d',
                 '#56423e',
                 '#bea6a1',
@@ -33,7 +33,7 @@ const ChartConfig = {
                 // '#ED1C24', '#D80164', '#A5378B', '#664C92',
                 // '#354F7C ', '#2F4858', '#009096', '#00904E',
                 // '#198A00', '#7D7C00', '#BE5E00', 
-                '#ed1c24',
+                // '#ed1c24',
                 '#d80164',
                 '#9c354d',
                 '#bea6a1',
@@ -49,7 +49,8 @@ const ChartConfig = {
         // Enhanced colors for vertical bar charts
         verticalBar: {
             colors: [
-                '#ed1c24', '#56423e', '#bea6a1', '#0097a1', '#00606d', '#4993a1' , '#627b81'
+                // '#ed1c24', 
+                '#56423e', '#bea6a1', '#0097a1', '#00606d', '#4993a1' , '#627b81'
             ],
             name: 'Vertical Bar Colors'
         },
