@@ -104,8 +104,14 @@
         }
 
         .nav-item.active {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: white;
+            color: #296899;
             font-weight: 600;
+        }
+
+        .nav-item.active .nav-icon {
+            background-color: transparent;
+            color: #296899;
         }
 
         .sidebar-text {
@@ -537,130 +543,127 @@
         </div>
 
         <!-- Navigation -->
-        <nav class="flex-1 py-4 space-y-3 overflow-hidden px-3">
+        <nav class="flex-1 py-4 space-y-1 overflow-hidden px-3">
 
             <a href="/dashboard"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-tachometer-alt text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-tachometer-alt text-sm group-hover:text-white""></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Ringkasan</span>
-                <!-- Tooltip -->
             </a>
 
             <a href="/alldata"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-users text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-users text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Pusat Data</span>
             </a>
+
             <a href="/sosioekonomi"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-coins text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-coins text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Sosioeknomi Graduan</span>
             </a>
 
             <a href="/status-pekerjaan"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-briefcase text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-briefcase text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Status Pekerjaan & Kesesuaian dengan Bidang
                     Pengajian</span>
             </a>
 
-
             <a href="/sektor-gaji"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-briefcase text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-dollar-sign text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Sektor, Industri & Gaji Graduan</span>
             </a>
 
-
-
             <a href="/faktor-graduan"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-chart-bar text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-chart-bar text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Faktor Mempengaruhi Kebolehpasaran
                     Graduan</span>
             </a>
 
             <a href="/graduan-bidang"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-external-link-alt text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-graduation-cap text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Graduan Mengikut Bidang dan Tahun Graduasi</span>
             </a>
 
             <a href="/graduan-luar"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-external-link-alt text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-external-link-alt text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Graduan Bekerja di Luar Bidang</span>
             </a>
+
             <a href="/demografi"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-users text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-users text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Demografi & Latar Belakang Akademik</span>
             </a>
 
-
             <a href="/intern"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-graduation-cap text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-user-tie text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Latihan Industri dan Cabaran Mendapat
                     Kerja</span>
             </a>
 
             <a href="/gig-economy"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-rocket text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-rocket text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Trend Ekonomi Gig/Keusahawanan</span>
             </a>
 
             <a href="/"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fa-solid fa-door-open text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fa-solid fa-door-open text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Keluar</span>
             </a>
