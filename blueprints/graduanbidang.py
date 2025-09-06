@@ -93,10 +93,13 @@ def api_summary():
         year_column = None
         field_column = None
         
-        # Find year column
+        # Find year column - prioritize exact matches first
         year_columns = [
-            'Tahun graduasi ', 'Tahun graduasi', 'Tahun graduasi anda?', 
-            'Graduation Year', 'Year'
+            'Tahun graduasi anda?',  # Most likely column name
+            'Tahun graduasi ',
+            'Tahun graduasi', 
+            'Graduation Year', 
+            'Year'
         ]
         
         # Search for year column with keywords
@@ -131,10 +134,13 @@ def api_summary():
             except Exception as e:
                 print(f"Error processing year data: {str(e)}")
         
-        # Find field column
+        # Find field column - prioritize exact matches first
         field_columns = [
-            'Bidang pengajian utama ', 'Bidang pengajian utama', 'Bidang pengajian', 
-            'Field of Study', 'Program pengajian yang anda ikuti?'
+            'Program pengajian yang anda ikuti?',  # Most likely column name
+            'Bidang pengajian utama ',
+            'Bidang pengajian utama', 
+            'Bidang pengajian', 
+            'Field of Study'
         ]
         
         # Search for field column with keywords
@@ -199,10 +205,13 @@ def api_field_by_year():
         filtered_processor = data_processor.apply_filters(filters)
         filtered_df = filtered_processor.filtered_df
         
-        # Find year column - multiple possible names
+        # Find year column - prioritize exact matches first
         year_columns = [
-            'Tahun graduasi ', 'Tahun graduasi', 'Tahun graduasi anda?', 
-            'Graduation Year', 'Year'
+            'Tahun graduasi anda?',  # Most likely column name
+            'Tahun graduasi ',
+            'Tahun graduasi', 
+            'Graduation Year', 
+            'Year'
         ]
         
         # Search for year column with keywords
@@ -218,10 +227,13 @@ def api_field_by_year():
                 year_column = col
                 break
         
-        # Find field column - multiple possible names
+        # Find field column - prioritize exact matches first
         field_columns = [
-            'Bidang pengajian utama ', 'Bidang pengajian utama', 'Bidang pengajian', 
-            'Field of Study', 'Program pengajian yang anda ikuti?'
+            'Program pengajian yang anda ikuti?',  # Most likely column name
+            'Bidang pengajian utama ',
+            'Bidang pengajian utama', 
+            'Bidang pengajian', 
+            'Field of Study'
         ]
         
         # Search for field column with keywords
@@ -336,6 +348,55 @@ def api_field_by_year():
             }
         }), 500
 
+@graduan_bidang_bp.route('/api/chart-table-data/field-by-year')
+def api_chart_table_data():
+    """Get table data for field-by-year chart"""
+    try:
+        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        filtered_processor = data_processor.apply_filters(filters)
+        filtered_df = filtered_processor.filtered_df
+        
+        # Define relevant columns for field-by-year chart
+        relevant_columns = [
+            'Tahun graduasi anda?',
+            'Tahun graduasi ',
+            'Program pengajian yang anda ikuti?',
+            'Bidang pengajian utama ',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ]
+        
+        # Filter to only include columns that exist in the dataframe
+        available_columns = [col for col in relevant_columns if col in filtered_df.columns]
+        
+        # If no specific columns found, include first few columns
+        if not available_columns:
+            available_columns = list(filtered_df.columns)[:6]
+        
+        # Prepare data for the modal
+        filtered_data = filtered_df[available_columns].fillna('')
+        
+        # Convert to list of dictionaries for JSON serialization
+        data_records = filtered_data.to_dict('records')
+        
+        return jsonify({
+            'data': data_records,
+            'columns': available_columns,
+            'total_records': len(data_records)
+        })
+        
+    except Exception as e:
+        print(f"Error in chart table data endpoint: {str(e)}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
+        
+        return jsonify({
+            'error': str(e),
+            'data': [],
+            'columns': [],
+            'total_records': 0
+        }), 500
+
 @graduan_bidang_bp.route('/api/columns')
 def api_columns():
     """Get all available columns and sample data for debugging"""
@@ -381,8 +442,8 @@ def api_table_data():
         
         # Define relevant columns for graduan bidang
         relevant_columns = [
-            'Tahun graduasi ',
             'Tahun graduasi anda?',
+            'Tahun graduasi ',
             'Bidang pengajian utama ',
             'Bidang pengajian',
             'Program pengajian yang anda ikuti?',
@@ -407,21 +468,37 @@ def api_table_data():
 def api_export():
     """Export graduan bidang data in various formats"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() if k != 'format'}
+        # Get chart_type if provided (for chart-specific exports)
+        chart_type = request.args.get('chart_type', '')
+        
+        filters = {k: request.args.getlist(k) for k in request.args.keys() 
+                   if k not in ['format', 'chart_type']}
         filtered_processor = data_processor.apply_filters(filters)
         
         format_type = request.args.get('format', 'csv')
         
-        relevant_columns = [
-            'Timestamp',
-            'Tahun graduasi ',
-            'Tahun graduasi anda?',
-            'Bidang pengajian utama ',
-            'Bidang pengajian',
-            'Program pengajian yang anda ikuti?',
-            'Jantina anda?',
-            'Institusi pendidikan MARA yang anda hadiri?'
-        ]
+        # Define columns based on chart type or use default
+        if chart_type == 'field-by-year':
+            relevant_columns = [
+                'Timestamp',
+                'Tahun graduasi anda?',
+                'Tahun graduasi ',
+                'Program pengajian yang anda ikuti?',
+                'Bidang pengajian utama ',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ]
+        else:
+            relevant_columns = [
+                'Timestamp',
+                'Tahun graduasi anda?',
+                'Tahun graduasi ',
+                'Bidang pengajian utama ',
+                'Bidang pengajian',
+                'Program pengajian yang anda ikuti?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ]
         
         available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
         
@@ -455,8 +532,9 @@ def api_available_filters():
         filters = {}
         
         filter_columns = [
+            'Tahun graduasi anda?',  # Primary graduation year column
             'Tahun graduasi ',
-            'Tahun graduasi anda?',
+            'Tahun graduasi',
             'Jantina anda?',
             'Institusi pendidikan MARA yang anda hadiri?',
             'Program pengajian yang anda ikuti?',
@@ -467,13 +545,37 @@ def api_available_filters():
         for column in filter_columns:
             if column in sample_df.columns:
                 unique_values = sample_df[column].dropna().unique().tolist()
-                if isinstance(unique_values[0] if unique_values else None, (int, float)):
-                    unique_values = sorted(unique_values)
-                else:
-                    unique_values = sorted([str(val) for val in unique_values])
-                filters[column] = unique_values
+                
+                # Handle different data types appropriately
+                if len(unique_values) > 0:
+                    # Check if values are numeric (years)
+                    if column in ['Tahun graduasi anda?', 'Tahun graduasi ', 'Tahun graduasi']:
+                        try:
+                            # Convert to numeric and sort
+                            numeric_values = []
+                            for val in unique_values:
+                                try:
+                                    numeric_val = int(float(str(val)))
+                                    numeric_values.append(numeric_val)
+                                except:
+                                    numeric_values.append(str(val))
+                            
+                            # Sort numeric values properly
+                            numeric_values = sorted(set(numeric_values))
+                            unique_values = [str(val) for val in numeric_values]
+                        except:
+                            # If conversion fails, sort as strings
+                            unique_values = sorted([str(val) for val in unique_values])
+                    else:
+                        # For non-numeric columns, sort as strings
+                        unique_values = sorted([str(val) for val in unique_values])
+                    
+                    filters[column] = unique_values
         
         return jsonify(filters)
         
     except Exception as e:
+        print(f"Error in available filters endpoint: {str(e)}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         return jsonify({'error': str(e), 'filters': {}}), 500

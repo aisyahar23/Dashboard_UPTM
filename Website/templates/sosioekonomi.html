@@ -1,62 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<style>
-/* Critical CSS to prevent flash - load immediately */
-.filter-dropdown {
-    visibility: hidden;
-    opacity: 0;
-    transform: translateY(-10px) scale(0.95);
-    transition: none !important;
-}
-
-.filter-dropdown.show {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    transition: all 0.2s ease-out;
-}
-
-.export-dropdown {
-    visibility: hidden;
-    opacity: 0;
-    transform: translateY(-10px) scale(0.95);
-    transition: none !important;
-}
-
-.export-dropdown.show {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    transition: all 0.2s ease-out;
-}
-
-/* Prevent sidebar width changes */
-.sidebar-container {
-    width: 0 !important;
-    overflow: hidden !important;
-    transition: none !important;
-}
-
-/* Prevent any layout shifts */
-.main-content {
-    margin-left: 0 !important;
-    transition: none !important;
-}
-
-/* Ensure dropdowns don't cause layout shifts */
-.relative {
-    position: relative;
-}
-
-.dropdown-container {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    z-index: 9999;
-    min-width: 250px;
-}
-</style>
 
 <div x-data="sosioekonomiDashboard()" x-init="init()" class="px-6 pb-6 space-y-6 bg-white min-h-screen">
     <!-- Header Section -->

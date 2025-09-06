@@ -550,7 +550,77 @@
             'Jika anda mempunyai pinjaman pendidikan, adakah beban hutang mempengaruhi pilihan kerjaya anda?',
             'Jantina anda?',
             'Tahun graduasi anda?'
-        ]
+        ],
+        // Gig Economy chart columns
+    'gig-types': [
+        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+        'Tahun graduasi anda?',
+        'Jantina anda?',
+        'Institusi pendidikan MARA yang anda hadiri?',
+        'Program pengajian yang anda ikuti?'
+    ],
+    'gig-motivations': [
+        'Apakah sebab utama anda memilih untuk bekerja dalam ekonomi gig? ',
+        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+        'Tahun graduasi anda?',
+        'Jantina anda?',
+        'Institusi pendidikan MARA yang anda hadiri?'
+    ],
+    'university-support': [
+        'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?',
+        'Tahun graduasi anda?',
+        'Jantina anda?',
+        'Institusi pendidikan MARA yang anda hadiri?',
+        'Program pengajian yang anda ikuti?'
+    ],
+    'university-programs': [
+        'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
+        'Tahun graduasi anda?',
+        'Jantina anda?',
+        'Institusi pendidikan MARA yang anda hadiri?'
+    ],
+    'program-effectiveness': [
+        'Adakah program berkaitan perniagaan atau ekonomi gig di universiti membantu anda dalam memulakan atau mengembangkan pekerjaan bebas anda?',
+        'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
+        'Tahun graduasi anda?',
+        'Jantina anda?',
+        'Institusi pendidikan MARA yang anda hadiri?'
+    ],
+    'skill-acquisition': [
+        'Bagaimanakah anda memperoleh kemahiran untuk bekerja dalam ekonomi gig?',
+        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+        'Tahun graduasi anda?',
+        'Jantina anda?',
+        'Institusi pendidikan MARA yang anda hadiri?'
+    ],
+    'gig-challenges': [
+        'Apakah cabaran utama yang anda hadapi dalam keusahawanan atau ekonomi gig?',
+        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+        'Tahun graduasi anda?',
+        'Jantina anda?',
+        'Institusi pendidikan MARA yang anda hadiri?'
+    ],
+    'support-needed': [
+        'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?',
+        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+        'Tahun graduasi anda?',
+        'Jantina anda?',
+        'Institusi pendidikan MARA yang anda hadiri?'
+    ],
+    'monthly-income': [
+        'Berapakah purata pendapatan bulan anda daripada ekonomi gig?',
+        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+        'Tahun graduasi anda?',
+        'Jantina anda?',
+        'Institusi pendidikan MARA yang anda hadiri?'
+    ],
+    'job-preference': [
+        'Jika diberikan peluang pekerjaan tetap dengan gaji setanding ekonomi gig, adakah anda akan menerimanya?',
+        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+        'Tahun graduasi anda?',
+        'Jantina anda?',
+        'Institusi pendidikan MARA yang anda hadiri?'
+    ]
     };
 
     // Initialize manager

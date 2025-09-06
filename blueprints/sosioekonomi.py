@@ -82,51 +82,72 @@ def table_view():
                          page_title='Socioeconomic Status Data Table',
                          api_endpoint='/sosioekonomi/api/table-data')
 
-def process_filters_with_conversion(request_args):
-    """Improved filter processing with better type handling and graduation year support"""
-    filters = {}
-    
-    print(f"=== PROCESSING FILTERS (IMPROVED) ===")
-    print(f"Raw request args: {dict(request_args)}")
-    
-    for key in request_args.keys():
-        values = request_args.getlist(key)
-        print(f"Processing filter key: '{key}' with values: {values}")
+def process_filter_values(key, values):
+    """Process filter values based on the filter type"""
+    # Handle graduation year with better conversion
+    if 'Tahun graduasi' in key:
+        processed_values = []
+        for val in values:
+            if val and str(val).strip():
+                # Clean the value
+                clean_val = str(val).strip()
+                processed_values.append(clean_val)
+                
+                # Also try to add as float/int for broader matching
+                try:
+                    numeric_val = float(clean_val)
+                    if numeric_val.is_integer():
+                        int_val = int(numeric_val)
+                        if str(int_val) not in processed_values:
+                            processed_values.append(str(int_val))
+                        if int_val not in processed_values:
+                            processed_values.append(int_val)
+                except (ValueError, AttributeError):
+                    pass
         
-        if not values or (len(values) == 1 and values[0] == ''):
-            continue
+        print(f"  Graduation year processed: {processed_values}")
+        return processed_values
+    else:
+        # For other filters, ensure we have clean string values
+        clean_values = []
+        for val in values:
+            if val and str(val).strip():
+                clean_values.append(str(val).strip())
+        print(f"  Other filter processed: {clean_values}")
+        return clean_values
+
+def process_filters_with_conversion_v2(request_args, exclude_keys=None):
+    """Improved filter processing that can handle both request.args and dict objects"""
+    filters = {}
+    exclude_keys = exclude_keys or ['page', 'per_page', 'search']
+    
+    print(f"=== PROCESSING FILTERS (V2) ===")
+    print(f"Raw request args type: {type(request_args)}")
+    
+    # Handle both Flask request.args and regular dict
+    if hasattr(request_args, 'getlist'):
+        # It's a Flask request.args object
+        keys_to_process = [k for k in request_args.keys() if k not in exclude_keys]
+        for key in keys_to_process:
+            values = request_args.getlist(key)
+            print(f"Processing filter key: '{key}' with values: {values}")
             
-        # Handle graduation year with better conversion
-        if 'Tahun graduasi' in key:
-            processed_values = []
-            for val in values:
-                if val and str(val).strip():
-                    # Clean the value
-                    clean_val = str(val).strip()
-                    processed_values.append(clean_val)
-                    
-                    # Also try to add as float/int for broader matching
-                    try:
-                        numeric_val = float(clean_val)
-                        if numeric_val.is_integer():
-                            int_val = int(numeric_val)
-                            if str(int_val) not in processed_values:
-                                processed_values.append(str(int_val))
-                            if int_val not in processed_values:
-                                processed_values.append(int_val)
-                    except (ValueError, AttributeError):
-                        pass
+            if not values or (len(values) == 1 and values[0] == ''):
+                continue
+                
+            filters[key] = process_filter_values(key, values)
+    else:
+        # It's a regular dict where values are already lists
+        for key, values in request_args.items():
+            if key in exclude_keys:
+                continue
+                
+            print(f"Processing filter key: '{key}' with values: {values}")
             
-            filters[key] = processed_values
-            print(f"  Graduation year processed: {processed_values}")
-        else:
-            # For other filters, ensure we have clean string values
-            clean_values = []
-            for val in values:
-                if val and str(val).strip():
-                    clean_values.append(str(val).strip())
-            filters[key] = clean_values
-            print(f"  Other filter processed: {clean_values}")
+            if not values or (len(values) == 1 and values[0] == ''):
+                continue
+                
+            filters[key] = process_filter_values(key, values)
     
     print(f"Final processed filters: {filters}")
     return filters
@@ -248,7 +269,7 @@ def api_summary():
     """Get enhanced summary statistics for socioeconomic status"""
     try:
         # Process filters with improved conversion
-        filters = process_filters_with_conversion(request.args)
+        filters = process_filters_with_conversion_v2(request.args)
         
         print(f"=== API SUMMARY DEBUG ===")
         print(f"Processed filters: {filters}")
@@ -345,7 +366,7 @@ def api_summary():
 def api_household_income():
     """Get household income distribution - Uses 'household-income' color scheme"""
     try:
-        filters = process_filters_with_conversion(request.args)
+        filters = process_filters_with_conversion_v2(request.args)
         filtered_df = apply_improved_filters(df, filters)
         
         income_column = 'Pendapatan isi rumah bulanan keluarga anda?'
@@ -404,7 +425,7 @@ def api_household_income():
 def api_education_financing():
     """Get education financing methods - Uses 'education-financing' color scheme"""
     try:
-        filters = process_filters_with_conversion(request.args)
+        filters = process_filters_with_conversion_v2(request.args)
         filtered_df = apply_improved_filters(df, filters)
         
         financing_column = 'Bagaimana anda membiayai pendidikan anda?'
@@ -437,7 +458,7 @@ def api_education_financing():
 def api_father_occupation_by_income():
     """Get father occupation by income distribution - Uses 'father-occupation' color scheme"""
     try:
-        filters = process_filters_with_conversion(request.args)
+        filters = process_filters_with_conversion_v2(request.args)
         filtered_df = apply_improved_filters(df, filters)
         
         income_column = 'Pendapatan isi rumah bulanan keluarga anda?'
@@ -470,7 +491,7 @@ def api_father_occupation_by_income():
 def api_mother_occupation_by_income():
     """Get mother occupation by income distribution - Uses 'mother-occupation' color scheme"""
     try:
-        filters = process_filters_with_conversion(request.args)
+        filters = process_filters_with_conversion_v2(request.args)
         filtered_df = apply_improved_filters(df, filters)
         
         income_column = 'Pendapatan isi rumah bulanan keluarga anda?'
@@ -503,7 +524,7 @@ def api_mother_occupation_by_income():
 def api_financing_job_advantage():
     """Get financing method vs job advantage - Uses 'financing-advantage' color scheme"""
     try:
-        filters = process_filters_with_conversion(request.args)
+        filters = process_filters_with_conversion_v2(request.args)
         filtered_df = apply_improved_filters(df, filters)
         
         financing_column = 'Bagaimana anda membiayai pendidikan anda?'
@@ -536,7 +557,7 @@ def api_financing_job_advantage():
 def api_debt_impact_career():
     """Get debt impact on career choices for loan-financed students - Uses 'debt-impact' color scheme"""
     try:
-        filters = process_filters_with_conversion(request.args)
+        filters = process_filters_with_conversion_v2(request.args)
         filtered_df = apply_improved_filters(df, filters)
         
         financing_column = 'Bagaimana anda membiayai pendidikan anda?'
@@ -579,10 +600,13 @@ def api_debt_impact_career():
 
 @sosioekonomi_bp.route('/api/table-data')
 def api_table_data():
-    """Get paginated table data for sosioekonomi"""
+    """Get paginated table data for sosioekonomi - FIXED VERSION"""
     try:
-        filters = process_filters_with_conversion({k: request.args.getlist(k) for k in request.args.keys() 
-                   if k not in ['page', 'per_page', 'search']})
+        # FIXED: Pass request.args directly and let the function handle exclusions
+        filters = process_filters_with_conversion_v2(
+            request.args, 
+            exclude_keys=['page', 'per_page', 'search']
+        )
         
         # Use improved filtering
         filtered_df = apply_improved_filters(df, filters)
@@ -659,10 +683,13 @@ def api_table_data():
 
 @sosioekonomi_bp.route('/api/chart-table-data/<chart_type>')
 def api_chart_table_data(chart_type):
-    """Get table data specific to each chart type"""
+    """Get table data specific to each chart type - FIXED VERSION"""
     try:
-        filters = process_filters_with_conversion({k: request.args.getlist(k) for k in request.args.keys() 
-                   if k not in ['page', 'per_page', 'search']})
+        # FIXED: Pass request.args directly and let the function handle exclusions
+        filters = process_filters_with_conversion_v2(
+            request.args,
+            exclude_keys=['page', 'per_page', 'search']
+        )
         
         print(f"=== CHART TABLE DATA for {chart_type} ===")
         print("Processed filters:", filters)
@@ -751,9 +778,13 @@ def api_chart_table_data(chart_type):
 
 @sosioekonomi_bp.route('/api/export')
 def api_export():
-    """Export sosioekonomi data in various formats"""
+    """Export sosioekonomi data in various formats - FIXED VERSION"""
     try:
-        filters = process_filters_with_conversion({k: request.args.getlist(k) for k in request.args.keys() if k != 'format'})
+        # FIXED: Pass request.args directly and let the function handle exclusions
+        filters = process_filters_with_conversion_v2(
+            request.args,
+            exclude_keys=['format']
+        )
         
         # Use improved filtering
         filtered_df = apply_improved_filters(df, filters)

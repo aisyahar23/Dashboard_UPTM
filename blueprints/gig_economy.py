@@ -700,6 +700,116 @@ def api_job_preference():
             "Error"
         )), 500
 
+# NEW: Chart-specific table data endpoints
+@gig_economy_bp.route('/api/chart-table-data/<chart_type>')
+def api_chart_table_data(chart_type):
+    """Get table data specific to each chart type"""
+    try:
+        filters = {k: request.args.getlist(k) for k in request.args.keys() 
+                   if k not in ['page', 'per_page', 'search']}
+        filtered_processor = data_processor.apply_filters(filters)
+        
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 100))
+        search = request.args.get('search', '')
+        
+        # Define chart-specific columns
+        chart_columns = {
+            'gig-types': [
+                'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?',
+                'Program pengajian yang anda ikuti?'
+            ],
+            'gig-motivations': [
+                'Apakah sebab utama anda memilih untuk bekerja dalam ekonomi gig? ',
+                'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ],
+            'university-support': [
+                'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?',
+                'Program pengajian yang anda ikuti?'
+            ],
+            'university-programs': [
+                'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ],
+            'program-effectiveness': [
+                'Adakah program berkaitan perniagaan atau ekonomi gig di universiti membantu anda dalam memulakan atau mengembangkan pekerjaan bebas anda?',
+                'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ],
+            'skill-acquisition': [
+                'Bagaimanakah anda memperoleh kemahiran untuk bekerja dalam ekonomi gig?',
+                'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ],
+            'gig-challenges': [
+                'Apakah cabaran utama yang anda hadapi dalam keusahawanan atau ekonomi gig?',
+                'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ],
+            'support-needed': [
+                'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?',
+                'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ],
+            'monthly-income': [
+                'Berapakah purata pendapatan bulan anda daripada ekonomi gig?',
+                'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ],
+            'job-preference': [
+                'Jika diberikan peluang pekerjaan tetap dengan gaji setanding ekonomi gig, adakah anda akan menerimanya?',
+                'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ]
+        }
+        
+        # Get columns for this chart type
+        relevant_columns = chart_columns.get(chart_type, [])
+        available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
+        
+        if not available_columns:
+            # Fallback to common columns
+            fallback_columns = [
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ]
+            available_columns = [col for col in fallback_columns if col in filtered_processor.filtered_df.columns]
+        
+        data = filtered_processor.get_table_data(page, per_page, search, available_columns)
+        return jsonify(data)
+        
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'data': [],
+            'pagination': {'page': 1, 'per_page': 100, 'total': 0, 'pages': 0},
+            'columns': []
+        }), 500
+
 # Keep existing table, export, and filter endpoints
 @gig_economy_bp.route('/api/table-data')
 def api_table_data():
@@ -746,27 +856,96 @@ def api_table_data():
 def api_export():
     """Export gig economy data in various formats"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() if k != 'format'}
+        filters = {k: request.args.getlist(k) for k in request.args.keys() 
+                   if k not in ['format', 'chart_type']}
         filtered_processor = data_processor.apply_filters(filters)
         
         format_type = request.args.get('format', 'csv')
+        chart_type = request.args.get('chart_type')
         
-        relevant_columns = [
-            'Timestamp',
-            'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
-            'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?',
-            'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
-            'Adakah program berkaitan perniagaan atau ekonomi gig di universiti membantu anda dalam memulakan atau mengembangkan pekerjaan bebas anda?',
-            'Apakah sebab utama anda memilih untuk bekerja dalam ekonomi gig? ',
-            'Bagaimanakah anda memperoleh kemahiran untuk bekerja dalam ekonomi gig?',
-            'Apakah cabaran utama yang anda hadapi dalam keusahawanan atau ekonomi gig?',
-            'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?',
-            'Berapakah purata pendapatan bulan anda daripada ekonomi gig?',
-            'Jika diberikan peluang pekerjaan tetap dengan gaji setanding ekonomi gig, adakah anda akan menerimanya?',
-            'Tahun graduasi anda?',
-            'Jantina anda?',
-            'Institusi pendidikan MARA yang anda hadiri?'
-        ]
+        # Use chart-specific columns if chart_type is provided
+        if chart_type:
+            chart_columns = {
+                'gig-types': [
+                    'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?'
+                ],
+                'gig-motivations': [
+                    'Apakah sebab utama anda memilih untuk bekerja dalam ekonomi gig? ',
+                    'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?'
+                ],
+                'university-support': [
+                    'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?'
+                ],
+                'university-programs': [
+                    'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?'
+                ],
+                'program-effectiveness': [
+                    'Adakah program berkaitan perniagaan atau ekonomi gig di universiti membantu anda dalam memulakan atau mengembangkan pekerjaan bebas anda?',
+                    'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?'
+                ],
+                'skill-acquisition': [
+                    'Bagaimanakah anda memperoleh kemahiran untuk bekerja dalam ekonomi gig?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?'
+                ],
+                'gig-challenges': [
+                    'Apakah cabaran utama yang anda hadapi dalam keusahawanan atau ekonomi gig?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?'
+                ],
+                'support-needed': [
+                    'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?'
+                ],
+                'monthly-income': [
+                    'Berapakah purata pendapatan bulan anda daripada ekonomi gig?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?'
+                ],
+                'job-preference': [
+                    'Jika diberikan peluang pekerjaan tetap dengan gaji setanding ekonomi gig, adakah anda akan menerimanya?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?'
+                ]
+            }
+            relevant_columns = chart_columns.get(chart_type, [])
+        else:
+            # Default columns for general export
+            relevant_columns = [
+                'Timestamp',
+                'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+                'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?',
+                'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
+                'Adakah program berkaitan perniagaan atau ekonomi gig di universiti membantu anda dalam memulakan atau mengembangkan pekerjaan bebas anda?',
+                'Apakah sebab utama anda memilih untuk bekerja dalam ekonomi gig? ',
+                'Bagaimanakah anda memperoleh kemahiran untuk bekerja dalam ekonomi gig?',
+                'Apakah cabaran utama yang anda hadapi dalam keusahawanan atau ekonomi gig?',
+                'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?',
+                'Berapakah purata pendapatan bulan anda daripada ekonomi gig?',
+                'Jika diberikan peluang pekerjaan tetap dengan gaji setanding ekonomi gig, adakah anda akan menerimanya?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?'
+            ]
         
         available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
         
@@ -774,13 +953,13 @@ def api_export():
         
         if format_type == 'csv':
             mimetype = 'text/csv'
-            filename = 'gig_economy_entrepreneurship_data.csv'
+            filename = f'gig_economy_{chart_type or "data"}.csv'
         elif format_type == 'excel':
             mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            filename = 'gig_economy_entrepreneurship_data.xlsx'
+            filename = f'gig_economy_{chart_type or "data"}.xlsx'
         else:
             mimetype = 'application/json'
-            filename = 'gig_economy_entrepreneurship_data.json'
+            filename = f'gig_economy_{chart_type or "data"}.json'
         
         return send_file(
             io.BytesIO(data),
