@@ -104,15 +104,32 @@
             }
         }
 
+        // Determine the correct endpoint based on current page
+        getEndpointPrefix() {
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/sosioekonomi')) {
+                return '/sosioekonomi';
+            } else if (currentPath.includes('/gig-economy')) {
+                return '/gig-economy';
+            } else if (currentPath.includes('/faktor-graduan')) {
+                return '/faktor-graduan';
+            } else if (currentPath.includes('/graduan-luar')) {
+                return '/graduan-luar';
+            }
+            return '/sosioekonomi'; // Default fallback
+        }
+
         // Main function for chart table modals
         async openChartTableModal(chartType, title) {
             this.currentChartType = chartType;
             this.currentTitle = title;
             
             const params = this.buildFilterParams();
-            const endpoint = `/sosioekonomi/api/chart-table-data/${chartType}?${params}`;
+            const endpointPrefix = this.getEndpointPrefix();
+            const endpoint = `${endpointPrefix}/api/chart-table-data/${chartType}?${params}`;
             
             console.log(`Opening chart modal for ${chartType} with params: ${params}`);
+            console.log(`Using endpoint: ${endpoint}`);
             await this.openModal(title, endpoint);
         }
 
@@ -230,51 +247,7 @@
 
         // Get chart-specific columns
         getChartSpecificColumns(chartType, allColumns) {
-            const chartColumnMappings = {
-                'household-income': [
-                    'Pendapatan isi rumah bulanan keluarga anda?',
-                    'Jantina anda?',
-                    'Tahun graduasi anda?',
-                    'Institusi pendidikan MARA yang anda hadiri?',
-                    'Program pengajian yang anda ikuti?'
-                ],
-                'education-financing': [
-                    'Bagaimana anda membiayai pendidikan anda?',
-                    'Jantina anda?',
-                    'Tahun graduasi anda?',
-                    'Institusi pendidikan MARA yang anda hadiri?',
-                    'Program pengajian yang anda ikuti?'
-                ],
-                'father-occupation': [
-                    'Pekerjaan bapa anda',
-                    'Pendapatan isi rumah bulanan keluarga anda?',
-                    'Jantina anda?',
-                    'Tahun graduasi anda?',
-                    'Institusi pendidikan MARA yang anda hadiri?'
-                ],
-                'mother-occupation': [
-                    'Pekerjaan ibu anda?',
-                    'Pendapatan isi rumah bulanan keluarga anda?',
-                    'Jantina anda?',
-                    'Tahun graduasi anda?',
-                    'Institusi pendidikan MARA yang anda hadiri?'
-                ],
-                'financing-advantage': [
-                    'Bagaimana anda membiayai pendidikan anda?',
-                    'Adakah jenis pembiayaan ini memberi kelebihan dalam mencari kerja?',
-                    'Jantina anda?',
-                    'Tahun graduasi anda?',
-                    'Institusi pendidikan MARA yang anda hadiri?'
-                ],
-                'debt-impact': [
-                    'Bagaimana anda membiayai pendidikan anda?',
-                    'Jika anda mempunyai pinjaman pendidikan, adakah beban hutang mempengaruhi pilihan kerjaya anda?',
-                    'Jantina anda?',
-                    'Tahun graduasi anda?',
-                    'Institusi pendidikan MARA yang anda hadiri?'
-                ]
-            };
-
+            const chartColumnMappings = CHART_COLUMNS;
             const specificColumns = chartColumnMappings[chartType] || this.getFaktorGraduanColumns(allColumns);
             return specificColumns.filter(col => allColumns.includes(col));
         }
@@ -282,12 +255,37 @@
         // Get chart description
         getChartDescription(chartType) {
             const descriptions = {
+                // Sosioekonomi descriptions
                 'household-income': 'Data taburan pendapatan isi rumah mengikut kategori pendapatan bulanan',
                 'education-financing': 'Data kaedah pembiayaan pendidikan yang digunakan oleh responden',
                 'father-occupation': 'Data hubungan antara pekerjaan bapa dan tahap pendapatan keluarga',
                 'mother-occupation': 'Data hubungan antara pekerjaan ibu dan tahap pendapatan keluarga',
                 'financing-advantage': 'Data persepsi responden tentang kelebihan kaedah pembiayaan dalam mencari kerja',
-                'debt-impact': 'Data kesan beban hutang pendidikan terhadap pilihan kerjaya graduan'
+                'debt-impact': 'Data kesan beban hutang pendidikan terhadap pilihan kerjaya graduan',
+                
+                // Gig Economy descriptions
+                'gig-types': 'Data jenis pekerjaan bebas yang diceburi atau dirancang oleh responden',
+                'gig-motivations': 'Data sebab utama responden memilih untuk bekerja dalam ekonomi gig',
+                'university-support': 'Data sokongan universiti dalam bentuk kursus atau latihan keusahawanan',
+                'university-programs': 'Data program universiti berkaitan perniagaan dan ekonomi gig',
+                'program-effectiveness': 'Data keberkesanan program universiti dalam membantu pekerjaan bebas',
+                'skill-acquisition': 'Data kaedah pemerolehan kemahiran untuk bekerja dalam ekonomi gig',
+                'gig-challenges': 'Data cabaran utama yang dihadapi dalam keusahawanan atau ekonomi gig',
+                'support-needed': 'Data bantuan atau sokongan yang diperlukan untuk berjaya dalam ekonomi gig',
+                'monthly-income': 'Data purata pendapatan bulanan daripada aktiviti ekonomi gig',
+                'job-preference': 'Data pilihan responden antara kerja tetap dan ekonomi gig',
+                
+                // Faktor Graduan descriptions
+                'employability-factors': 'Data faktor-faktor yang mempengaruhi kebolehpasaran graduan',
+                'professional-certificates': 'Data kepemilikan sijil profesional dan kesannya terhadap pekerjaan',
+                'employer-requirements': 'Data keperluan tambahan yang diminta oleh majikan',
+                'university-preparedness': 'Data persepsi graduan tentang kesiapan universiti untuk pasaran kerja',
+                'additional-skills': 'Data kemahiran tambahan yang diminta oleh majikan',
+
+                // Add to descriptions object in getChartDescription method
+                'reasons': 'Data sebab utama graduan bekerja di luar bidang pengajian dengan analisis terperinci',
+                'jobtypes': 'Data agihan jenis pekerjaan semasa yang diceburi oleh graduan luar bidang',
+                'reasons-simple': 'Data analisis mudah sebab graduan tidak bekerja dalam bidang pengajian mereka'
             };
             return descriptions[chartType] || 'Data yang berkaitan dengan graf ini';
         }
@@ -514,6 +512,7 @@
             'Jantina anda?',
             'Institusi pendidikan MARA yang anda hadiri?'
         ],
+        
         // Sosioekonomi chart columns
         'household-income': [
             'Pendapatan isi rumah bulanan keluarga anda?',
@@ -551,76 +550,102 @@
             'Jantina anda?',
             'Tahun graduasi anda?'
         ],
+        
         // Gig Economy chart columns
-    'gig-types': [
-        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
-        'Tahun graduasi anda?',
-        'Jantina anda?',
-        'Institusi pendidikan MARA yang anda hadiri?',
-        'Program pengajian yang anda ikuti?'
-    ],
-    'gig-motivations': [
-        'Apakah sebab utama anda memilih untuk bekerja dalam ekonomi gig? ',
-        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
-        'Tahun graduasi anda?',
-        'Jantina anda?',
-        'Institusi pendidikan MARA yang anda hadiri?'
-    ],
-    'university-support': [
-        'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?',
-        'Tahun graduasi anda?',
-        'Jantina anda?',
-        'Institusi pendidikan MARA yang anda hadiri?',
-        'Program pengajian yang anda ikuti?'
-    ],
-    'university-programs': [
-        'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
-        'Tahun graduasi anda?',
-        'Jantina anda?',
-        'Institusi pendidikan MARA yang anda hadiri?'
-    ],
-    'program-effectiveness': [
-        'Adakah program berkaitan perniagaan atau ekonomi gig di universiti membantu anda dalam memulakan atau mengembangkan pekerjaan bebas anda?',
-        'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
-        'Tahun graduasi anda?',
-        'Jantina anda?',
-        'Institusi pendidikan MARA yang anda hadiri?'
-    ],
-    'skill-acquisition': [
-        'Bagaimanakah anda memperoleh kemahiran untuk bekerja dalam ekonomi gig?',
-        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
-        'Tahun graduasi anda?',
-        'Jantina anda?',
-        'Institusi pendidikan MARA yang anda hadiri?'
-    ],
-    'gig-challenges': [
-        'Apakah cabaran utama yang anda hadapi dalam keusahawanan atau ekonomi gig?',
-        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
-        'Tahun graduasi anda?',
-        'Jantina anda?',
-        'Institusi pendidikan MARA yang anda hadiri?'
-    ],
-    'support-needed': [
-        'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?',
-        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
-        'Tahun graduasi anda?',
-        'Jantina anda?',
-        'Institusi pendidikan MARA yang anda hadiri?'
-    ],
-    'monthly-income': [
-        'Berapakah purata pendapatan bulan anda daripada ekonomi gig?',
-        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
-        'Tahun graduasi anda?',
-        'Jantina anda?',
-        'Institusi pendidikan MARA yang anda hadiri?'
-    ],
-    'job-preference': [
-        'Jika diberikan peluang pekerjaan tetap dengan gaji setanding ekonomi gig, adakah anda akan menerimanya?',
-        'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
-        'Tahun graduasi anda?',
-        'Jantina anda?',
-        'Institusi pendidikan MARA yang anda hadiri?'
-    ]
+        'gig-types': [
+            'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Program pengajian yang anda ikuti?'
+        ],
+        'gig-motivations': [
+            'Apakah sebab utama anda memilih untuk bekerja dalam ekonomi gig? ',
+            'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ],
+        'university-support': [
+            'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Program pengajian yang anda ikuti?'
+        ],
+        'university-programs': [
+            'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ],
+        'program-effectiveness': [
+            'Adakah program berkaitan perniagaan atau ekonomi gig di universiti membantu anda dalam memulakan atau mengembangkan pekerjaan bebas anda?',
+            'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ],
+        'skill-acquisition': [
+            'Bagaimanakah anda memperoleh kemahiran untuk bekerja dalam ekonomi gig?',
+            'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ],
+        'gig-challenges': [
+            'Apakah cabaran utama yang anda hadapi dalam keusahawanan atau ekonomi gig?',
+            'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ],
+        'support-needed': [
+            'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?',
+            'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ],
+        'monthly-income': [
+            'Berapakah purata pendapatan bulan anda daripada ekonomi gig?',
+            'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ],
+        'job-preference': [
+            'Jika diberikan peluang pekerjaan tetap dengan gaji setanding ekonomi gig, adakah anda akan menerimanya?',
+            'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ],
+        // Add to CHART_COLUMNS object in modal manager
+        'reasons': [
+            'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Program pengajian yang anda ikuti?',
+            'Apakah jenis pekerjaan anda sekarang'
+        ],
+        'jobtypes': [
+            'Apakah jenis pekerjaan anda sekarang',
+            'Bidang pekerjaan yang anda ceburi sekarang?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Program pengajian yang anda ikuti?'
+        ],
+        'reasons-simple': [
+            'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Program pengajian yang anda ikuti?',
+            'Apakah jenis pekerjaan anda sekarang'
+        ]
     };
 
     // Initialize manager
@@ -650,7 +675,7 @@
                 window.modalManagerInstance.openModal(title, endpoint);
             };
 
-            // Global function for chart table modals (main function for sosioekonomi)
+            // Global function for chart table modals (main function for sosioekonomi and gig economy)
             window.openChartTableModal = function(chartType, title) {
                 if (!window.modalManagerInstance) {
                     console.error('Modal manager not ready');

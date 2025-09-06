@@ -45,6 +45,159 @@ class ChartDataFormatter:
 
 formatter = ChartDataFormatter()
 
+# ===== IMPROVED FILTER PROCESSING (copied from sosioekonomi) =====
+
+def process_filter_values(key, values):
+    """Process filter values based on the filter type"""
+    # Handle graduation year with better conversion
+    if 'Tahun graduasi' in key:
+        processed_values = []
+        for val in values:
+            if val and str(val).strip():
+                # Clean the value
+                clean_val = str(val).strip()
+                processed_values.append(clean_val)
+                
+                # Also try to add as float/int for broader matching
+                try:
+                    numeric_val = float(clean_val)
+                    if numeric_val.is_integer():
+                        int_val = int(numeric_val)
+                        if str(int_val) not in processed_values:
+                            processed_values.append(str(int_val))
+                        if int_val not in processed_values:
+                            processed_values.append(int_val)
+                except (ValueError, AttributeError):
+                    pass
+        
+        print(f"  Graduation year processed: {processed_values}")
+        return processed_values
+    else:
+        # For other filters, ensure we have clean string values
+        clean_values = []
+        for val in values:
+            if val and str(val).strip():
+                clean_values.append(str(val).strip())
+        print(f"  Other filter processed: {clean_values}")
+        return clean_values
+
+def process_filters_with_conversion_v2(request_args, exclude_keys=None):
+    """Improved filter processing that can handle both request.args and dict objects"""
+    filters = {}
+    exclude_keys = exclude_keys or ['page', 'per_page', 'search']
+    
+    print(f"=== PROCESSING FILTERS (V2) - GIG ECONOMY ===")
+    print(f"Raw request args type: {type(request_args)}")
+    
+    # Handle both Flask request.args and regular dict
+    if hasattr(request_args, 'getlist'):
+        # It's a Flask request.args object
+        keys_to_process = [k for k in request_args.keys() if k not in exclude_keys]
+        for key in keys_to_process:
+            values = request_args.getlist(key)
+            print(f"Processing filter key: '{key}' with values: {values}")
+            
+            if not values or (len(values) == 1 and values[0] == ''):
+                continue
+                
+            filters[key] = process_filter_values(key, values)
+    else:
+        # It's a regular dict where values are already lists
+        for key, values in request_args.items():
+            if key in exclude_keys:
+                continue
+                
+            print(f"Processing filter key: '{key}' with values: {values}")
+            
+            if not values or (len(values) == 1 and values[0] == ''):
+                continue
+                
+            filters[key] = process_filter_values(key, values)
+    
+    print(f"Final processed filters: {filters}")
+    return filters
+
+def apply_improved_filters(df, filters):
+    """Apply filters with improved matching logic"""
+    if not filters:
+        return df
+    
+    filtered_df = df.copy()
+    
+    print(f"=== APPLYING IMPROVED FILTERS - GIG ECONOMY ===")
+    print(f"Original dataframe shape: {filtered_df.shape}")
+    
+    for filter_key, filter_values in filters.items():
+        if not filter_values:
+            continue
+            
+        print(f"Applying filter: {filter_key} = {filter_values}")
+        
+        if filter_key not in filtered_df.columns:
+            print(f"  Warning: Column '{filter_key}' not found in dataframe")
+            continue
+        
+        # Get the column data and handle different data types
+        column_data = filtered_df[filter_key]
+        
+        # Create mask for matching values
+        mask = pd.Series([False] * len(filtered_df), index=filtered_df.index)
+        
+        # Special handling for graduation year
+        if 'Tahun graduasi' in filter_key:
+            for filter_val in filter_values:
+                # Try multiple matching strategies
+                try:
+                    # Direct string match
+                    string_match = column_data.astype(str).str.strip() == str(filter_val).strip()
+                    mask |= string_match
+                    
+                    # Numeric match if possible
+                    if pd.api.types.is_numeric_dtype(column_data):
+                        try:
+                            numeric_filter = float(filter_val)
+                            numeric_match = column_data == numeric_filter
+                            mask |= numeric_match
+                        except (ValueError, TypeError):
+                            pass
+                    
+                    # Try converting column to numeric and compare
+                    try:
+                        numeric_column = pd.to_numeric(column_data, errors='coerce')
+                        numeric_filter = float(filter_val)
+                        numeric_match = numeric_column == numeric_filter
+                        mask |= numeric_match.fillna(False)
+                    except (ValueError, TypeError):
+                        pass
+                        
+                except Exception as e:
+                    print(f"    Error processing graduation year filter {filter_val}: {e}")
+                    
+        else:
+            # Standard string matching for other filters
+            for filter_val in filter_values:
+                try:
+                    string_match = column_data.astype(str).str.strip() == str(filter_val).strip()
+                    mask |= string_match
+                except Exception as e:
+                    print(f"    Error processing filter {filter_val}: {e}")
+        
+        # Apply the mask
+        before_count = len(filtered_df)
+        filtered_df = filtered_df[mask]
+        after_count = len(filtered_df)
+        
+        print(f"  Filter '{filter_key}' reduced data from {before_count} to {after_count} rows")
+        
+        if after_count == 0:
+            print(f"  Warning: Filter '{filter_key}' resulted in empty dataset")
+            break
+    
+    print(f"Final filtered dataframe shape: {filtered_df.shape}")
+    return filtered_df
+
+# ===== END IMPROVED FILTER PROCESSING =====
+
 @gig_economy_bp.route('/')
 def index():
     """Main gig economy dashboard page"""
@@ -57,15 +210,51 @@ def table_view():
                          page_title='Gig Economy & Entrepreneurship Data Table',
                          api_endpoint='/gig-economy/api/table-data')
 
+@gig_economy_bp.route('/api/test')
+def api_test():
+    """Test endpoint to verify the blueprint is working"""
+    return jsonify({
+        'status': 'success',
+        'message': 'Gig Economy API is working',
+        'available_columns': list(df.columns) if not df.empty else [],
+        'total_records': len(df)
+    })
+
+@gig_economy_bp.route('/api/debug-data')
+def api_debug_data():
+    """Debug endpoint to check data structure"""
+    try:
+        grad_col = 'Tahun graduasi anda?'
+        sample_data = {}
+        
+        if grad_col in df.columns:
+            grad_data = df[grad_col].dropna()
+            sample_data['graduation_years'] = {
+                'unique_values': sorted(grad_data.unique().tolist()),
+                'value_counts': grad_data.value_counts().to_dict(),
+                'data_types': [str(type(x)) for x in grad_data.unique()[:5]]
+            }
+        
+        return jsonify({
+            'total_records': len(df),
+            'columns': list(df.columns),
+            'sample_data': sample_data
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @gig_economy_bp.route('/api/summary')
 def api_summary():
-    """Get summary statistics for gig economy data"""
+    """Get summary statistics for gig economy data - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
-        stats = filtered_processor.get_summary_stats()
-        filtered_df = filtered_processor.filtered_df
+        print(f"=== API SUMMARY DEBUG - GIG ECONOMY ===")
+        print(f"Processed filters: {filters}")
+        print(f"Filtered DF shape: {filtered_df.shape}")
+        print(f"Original DF shape: {df.shape}")
         
         total_records = len(filtered_df)
         
@@ -97,14 +286,15 @@ def api_summary():
                     found = list(dict.fromkeys(found))
                     return '; '.join(found)
                 
-                filtered_df['gig_clean'] = filtered_df[gig_column].apply(clean_gig)
+                filtered_df_copy = filtered_df.copy()
+                filtered_df_copy['gig_clean'] = filtered_df_copy[gig_column].apply(clean_gig)
                 
                 # Calculate participation rates
-                gig_interested = len(filtered_df[filtered_df['gig_clean'] != 'Tidak Berminat'])
+                gig_interested = len(filtered_df_copy[filtered_df_copy['gig_clean'] != 'Tidak Berminat'])
                 gig_participation_rate = (gig_interested / total_records) * 100 if total_records > 0 else 0
                 
                 # Count entrepreneurs specifically
-                entrepreneur_count = len(filtered_df[filtered_df['gig_clean'].str.contains('Usahawan', na=False)])
+                entrepreneur_count = len(filtered_df_copy[filtered_df_copy['gig_clean'].str.contains('Usahawan', na=False)])
                 entrepreneurship_rate = (entrepreneur_count / total_records) * 100 if total_records > 0 else 0
                 
                 gig_stats['gig_participation_rate'] = gig_participation_rate
@@ -155,18 +345,23 @@ def api_summary():
                 gig_stats['job_preference_rate'] = job_preference_rate
         
         # Update stats with calculated values
-        stats.update({
+        enhanced_stats = {
             'total_records': total_records,
             'gig_participation_rate': round(gig_stats.get('gig_participation_rate', 0), 1),
             'entrepreneurship_rate': round(gig_stats.get('entrepreneurship_rate', 0), 1),
             'university_support_rate': round(gig_stats.get('university_support_rate', 0), 1),
             'avg_income': gig_stats.get('avg_income', 'RM0'),
-            'job_preference_rate': round(gig_stats.get('job_preference_rate', 0), 1)
-        })
+            'job_preference_rate': round(gig_stats.get('job_preference_rate', 0), 1),
+            'filter_applied': len([f for f in filters.values() if f]) > 0
+        }
         
-        return jsonify(stats)
+        print(f"Summary stats: {enhanced_stats}")
+        return jsonify(enhanced_stats)
         
     except Exception as e:
+        print(f"Error in API summary: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
         return jsonify({
             'error': str(e),
             'total_records': 0,
@@ -179,14 +374,15 @@ def api_summary():
 
 @gig_economy_bp.route('/api/gig-types')
 def api_gig_types():
-    """Get gig economy work types data - Uses 'gig-types' color scheme"""
+    """Get gig economy work types data - Uses 'gig-types' color scheme - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
         gig_column = 'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?'
         
-        if gig_column not in filtered_processor.filtered_df.columns:
+        if gig_column not in filtered_df.columns:
             return jsonify(formatter.format_bar_chart(
                 pd.Series([1], index=['No Data Available']),
                 "Gig Economy Types"
@@ -213,7 +409,7 @@ def api_gig_types():
             found = list(dict.fromkeys(found))
             return '; '.join(found)
         
-        df_work = filtered_processor.filtered_df.copy()
+        df_work = filtered_df.copy()
         df_work['gig_clean'] = df_work[gig_column].apply(clean_gig)
         
         # Filter out 'Tidak Berminat'
@@ -250,6 +446,7 @@ def api_gig_types():
         return jsonify(chart_data)
         
     except Exception as e:
+        print(f"Error in gig types endpoint: {str(e)}")
         return jsonify(formatter.format_bar_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
@@ -257,20 +454,21 @@ def api_gig_types():
 
 @gig_economy_bp.route('/api/university-support')
 def api_university_support():
-    """Get university entrepreneurship support data - Uses 'university-support' color scheme"""
+    """Get university entrepreneurship support data - Uses 'university-support' color scheme - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
         support_column = 'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?'
         
-        if support_column not in filtered_processor.filtered_df.columns:
+        if support_column not in filtered_df.columns:
             return jsonify(formatter.format_pie_chart(
                 pd.Series([1], index=['No Data Available']),
                 "University Support"
             ))
         
-        support_counts = filtered_processor.filtered_df[support_column].value_counts()
+        support_counts = filtered_df[support_column].value_counts()
         
         # Use centralized formatter
         chart_data = formatter.format_pie_chart(
@@ -281,6 +479,7 @@ def api_university_support():
         return jsonify(chart_data)
         
     except Exception as e:
+        print(f"Error in university support endpoint: {str(e)}")
         return jsonify(formatter.format_pie_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
@@ -288,20 +487,21 @@ def api_university_support():
 
 @gig_economy_bp.route('/api/university-programs')
 def api_university_programs():
-    """Get university business programs data - Uses 'university-programs' color scheme"""
+    """Get university business programs data - Uses 'university-programs' color scheme - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
         programs_column = 'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?'
         
-        if programs_column not in filtered_processor.filtered_df.columns:
+        if programs_column not in filtered_df.columns:
             return jsonify(formatter.format_pie_chart(
                 pd.Series([1], index=['No Data Available']),
                 "University Programs"
             ))
         
-        programs_counts = filtered_processor.filtered_df[programs_column].value_counts()
+        programs_counts = filtered_df[programs_column].value_counts()
         
         # Use centralized formatter
         chart_data = formatter.format_pie_chart(
@@ -312,6 +512,7 @@ def api_university_programs():
         return jsonify(chart_data)
         
     except Exception as e:
+        print(f"Error in university programs endpoint: {str(e)}")
         return jsonify(formatter.format_pie_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
@@ -319,17 +520,18 @@ def api_university_programs():
 
 @gig_economy_bp.route('/api/program-effectiveness')
 def api_program_effectiveness():
-    """Get program effectiveness data - Uses 'program-effectiveness' color scheme"""
+    """Get program effectiveness data - Uses 'program-effectiveness' color scheme - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
         programs_column = 'Adakah universiti anda pernah menganjurkan program berkaitan perniagaan atau ekonomi gig seperti hackathon, bootcamp, atau geran permulaan perniagaan?'
         effectiveness_column = 'Adakah program berkaitan perniagaan atau ekonomi gig di universiti membantu anda dalam memulakan atau mengembangkan pekerjaan bebas anda?'
         
         # Filter out those who didn't hear about programs
-        df_filtered = filtered_processor.filtered_df[
-            filtered_processor.filtered_df[programs_column] != 'Tidak, saya tidak pernah dengar tentang program seperti ini.'
+        df_filtered = filtered_df[
+            filtered_df[programs_column] != 'Tidak, saya tidak pernah dengar tentang program seperti ini.'
         ].copy()
         
         if df_filtered.empty or effectiveness_column not in df_filtered.columns:
@@ -349,6 +551,7 @@ def api_program_effectiveness():
         return jsonify(chart_data)
         
     except Exception as e:
+        print(f"Error in program effectiveness endpoint: {str(e)}")
         return jsonify(formatter.format_pie_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
@@ -356,10 +559,11 @@ def api_program_effectiveness():
 
 @gig_economy_bp.route('/api/gig-motivations')
 def api_gig_motivations():
-    """Get gig economy motivations data - Uses 'gig-motivations' color scheme"""
+    """Get gig economy motivations data - Uses 'gig-motivations' color scheme - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
         # Try both possible column names
         motivations_columns = [
@@ -369,7 +573,7 @@ def api_gig_motivations():
         
         motivations_column = None
         for col in motivations_columns:
-            if col in filtered_processor.filtered_df.columns:
+            if col in filtered_df.columns:
                 motivations_column = col
                 break
         
@@ -380,7 +584,7 @@ def api_gig_motivations():
             ))
         
         # Get all non-null values first
-        all_responses = filtered_processor.filtered_df[motivations_column].dropna()
+        all_responses = filtered_df[motivations_column].dropna()
         
         if all_responses.empty:
             return jsonify(formatter.format_bar_chart(
@@ -426,6 +630,7 @@ def api_gig_motivations():
         return jsonify(chart_data)
         
     except Exception as e:
+        print(f"Error in gig motivations endpoint: {str(e)}")
         return jsonify(formatter.format_bar_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
@@ -433,14 +638,15 @@ def api_gig_motivations():
 
 @gig_economy_bp.route('/api/skill-acquisition')
 def api_skill_acquisition():
-    """Get skill acquisition methods data - Uses 'skill-acquisition' color scheme"""
+    """Get skill acquisition methods data - Uses 'skill-acquisition' color scheme - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
         skills_column = 'Bagaimanakah anda memperoleh kemahiran untuk bekerja dalam ekonomi gig?'
         
-        if skills_column not in filtered_processor.filtered_df.columns:
+        if skills_column not in filtered_df.columns:
             return jsonify(formatter.format_bar_chart(
                 pd.Series([1], index=['No Data Available']),
                 "Skill Acquisition"
@@ -465,7 +671,7 @@ def api_skill_acquisition():
             found = list(dict.fromkeys(found))
             return '; '.join(found)
         
-        df_work = filtered_processor.filtered_df.copy()
+        df_work = filtered_df.copy()
         df_work['skills_acquisition_clean'] = df_work[skills_column].apply(clean_skills_acquisition)
         
         # Calculate frequency
@@ -493,6 +699,7 @@ def api_skill_acquisition():
         return jsonify(chart_data)
         
     except Exception as e:
+        print(f"Error in skill acquisition endpoint: {str(e)}")
         return jsonify(formatter.format_bar_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
@@ -500,14 +707,15 @@ def api_skill_acquisition():
 
 @gig_economy_bp.route('/api/gig-challenges')
 def api_gig_challenges():
-    """Get gig economy challenges data - Uses 'gig-challenges' color scheme"""
+    """Get gig economy challenges data - Uses 'gig-challenges' color scheme - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
         challenges_column = 'Apakah cabaran utama yang anda hadapi dalam keusahawanan atau ekonomi gig?'
         
-        if challenges_column not in filtered_processor.filtered_df.columns:
+        if challenges_column not in filtered_df.columns:
             return jsonify(formatter.format_bar_chart(
                 pd.Series([1], index=['No Data Available']),
                 "Gig Challenges"
@@ -515,7 +723,7 @@ def api_gig_challenges():
         
         # Process comma-separated challenges
         all_challenges = []
-        for challenges_cell in filtered_processor.filtered_df[challenges_column].dropna():
+        for challenges_cell in filtered_df[challenges_column].dropna():
             if pd.notna(challenges_cell):
                 challenges = [c.strip() for c in str(challenges_cell).split(',')]
                 challenges = [c for c in challenges if c]
@@ -539,6 +747,7 @@ def api_gig_challenges():
         return jsonify(chart_data)
         
     except Exception as e:
+        print(f"Error in gig challenges endpoint: {str(e)}")
         return jsonify(formatter.format_bar_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
@@ -546,14 +755,15 @@ def api_gig_challenges():
 
 @gig_economy_bp.route('/api/support-needed')
 def api_support_needed():
-    """Get support needed data - Uses 'support-needed' color scheme"""
+    """Get support needed data - Uses 'support-needed' color scheme - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
         support_column = 'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?'
         
-        if support_column not in filtered_processor.filtered_df.columns:
+        if support_column not in filtered_df.columns:
             return jsonify(formatter.format_bar_chart(
                 pd.Series([1], index=['No Data Available']),
                 "Support Needed"
@@ -561,7 +771,7 @@ def api_support_needed():
         
         # Process comma-separated support needs
         all_support = []
-        for support_cell in filtered_processor.filtered_df[support_column].dropna():
+        for support_cell in filtered_df[support_column].dropna():
             if pd.notna(support_cell):
                 support_items = [s.strip() for s in str(support_cell).split(',')]
                 support_items = [s for s in support_items if s and 'Tidak relevan' not in s]
@@ -585,6 +795,7 @@ def api_support_needed():
         return jsonify(chart_data)
         
     except Exception as e:
+        print(f"Error in support needed endpoint: {str(e)}")
         return jsonify(formatter.format_bar_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
@@ -592,10 +803,11 @@ def api_support_needed():
 
 @gig_economy_bp.route('/api/monthly-income')
 def api_monthly_income():
-    """Get monthly income from gig economy data - Uses 'monthly-income' color scheme"""
+    """Get monthly income from gig economy data - Uses 'monthly-income' color scheme - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
         # Try multiple possible column names
         income_columns = [
@@ -607,7 +819,7 @@ def api_monthly_income():
         
         income_column = None
         for col in income_columns:
-            if col in filtered_processor.filtered_df.columns:
+            if col in filtered_df.columns:
                 income_column = col
                 break
         
@@ -618,7 +830,7 @@ def api_monthly_income():
             ))
         
         # Get all non-null values
-        all_income_data = filtered_processor.filtered_df[income_column].dropna()
+        all_income_data = filtered_df[income_column].dropna()
         
         if all_income_data.empty:
             return jsonify(formatter.format_bar_chart(
@@ -653,6 +865,7 @@ def api_monthly_income():
         return jsonify(chart_data)
         
     except Exception as e:
+        print(f"Error in monthly income endpoint: {str(e)}")
         return jsonify(formatter.format_bar_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
@@ -660,22 +873,23 @@ def api_monthly_income():
 
 @gig_economy_bp.route('/api/job-preference')
 def api_job_preference():
-    """Get job preference data - Uses 'job-preference' color scheme"""
+    """Get job preference data - Uses 'job-preference' color scheme - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
         
         preference_column = 'Jika diberikan peluang pekerjaan tetap dengan gaji setanding ekonomi gig, adakah anda akan menerimanya?'
         
-        if preference_column not in filtered_processor.filtered_df.columns:
+        if preference_column not in filtered_df.columns:
             return jsonify(formatter.format_pie_chart(
                 pd.Series([1], index=['No Data Available']),
                 "Job Preference"
             ))
         
         # Filter out 'Tidak relevan'
-        df_preference_filtered = filtered_processor.filtered_df[
-            filtered_processor.filtered_df[preference_column] != 'Tidak relevan'
+        df_preference_filtered = filtered_df[
+            filtered_df[preference_column] != 'Tidak relevan'
         ].copy()
         
         if df_preference_filtered.empty:
@@ -695,19 +909,23 @@ def api_job_preference():
         return jsonify(chart_data)
         
     except Exception as e:
+        print(f"Error in job preference endpoint: {str(e)}")
         return jsonify(formatter.format_pie_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
         )), 500
 
-# NEW: Chart-specific table data endpoints
+# NEW: Chart-specific table data endpoints - FIXED VERSION
 @gig_economy_bp.route('/api/chart-table-data/<chart_type>')
 def api_chart_table_data(chart_type):
-    """Get table data specific to each chart type"""
+    """Get table data specific to each chart type - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() 
-                   if k not in ['page', 'per_page', 'search']}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(
+            request.args, 
+            exclude_keys=['page', 'per_page', 'search']
+        )
+        filtered_df = apply_improved_filters(df, filters)
         
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 100))
@@ -788,7 +1006,7 @@ def api_chart_table_data(chart_type):
         
         # Get columns for this chart type
         relevant_columns = chart_columns.get(chart_type, [])
-        available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
+        available_columns = [col for col in relevant_columns if col in filtered_df.columns]
         
         if not available_columns:
             # Fallback to common columns
@@ -797,12 +1015,51 @@ def api_chart_table_data(chart_type):
                 'Jantina anda?',
                 'Institusi pendidikan MARA yang anda hadiri?'
             ]
-            available_columns = [col for col in fallback_columns if col in filtered_processor.filtered_df.columns]
+            available_columns = [col for col in fallback_columns if col in filtered_df.columns]
         
-        data = filtered_processor.get_table_data(page, per_page, search, available_columns)
+        # Create filtered processor and get data using the same pattern as sosioekonomi
+        class FilteredProcessor:
+            def __init__(self, df):
+                self.filtered_df = df
+                
+            def get_table_data(self, page, per_page, search, columns):
+                df_subset = self.filtered_df[columns] if columns else self.filtered_df
+                
+                # Apply search if provided
+                if search:
+                    search_mask = df_subset.astype(str).apply(
+                        lambda x: x.str.contains(search, case=False, na=False)
+                    ).any(axis=1)
+                    df_subset = df_subset[search_mask]
+                
+                # Calculate pagination
+                total = len(df_subset)
+                pages = (total + per_page - 1) // per_page
+                start_idx = (page - 1) * per_page
+                end_idx = start_idx + per_page
+                
+                # Get page data
+                page_data = df_subset.iloc[start_idx:end_idx].fillna('').to_dict('records')
+                
+                return {
+                    'data': page_data,
+                    'pagination': {
+                        'page': page,
+                        'per_page': per_page,
+                        'total': total,
+                        'pages': pages
+                    },
+                    'columns': list(df_subset.columns)
+                }
+        
+        processor = FilteredProcessor(filtered_df)
+        data = processor.get_table_data(page, per_page, search, available_columns)
         return jsonify(data)
         
     except Exception as e:
+        print(f"Error in chart table data: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
         return jsonify({
             'error': str(e),
             'data': [],
@@ -810,14 +1067,17 @@ def api_chart_table_data(chart_type):
             'columns': []
         }), 500
 
-# Keep existing table, export, and filter endpoints
+# Keep existing table, export, and filter endpoints - FIXED VERSIONS
 @gig_economy_bp.route('/api/table-data')
 def api_table_data():
-    """Get paginated table data for gig economy"""
+    """Get paginated table data for gig economy - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() 
-                   if k not in ['page', 'per_page', 'search']}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(
+            request.args,
+            exclude_keys=['page', 'per_page', 'search']
+        )
+        filtered_df = apply_improved_filters(df, filters)
         
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 50))
@@ -839,12 +1099,51 @@ def api_table_data():
             'Jantina anda?'
         ]
         
-        available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
+        available_columns = [col for col in relevant_columns if col in filtered_df.columns]
         
-        data = filtered_processor.get_table_data(page, per_page, search, available_columns)
+        # Create filtered processor and get data
+        class FilteredProcessor:
+            def __init__(self, df):
+                self.filtered_df = df
+                
+            def get_table_data(self, page, per_page, search, columns):
+                df_subset = self.filtered_df[columns] if columns else self.filtered_df
+                
+                # Apply search if provided
+                if search:
+                    search_mask = df_subset.astype(str).apply(
+                        lambda x: x.str.contains(search, case=False, na=False)
+                    ).any(axis=1)
+                    df_subset = df_subset[search_mask]
+                
+                # Calculate pagination
+                total = len(df_subset)
+                pages = (total + per_page - 1) // per_page
+                start_idx = (page - 1) * per_page
+                end_idx = start_idx + per_page
+                
+                # Get page data
+                page_data = df_subset.iloc[start_idx:end_idx].fillna('').to_dict('records')
+                
+                return {
+                    'data': page_data,
+                    'pagination': {
+                        'page': page,
+                        'per_page': per_page,
+                        'total': total,
+                        'pages': pages
+                    },
+                    'columns': list(df_subset.columns)
+                }
+        
+        processor = FilteredProcessor(filtered_df)
+        data = processor.get_table_data(page, per_page, search, available_columns)
         return jsonify(data)
         
     except Exception as e:
+        print(f"Error in table data: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
         return jsonify({
             'error': str(e),
             'data': [],
@@ -854,11 +1153,14 @@ def api_table_data():
 
 @gig_economy_bp.route('/api/export')
 def api_export():
-    """Export gig economy data in various formats"""
+    """Export gig economy data in various formats - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() 
-                   if k not in ['format', 'chart_type']}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Use improved filter processing
+        filters = process_filters_with_conversion_v2(
+            request.args,
+            exclude_keys=['format', 'chart_type']
+        )
+        filtered_df = apply_improved_filters(df, filters)
         
         format_type = request.args.get('format', 'csv')
         chart_type = request.args.get('chart_type')
@@ -947,17 +1249,25 @@ def api_export():
                 'Institusi pendidikan MARA yang anda hadiri?'
             ]
         
-        available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
+        available_columns = [col for col in relevant_columns if col in filtered_df.columns]
+        export_df = filtered_df[available_columns]
         
-        data = filtered_processor.export_data(format_type, available_columns)
-        
+        # Create export data
         if format_type == 'csv':
+            output = io.StringIO()
+            export_df.to_csv(output, index=False)
+            data = output.getvalue().encode('utf-8')
             mimetype = 'text/csv'
             filename = f'gig_economy_{chart_type or "data"}.csv'
         elif format_type == 'excel':
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                export_df.to_excel(writer, index=False, sheet_name='Gig Economy Data')
+            data = output.getvalue()
             mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             filename = f'gig_economy_{chart_type or "data"}.xlsx'
         else:
+            data = export_df.to_json(orient='records', indent=2).encode('utf-8')
             mimetype = 'application/json'
             filename = f'gig_economy_{chart_type or "data"}.json'
         
@@ -969,13 +1279,16 @@ def api_export():
         )
         
     except Exception as e:
+        print(f"Export error: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
 @gig_economy_bp.route('/api/filters/available')
 def api_available_filters():
-    """Get available filter options for gig economy data"""
+    """Get available filter options for gig economy data - FIXED VERSION"""
     try:
-        sample_df = data_processor.df
+        sample_df = df.copy()
         filters = {}
         
         filter_columns = [
@@ -984,16 +1297,52 @@ def api_available_filters():
             'Institusi pendidikan MARA yang anda hadiri?'
         ]
         
+        # Debug: Print all column names to see exact format
+        print("Available columns in gig economy dataset:")
+        for i, col in enumerate(sample_df.columns):
+            print(f"  {i}: '{col}'")
+        
         for column in filter_columns:
             if column in sample_df.columns:
-                unique_values = sample_df[column].dropna().unique().tolist()
-                if isinstance(unique_values[0] if unique_values else None, (int, float)):
-                    unique_values = sorted(unique_values)
+                # Get unique values and handle different data types
+                unique_values = sample_df[column].dropna().unique()
+                print(f"Column '{column}' has {len(unique_values)} unique values: {list(unique_values)[:5]}...")
+                
+                # Special handling for graduation years - ensure consistent string format
+                if 'Tahun graduasi' in column:
+                    processed_values = []
+                    for val in unique_values:
+                        # Convert to string and clean
+                        str_val = str(val).strip()
+                        if str_val and str_val != 'nan':
+                            processed_values.append(str_val)
+                    
+                    # Sort numerically if possible, otherwise alphabetically
+                    try:
+                        processed_values = sorted(processed_values, key=lambda x: float(x))
+                    except (ValueError, TypeError):
+                        processed_values = sorted(processed_values)
+                    
+                    filters[column] = processed_values
+                    print(f"  Graduation years after processing: {processed_values}")
                 else:
-                    unique_values = sorted([str(val) for val in unique_values])
-                filters[column] = unique_values
+                    # Convert all values to string for consistency and clean
+                    processed_values = []
+                    for val in unique_values:
+                        str_val = str(val).strip()
+                        if str_val and str_val != 'nan':
+                            processed_values.append(str_val)
+                    
+                    filters[column] = sorted(processed_values)
+                    print(f"  Other filter processed: {len(processed_values)} values")
+            else:
+                print(f"Column '{column}' not found in dataset")
+                filters[column] = []
         
         return jsonify(filters)
         
     except Exception as e:
+        print(f"Error in api_available_filters: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
         return jsonify({'error': str(e), 'filters': {}}), 500

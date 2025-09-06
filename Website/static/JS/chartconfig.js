@@ -2,125 +2,207 @@
 
 // Enhanced Global Chart Configuration
 const ChartConfig = {
-    // Enhanced Color Schemes with better gradients and contrast
-    colorSchemes: {
-        // Enhanced colors for horizontal bar charts
-        horizontalBar: {
-            colors: [
-                // '#ed1c24',
-                '#9c354d',
-                '#56423e',
-                '#bea6a1',
-                '#3a001e',
-                '#a5378b',
-                '#cc0068',
-                '#9c4f00',
-                '#d28433'
-
-
-                // '#00606d',
-                // '#0097a1',
-                // '#2d8b00',
-                // '#005800',
-
-            ],
-            name: 'Horizontal Bar Colors'
-        },
-
-        // Enhanced colors for stacked bar charts
-        stackedBar: {
-            colors: [
-                // '#ED1C24', '#D80164', '#A5378B', '#664C92',
-                // '#354F7C ', '#2F4858', '#009096', '#00904E',
-                // '#198A00', '#7D7C00', '#BE5E00', 
-                // '#ed1c24',
-                '#d80164',
-                '#9c354d',
-                '#bea6a1',
-                '#664c92',
-                '#9b89b4',
-                '#b0a8b9'
-            ],
-            // backgrounds: [
-            //     'rgba(37, 99, 235, 0.1)', 'rgba(220, 38, 38, 0.1)', 'rgba(22, 163, 74, 0.1)',
-            //     'rgba(234, 88, 12, 0.1)', 'rgba(147, 51, 234, 0.1)', 'rgba(8, 145, 178, 0.1)'
-            // ],
-            name: 'Stacked Bar Colors'
-        },
-
-        // Enhanced colors for vertical bar charts
-        verticalBar: {
-            colors: [
-                // '#ed1c24', 
-                '#56423e', '#bea6a1', '#0097a1', '#00606d', '#4993a1' , '#627b81'
-            ],
-            name: 'Vertical Bar Colors'
-        },
-
-        // Enhanced colors for pie charts
-        enhancedPie: {
-            colors: [
-                '#2159a2', '#a6abbd', '#9c354d', '#d6697e', '#727787' ],
-            name: 'Enhanced Pie Colors'
-        },
-
-        // Enhanced colors for area charts
-        area: {
-            colors: [
-                '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
-                '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6366f1'
-            ],
-            gradients: [
-                [ '#3b82f6', '#93c5fd' ], [ '#10b981', '#6ee7b7' ], [ '#f59e0b', '#fcd34d' ],
-                [ '#ef4444', '#f87171' ], [ '#8b5cf6', '#c4b5fd' ]
-            ],
-            name: 'Area Chart Colors'
-        },
-
-        // Enhanced colors for line charts
-        line: {
-            colors: [
-                '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
-                '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6366f1'
-            ],
-            name: 'Line Chart Colors'
-        },
-
-        // Enhanced colors for multiple bar charts (employability factors)
-        multipleBar: {
-            colors: [
-                '#1d4f90', '#2066a8', '#8ec1da', '#cde1ec',
-                '#f6d6c2', '#d47264', '#ae282c', '#7f1d1d'
-            ],
-            name: 'Multiple Bar Colors'
-        },
-
-        // NEW: Sosioekonomi specific color schemes
-        sosioekonomiIncome: {
-            colors: [
-                '#10b981', '#22c55e', '#4ade80', '#86efac', '#bbf7d0',
-                '#065f46', '#047857', '#059669', '#0d9488', '#14b8a6'
-            ],
-            name: 'Sosioekonomi Income Colors'
-        },
-
-        sosioekonomiFinancing: {
-            colors: [
-                '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe',
-                '#1e40af', '#2563eb', '#1d4ed8', '#1e3a8a', '#312e81'
-            ],
-            name: 'Sosioekonomi Financing Colors'
-        },
-
-        sosioekonomiOccupation: {
-            colors: [
-                '#f59e0b', '#fbbf24', '#fcd34d', '#fde68a', '#fef3c7',
-                '#d97706', '#f59e0b', '#eab308', '#ca8a04', '#a16207',
-                '#92400e', '#78350f', '#451a03'
-            ],
-            name: 'Sosioekonomi Occupation Colors'
-        }
+    // Corporate Color Schemes - Designed for accessibility and professional appearance
+// Optimized for older audiences with high contrast and clear differentiation
+colorSchemes: {
+    
+    // 1. PROFESSIONAL NAVY & STEEL - Classic corporate look
+    corporateNavy: {
+        colors: [
+            '#1a365d', // Deep navy blue
+            '#2d5a87', // Medium navy
+            '#4a90b8', // Steel blue
+            '#6ba3d0', // Light steel
+            '#8bb8d8', // Very light steel
+            '#a8cde8'  // Pale steel
+        ],
+        name: 'Corporate Navy & Steel'
     },
+
+    // 2. EXECUTIVE BURGUNDY & GRAY - Sophisticated and authoritative
+    executiveBurgundy: {
+        colors: [
+            '#722f37', // Deep burgundy
+            '#8b4513', // Rich brown
+            '#5d5d5d', // Charcoal gray
+            '#787878', // Medium gray
+            '#9d9d9d', // Light gray
+            '#b8b8b8'  // Very light gray
+        ],
+        name: 'Executive Burgundy & Gray'
+    },
+
+    // 3. FOREST GREEN CORPORATE - Trustworthy and stable
+    forestCorporate: {
+        colors: [
+            '#2d5016', // Deep forest green
+            '#3d6b1f', // Forest green
+            '#4a7c28', // Medium green
+            '#689842', // Lighter green
+            '#87b35c', // Light olive
+            '#a6c878'  // Pale green
+        ],
+        name: 'Forest Green Corporate'
+    },
+
+    // 4. SLATE & COPPER - Modern yet conservative
+    slateCopper: {
+        colors: [
+            '#334155', // Dark slate
+            '#475569', // Medium slate
+            '#64748b', // Light slate
+            '#94a3b8', // Very light slate
+            '#b45309', // Copper
+            '#d97706'  // Light copper
+        ],
+        name: 'Slate & Copper Professional'
+    },
+
+    // 5. DEEP BLUE CORPORATE - Traditional and reliable
+    deepBlueCorp: {
+        colors: [
+            '#0f172a', // Very dark blue
+            '#1e293b', // Dark blue
+            '#334155', // Medium blue-gray
+            '#475569', // Lighter blue-gray
+            '#64748b', // Light blue-gray
+            '#94a3b8'  // Very light blue-gray
+        ],
+        name: 'Deep Blue Corporate'
+    },
+
+    // 6. WARM EARTH TONES - Approachable yet professional
+    warmEarth: {
+        colors: [
+            '#451a03', // Dark brown
+            '#78350f', // Rich brown
+            '#92400e', // Medium brown
+            '#c2410c', // Orange-brown
+            '#ea580c', // Light orange
+            '#fb923c'  // Pale orange
+        ],
+        name: 'Warm Earth Professional'
+    },
+
+    // UPDATED ORIGINAL SCHEMES with better accessibility:
+    
+    // Enhanced colors for horizontal bar charts
+    horizontalBar: {
+        colors: [
+            '#1a365d', // Deep navy (high contrast)
+            '#722f37', // Deep burgundy  
+            '#2d5016', // Deep forest green
+            '#451a03', // Dark brown
+            '#334155', // Dark slate
+            '#0f172a', // Very dark blue
+            '#78350f', // Rich brown
+            '#3d6b1f'  // Forest green
+        ],
+        name: 'Horizontal Bar Colors - Corporate'
+    },
+    
+    // Enhanced colors for stacked bar charts
+    stackedBar: {
+        colors: [
+            '#1a365d', // Deep navy
+            '#722f37', // Deep burgundy
+            '#2d5016', // Deep forest green
+            '#334155', // Dark slate
+            '#451a03', // Dark brown
+            '#78350f', // Rich brown
+            '#0f172a'  // Very dark blue
+        ],
+        name: 'Stacked Bar Colors - Corporate'
+    },
+    
+    // Enhanced colors for vertical bar charts
+    verticalBar: {
+        colors: [
+            '#1a365d', // Deep navy
+            '#2d5a87', // Medium navy
+            '#4a90b8', // Steel blue
+            '#334155', // Dark slate
+            '#475569', // Medium slate
+            '#64748b'  // Light slate
+        ],
+        name: 'Vertical Bar Colors - Corporate'
+    },
+    
+    // Enhanced colors for pie charts
+    enhancedPie: {
+        colors: [
+            '#1a365d', // Deep navy
+            '#722f37', // Deep burgundy
+            '#2d5016', // Deep forest green
+            '#451a03', // Dark brown
+            '#334155'  // Dark slate
+        ],
+        name: 'Enhanced Pie Colors - Corporate'
+    },
+    
+    // Enhanced colors for area charts
+    area: {
+        colors: [
+            '#1a365d', '#2d5a87', '#4a90b8', '#722f37', '#8b4513',
+            '#2d5016', '#3d6b1f', '#451a03', '#334155', '#475569'
+        ],
+        gradients: [
+            ['#1a365d', '#4a90b8'], ['#722f37', '#a8787e'], ['#2d5016', '#689842'],
+            ['#451a03', '#d97706'], ['#334155', '#94a3b8']
+        ],
+        name: 'Area Chart Colors - Corporate'
+    },
+    
+    // Enhanced colors for line charts
+    line: {
+        colors: [
+            '#1a365d', '#722f37', '#2d5016', '#451a03', '#334155',
+            '#78350f', '#0f172a', '#3d6b1f', '#2d5a87', '#8b4513'
+        ],
+        name: 'Line Chart Colors - Corporate'
+    },
+    
+    // Enhanced colors for multiple bar charts
+    multipleBar: {
+        colors: [
+            '#0f172a', // Very dark blue
+            '#1a365d', // Deep navy
+            '#2d5a87', // Medium navy
+            '#4a90b8', // Steel blue
+            '#6ba3d0', // Light steel
+            '#8bb8d8', // Very light steel
+            '#a8cde8', // Pale steel
+            '#dbeafe'  // Very pale blue
+        ],
+        name: 'Multiple Bar Colors - Corporate'
+    },
+    
+    // Enhanced Sosioekonomi color schemes
+    sosioekonomiIncome: {
+        colors: [
+            '#2d5016', '#3d6b1f', '#4a7c28', '#689842', '#87b35c',
+            '#1f5f1f', '#2d7d2d', '#3d8b3d', '#4d9a4d', '#5da85d'
+        ],
+        name: 'Sosioekonomi Income - Corporate Green'
+    },
+    
+    sosioekonomiFinancing: {
+        colors: [
+            '#0f172a', '#1a365d', '#2d5a87', '#4a90b8', '#6ba3d0',
+            '#1e293b', '#334155', '#475569', '#64748b', '#94a3b8'
+        ],
+        name: 'Sosioekonomi Financing - Corporate Blue'
+    },
+    
+    sosioekonomiOccupation: {
+        colors: [
+            '#451a03', '#78350f', '#92400e', '#c2410c', '#ea580c',
+            '#fb923c', '#fdba74', '#fed7aa', '#ffedd5', '#451a03',
+            '#78350f', '#92400e', '#c2410c'
+        ],
+        name: 'Sosioekonomi Occupation - Corporate Earth'
+    }
+},
 
     // Enhanced Style Templates
     styleTemplates: {

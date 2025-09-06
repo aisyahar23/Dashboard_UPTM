@@ -21,130 +21,17 @@
 
             <!-- Button Section -->
             <div class="flex flex-row space-x-4 px-6">
-                <!-- Enhanced Filters Dropdown - FIXED -->
-                <div class="relative" x-data="{ open: false }" x-init="open = false">
-                    <button @click.stop="open = !open"
-                        class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400">
-                        <i class="fas fa-filter text-primary-700 text-[10px]"></i>
-                        <span class="font-semibold text-primary-700 text-[10px]">Penapisan</span>
-                        <div x-show="activeFiltersCount > 0"
-                            class="bg-primary-400 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
-                            x-text="activeFiltersCount"></div>
-                    </button>
+                
 
-                    <!-- Enhanced Filter Dropdown -->
-                    <div x-show="open" 
-                         x-cloak
-                         x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
-                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-200"
-                         x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" 
-                         @click.away="open = false"
-                         class="absolute right-0 mt-2 w-96 bg-white backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
-                        <div class="px-6 py-5">
-                            <!-- Header -->
-                            <div class="flex items-center justify-between mb-5">
-                                <div>
-                                    <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                                        <i class="fas fa-filter text-primary-600 mr-2"></i>
-                                        Tapis Maklumat
-                                    </h3>
-                                    <p class="text-sm text-gray-500 mt-1">Pilih kriteria untuk menapis data</p>
-                                </div>
-                                <button @click="clearAllFilters(); open = false"
-                                    class="text-red-500 hover:text-red-700 text-sm font-semibold px-3 py-1 rounded-lg hover:bg-red-50 transition-colors">
-                                    <i class="fas fa-times-circle mr-1"></i>Kosongkan
-                                </button>
-                            </div>
-
-                            <!-- Filter Options -->
-                            <div class="space-y-5">
-                                <!-- Graduation Year - FIXED -->
-                                <div class="filter-section">
-                                    <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
-                                        <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Tahun Graduasi
-                                        <span class="ml-auto text-xs text-gray-500"
-                                            x-show="filters.graduation_year.length > 0"
-                                            x-text="`${filters.graduation_year.length} dipilih`"></span>
-                                    </label>
-                                    <div class="grid grid-cols-4 gap-2 max-h-28 overflow-y-auto border rounded-lg p-2 bg-gray-50">
-                                        <template x-for="year in availableFilters.graduation_years || []" :key="year">
-                                            <label
-                                                class="flex items-center p-2 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
-                                                <input type="checkbox" :value="year" x-model="filters.graduation_year"
-                                                    class="rounded border-blue-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0">
-                                                <span class="ml-2 text-sm font-medium text-gray-700"
-                                                    x-text="year"></span>
-                                            </label>
-                                        </template>
-                                    </div>
-                                </div>
-
-                                <!-- Gender -->
-                                <div class="filter-section">
-                                    <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
-                                        <i class="fas fa-venus-mars mr-2 text-purple-500"></i>Jantina
-                                        <span class="ml-auto text-xs text-gray-500" x-show="filters.gender.length > 0"
-                                            x-text="`${filters.gender.length} dipilih`"></span>
-                                    </label>
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <template x-for="gender in availableFilters.genders || []" :key="gender">
-                                            <label
-                                                class="flex items-center p-3 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
-                                                <input type="checkbox" :value="gender" x-model="filters.gender"
-                                                    class="rounded border-purple-300 text-purple-600 focus:ring-purple-500 focus:ring-offset-0">
-                                                <span class="ml-3 text-sm font-medium text-gray-700"
-                                                    x-text="gender"></span>
-                                            </label>
-                                        </template>
-                                    </div>
-                                </div>
-
-                                <!-- Institution -->
-                                <div class="filter-section">
-                                    <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
-                                        <i class="fas fa-university mr-2 text-green-500"></i>Institusi
-                                        <span class="ml-auto text-xs text-gray-500"
-                                            x-show="filters.institution.length > 0"
-                                            x-text="`${filters.institution.length} dipilih`"></span>
-                                    </label>
-                                    <div class="max-h-36 overflow-y-auto border rounded-lg p-2 bg-gray-50 space-y-1">
-                                        <template x-for="institution in availableFilters.institutions || []" :key="institution">
-                                            <label
-                                                class="flex items-center p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm transition-colors">
-                                                <input type="checkbox" :value="institution"
-                                                    x-model="filters.institution"
-                                                    class="rounded border-green-300 text-green-600 focus:ring-green-500 focus:ring-offset-0">
-                                                <span class="ml-3 font-medium text-gray-700 leading-tight"
-                                                    x-text="institution"></span>
-                                            </label>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Apply Button -->
-                            <div class="mt-6 pt-4 border-t border-gray-200">
-                                <button @click="applyFilters(); open = false"
-                                    class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-bold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg transform hover:scale-[1.02]">
-                                    <i class="fas fa-search mr-2"></i>Terapkan Penapis
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Enhanced Export Button - FIXED -->
-                <div class="relative" x-data="{ open: false }" x-init="open = false">
-                    <button @click.stop="open = !open"
+                <!-- Enhanced Export Button -->
+                <div class="relative">
+                    <button @click="toggleExport()" @click.stop
                         class="button-style-fulll-blue flex items-center bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-md transition-all duration-200 shadow-lg shadow-primary-700/30 group transform hover:scale-105">
                         <i class="fas fa-download group-hover:animate-bounce text-[10px]"></i>
                         <span class="font-semibold text-[10px]">Eksport</span>
                     </button>
 
-                    <div x-show="open" 
+                    <div x-show="exportOpen" 
                          x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
@@ -152,10 +39,10 @@
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
                          x-transition:leave-end="opacity-0 transform scale-95 translate-y-2" 
-                         @click.away="open = false"
+                         @click.away="exportOpen = false"
                          class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
                         <div class="py-2">
-                            <button @click="exportData('csv'); open = false"
+                            <button @click="exportData('csv')"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
                                 <i
                                     class="fas fa-file-csv text-emerald-600 text-lg group-hover:scale-110 transition-transform"></i>
@@ -164,7 +51,7 @@
                                     <div class="text-xs text-gray-500">Fail nilai dipisahkan koma</div>
                                 </div>
                             </button>
-                            <button @click="exportData('excel'); open = false"
+                            <button @click="exportData('excel')"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-blue-50 flex items-center space-x-3 transition-colors group">
                                 <i
                                     class="fas fa-file-excel text-blue-600 text-lg group-hover:scale-110 transition-transform"></i>
@@ -181,7 +68,6 @@
                 <button @click="refreshData()"
                     class="button-style flex items-center px-3 py-1 rounded-md transition-all duration-200 shadow-lg border-[1.5px] border-gray-50 hover:border-primary-400"
                     :disabled="loading">
-
                     <i class="fas fa-sync-alt text-primary-700 text-[10px]" :class="{ 'animate-spin': loading }"></i>
                     <span class="font-semibold text-primary-700 text-[10px]">Muat Semula</span>
                 </button>
@@ -306,7 +192,7 @@
                 </div>
             </div>
 
-            <!-- UPDATED: Private Sector Rate - REPLACED Better Prospects -->
+            <!-- Private Sector Rate -->
             <div
                 class="bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
                 <div class="flex items-center justify-between">
@@ -342,7 +228,6 @@
                         </p>
                     </div>
                     <div class="flex space-x-1">
-                        <!-- TABLE ICON ADDED -->
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="openChartModal('reasons', 'Sebab Utama Bekerja di Luar Bidang')"
@@ -398,7 +283,6 @@
                         <p class="text-gray-500 text-[10px] mt-1">Agihan pekerjaan semasa</p>
                     </div>
                     <div class="flex space-x-1">
-                        <!-- TABLE ICON ADDED -->
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
                             <button @click="openChartModal('jobtypes', 'Agihan Jenis Pekerjaan')"
@@ -442,24 +326,22 @@
             </div>
         </div>
 
-        <!-- Enhanced Institution vs Reasons Analysis - Horizontal Stacked Bar -->
+        <!-- FIXED: Simplified Reasons Distribution Chart - Vertical Bar -->
         <div
             class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden hover:shadow-3xl transition-shadow duration-300">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-md font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-university text-primary-600 mr-2"></i>
-                            Institusi vs Faktor Perubahan Kerjaya
+                            <i class="fas fa-chart-column text-primary-600 mr-2"></i>
+                            Analisis Sebab Tidak Bekerja dalam Bidang
                         </h3>
-                        <p class="text-gray-500 text-[10px] mt-1">Korelasi antara latar belakang pendidikan dan motivasi
-                            peralihan kerjaya</p>
+                        <p class="text-gray-500 text-[10px] mt-1">Taburan sebab-sebab utama mengapa tidak bekerja dalam bidang pengajian</p>
                     </div>
                     <div class="flex space-x-3">
-                        <!-- TABLE ICON ADDED -->
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openChartModal('institution', 'Analisis Institusi vs Sebab')"
+                            <button @click="openChartModal('reasons-simple', 'Analisis Sebab Tidak Bekerja dalam Bidang')"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -469,23 +351,17 @@
                                 Maklumat Lanjut
                             </div>
                         </div>
-
-                        <!-- External Link -->
-                        <div class="flex flex-row items-center relative group">
-                            <div>
-                                <a href="/graduan-luar/table" target="_blank" class="inline-block px-3 py-2 text-sm font-semibold bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg 
-                                          hover:from-primary-600 hover:to-primary-700 transform hover:scale-105 
-                                          transition-transform duration-200 ease-out" title="Buka Halaman">
-                                    <i class="fas fa-external-link-alt text-xs mr-2"></i>
-                                    <span class="text-xs">
-                                        Lihat Maklumat Penuh
-                                    </span>
-                                </a>
-                            </div>
-                            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none 
-                                transition-opacity duration-200 whitespace-nowrap">
-                                Buka Halaman
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="refreshChart('reasons-simple')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i
+                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
                             </div>
                         </div>
                     </div>
@@ -498,20 +374,61 @@
                         <div class="text-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4">
                             </div>
-                            <div class="text-gray-600 font-medium">Memuatkan data korelasi institusi...</div>
+                            <div class="text-gray-600 font-medium">Memuatkan data sebab tidak bekerja...</div>
                         </div>
                     </div>
-                    <canvas id="institutionReasonsChart" class="w-full h-full"></canvas>
+                    <canvas id="reasonsSimpleChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Add CSS to prevent dropdown flash -->
+<!-- FIXED CSS to prevent dropdown flash and enable proper clicking -->
 <style>
 [x-cloak] { 
     display: none !important; 
+}
+
+/* Prevent layout shift during dropdown transitions */
+.relative {
+    position: relative;
+}
+
+.relative .absolute {
+    position: absolute;
+    z-index: 50;
+}
+
+/* Ensure dropdowns don't cause layout shifts */
+.relative > .absolute {
+    width: max-content;
+    min-width: 100%;
+}
+
+/* Ensure proper cursor and interactivity for all filter elements */
+.filter-section-fixed label {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
+.filter-section-fixed input[type="checkbox"] {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Additional fixes for checkbox interaction */
+.filter-section-fixed input[type="checkbox"]:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Make sure the filter containers are properly interactive */
+.filter-section-fixed {
+    position: relative;
+    z-index: 1;
 }
 </style>
 
@@ -525,6 +442,8 @@
             dataLoaded: false,
             kpis: {},
             isInitialized: false,
+            filtersOpen: false,
+            exportOpen: false,
             filters: {
                 graduation_year: [],
                 gender: [],
@@ -542,18 +461,29 @@
                 if (this.isInitialized) return;
                 this.isInitialized = true;
                 
-                // Force close all dropdowns on init - FIXED
-                this.$nextTick(() => {
-                    document.querySelectorAll('[x-data*="open"]').forEach(el => {
-                        if (el.__x && el.__x.$data.open !== undefined) {
-                            el.__x.$data.open = false;
-                        }
-                    });
-                });
+                // Set current dashboard instance for modal manager
+                window.currentDashboardInstance = this;
                 
                 this.waitForEnhancedChart();
                 this.loadAvailableFilters();
                 this.updateActiveFiltersCount();
+                
+                // Watch for filter changes to auto-apply them
+                this.$watch('filters', () => {
+                    this.updateActiveFiltersCount();
+                    console.log('Filters changed:', this.filters);
+                }, { deep: true });
+            },
+
+            toggleFilters() {
+                this.filtersOpen = !this.filtersOpen;
+                this.exportOpen = false; // Close export if open
+                console.log('Filters opened:', this.filtersOpen);
+            },
+
+            toggleExport() {
+                this.exportOpen = !this.exportOpen;
+                this.filtersOpen = false; // Close filters if open
             },
 
             waitForEnhancedChart() {
@@ -576,7 +506,6 @@
                     const data = await response.json();
                     console.log('Raw filter data received:', data);
 
-                    // FIXED: Proper mapping of filter data
                     this.availableFilters = {
                         graduation_years: data['Tahun graduasi anda?'] || [],
                         genders: data['Jantina anda?'] || [],
@@ -584,13 +513,15 @@
                     };
                     
                     console.log('Processed available filters:', this.availableFilters);
-                    console.log('Graduation years count:', this.availableFilters.graduation_years.length);
+                    
+                    // Force update to ensure Alpine.js reactivity
+                    this.$nextTick(() => {
+                        console.log('Available graduation years for display:', this.availableFilters.graduation_years);
+                    });
                     
                 } catch (error) {
                     console.error('Error loading filters:', error);
-                    // Set empty defaults on error
                     this.availableFilters = {
-                        graduation_years: [],
                         genders: [],
                         institutions: []
                     };
@@ -610,7 +541,7 @@
                     await this.delay(300);
                     await this.loadJobTypesChart();
                     await this.delay(300);
-                    await this.loadInstitutionReasonsChart();
+                    await this.loadReasonsSimpleChart();
 
                     this.dataLoaded = true;
                 } catch (error) {
@@ -625,13 +556,11 @@
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
 
-            // FIXED: Better filter parameter building
             buildFilterParams() {
                 const params = new URLSearchParams();
                 
                 console.log('Building filter params from:', this.filters);
                 
-                // Map frontend filter keys to backend column names
                 const filterMapping = {
                     'graduation_year': 'Tahun graduasi anda?',
                     'gender': 'Jantina anda?',
@@ -781,55 +710,150 @@
                 }
             },
 
-            async loadInstitutionReasonsChart() {
+            // FIXED: Add label wrapping helper function (from faktor dashboard)
+            wrapLabel(label, maxCharsPerLine = 15) {
+                if (!label) return '';
+                const words = label.toString().split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                for (const word of words) {
+                    const testLine = currentLine ? `${currentLine} ${word}` : word;
+
+                    if (testLine.length <= maxCharsPerLine) {
+                        currentLine = testLine;
+                    } else {
+                        if (currentLine) lines.push(currentLine);
+                        // Handle very long words
+                        if (word.length > maxCharsPerLine) {
+                            for (let i = 0; i < word.length; i += maxCharsPerLine) {
+                                lines.push(word.slice(i, i + maxCharsPerLine));
+                            }
+                            currentLine = '';
+                        } else {
+                            currentLine = word;
+                        }
+                    }
+                }
+
+                if (currentLine) lines.push(currentLine);
+                return lines;
+            },
+
+            // FIXED: Enhanced loadReasonsSimpleChart with proper label formatting
+            async loadReasonsSimpleChart() {
                 try {
+                    console.log('GRADUAN LUAR: Loading reasons simple chart...');
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/graduan-luar/api/institution-reasons${params ? '?' + params : ''}`);
+                    const url = `/graduan-luar/api/reasons-simple${params ? '?' + params : ''}`;
+                    console.log('GRADUAN LUAR: Fetching from URL:', url);
+                    
+                    const response = await fetch(url);
+                    console.log('GRADUAN LUAR: Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
                     const data = await response.json();
+                    console.log('GRADUAN LUAR: Received data:', data);
 
-                    this.safeDestroyChart('institutionReasons');
+                    this.safeDestroyChart('reasonsSimple');
 
-                    const canvas = document.getElementById('institutionReasonsChart');
+                    const canvas = document.getElementById('reasonsSimpleChart');
                     if (canvas) {
                         const ctx = canvas.getContext('2d');
                         if (ctx) {
+                            console.log('GRADUAN LUAR: Creating vertical bar chart...');
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.institutionReasons = EnhancedChartFactory.createStackedBarChart(ctx, data, 'enhanced-stacked-bar', {
-                                indexAxis: 'y',
+                            
+                            // FIXED: Apply label wrapping like in faktor dashboard
+                            const chartData = {
+                                ...data,
+                                labels: data.labels.map(label => this.wrapLabel(label, 14)) // Wrap long labels
+                            };
+                            
+                            // Use the existing ChartConfig to create a proper vertical bar chart
+                            window.globalCharts.reasonsSimple = EnhancedChartFactory.createBarChart(ctx, chartData, 'vertical-bar', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
                                             label: function (context) {
-                                                return `${context.dataset.label}: ${context.parsed.x.toLocaleString()}`;
+                                                return `Bilangan: ${context.parsed.y.toLocaleString()}`;
                                             }
                                         }
+                                    },
+                                    legend: {
+                                        display: false
                                     }
                                 },
                                 scales: {
-                                    x: {
-                                        stacked: true,
+                                    y: {
                                         beginAtZero: true,
                                         grid: {
                                             color: 'rgba(0,0,0,0.06)',
                                             drawBorder: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 11,
+                                                weight: '500'
+                                            },
+                                            callback: function (value) {
+                                                return value.toLocaleString();
+                                            }
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: 'Bilangan Responden',
+                                            font: { size: 11, weight: '600' }
                                         }
                                     },
-                                    y: {
-                                        stacked: true,
+                                    x: {
                                         grid: { display: false },
                                         ticks: {
                                             font: {
                                                 size: 10,
                                                 weight: '500'
-                                            }
+                                            },
+                                            color: '#6b7280',
+                                            maxRotation: 0,  // Keep labels horizontal
+                                            minRotation: 0,  // Keep labels horizontal
+                                            align: 'center',
+                                            textAlign: 'center',
+                                            autoSkip: false  // Don't skip labels
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: 'Sebab Utama',
+                                            font: { size: 10, weight: '600' }
                                         }
+                                    }
+                                },
+                                layout: {
+                                    padding: {
+                                        bottom: 20 // Extra space for wrapped labels
                                     }
                                 }
                             });
+                            console.log('GRADUAN LUAR: Reasons simple chart created successfully');
                         }
+                    } else {
+                        console.error('GRADUAN LUAR: Canvas element reasonsSimpleChart not found');
                     }
                 } catch (error) {
-                    console.error('Error loading institution reasons chart:', error);
+                    console.error('GRADUAN LUAR: Error loading reasons simple chart:', error);
+                    // Show error message in the chart area
+                    const canvas = document.getElementById('reasonsSimpleChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            ctx.fillStyle = '#ef4444';
+                            ctx.font = '16px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText('Error loading chart data', canvas.width / 2, canvas.height / 2);
+                        }
+                    }
                 }
             },
 
@@ -844,19 +868,11 @@
                 }
             },
 
-            // FIXED: Apply filters with proper debugging
             applyFilters() {
                 console.log('Applying filters:', this.filters);
                 this.updateActiveFiltersCount();
                 this.dataLoaded = false;
-                
-                // Force close dropdown
-                document.querySelectorAll('[x-data*="open"]').forEach(el => {
-                    if (el.__x && el.__x.$data.open !== undefined) {
-                        el.__x.$data.open = false;
-                    }
-                });
-                
+                this.filtersOpen = false;
                 this.loadData();
                 this.showToast('Penapis berjaya diterapkan', 'success');
             },
@@ -870,14 +886,7 @@
                 };
                 this.updateActiveFiltersCount();
                 this.dataLoaded = false;
-                
-                // Force close dropdown
-                document.querySelectorAll('[x-data*="open"]').forEach(el => {
-                    if (el.__x && el.__x.$data.open !== undefined) {
-                        el.__x.$data.open = false;
-                    }
-                });
-                
+                this.filtersOpen = false;
                 this.loadData();
                 this.showToast('Semua penapis dikosongkan', 'info');
             },
@@ -900,16 +909,15 @@
                     await this.loadReasonsChart();
                 } else if (chartType === 'jobtypes') {
                     await this.loadJobTypesChart();
-                } else if (chartType === 'institution') {
-                    await this.loadInstitutionReasonsChart();
+                } else if (chartType === 'reasons-simple') {
+                    await this.loadReasonsSimpleChart();
                 }
                 this.showToast(`Graf ${chartType} dimuat semula`, 'success');
             },
 
-            // ADDED: Chart modal function
             openChartModal(chartType, title) {
                 const params = this.buildFilterParams();
-                const endpoint = `/graduan-luar/api/table-data${params ? '?' + params : ''}`;
+                const endpoint = `/graduan-luar/api/chart-table-data/${chartType}?${params}`;
                 
                 console.log('Opening chart modal:', { chartType, title, endpoint });
                 
@@ -925,6 +933,7 @@
                     const params = this.buildFilterParams();
                     const url = `/graduan-luar/api/export?format=${format}${params ? '&' + params : ''}`;
                     window.open(url, '_blank');
+                    this.exportOpen = false;
                     this.showToast(`Mengeksport data sebagai ${format.toUpperCase()}...`, 'info');
                 } catch (error) {
                     console.error('Export error:', error);

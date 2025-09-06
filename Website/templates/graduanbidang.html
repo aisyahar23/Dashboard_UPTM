@@ -79,6 +79,10 @@
                                             </label>
                                         </template>
                                     </div>
+                                    <!-- Debug info for graduation years -->
+                                    <div x-show="debugMode" class="text-xs text-gray-500 mt-2">
+                                        Debug: <span x-text="JSON.stringify(availableFilters.graduation_years)"></span>
+                                    </div>
                                 </div>
 
                                 <!-- Gender -->
@@ -150,6 +154,10 @@
                                 <button @click.prevent.stop="applyFilters(); filterOpen = false"
                                     class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-bold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg transform hover:scale-[1.02]">
                                     <i class="fas fa-search mr-2"></i>Terapkan Penapis
+                                </button>
+                                <!-- Debug toggle -->
+                                <button @click.prevent.stop="debugMode = !debugMode" class="text-xs text-gray-400 mt-2">
+                                    Toggle Debug
                                 </button>
                             </div>
                         </div>
@@ -402,13 +410,19 @@
             isInitialized: false,
             filterOpen: false,
             exportOpen: false,
+            debugMode: false, // Add debug mode
             filters: {
                 graduation_year: [],
                 gender: [],
                 institution: [],
                 field_of_study: []
             },
-            availableFilters: {},
+            availableFilters: {
+                graduation_years: [],
+                genders: [],
+                institutions: [],
+                fields_of_study: []
+            },
             activeFiltersCount: 0,
 
             // Store current dashboard instance globally for modal access
@@ -448,18 +462,66 @@
             {
                 try
                 {
+                    console.log('Loading available filters...');
                     const response = await fetch('/graduan-bidang/api/filters/available');
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
                     const data = await response.json();
+                    console.log('Raw filter data received:', data);
 
+                    // Handle multiple possible column names for graduation year
+                    let graduation_years = [];
+                    
+                    // Try different column name variations
+                    const possibleYearColumns = [
+                        'Tahun graduasi anda?',
+                        'Tahun graduasi ',
+                        'Tahun graduasi',
+                        'Graduation Year'
+                    ];
+                    
+                    for (let colName of possibleYearColumns) {
+                        if (data[colName] && Array.isArray(data[colName]) && data[colName].length > 0) {
+                            graduation_years = data[colName];
+                            console.log(`Found graduation years in column '${colName}':`, graduation_years);
+                            break;
+                        }
+                    }
+
+                    // Handle multiple possible column names for field of study  
+                    let fields_of_study = [];
+                    const possibleFieldColumns = [
+                        'Program pengajian yang anda ikuti?',
+                        'Bidang pengajian utama ',
+                        'Bidang pengajian',
+                        'Field of Study'
+                    ];
+                    
+                    for (let colName of possibleFieldColumns) {
+                        if (data[colName] && Array.isArray(data[colName]) && data[colName].length > 0) {
+                            fields_of_study = data[colName];
+                            console.log(`Found fields of study in column '${colName}':`, fields_of_study);
+                            break;
+                        }
+                    }
+
+                    // Set the available filters
                     this.availableFilters = {
-                        graduation_years: data[ 'Tahun graduasi ' ] || data[ 'Tahun graduasi anda?' ] || [],
-                        genders: data[ 'Jantina anda?' ] || [],
-                        institutions: data[ 'Institusi pendidikan MARA yang anda hadiri?' ] || [],
-                        fields_of_study: data[ 'Bidang pengajian utama ' ] || data[ 'Bidang pengajian' ] || data[ 'Program pengajian yang anda ikuti?' ] || []
+                        graduation_years: graduation_years,
+                        genders: data['Jantina anda?'] || [],
+                        institutions: data['Institusi pendidikan MARA yang anda hadiri?'] || [],
+                        fields_of_study: fields_of_study
                     };
+
+                    console.log('Processed available filters:', this.availableFilters);
+
                 } catch (error)
                 {
                     console.error('Error loading filters:', error);
+                    this.showToast('Ralat memuatkan senarai penapis', 'error');
                 }
             },
 
@@ -681,13 +743,27 @@
                 {
                     if (Array.isArray(values) && values.length > 0)
                     {
-                        const paramKey = key === 'graduation_year' ? 'Tahun graduasi anda?' :
-                            key === 'gender' ? 'Jantina anda?' :
-                                key === 'institution' ? 'Institusi pendidikan MARA yang anda hadiri?' :
-                                    key === 'field_of_study' ? 'Program pengajian yang anda ikuti?' : key;
+                        // Map frontend filter keys to backend column names
+                        let paramKey = key;
+                        if (key === 'graduation_year') {
+                            // Try to find the right column name - prioritize the ones most likely to exist
+                            if (this.availableFilters.graduation_years.length > 0) {
+                                // Use the first available graduation year column found during filter loading
+                                paramKey = 'Tahun graduasi anda?'; // Default, but this should match backend
+                            }
+                        } else if (key === 'gender') {
+                            paramKey = 'Jantina anda?';
+                        } else if (key === 'institution') {
+                            paramKey = 'Institusi pendidikan MARA yang anda hadiri?';
+                        } else if (key === 'field_of_study') {
+                            paramKey = 'Program pengajian yang anda ikuti?';
+                        }
+                        
                         values.forEach(value => params.append(paramKey, value));
                     }
                 });
+                
+                console.log('Built filter params:', params.toString());
                 return params.toString();
             },
 
@@ -724,6 +800,7 @@
             async refreshData()
             {
                 this.dataLoaded = false;
+                await this.loadAvailableFilters(); // Reload filters too
                 await this.loadData();
                 this.showToast('Data berjaya dimuat semula', 'success');
             },

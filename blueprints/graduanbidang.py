@@ -13,6 +13,155 @@ EXCEL_FILE_PATH = 'data/Questionnaire.xlsx'
 df = load_excel_data(EXCEL_FILE_PATH)
 data_processor = DataProcessor(df)
 
+def process_filter_values(key, values):
+    """Process filter values based on the filter type - FIXED VERSION"""
+    # Handle graduation year with better conversion
+    if 'Tahun graduasi' in key:
+        processed_values = []
+        for val in values:
+            if val and str(val).strip():
+                # Clean the value
+                clean_val = str(val).strip()
+                processed_values.append(clean_val)
+                
+                # Also try to add as float/int for broader matching
+                try:
+                    numeric_val = float(clean_val)
+                    if numeric_val.is_integer():
+                        int_val = int(numeric_val)
+                        if str(int_val) not in processed_values:
+                            processed_values.append(str(int_val))
+                        if int_val not in processed_values:
+                            processed_values.append(int_val)
+                except (ValueError, AttributeError):
+                    pass
+        
+        print(f"  Graduation year processed: {processed_values}")
+        return processed_values
+    else:
+        # For other filters, ensure we have clean string values
+        clean_values = []
+        for val in values:
+            if val and str(val).strip():
+                clean_values.append(str(val).strip())
+        print(f"  Other filter processed: {clean_values}")
+        return clean_values
+
+def process_filters_with_conversion_v2(request_args, exclude_keys=None):
+    """Improved filter processing that can handle both request.args and dict objects"""
+    filters = {}
+    exclude_keys = exclude_keys or ['page', 'per_page', 'search']
+    
+    print(f"=== PROCESSING FILTERS (V2) ===")
+    print(f"Raw request args type: {type(request_args)}")
+    
+    # Handle both Flask request.args and regular dict
+    if hasattr(request_args, 'getlist'):
+        # It's a Flask request.args object
+        keys_to_process = [k for k in request_args.keys() if k not in exclude_keys]
+        for key in keys_to_process:
+            values = request_args.getlist(key)
+            print(f"Processing filter key: '{key}' with values: {values}")
+            
+            if not values or (len(values) == 1 and values[0] == ''):
+                continue
+                
+            filters[key] = process_filter_values(key, values)
+    else:
+        # It's a regular dict where values are already lists
+        for key, values in request_args.items():
+            if key in exclude_keys:
+                continue
+                
+            print(f"Processing filter key: '{key}' with values: {values}")
+            
+            if not values or (len(values) == 1 and values[0] == ''):
+                continue
+                
+            filters[key] = process_filter_values(key, values)
+    
+    print(f"Final processed filters: {filters}")
+    return filters
+
+def apply_improved_filters(df, filters):
+    """Apply filters with improved matching logic"""
+    if not filters:
+        return df
+    
+    filtered_df = df.copy()
+    
+    print(f"=== APPLYING IMPROVED FILTERS ===")
+    print(f"Original dataframe shape: {filtered_df.shape}")
+    
+    for filter_key, filter_values in filters.items():
+        if not filter_values:
+            continue
+            
+        print(f"Applying filter: {filter_key} = {filter_values}")
+        
+        if filter_key not in filtered_df.columns:
+            print(f"  Warning: Column '{filter_key}' not found in dataframe")
+            continue
+        
+        # Get the column data and handle different data types
+        column_data = filtered_df[filter_key]
+        
+        # Create mask for matching values
+        mask = pd.Series([False] * len(filtered_df), index=filtered_df.index)
+        
+        # Special handling for graduation year
+        if 'Tahun graduasi' in filter_key:
+            for filter_val in filter_values:
+                # Try multiple matching strategies
+                try:
+                    # Direct string match
+                    string_match = column_data.astype(str).str.strip() == str(filter_val).strip()
+                    mask |= string_match
+                    
+                    # Numeric match if possible
+                    if pd.api.types.is_numeric_dtype(column_data):
+                        try:
+                            numeric_filter = float(filter_val)
+                            numeric_match = column_data == numeric_filter
+                            mask |= numeric_match
+                        except (ValueError, TypeError):
+                            pass
+                    
+                    # Try converting column to numeric and compare
+                    try:
+                        numeric_column = pd.to_numeric(column_data, errors='coerce')
+                        numeric_filter = float(filter_val)
+                        numeric_match = numeric_column == numeric_filter
+                        mask |= numeric_match.fillna(False)
+                    except (ValueError, TypeError):
+                        pass
+                        
+                except Exception as e:
+                    print(f"    Error processing graduation year filter {filter_val}: {e}")
+                    
+        else:
+            # Standard string matching for other filters
+            for filter_val in filter_values:
+                try:
+                    string_match = column_data.astype(str).str.strip() == str(filter_val).strip()
+                    mask |= string_match
+                except Exception as e:
+                    print(f"    Error processing filter {filter_val}: {e}")
+        
+        # Apply the mask
+        before_count = len(filtered_df)
+        filtered_df = filtered_df[mask]
+        after_count = len(filtered_df)
+        
+        print(f"  Filter '{filter_key}' reduced data from {before_count} to {after_count} rows")
+        
+        if after_count == 0:
+            print(f"  Warning: Filter '{filter_key}' resulted in empty dataset")
+            break
+    
+    print(f"Final filtered dataframe shape: {filtered_df.shape}")
+    return filtered_df
+
 @graduan_bidang_bp.route('/')
 def index():
     """Main graduan bidang dashboard page"""
@@ -77,11 +226,19 @@ def api_test():
 
 @graduan_bidang_bp.route('/api/summary')
 def api_summary():
-    """Get enhanced summary statistics for graduan bidang"""
+    """Get enhanced summary statistics for graduan bidang - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
-        filtered_df = filtered_processor.filtered_df
+        # Process filters with improved conversion
+        filters = process_filters_with_conversion_v2(request.args)
+        
+        print(f"=== API SUMMARY DEBUG ===")
+        print(f"Processed filters: {filters}")
+        
+        # Apply improved filtering
+        filtered_df = apply_improved_filters(df, filters)
+        
+        print(f"Filtered DF shape: {filtered_df.shape}")
+        print(f"Original DF shape: {df.shape}")
         
         total_records = len(filtered_df)
         
@@ -199,11 +356,13 @@ def api_summary():
 
 @graduan_bidang_bp.route('/api/field-by-year')
 def api_field_by_year():
-    """Get field distribution by graduation year - Stacked Bar Chart"""
+    """Get field distribution by graduation year - Stacked Bar Chart - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
-        filtered_df = filtered_processor.filtered_df
+        # Process filters with improved conversion
+        filters = process_filters_with_conversion_v2(request.args)
+        
+        # Apply improved filtering
+        filtered_df = apply_improved_filters(df, filters)
         
         # Find year column - prioritize exact matches first
         year_columns = [
@@ -350,11 +509,16 @@ def api_field_by_year():
 
 @graduan_bidang_bp.route('/api/chart-table-data/field-by-year')
 def api_chart_table_data():
-    """Get table data for field-by-year chart"""
+    """Get table data for field-by-year chart - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
-        filtered_df = filtered_processor.filtered_df
+        # Process filters with improved conversion
+        filters = process_filters_with_conversion_v2(
+            request.args,
+            exclude_keys=['page', 'per_page', 'search']
+        )
+        
+        # Apply improved filtering
+        filtered_df = apply_improved_filters(df, filters)
         
         # Define relevant columns for field-by-year chart
         relevant_columns = [
@@ -430,11 +594,16 @@ def api_columns():
 
 @graduan_bidang_bp.route('/api/table-data')
 def api_table_data():
-    """Get paginated table data for graduan bidang"""
+    """Get paginated table data for graduan bidang - FIXED VERSION"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() 
-                   if k not in ['page', 'per_page', 'search']}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Process filters with improved conversion
+        filters = process_filters_with_conversion_v2(
+            request.args, 
+            exclude_keys=['page', 'per_page', 'search']
+        )
+        
+        # Apply improved filtering
+        filtered_df = apply_improved_filters(df, filters)
         
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 50))
@@ -451,12 +620,51 @@ def api_table_data():
             'Institusi pendidikan MARA yang anda hadiri?'
         ]
         
-        available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
+        available_columns = [col for col in relevant_columns if col in filtered_df.columns]
         
-        data = filtered_processor.get_table_data(page, per_page, search, available_columns)
+        # Create a mock data processor with the filtered data
+        class FilteredProcessor:
+            def __init__(self, df):
+                self.filtered_df = df
+                
+            def get_table_data(self, page, per_page, search, columns):
+                df_subset = self.filtered_df[columns] if columns else self.filtered_df
+                
+                # Apply search if provided
+                if search:
+                    search_mask = df_subset.astype(str).apply(
+                        lambda x: x.str.contains(search, case=False, na=False)
+                    ).any(axis=1)
+                    df_subset = df_subset[search_mask]
+                
+                # Calculate pagination
+                total = len(df_subset)
+                pages = (total + per_page - 1) // per_page
+                start_idx = (page - 1) * per_page
+                end_idx = start_idx + per_page
+                
+                # Get page data
+                page_data = df_subset.iloc[start_idx:end_idx].fillna('').to_dict('records')
+                
+                return {
+                    'data': page_data,
+                    'pagination': {
+                        'page': page,
+                        'per_page': per_page,
+                        'total': total,
+                        'pages': pages
+                    },
+                    'columns': list(df_subset.columns)
+                }
+        
+        processor = FilteredProcessor(filtered_df)
+        data = processor.get_table_data(page, per_page, search, available_columns)
         return jsonify(data)
         
     except Exception as e:
+        print(f"Error in table data: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
         return jsonify({
             'error': str(e),
             'data': [],
@@ -466,14 +674,19 @@ def api_table_data():
 
 @graduan_bidang_bp.route('/api/export')
 def api_export():
-    """Export graduan bidang data in various formats"""
+    """Export graduan bidang data in various formats - FIXED VERSION"""
     try:
         # Get chart_type if provided (for chart-specific exports)
         chart_type = request.args.get('chart_type', '')
         
-        filters = {k: request.args.getlist(k) for k in request.args.keys() 
-                   if k not in ['format', 'chart_type']}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Process filters with improved conversion
+        filters = process_filters_with_conversion_v2(
+            request.args, 
+            exclude_keys=['format', 'chart_type']
+        )
+        
+        # Apply improved filtering
+        filtered_df = apply_improved_filters(df, filters)
         
         format_type = request.args.get('format', 'csv')
         
@@ -500,17 +713,25 @@ def api_export():
                 'Institusi pendidikan MARA yang anda hadiri?'
             ]
         
-        available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
+        available_columns = [col for col in relevant_columns if col in filtered_df.columns]
+        export_df = filtered_df[available_columns]
         
-        data = filtered_processor.export_data(format_type, available_columns)
-        
+        # Create export data
         if format_type == 'csv':
+            output = io.StringIO()
+            export_df.to_csv(output, index=False)
+            data = output.getvalue().encode('utf-8')
             mimetype = 'text/csv'
             filename = 'graduan_bidang_data.csv'
         elif format_type == 'excel':
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                export_df.to_excel(writer, index=False, sheet_name='Graduan Bidang Data')
+            data = output.getvalue()
             mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             filename = 'graduan_bidang_data.xlsx'
         else:
+            data = export_df.to_json(orient='records', indent=2).encode('utf-8')
             mimetype = 'application/json'
             filename = 'graduan_bidang_data.json'
         
@@ -522,13 +743,16 @@ def api_export():
         )
         
     except Exception as e:
+        print(f"Export error: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
 @graduan_bidang_bp.route('/api/filters/available')
 def api_available_filters():
-    """Get available filter options for graduan bidang data"""
+    """Get available filter options for graduan bidang data - FIXED VERSION"""
     try:
-        sample_df = data_processor.df
+        sample_df = df.copy()
         filters = {}
         
         filter_columns = [
@@ -542,35 +766,47 @@ def api_available_filters():
             'Bidang pengajian'
         ]
         
+        # Debug: Print all column names to see exact format
+        print("Available columns in dataset:")
+        for i, col in enumerate(sample_df.columns):
+            print(f"  {i}: '{col}'")
+        
         for column in filter_columns:
             if column in sample_df.columns:
-                unique_values = sample_df[column].dropna().unique().tolist()
+                # Get unique values and handle different data types
+                unique_values = sample_df[column].dropna().unique()
+                print(f"Column '{column}' has {len(unique_values)} unique values: {list(unique_values)[:5]}...")
                 
-                # Handle different data types appropriately
-                if len(unique_values) > 0:
-                    # Check if values are numeric (years)
-                    if column in ['Tahun graduasi anda?', 'Tahun graduasi ', 'Tahun graduasi']:
-                        try:
-                            # Convert to numeric and sort
-                            numeric_values = []
-                            for val in unique_values:
-                                try:
-                                    numeric_val = int(float(str(val)))
-                                    numeric_values.append(numeric_val)
-                                except:
-                                    numeric_values.append(str(val))
-                            
-                            # Sort numeric values properly
-                            numeric_values = sorted(set(numeric_values))
-                            unique_values = [str(val) for val in numeric_values]
-                        except:
-                            # If conversion fails, sort as strings
-                            unique_values = sorted([str(val) for val in unique_values])
-                    else:
-                        # For non-numeric columns, sort as strings
-                        unique_values = sorted([str(val) for val in unique_values])
+                # Special handling for graduation years - ensure consistent string format
+                if 'Tahun graduasi' in column:
+                    processed_values = []
+                    for val in unique_values:
+                        # Convert to string and clean
+                        str_val = str(val).strip()
+                        if str_val and str_val != 'nan':
+                            processed_values.append(str_val)
                     
-                    filters[column] = unique_values
+                    # Sort numerically if possible, otherwise alphabetically
+                    try:
+                        processed_values = sorted(processed_values, key=lambda x: float(x))
+                    except (ValueError, TypeError):
+                        processed_values = sorted(processed_values)
+                    
+                    filters[column] = processed_values
+                    print(f"  Graduation years after processing: {processed_values}")
+                else:
+                    # Convert all values to string for consistency and clean
+                    processed_values = []
+                    for val in unique_values:
+                        str_val = str(val).strip()
+                        if str_val and str_val != 'nan':
+                            processed_values.append(str_val)
+                    
+                    filters[column] = sorted(processed_values)
+                    print(f"  Other filter processed: {len(processed_values)} values")
+            else:
+                print(f"Column '{column}' not found in dataset")
+                filters[column] = []
         
         return jsonify(filters)
         

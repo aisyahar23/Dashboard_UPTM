@@ -11,7 +11,7 @@ EXCEL_FILE_PATH = 'data/Questionnaire.xlsx'
 df = load_excel_data(EXCEL_FILE_PATH)
 
 # Filter out rows where 'Apakah jenis pekerjaan anda sekarang' is 'Bekerja dalam bidang pengajian' or 'Tidak bekerja'
-df_filtered = df[~df['Apakah jenis pekerjaan anda sekarang'].isin(['Bekerja dalam bidang pengajian', 'Tidak bekerja'])]
+df_filtered = df[~df['Apakah jenis pekerjaan anda sekarang'].isin(['Bekerja dalam bidang pengajian', 'Tidak bekerja'])].copy()
 data_processor = DataProcessor(df_filtered)
 
 # Enhanced Chart Data Formatter for better integration with ChartConfig
@@ -96,50 +96,6 @@ class EnhancedChartDataFormatter:
                 'maintainAspectRatio': False,
                 'maxItems': max_items
             }
-        }
-    
-    @staticmethod
-    def format_enhanced_stacked_bar_chart(crosstab_df, title="Enhanced Stacked Bar Chart", orientation='vertical'):
-        """Format data for enhanced stacked bar charts with better styling"""
-        datasets = []
-        
-        # Limit categories for better visualization
-        if len(crosstab_df.columns) > 8:
-            top_cols = crosstab_df.sum().nlargest(8).index
-            crosstab_df = crosstab_df[top_cols]
-        
-        if len(crosstab_df.index) > 10:
-            top_rows = crosstab_df.sum(axis=1).nlargest(10).index
-            crosstab_df = crosstab_df.loc[top_rows]
-        
-        for i, column in enumerate(crosstab_df.columns):
-            datasets.append({
-                'label': str(column)[:30] + ('...' if len(str(column)) > 30 else ''),
-                'data': crosstab_df[column].tolist(),
-                'chartType': 'enhanced-stacked-bar',
-                'stack': 'stack1'
-            })
-        
-        # For vertical charts, keep institution names shorter but readable
-        label_max_length = 20 if orientation == 'vertical' else 25
-        labels = [str(label)[:label_max_length] + ('...' if len(str(label)) > label_max_length else '') 
-                  for label in crosstab_df.index.tolist()]
-        
-        chart_config = {
-            'type': 'enhanced-stacked-bar',
-            'responsive': True,
-            'maintainAspectRatio': False,
-            'orientation': orientation
-        }
-        
-        # Only set indexAxis for horizontal orientation
-        if orientation == 'horizontal':
-            chart_config['indexAxis'] = 'y'
-        
-        return {
-            'labels': labels,
-            'datasets': datasets,
-            'chartConfig': chart_config
         }
 
 formatter = EnhancedChartDataFormatter()
@@ -241,7 +197,7 @@ def api_summary():
                 job_counts = filtered_df[job_column].value_counts()
                 most_common_job = job_counts.index[0] if len(job_counts) > 0 else 'N/A'
                 
-                # Calculate Private Sector Rate - FIXED KPI
+                # Calculate Private Sector Rate
                 private_sector_keywords = ['swasta', 'private', 'syarikat', 'company', 'korporat', 'Bekerja di luar bidang']
                 private_count = 0
                 
@@ -279,7 +235,7 @@ def api_summary():
             'total_records': total_records,
             'mismatch_rate': round(reason_stats.get('mismatch_rate', 0), 1),
             'opportunity_rate': round(reason_stats.get('opportunity_rate', 0), 1),
-            'private_sector_rate': round(private_sector_rate, 1),  # REPLACED better_prospects_rate
+            'private_sector_rate': round(private_sector_rate, 1),
             'salary_consideration_rate': round(reason_stats.get('salary_rate', 0), 1),
             'personal_interest_rate': round(reason_stats.get('personal_rate', 0), 1),
             'most_common_job': job_type_stats.get('most_common_job', 'N/A'),
@@ -380,61 +336,115 @@ def api_job_types():
             "Error"
         )), 500
 
-@graduanluar_bp.route('/api/institution-reasons')
-def api_institution_reasons():
-    """Get enhanced institution vs reasons correlation for stacked bar chart"""
+@graduanluar_bp.route('/api/reasons-simple')
+def api_reasons_simple():
+    """Get simplified reasons distribution for vertical bar chart (NEW ENDPOINT)"""
+    try:
+        print("GRADUAN LUAR: Reasons Simple API called")
+        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        print(f"GRADUAN LUAR: Filters received: {filters}")
+        
+        filtered_processor = data_processor.apply_filters(filters)
+        print(f"GRADUAN LUAR: Filtered data has {len(filtered_processor.filtered_df)} records")
+        
+        reason_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
+        if reason_column not in filtered_processor.filtered_df.columns:
+            print(f"GRADUAN LUAR: Column '{reason_column}' not found in data")
+            return jsonify(formatter.format_vertical_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Sebab Tidak Bekerja dalam Bidang"
+            ))
+        
+        # Simple value counts like the matplotlib example
+        reason_counts = filtered_processor.filtered_df[reason_column].value_counts().head(10)
+        print(f"GRADUAN LUAR: Reason counts: {reason_counts.to_dict()}")
+        
+        if len(reason_counts) == 0:
+            print("GRADUAN LUAR: No reason data found")
+            return jsonify(formatter.format_vertical_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Sebab Tidak Bekerja dalam Bidang"
+            ))
+        
+        chart_data = formatter.format_vertical_bar_chart(
+            reason_counts,
+            "Sebab Tidak Bekerja dalam Bidang Pengajian",
+            sort_desc=True,
+            max_items=10
+        )
+        
+        print(f"GRADUAN LUAR: Returning chart data: {chart_data}")
+        return jsonify(chart_data)
+        
+    except Exception as e:
+        print(f"GRADUAN LUAR: Error in reasons-simple API: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify(formatter.format_vertical_bar_chart(
+            pd.Series([1], index=['Error Loading Data']),
+            "Error"
+        )), 500
+
+@graduanluar_bp.route('/api/chart-table-data/<chart_type>')
+def api_chart_table_data(chart_type):
+    """Get table data for specific chart modals"""
     try:
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         filtered_processor = data_processor.apply_filters(filters)
         
-        institution_column = 'Institusi pendidikan MARA yang anda hadiri?'
-        reason_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
+        # Define relevant columns for each chart type
+        chart_columns = {
+            'reasons': [
+                'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?',
+                'Program pengajian yang anda ikuti?',
+                'Apakah jenis pekerjaan anda sekarang'
+            ],
+            'jobtypes': [
+                'Apakah jenis pekerjaan anda sekarang',
+                'Bidang pekerjaan yang anda ceburi sekarang?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?',
+                'Program pengajian yang anda ikuti?'
+            ],
+            'reasons-simple': [
+                'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Institusi pendidikan MARA yang anda hadiri?',
+                'Program pengajian yang anda ikuti?',
+                'Apakah jenis pekerjaan anda sekarang'
+            ]
+        }
         
-        if institution_column not in filtered_processor.filtered_df.columns or reason_column not in filtered_processor.filtered_df.columns:
-            return jsonify(formatter.format_enhanced_stacked_bar_chart(
-                pd.DataFrame({'No Data': [1]}, index=['No Data Available']),
-                "Institusi vs Faktor Perubahan Kerjaya"
-            ))
+        relevant_columns = chart_columns.get(chart_type, [
+            'Apakah jenis pekerjaan anda sekarang',
+            'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
+            'Institusi pendidikan MARA yang anda hadiri?',
+            'Tahun graduasi anda?',
+            'Jantina anda?'
+        ])
         
-        df_clean = filtered_processor.filtered_df[[institution_column, reason_column]].dropna()
+        available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
         
-        # Process and expand the data
-        expanded_data = []
-        for _, row in df_clean.iterrows():
-            institution = str(row[institution_column]).strip()
-            reasons = str(row[reason_column]).split(',')
-            
-            for reason in reasons:
-                clean_reason = reason.strip()
-                if clean_reason and len(clean_reason) > 3:
-                    short_institution = institution[:20] + '...' if len(institution) > 20 else institution
-                    expanded_data.append({
-                        'institution': short_institution,
-                        'reason': clean_reason[:40] + '...' if len(clean_reason) > 40 else clean_reason
-                    })
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 100))
+        search = request.args.get('search', '')
         
-        if not expanded_data:
-            return jsonify(formatter.format_enhanced_stacked_bar_chart(
-                pd.DataFrame({'No Data': [1]}, index=['No Data']),
-                "Institusi vs Faktor Perubahan Kerjaya"
-            ))
-        
-        expanded_df = pd.DataFrame(expanded_data)
-        crosstab = pd.crosstab(expanded_df['institution'], expanded_df['reason'])
-        
-        chart_data = formatter.format_enhanced_stacked_bar_chart(
-            crosstab,
-            "Institusi vs Faktor Perubahan Kerjaya",
-            orientation='horizontal'
-        )
-        
-        return jsonify(chart_data)
+        data = filtered_processor.get_table_data(page, per_page, search, available_columns)
+        return jsonify(data)
         
     except Exception as e:
-        return jsonify(formatter.format_enhanced_stacked_bar_chart(
-            pd.DataFrame({'Error': [1]}, index=['Error Loading Data']),
-            "Error"
-        )), 500
+        print(f"GRADUAN LUAR CHART TABLE ERROR: {str(e)}")
+        return jsonify({
+            'error': str(e),
+            'data': [],
+            'pagination': {'page': 1, 'per_page': 100, 'total': 0, 'pages': 0},
+            'columns': []
+        }), 500
 
 @graduanluar_bp.route('/api/table-data')
 def api_table_data():
@@ -483,22 +493,52 @@ def api_table_data():
 def api_export():
     """Export graduan luar data in various formats"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys() if k != 'format'}
+        filters = {k: request.args.getlist(k) for k in request.args.keys() 
+                  if k not in ['format', 'chart_type']}
         filtered_processor = data_processor.apply_filters(filters)
         
         format_type = request.args.get('format', 'csv')
+        chart_type = request.args.get('chart_type', None)
         
-        relevant_columns = [
-            'Timestamp',
-            'Apakah jenis pekerjaan anda sekarang',
-            'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
-            'Institusi pendidikan MARA yang anda hadiri?',
-            'Program pengajian yang anda ikuti?',
-            'Bidang pekerjaan yang anda ceburi sekarang?',
-            'Tahun graduasi anda?',
-            'Jantina anda?',
-            'Umur anda?'
-        ]
+        # If exporting from a specific chart, use relevant columns for that chart
+        if chart_type:
+            chart_columns = {
+                'reasons': [
+                    'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?',
+                    'Program pengajian yang anda ikuti?'
+                ],
+                'jobtypes': [
+                    'Apakah jenis pekerjaan anda sekarang',
+                    'Bidang pekerjaan yang anda ceburi sekarang?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?'
+                ],
+                'reasons-simple': [
+                    'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
+                    'Tahun graduasi anda?',
+                    'Jantina anda?',
+                    'Institusi pendidikan MARA yang anda hadiri?',
+                    'Program pengajian yang anda ikuti?'
+                ]
+            }
+            relevant_columns = chart_columns.get(chart_type, [])
+        else:
+            # Default columns for general export
+            relevant_columns = [
+                'Timestamp',
+                'Apakah jenis pekerjaan anda sekarang',
+                'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
+                'Institusi pendidikan MARA yang anda hadiri?',
+                'Program pengajian yang anda ikuti?',
+                'Bidang pekerjaan yang anda ceburi sekarang?',
+                'Tahun graduasi anda?',
+                'Jantina anda?',
+                'Umur anda?'
+            ]
         
         available_columns = [col for col in relevant_columns if col in filtered_processor.filtered_df.columns]
         
@@ -506,13 +546,13 @@ def api_export():
         
         if format_type == 'csv':
             mimetype = 'text/csv'
-            filename = 'graduan_luar_bidang_data.csv'
+            filename = f'graduan_luar_bidang_{chart_type or "data"}.csv'
         elif format_type == 'excel':
             mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            filename = 'graduan_luar_bidang_data.xlsx'
+            filename = f'graduan_luar_bidang_{chart_type or "data"}.xlsx'
         else:
             mimetype = 'application/json'
-            filename = 'graduan_luar_bidang_data.json'
+            filename = f'graduan_luar_bidang_{chart_type or "data"}.json'
         
         return send_file(
             io.BytesIO(data),
@@ -526,7 +566,7 @@ def api_export():
 
 @graduanluar_bp.route('/api/filters/available')
 def api_available_filters():
-    """Get available filter options for graduan luar data - FIXED"""
+    """Get available filter options for graduan luar data"""
     try:
         sample_df = data_processor.df
         filters = {}
