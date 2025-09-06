@@ -8,14 +8,15 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="{{ url_for('static', filename='JS/chartconfig.js') }}"></script>
     <script src="{{ url_for('static', filename='JS/modalManager.js') }}"></script>
-      {% block extra_css %}{% endblock %}
+    {% block extra_css %}{% endblock %}
     <script>
         tailwind.config = {
             theme: {
@@ -92,7 +93,7 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
-       
+
 
         .sidebar.collapsed {
             width: 80px;
@@ -103,8 +104,14 @@
         }
 
         .nav-item.active {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: white;
+            color: #296899;
             font-weight: 600;
+        }
+
+        .nav-item.active .nav-icon {
+            background-color: transparent;
+            color: #296899;
         }
 
         .sidebar-text {
@@ -291,7 +298,7 @@
             text-transform: capitalize;
         }
 
-        
+
         .chart-container {
             position: relative;
             height: 300px;
@@ -300,19 +307,19 @@
             border-radius: 12px;
             padding: 16px;
         }
-        
+
         .chart-container canvas {
             max-width: 100% !important;
             max-height: 100% !important;
         }
-        
+
         /* Corporate Section Dividers */
         .section-divider {
             background: linear-gradient(90deg, transparent, #e2e8f0 50%, transparent);
             height: 1px;
             margin: 4rem 0;
         }
-        
+
         /* Enhanced Corporate Card Shadows */
         .corporate-card {
             background: white;
@@ -321,12 +328,12 @@
             border: 1px solid #e2e8f0;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .corporate-card:hover {
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             transform: translateY(-2px);
         }
-        
+
         /* Professional Loading Animation */
         .loading-ring {
             width: 40px;
@@ -336,30 +343,64 @@
             border-radius: 50%;
             animation: loading-spin 1s linear infinite;
         }
-        
+
         @keyframes loading-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         /* Carousel Slide Transitions */
         .carousel-slides {
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             will-change: transform;
         }
-        
+
         /* Corporate Gradient Overlays */
-        .gradient-overlay-blue { background: linear-gradient(135deg, rgba(41, 104, 153, 0.05) 0%, rgba(30, 58, 138, 0.1) 100%); }
-        .gradient-overlay-green { background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.1) 100%); }
-        .gradient-overlay-red { background: linear-gradient(135deg, rgba(186, 69, 77, 0.05) 0%, rgba(220, 38, 38, 0.1) 100%); }
-        .gradient-overlay-purple { background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(124, 58, 237, 0.1) 100%); }
-        .gradient-overlay-orange { background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.1) 100%); }
-        .gradient-overlay-pink { background: linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(219, 39, 119, 0.1) 100%); }
-        .gradient-overlay-teal { background: linear-gradient(135deg, rgba(20, 184, 166, 0.05) 0%, rgba(13, 148, 136, 0.1) 100%); }
-        .gradient-overlay-indigo { background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(67, 56, 202, 0.1) 100%); }
-        .gradient-overlay-yellow { background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.1) 100%); }
-        .gradient-overlay-cyan { background: linear-gradient(135deg, rgba(6, 182, 212, 0.05) 0%, rgba(8, 145, 178, 0.1) 100%); }
-        
+        .gradient-overlay-blue {
+            background: linear-gradient(135deg, rgba(41, 104, 153, 0.05) 0%, rgba(30, 58, 138, 0.1) 100%);
+        }
+
+        .gradient-overlay-green {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.1) 100%);
+        }
+
+        .gradient-overlay-red {
+            background: linear-gradient(135deg, rgba(186, 69, 77, 0.05) 0%, rgba(220, 38, 38, 0.1) 100%);
+        }
+
+        .gradient-overlay-purple {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(124, 58, 237, 0.1) 100%);
+        }
+
+        .gradient-overlay-orange {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.1) 100%);
+        }
+
+        .gradient-overlay-pink {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(219, 39, 119, 0.1) 100%);
+        }
+
+        .gradient-overlay-teal {
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.05) 0%, rgba(13, 148, 136, 0.1) 100%);
+        }
+
+        .gradient-overlay-indigo {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(67, 56, 202, 0.1) 100%);
+        }
+
+        .gradient-overlay-yellow {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.1) 100%);
+        }
+
+        .gradient-overlay-cyan {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.05) 0%, rgba(8, 145, 178, 0.1) 100%);
+        }
+
         /* Professional Status Indicators */
         .status-dot {
             width: 8px;
@@ -367,12 +408,19 @@
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
-        
+
         /* Corporate Button Styles */
         .btn-corporate-primary {
             background: linear-gradient(135deg, #296899 0%, #1e3a8a 100%);
@@ -383,12 +431,12 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 14px 0 rgba(41, 104, 153, 0.39);
         }
-        
+
         .btn-corporate-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px 0 rgba(41, 104, 153, 0.5);
         }
-        
+
         .btn-corporate-secondary {
             background: white;
             color: #296899;
@@ -397,14 +445,51 @@
             font-weight: 600;
             transition: all 0.3s ease;
         }
-        
+
         .btn-corporate-secondary:hover {
             background: #296899;
             color: white;
             transform: translateY(-1px);
         }
+
+        /* Critical CSS to prevent flash - load immediately */
+        .filter-dropdown {
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+            transition: none !important;
+        }
+
+        .filter-dropdown.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: all 0.2s ease-out;
+        }
+
+        .export-dropdown {
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+            transition: none !important;
+        }
+
+        .export-dropdown.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: all 0.2s ease-out;
+        }
+
+        .dropdown-container {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            z-index: 9999;
+            min-width: 250px;
+        }
     </style>
-  
+
 </head>
 
 <body class="min-h-screen font-sans" x-data="{ sidebarCollapsed: false, mobileSidebarOpen: false }">
@@ -425,7 +510,7 @@
     }" class="sidebar fixed left-0 top-0 h-screen overflow-y-auto bg-primary-400 text-white z-50">
 
         <!-- Brand Header -->
-        <div class="px-4 pb-3 border-b border-primary-500/30">
+        <div class="px-4 py-3 border-b border-primary-500/30">
             <div class="flex items-center"
                 :class="sidebarCollapsed ? 'justify-center lg:justify-center' : 'justify-between'">
                 <!-- Logo and Title -->
@@ -458,130 +543,127 @@
         </div>
 
         <!-- Navigation -->
-        <nav class="flex-1 py-4 space-y-3 overflow-hidden px-3">
+        <nav class="flex-1 py-4 space-y-1 overflow-hidden px-3">
 
             <a href="/dashboard"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-tachometer-alt text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-tachometer-alt text-sm group-hover:text-white""></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Ringkasan</span>
-                <!-- Tooltip -->
             </a>
 
             <a href="/alldata"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-users text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-users text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Pusat Data</span>
             </a>
+
             <a href="/sosioekonomi"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-coins text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-coins text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Sosioeknomi Graduan</span>
             </a>
 
             <a href="/status-pekerjaan"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-briefcase text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-briefcase text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Status Pekerjaan & Kesesuaian dengan Bidang
                     Pengajian</span>
             </a>
 
-
             <a href="/sektor-gaji"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-briefcase text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-dollar-sign text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Sektor, Industri & Gaji Graduan</span>
             </a>
 
-
-
             <a href="/faktor-graduan"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-chart-bar text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-chart-bar text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Faktor Mempengaruhi Kebolehpasaran
                     Graduan</span>
             </a>
 
             <a href="/graduan-bidang"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-external-link-alt text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-graduation-cap text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Graduan Mengikut Bidang dan Tahun Graduasi</span>
             </a>
 
             <a href="/graduan-luar"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-external-link-alt text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-external-link-alt text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Graduan Bekerja di Luar Bidang</span>
             </a>
-             <a href="/demografi"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+
+            <a href="/demografi"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-users text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-users text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Demografi & Latar Belakang Akademik</span>
             </a>
 
-
             <a href="/intern"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-graduation-cap text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-user-tie text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Latihan Industri dan Cabaran Mendapat
                     Kerja</span>
             </a>
 
             <a href="/gig-economy"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fas fa-rocket text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fas fa-rocket text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Trend Ekonomi Gig/Keusahawanan</span>
             </a>
 
             <a href="/"
-                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-1 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
+                class="nav-item group relative flex items-center rounded-md space-x-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-white"
                 :class="sidebarCollapsed ? 'justify-center' : ''">
                 <div
-                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                    <i class="fa-solid fa-door-open text-sm"></i>
+                    class="nav-icon w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
+                    <i class="fa-solid fa-door-open text-sm group-hover:text-white"></i>
                 </div>
                 <span class="sidebar-text" x-show="!sidebarCollapsed">Keluar</span>
             </a>

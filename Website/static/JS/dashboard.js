@@ -916,4 +916,28 @@ window.addEventListener('beforeunload', function() {
     }
 });
 
+// Function to determine if current URL matches the link
+function isCurrentPage(href) {
+    const currentPath = window.location.pathname;
+    
+    // Handle exact matches and root cases
+    if (href === '/' && currentPath === '/') return true;
+    if (href !== '/' && currentPath === href) return true;
+    if (href !== '/' && currentPath.startsWith(href + '/')) return true;
+    
+    return false;
+}
+
+// Apply active class when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('.nav-item');
+    
+    navLinks.forEach(function(link) {
+        const href = link.getAttribute('href');
+        if (href && isCurrentPage(href)) {
+            link.classList.add('active');
+        }
+    });
+});
+
 console.log('✅ Enhanced Corporate Dashboard loaded successfully with improved error handling and design');
