@@ -327,22 +327,12 @@ def api_salary_by_education():
         
         print(f"Salary by education - Filtered data shape: {filtered_df.shape}")
         
-        # Try multiple possible column names for education - ENHANCED SEARCH
+        # Use specific education level column only
         education_columns = [
+            'Tahap pendidikan tertinggi anda?',
             'Tahap pendidikan tertinggi', 
-            'Tahap pendidikan', 
-            'Education Level', 
-            'Pendidikan',
-            'Institusi pendidikan MARA yang anda hadiri?',  # Use institution as education proxy
-            'Program pengajian yang anda ikuti?'  # Use program as education proxy
+            'Tahap pendidikan'
         ]
-        
-        # Search for any column containing education-related keywords
-        education_keywords = ['pendidikan', 'education', 'level', 'tahap', 'institusi', 'institution']
-        for col in filtered_df.columns:
-            col_lower = col.lower()
-            if any(keyword in col_lower for keyword in education_keywords) and col not in education_columns:
-                education_columns.append(col)
         
         education_column = None
         for col in education_columns:

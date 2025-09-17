@@ -245,7 +245,8 @@
         <!-- Enhanced KPI Cards Row -->
         <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Employment Rate -->
-            <div class="flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div class="flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group cursor-pointer hover:scale-105"
+                 @click="scrollToChart('employment-status')">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
@@ -257,14 +258,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Graduan yang bekerja
+                <div class="text-xs text-gray-500 flex items-center justify-between">
+                    <span class="flex items-center">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Graduan yang bekerja
+                    </span>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i class="fas fa-arrow-right text-green-600"></i>
+                    </div>
                 </div>
             </div>
 
             <!-- Field Match Rate -->
-            <div class="flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div class="flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group cursor-pointer hover:scale-105"
+                 @click="scrollToChart('field-alignment')">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
@@ -276,14 +283,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Bekerja dalam bidang pengajian
+                <div class="text-xs text-gray-500 flex items-center justify-between">
+                    <span class="flex items-center">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Bekerja dalam bidang pengajian
+                    </span>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i class="fas fa-arrow-right text-blue-600"></i>
+                    </div>
                 </div>
             </div>
 
             <!-- Most Common Job Type -->
-            <div class="flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div class="flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group cursor-pointer hover:scale-105"
+                 @click="scrollToChart('job-types')">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div class="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
@@ -295,9 +308,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Jenis pekerjaan terbanyak
+                <div class="text-xs text-gray-500 flex items-center justify-between">
+                    <span class="flex items-center">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Jenis pekerjaan terbanyak
+                    </span>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i class="fas fa-arrow-right text-orange-600"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -441,8 +459,7 @@
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 flex items-center">
                             <i class="fas fa-briefcase text-primary-600 mr-2"></i>
-                            Agihan Jenis Pekerjaan
-                        </h3>
+                            Agihan Bidang Pekerjaan                       </h3>
                         <p class="text-gray-600 text-xs mt-1">Jenis pekerjaan yang diceburi</p>
                     </div>
                     <div class="flex space-x-1">
@@ -479,7 +496,7 @@
         </div>
 
         <!-- Job Finding Factors - Bar Chart -->
-        <div class="col-span-12 lg:col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden">
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -493,7 +510,7 @@
                         <button @click="refreshChart('job-factors')"
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] hover:border-gray-600 transition-all duration-200 p-2">
                             <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
-                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Muat Semula
                             </div>
@@ -501,7 +518,7 @@
                         <button @click="openTableModal('Faktor Utama Mendapat Pekerjaan', 'job-factors')"
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] hover:border-primary-600 transition-all duration-200 p-2">
                             <i class="fas fa-table text-xs text-primary-600"></i>
-                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100
                                 bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
                                 Lihat Jadual
                             </div>
@@ -509,8 +526,8 @@
                     </div>
                 </div>
             </div>
-            <div class="p-8">
-                <div class="h-96 relative">
+            <div class="p-6">
+                <div class="h-80 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
                             <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
@@ -518,6 +535,50 @@
                         </div>
                     </div>
                     <canvas id="jobFindingFactorsChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Field Alignment Programs - NEW CHART -->
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-graduation-cap text-green-600 mr-3"></i>
+                            Program Bekerja dalam Bidang
+                        </h3>
+                        <p class="text-gray-600 text-[10px] mt-1">Program pengajian graduan yang bekerja mengikut bidang</p>
+                    </div>
+                    <div class="flex space-x-1">
+                        <button @click="refreshChart('field-alignment')"
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] hover:border-gray-600 transition-all duration-200 p-2">
+                            <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </button>
+                        <button @click="openTableModal('Program Bekerja dalam Bidang', 'field-alignment')"
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] hover:border-primary-600 transition-all duration-200 p-2">
+                            <i class="fas fa-table text-xs text-primary-600"></i>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Lihat Jadual
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="h-80 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                        <div class="text-center">
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
+                            <div class="text-gray-700 font-medium">Memuatkan program dalam bidang...</div>
+                        </div>
+                    </div>
+                    <canvas id="fieldAlignmentChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
@@ -612,6 +673,8 @@
                     await this.loadCurrentJobTypesChart();
                     await this.delay(200);
                     await this.loadJobFindingFactorsChart();
+                    await this.delay(200);
+                    await this.loadFieldAlignmentChart();
 
                     this.dataLoaded = true;
                 } catch (error) {
@@ -964,6 +1027,62 @@
                 }
             },
 
+            async loadFieldAlignmentChart() {
+                try {
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/status-pekerjaan/api/field-alignment-programs?${params}`);
+                    const data = await response.json();
+
+                    this.safeDestroyChart('fieldAlignment');
+
+                    const canvas = document.getElementById('fieldAlignmentChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            window.globalCharts = window.globalCharts || {};
+                            window.globalCharts.fieldAlignment = EnhancedChartFactory.createChart(ctx, 'enhanced-pie', data, 'field-alignment', {
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                                return `${context.label}: ${context.parsed.toLocaleString()} graduan (${percentage}%)`;
+                                            }
+                                        }
+                                    },
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            padding: 15,
+                                            usePointStyle: true,
+                                            font: {
+                                                size: 11
+                                            },
+                                            generateLabels: function(chart) {
+                                                const data = chart.data;
+                                                return data.labels.map((label, index) => {
+                                                    const value = data.datasets[0].data[index];
+                                                    const truncatedLabel = label.length > 25 ? label.substring(0, 25) + '...' : label;
+                                                    return {
+                                                        text: `${truncatedLabel} (${value})`,
+                                                        fillStyle: data.datasets[0].backgroundColor[index],
+                                                        hidden: false,
+                                                        index: index
+                                                    };
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading field alignment chart:', error);
+                }
+            },
+
             safeDestroyChart(chartName) {
                 if (window.globalCharts && window.globalCharts[chartName]) {
                     try {
@@ -1034,6 +1153,8 @@
                     await this.loadCurrentJobTypesChart();
                 } else if (chartType === 'job-factors') {
                     await this.loadJobFindingFactorsChart();
+                } else if (chartType === 'field-alignment') {
+                    await this.loadFieldAlignmentChart();
                 }
                 this.showToast(`Graf ${chartType} dimuat semula`, 'success');
             },
@@ -1061,10 +1182,11 @@
             getTableEndpoint(chartType) {
                 const endpoints = {
                     'employment-status': 'employment-status-table',
-                    'job-status': 'job-status-table', 
+                    'job-status': 'job-status-table',
                     'time-to-job': 'time-to-job-table',
                     'job-types': 'job-types-table',
-                    'job-factors': 'job-factors-table'
+                    'job-factors': 'job-factors-table',
+                    'field-alignment': 'field-alignment-table'
                 };
                 return endpoints[chartType] || 'table-data';
             },
@@ -1075,6 +1197,54 @@
                 } else {
                     console.log(`${type.toUpperCase()}: ${message}`);
                 }
+            },
+
+            scrollToChart(chartType) {
+                // Map chart types to their corresponding element IDs
+                const chartElementIds = {
+                    'employment-status': 'employmentStatusChart',
+                    'field-alignment': 'fieldAlignmentChart',
+                    'job-types': 'currentJobTypesChart',
+                    'job-status': 'currentJobStatusChart',
+                    'time-to-job': 'timeToFirstJobChart',
+                    'job-factors': 'jobFindingFactorsChart'
+                };
+
+                const elementId = chartElementIds[chartType];
+                if (elementId) {
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                        // Scroll to the chart with smooth behavior
+                        element.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+
+                        // Add a visual highlight effect
+                        const chartContainer = element.closest('.bg-white');
+                        if (chartContainer) {
+                            chartContainer.classList.add('ring-4', 'ring-blue-300', 'ring-opacity-50');
+                            setTimeout(() => {
+                                chartContainer.classList.remove('ring-4', 'ring-blue-300', 'ring-opacity-50');
+                            }, 2000);
+                        }
+
+                        // Show a toast message
+                        this.showToast(`Menunjukkan carta: ${this.getChartTitle(chartType)}`, 'info');
+                    }
+                }
+            },
+
+            getChartTitle(chartType) {
+                const chartTitles = {
+                    'employment-status': 'Taburan Status Pekerjaan',
+                    'field-alignment': 'Program Bekerja dalam Bidang',
+                    'job-types': 'Agihan Bidang Pekerjaan',
+                    'job-status': 'Status Pekerjaan Semasa',
+                    'time-to-job': 'Masa ke Pekerjaan Pertama',
+                    'job-factors': 'Faktor Utama Mendapat Pekerjaan'
+                };
+                return chartTitles[chartType] || 'Carta';
             }
         }
     }

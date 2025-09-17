@@ -30,7 +30,7 @@ class ChartDataFormatter:
     
     @staticmethod  
     def format_bar_chart(data_series, title="Chart", sort_desc=True):
-        """Format data for bar charts - compatible with centralized config"""
+        """Format data for vertical bar charts - compatible with centralized config"""
         if sort_desc:
             data_series = data_series.sort_values(ascending=False)
         
@@ -45,7 +45,7 @@ class ChartDataFormatter:
 
 formatter = ChartDataFormatter()
 
-# ===== IMPROVED FILTER PROCESSING (copied from sosioekonomi) =====
+# ===== IMPROVED FILTER PROCESSING =====
 
 def process_filter_values(key, values):
     """Process filter values based on the filter type"""
@@ -245,7 +245,7 @@ def api_debug_data():
 
 @gig_economy_bp.route('/api/summary')
 def api_summary():
-    """Get summary statistics for gig economy data - FIXED VERSION"""
+    """Get summary statistics for gig economy data"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -374,7 +374,7 @@ def api_summary():
 
 @gig_economy_bp.route('/api/gig-types')
 def api_gig_types():
-    """Get gig economy work types data - Uses 'gig-types' color scheme - FIXED VERSION"""
+    """Get gig economy work types data - Returns vertical bar chart data"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -436,7 +436,7 @@ def api_gig_types():
         
         gig_counts = pd.Series(all_gigs).value_counts()
         
-        # Use centralized formatter
+        # Use centralized formatter for vertical bar chart
         chart_data = formatter.format_bar_chart(
             gig_counts,
             "Gig Economy Types",
@@ -454,7 +454,7 @@ def api_gig_types():
 
 @gig_economy_bp.route('/api/university-support')
 def api_university_support():
-    """Get university entrepreneurship support data - Uses 'university-support' color scheme - FIXED VERSION"""
+    """Get university entrepreneurship support data - Uses 'university-support' color scheme"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -487,7 +487,7 @@ def api_university_support():
 
 @gig_economy_bp.route('/api/university-programs')
 def api_university_programs():
-    """Get university business programs data - Uses 'university-programs' color scheme - FIXED VERSION"""
+    """Get university business programs data - Uses 'university-programs' color scheme"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -520,7 +520,7 @@ def api_university_programs():
 
 @gig_economy_bp.route('/api/program-effectiveness')
 def api_program_effectiveness():
-    """Get program effectiveness data - Uses 'program-effectiveness' color scheme - FIXED VERSION"""
+    """Get program effectiveness data - Uses 'program-effectiveness' color scheme"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -559,7 +559,7 @@ def api_program_effectiveness():
 
 @gig_economy_bp.route('/api/gig-motivations')
 def api_gig_motivations():
-    """Get gig economy motivations data - Uses 'gig-motivations' color scheme - FIXED VERSION"""
+    """Get gig economy motivations data - Returns vertical bar chart data"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -620,7 +620,7 @@ def api_gig_motivations():
             # Show top 10 relevant motivations
             top_motivations = relevant_motivations.head(10)
         
-        # Use centralized formatter
+        # Use centralized formatter for vertical bar chart
         chart_data = formatter.format_bar_chart(
             top_motivations,
             "Gig Economy Motivations",
@@ -638,7 +638,7 @@ def api_gig_motivations():
 
 @gig_economy_bp.route('/api/skill-acquisition')
 def api_skill_acquisition():
-    """Get skill acquisition methods data - Uses 'skill-acquisition' color scheme - FIXED VERSION"""
+    """Get skill acquisition methods data - Returns vertical bar chart data"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -689,7 +689,7 @@ def api_skill_acquisition():
         
         skills_counts = pd.Series(all_skills).value_counts()
         
-        # Use centralized formatter
+        # Use centralized formatter for vertical bar chart
         chart_data = formatter.format_bar_chart(
             skills_counts,
             "Skill Acquisition Methods",
@@ -707,7 +707,7 @@ def api_skill_acquisition():
 
 @gig_economy_bp.route('/api/gig-challenges')
 def api_gig_challenges():
-    """Get gig economy challenges data - Uses 'gig-challenges' color scheme - FIXED VERSION"""
+    """Get gig economy challenges data - Returns vertical bar chart data"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -737,7 +737,7 @@ def api_gig_challenges():
         
         challenges_counts = pd.Series(all_challenges).value_counts()
         
-        # Use centralized formatter
+        # Use centralized formatter for vertical bar chart
         chart_data = formatter.format_bar_chart(
             challenges_counts,
             "Gig Economy Challenges",
@@ -755,7 +755,7 @@ def api_gig_challenges():
 
 @gig_economy_bp.route('/api/support-needed')
 def api_support_needed():
-    """Get support needed data - Uses 'support-needed' color scheme - FIXED VERSION"""
+    """Get support needed data - Returns vertical bar chart data"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -785,7 +785,7 @@ def api_support_needed():
         
         support_counts = pd.Series(all_support).value_counts()
         
-        # Use centralized formatter
+        # Use centralized formatter for vertical bar chart
         chart_data = formatter.format_bar_chart(
             support_counts,
             "Support Needed",
@@ -803,7 +803,7 @@ def api_support_needed():
 
 @gig_economy_bp.route('/api/monthly-income')
 def api_monthly_income():
-    """Get monthly income from gig economy data - Uses 'monthly-income' color scheme - FIXED VERSION"""
+    """Get monthly income from gig economy data - Returns vertical bar chart data"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -855,7 +855,7 @@ def api_monthly_income():
         
         income_counts = df_income_filtered.value_counts()
         
-        # Use centralized formatter
+        # Use centralized formatter for vertical bar chart (keep logical order for income)
         chart_data = formatter.format_bar_chart(
             income_counts,
             "Monthly Income from Gig Economy",
@@ -873,7 +873,7 @@ def api_monthly_income():
 
 @gig_economy_bp.route('/api/job-preference')
 def api_job_preference():
-    """Get job preference data - Uses 'job-preference' color scheme - FIXED VERSION"""
+    """Get job preference data - Uses 'job-preference' color scheme"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(request.args)
@@ -915,10 +915,10 @@ def api_job_preference():
             "Error"
         )), 500
 
-# NEW: Chart-specific table data endpoints - FIXED VERSION
+# Chart-specific table data endpoints
 @gig_economy_bp.route('/api/chart-table-data/<chart_type>')
 def api_chart_table_data(chart_type):
-    """Get table data specific to each chart type - FIXED VERSION"""
+    """Get table data specific to each chart type"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(
@@ -1017,7 +1017,7 @@ def api_chart_table_data(chart_type):
             ]
             available_columns = [col for col in fallback_columns if col in filtered_df.columns]
         
-        # Create filtered processor and get data using the same pattern as sosioekonomi
+        # Create filtered processor and get data
         class FilteredProcessor:
             def __init__(self, df):
                 self.filtered_df = df
@@ -1067,10 +1067,9 @@ def api_chart_table_data(chart_type):
             'columns': []
         }), 500
 
-# Keep existing table, export, and filter endpoints - FIXED VERSIONS
 @gig_economy_bp.route('/api/table-data')
 def api_table_data():
-    """Get paginated table data for gig economy - FIXED VERSION"""
+    """Get paginated table data for gig economy"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(
@@ -1153,7 +1152,7 @@ def api_table_data():
 
 @gig_economy_bp.route('/api/export')
 def api_export():
-    """Export gig economy data in various formats - FIXED VERSION"""
+    """Export gig economy data in various formats"""
     try:
         # Use improved filter processing
         filters = process_filters_with_conversion_v2(
@@ -1286,7 +1285,7 @@ def api_export():
 
 @gig_economy_bp.route('/api/filters/available')
 def api_available_filters():
-    """Get available filter options for gig economy data - FIXED VERSION"""
+    """Get available filter options for gig economy data"""
     try:
         sample_df = df.copy()
         filters = {}

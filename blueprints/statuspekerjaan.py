@@ -1105,6 +1105,174 @@ def api_export():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@status_pekerjaan_bp.route('/api/debug-field-data')
+def api_debug_field_data():
+    """Debug endpoint to check available data structure"""
+    try:
+        # Show column names and sample data
+        all_columns = list(df.columns)
+        job_related_columns = [col for col in all_columns if any(keyword in col.lower() for keyword in ['pekerjaan', 'kerja', 'bidang', 'job', 'work', 'field'])]
+
+        sample_data = {}
+        for col in job_related_columns[:5]:  # Limit to first 5 relevant columns
+            sample_data[col] = df[col].value_counts().head(10).to_dict()
+
+        # Add specific debug for the key column
+        key_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
+        if key_column in df.columns:
+            sample_data[key_column] = {
+                'value_counts': df[key_column].value_counts().head(10).to_dict(),
+                'null_count': int(df[key_column].isnull().sum()),
+                'empty_string_count': int((df[key_column] == '').sum()),
+                'total_responses': int(len(df[key_column])),
+                'sample_values': df[key_column].dropna().head(10).tolist()
+            }
+
+        return jsonify({
+            'all_columns': all_columns,
+            'job_related_columns': job_related_columns,
+            'sample_data': sample_data,
+            'total_rows': len(df)
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@status_pekerjaan_bp.route('/api/field-alignment-programs')
+def api_field_alignment_programs():
+    """Get programs breakdown for field alignment analysis - requested for Status Pekerjaan module"""
+    try:
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
+
+        # Get graduates working in their field - use the "not working in field" question logic
+        # If they don't have a response to "why not working in field", they are likely working in their field
+        not_in_field_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
+        program_column = 'Bidang pengajian utama anda?'  # Use the correct program column from debug
+
+        if not_in_field_column not in filtered_df.columns or program_column not in filtered_df.columns:
+            return jsonify({
+                'labels': ['No Data Available'],
+                'datasets': [{
+                    'label': 'Program yang Sesuai Bidang',
+                    'data': [1],
+                    'backgroundColor': ['#DC2626']
+                }]
+            })
+
+        # Filter for graduates working in their field
+        # They respond with "Tidak berkaitan kerana saya bekerja dalam bidang pengajian"
+        in_field_df = filtered_df[filtered_df[not_in_field_column].str.contains('Tidak berkaitan kerana saya bekerja dalam bidang pengajian', na=False)].copy()
+
+        if in_field_df.empty:
+            return jsonify({
+                'labels': ['Tiada Graduan Bekerja dalam Bidang'],
+                'datasets': [{
+                    'label': 'Program yang Sesuai Bidang',
+                    'data': [1]
+                }]
+            })
+
+        # Get program distribution for those working in their field
+        program_counts = in_field_df[program_column].value_counts()
+
+        chart_data = {
+            'labels': [str(label) for label in program_counts.index.tolist()],
+            'datasets': [{
+                'label': 'Bilangan Graduan Bekerja dalam Bidang',
+                'data': [int(val) for val in program_counts.values.tolist()],
+                'backgroundColor': [
+                    '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B',
+                    '#EF4444', '#06B6D4', '#84CC16', '#F97316',
+                    '#EC4899', '#6366F1'
+                ][:len(program_counts)]
+            }]
+        }
+
+        return jsonify(chart_data)
+
+    except Exception as e:
+        print(f"Error in field alignment programs endpoint: {str(e)}")
+        return jsonify({
+            'error': str(e),
+            'labels': ['Error'],
+            'datasets': [{
+                'label': 'Error',
+                'data': [1]
+            }]
+        }), 500
+
+@status_pekerjaan_bp.route('/api/field-alignment-table')
+def api_field_alignment_table():
+    """Get table data for field alignment chart"""
+    try:
+        filters = process_filters_with_conversion_v2(
+            request.args,
+            exclude_keys=['page', 'per_page', 'search']
+        )
+        filtered_df = apply_improved_filters(df, filters)
+
+        # Filter for graduates working in their field - use same logic as chart
+        not_in_field_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
+        in_field_df = filtered_df[filtered_df[not_in_field_column].str.contains('Tidak berkaitan kerana saya bekerja dalam bidang pengajian', na=False)].copy()
+
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 50))
+        search = request.args.get('search', '')
+
+        relevant_columns = [
+            'Bidang pengajian utama anda?',
+            'Apakah jenis pekerjaan anda sekarang',
+            'Adakah anda kini bekerja?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ]
+
+        available_columns = [col for col in relevant_columns if col in in_field_df.columns]
+
+        class FilteredProcessor:
+            def __init__(self, df):
+                self.filtered_df = df
+
+            def get_table_data(self, page, per_page, search, columns):
+                df_subset = self.filtered_df[columns] if columns else self.filtered_df
+
+                if search:
+                    search_mask = df_subset.astype(str).apply(
+                        lambda x: x.str.contains(search, case=False, na=False)
+                    ).any(axis=1)
+                    df_subset = df_subset[search_mask]
+
+                total = len(df_subset)
+                pages = (total + per_page - 1) // per_page
+                start_idx = (page - 1) * per_page
+                end_idx = start_idx + per_page
+
+                page_data = df_subset.iloc[start_idx:end_idx].fillna('').to_dict('records')
+
+                return {
+                    'data': page_data,
+                    'pagination': {
+                        'page': page,
+                        'per_page': per_page,
+                        'total': total,
+                        'pages': pages
+                    },
+                    'columns': list(df_subset.columns)
+                }
+
+        processor = FilteredProcessor(in_field_df)
+        data = processor.get_table_data(page, per_page, search, available_columns)
+        return jsonify(data)
+
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'data': [],
+            'pagination': {'page': 1, 'per_page': 50, 'total': 0, 'pages': 0},
+            'columns': []
+        }), 500
+
 @status_pekerjaan_bp.route('/api/filters/available')
 def api_available_filters():
     """Get available filter options for status pekerjaan data"""

@@ -264,7 +264,7 @@
 
     <!-- Professional Bento Grid Layout for Charts -->
     <div class="grid grid-cols-12 gap-4 lg:gap-6">
-        <!-- Row 1: 2 Charts - Jenis Kerja Ekonomi Gig & Motivasi Ekonomi Gig -->
+        <!-- Row 1: 2 Charts - Jenis Kerja Ekonomi Gig & Cabaran Utama -->
         <!-- Jenis Kerja Ekonomi Gig (6 cols) -->
         <div
             class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden hover:shadow-3xl transition-shadow duration-300">
@@ -306,8 +306,8 @@
                     </div>
                 </div>
             </div>
-            <div class="p-4">
-                <div class="h-48 relative">
+            <div class="p-6">
+                <div class="h-56 relative">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
@@ -321,10 +321,60 @@
             </div>
         </div>
 
-        <!-- Motivasi Ekonomi Gig (6 cols) -->
+        <!-- Cabaran Utama (6 cols) -->
         <div
-            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
-            <div class="text-black border-b border-gray-300 px-4 py-3">
+            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            <div class="blue- text-black border-b border-gray-300 px-6 py-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-md font-bold text-gray-900"> 
+                            <i class="fas fa-exclamation-triangle text-primary-600 mr-2"></i>
+                            Cabaran Utama</h3>
+                        <p class="text-gray-500 text-xs mt-1">Halangan dalam ekonomi gig</p>
+                    </div>
+                    <div class="flex space-x-1">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openChartTableModal('gig-challenges', 'Cabaran Utama')"
+                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="refreshChart('gigChallenges')"
+                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                                <i
+                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="h-56 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-500"></div>
+                    </div>
+                    <canvas id="gigChallengesChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Motivasi Ekonomi Gig (12 cols) -->
+        <div
+            class="col-span-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
+            <div class="text-black border-b border-gray-300 px-6 py-3">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-md font-bold text-gray-900 flex items-center">
@@ -362,8 +412,8 @@
                     </div>
                 </div>
             </div>
-            <div class="p-4">
-                <div class="h-48 relative">
+            <div class="p-6">
+                <div class="h-96 relative">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
@@ -377,10 +427,10 @@
             </div>
         </div>
 
-        <!-- Row 2: 3 Charts - Sokongan Universiti, Program Universiti, Impak Program -->
-        <!-- Sokongan Universiti (4 cols) -->
+        <!-- Row 3: Sokongan Universiti + Program Universiti -->
+        <!-- Sokongan Universiti (6 cols) -->
         <div
-            class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
+            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
             <div class="text-black border-b border-gray-300 px-4 py-3">
                 <div class="flex items-center justify-between">
                     <div>
@@ -419,7 +469,7 @@
                 </div>
             </div>
             <div class="p-4">
-                <div class="h-48 relative">
+                <div class="h-80 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#c92427]"></div>
                     </div>
@@ -428,9 +478,9 @@
             </div>
         </div>
 
-        <!-- Program Universiti (4 cols) -->
+        <!-- Program Universiti (6 cols) -->
         <div
-            class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
             <div class="text-black border-b border-gray-300 px-4 py-3">
                 <div class="flex items-center justify-between">
                     <div>
@@ -469,7 +519,7 @@
                 </div>
             </div>
             <div class="p-4">
-                <div class="h-48 relative">
+                <div class="h-80 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-700"></div>
                     </div>
@@ -478,161 +528,10 @@
             </div>
         </div>
 
-        <!-- Impak Program (4 cols) -->
-        <div
-            class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
-            <div class="text-black border-b border-gray-300 px-4 py-3">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-bold text-gray-900"> 
-                            <i class="fas fa-chart-line text-primary-600 mr-2"></i>
-                            Impak Program</h3>
-                        <p class="text-gray-500 text-xs mt-1">Bagaimana program membantu pelajar</p>
-                    </div>
-                    <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openChartTableModal('program-effectiveness', 'Impak Program')"
-                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table text-xs"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Maklumat Lanjut
-                            </div>
-                        </div>
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="refreshChart('programEffectiveness')"
-                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Muat Semula
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-4">
-                <div class="h-48 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
-                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600"></div>
-                    </div>
-                    <canvas id="programEffectivenessChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Row 3: 2 Charts - Sokongan & Bantuan Diperlukan, Cabaran Utama -->
-        <!-- Sokongan & Bantuan Diperlukan (6 cols) -->
-        <div
-            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
-            <div class=" text-black border-b border-gray-300 px-4 py-3">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-bold text-gray-900"> 
-                            <i class="fas fa-handshake text-primary-600 mr-2"></i>
-                            Sokongan & Bantuan Diperlukan</h3>
-                        <p class="text-gray-500 text-xs mt-1">Apa yang usahawan perlukan untuk berjaya</p>
-                    </div>
-                    <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openChartTableModal('support-needed', 'Sokongan & Bantuan Diperlukan')"
-                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-black text-xs">
-                                <i class="fas fa-table text-xs"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Maklumat Lanjut
-                            </div>
-                        </div>
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="refreshChart('supportNeeded')"
-                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Muat Semula
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-4">
-                <div class="h-48 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
-                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-600"></div>
-                    </div>
-                    <canvas id="supportNeededChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cabaran Utama (6 cols) -->
+        <!-- Row 4: Kaedah Pemerolehan Kemahiran + Impak Program -->
+        <!-- Kaedah Pemerolehan Kemahiran (6 cols) -->
         <div
             class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
-            <div class="blue- text-black border-b border-gray-300 px-4 py-3">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-bold text-gray-900"> 
-                            <i class="fas fa-exclamation-triangle text-primary-600 mr-2"></i>
-                            Cabaran Utama</h3>
-                        <p class="text-gray-500 text-xs mt-1">Halangan dalam ekonomi gig</p>
-                    </div>
-                    <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openChartTableModal('gig-challenges', 'Cabaran Utama')"
-                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table text-xs"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Maklumat Lanjut
-                            </div>
-                        </div>
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="refreshChart('gigChallenges')"
-                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Muat Semula
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-4">
-                <div class="h-48 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
-                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-500"></div>
-                    </div>
-                    <canvas id="gigChallengesChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Row 4: 3 Charts - Kaedah Pemerolehan Kemahiran, Pendapatan Bulanan, Pilihan Kerjaya -->
-        <!-- Kaedah Pemerolehan Kemahiran (5 cols) -->
-        <div
-            class="col-span-12 lg:col-span-5 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
             <div class="text-black border-b border-gray-300 px-4 py-3">
                 <div class="flex items-center justify-between">
                     <div>
@@ -671,7 +570,7 @@
                 </div>
             </div>
             <div class="p-4">
-                <div class="h-48 relative">
+                <div class="h-80 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-600"></div>
                     </div>
@@ -680,9 +579,160 @@
             </div>
         </div>
 
-        <!-- Pendapatan Bulanan (4 cols) -->
+        <!-- Impak Program (6 cols) -->
         <div
-            class="col-span-12 lg:col-span-4 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            <div class="text-black border-b border-gray-300 px-4 py-4">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1 pr-2">
+                        <h3 class="text-md font-bold text-gray-900"> 
+                            <i class="fas fa-chart-line text-primary-600 mr-2"></i>
+                            Impak Program</h3>
+                        <p class="text-gray-500 text-xs mt-1 leading-relaxed">Bagaimana program membantu pelajar</p>
+                    </div>
+                    <div class="flex space-x-1">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openChartTableModal('program-effectiveness', 'Impak Program')"
+                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="refreshChart('programEffectiveness')"
+                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                                <i
+                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="h-80 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600"></div>
+                    </div>
+                    <canvas id="programEffectivenessChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: Sokongan & Bantuan Diperlukan (12 cols) -->
+        <div
+            class="col-span-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
+            <div class=" text-black border-b border-gray-300 px-6 py-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-md font-bold text-gray-900"> 
+                            <i class="fas fa-handshake text-primary-600 mr-2"></i>
+                            Sokongan & Bantuan Diperlukan</h3>
+                        <p class="text-gray-500 text-xs mt-1">Apa yang usahawan perlukan untuk berjaya</p>
+                    </div>
+                    <div class="flex space-x-1">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openChartTableModal('support-needed', 'Sokongan & Bantuan Diperlukan')"
+                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-black text-xs">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="refreshChart('supportNeeded')"
+                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                                <i
+                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="h-96 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-600"></div>
+                    </div>
+                    <canvas id="supportNeededChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 6: Pilihan Kerjaya + Pendapatan Bulanan -->
+        <!-- Pilihan Kerjaya (6 cols) -->
+        <div
+            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
+            <div class="px-4 py-4 text-black border-b border-gray-300">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1 pr-2">
+                        <h3 class="text-md font-bold text-gray-900"> 
+                            <i class="fas fa-balance-scale text-primary-600 mr-2"></i>
+                            Pilihan Kerjaya</h3>
+                        <p class="text-gray-500 text-xs mt-1 leading-relaxed">Pilihan kerja tetap vs ekonomi gig</p>
+                    </div>
+                    <div class="flex space-x-1">
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="openChartTableModal('job-preference', 'Pilihan Kerjaya')"
+                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-black text-xs">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div
+                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
+                            <button @click="refreshChart('jobPreference')"
+                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
+                                <i
+                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div
+                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="h-80 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-violet-600"></div>
+                    </div>
+                    <canvas id="jobPreferenceChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pendapatan Bulanan (6 cols) -->
+        <div
+            class="col-span-12 lg:col-span-6 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
             <div class=" text-black border-b border-gray-300 px-4 py-3">
                 <div class="flex items-center justify-between">
                     <div>
@@ -721,7 +771,7 @@
                 </div>
             </div>
             <div class="p-4">
-                <div class="h-48 relative">
+                <div class="h-80 relative">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="text-center">
                             <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mx-auto mb-2">
@@ -730,56 +780,6 @@
                         </div>
                     </div>
                     <canvas id="monthlyIncomeChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pilihan Kerjaya (3 cols) -->
-        <div
-            class="col-span-12 lg:col-span-3 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden">
-            <div class="px-4 py-3 text-black border-b border-gray-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-bold text-gray-900"> 
-                            <i class="fas fa-balance-scale text-primary-600 mr-2"></i>
-                            Pilihan Kerjaya</h3>
-                        <p class="text-gray-500 text-xs mt-1">Pilihan kerja tetap vs ekonomi gig</p>
-                    </div>
-                    <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openChartTableModal('job-preference', 'Pilihan Kerjaya')"
-                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-black text-xs">
-                                <i class="fas fa-table text-xs"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Maklumat Lanjut
-                            </div>
-                        </div>
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="refreshChart('jobPreference')"
-                                class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Muat Semula
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-4">
-                <div class="h-48 relative">
-                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
-                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-violet-600"></div>
-                    </div>
-                    <canvas id="jobPreferenceChart" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
@@ -936,44 +936,61 @@
                         const ctx = canvas.getContext('2d');
                         if (ctx)
                         {
-                            // Use centralized chart factory with proper text handling
+                            // Use vertical bar chart with enhanced styling
                             this.charts.gigTypes = EnhancedChartFactory.createChart(
                                 ctx,
                                 'bar',
                                 data,
                                 'gig-types',
                                 {
-                                    indexAxis: 'y', // Horizontal bar chart
                                     responsive: true,
                                     maintainAspectRatio: false,
+                                    categoryPercentage: 0.4,
+                                    barPercentage: 0.5,
                                     scales: {
                                         x: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 10, weight: '600' },
+                                                color: '#374151',
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                padding: 12,
+                                                autoSkip: false,
+                                                callback: function(value, index, values) {
+                                                    const label = this.getLabelForValue(value);
+                                                    if (label.length > 15) {
+                                                        const words = label.split(' ');
+                                                        const lines = [];
+                                                        let currentLine = '';
+                                                        
+                                                        words.forEach(word => {
+                                                            if ((currentLine + word).length > 15) {
+                                                                if (currentLine) lines.push(currentLine.trim());
+                                                                currentLine = word + ' ';
+                                                            } else {
+                                                                currentLine += word + ' ';
+                                                            }
+                                                        });
+                                                        if (currentLine) lines.push(currentLine.trim());
+                                                        return lines;
+                                                    }
+                                                    return label;
+                                                }
+                                            }
+                                        },
+                                        y: {
                                             beginAtZero: true,
                                             grid: {
                                                 color: 'rgba(0,0,0,0.04)',
                                                 drawBorder: false
                                             },
                                             ticks: {
-                                                font: { size: 10, weight: '500' },
+                                                font: { size: 11, weight: '500' },
                                                 color: '#6b7280',
                                                 callback: function (value)
                                                 {
                                                     return value.toLocaleString();
-                                                }
-                                            }
-                                        },
-                                        y: {
-                                            grid: { display: false },
-                                            ticks: {
-                                                font: { size: 10, weight: '500' },
-                                                color: '#374151',
-                                                maxRotation: 0, // Keep labels horizontal
-                                                padding: 8,
-                                                callback: function (value, index)
-                                                {
-                                                    const label = this.getLabelForValue(value);
-                                                    // Truncate long labels
-                                                    return label.length > 20 ? label.substring(0, 17) + '...' : label;
                                                 }
                                             }
                                         }
@@ -983,7 +1000,7 @@
                                             callbacks: {
                                                 label: function (context)
                                                 {
-                                                    return `${context.label}: ${context.parsed.x} responses`;
+                                                    return `${context.label}: ${context.parsed.y} responses`;
                                                 }
                                             }
                                         }
@@ -1023,37 +1040,61 @@
                                 data,
                                 'gig-motivations',
                                 {
-                                    indexAxis: 'y',
                                     responsive: true,
                                     maintainAspectRatio: false,
+                                    categoryPercentage: 0.1,
+                                    barPercentage: 0.15,
+                                    layout: {
+                                        padding: {
+                                            bottom: 40,
+                                            left: 10,
+                                            right: 10
+                                        }
+                                    },
                                     scales: {
                                         x: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 10, weight: '600' },
+                                                color: '#374151',
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                padding: 12,
+                                                autoSkip: false,
+                                                callback: function(value, index, values) {
+                                                    const label = this.getLabelForValue(value);
+                                                    if (label.length > 15) {
+                                                        const words = label.split(' ');
+                                                        const lines = [];
+                                                        let currentLine = '';
+                                                        
+                                                        words.forEach(word => {
+                                                            if ((currentLine + word).length > 15) {
+                                                                if (currentLine) lines.push(currentLine.trim());
+                                                                currentLine = word + ' ';
+                                                            } else {
+                                                                currentLine += word + ' ';
+                                                            }
+                                                        });
+                                                        if (currentLine) lines.push(currentLine.trim());
+                                                        return lines;
+                                                    }
+                                                    return label;
+                                                }
+                                            }
+                                        },
+                                        y: {
                                             beginAtZero: true,
                                             grid: {
                                                 color: 'rgba(0,0,0,0.04)',
                                                 drawBorder: false
                                             },
                                             ticks: {
-                                                font: { size: 10 },
+                                                font: { size: 11 },
                                                 color: '#6b7280',
                                                 callback: function (value)
                                                 {
                                                     return value.toLocaleString();
-                                                }
-                                            }
-                                        },
-                                        y: {
-                                            grid: { display: false },
-                                            ticks: {
-                                                font: { size: 9, weight: '500' },
-                                                color: '#374151',
-                                                maxRotation: 0,
-                                                padding: 6,
-                                                callback: function (value, index)
-                                                {
-                                                    const label = this.getLabelForValue(value);
-                                                    // Truncate very long motivation labels
-                                                    return label.length > 25 ? label.substring(0, 22) + '...' : label;
                                                 }
                                             }
                                         }
@@ -1093,42 +1134,12 @@
                                 data,
                                 'university-support',
                                 {
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                            position: 'bottom',
-                                            labels: {
-                                                padding: 10,
-                                                font: { size: 10, weight: '500' },
-                                                usePointStyle: true,
-                                                generateLabels: function (chart)
-                                                {
-                                                    const data = chart.data;
-                                                    if (data.labels.length && data.datasets.length)
-                                                    {
-                                                        return data.labels.map((label, index) =>
-                                                        {
-                                                            const dataset = data.datasets[ 0 ];
-                                                            const value = dataset.data[ index ];
-                                                            const total = dataset.data.reduce((sum, val) => sum + val, 0);
-                                                            const percentage = ((value / total) * 100).toFixed(1);
-
-                                                            // Truncate long labels for pie chart legend
-                                                            const truncatedLabel = label.length > 15 ? label.substring(0, 12) + '...' : label;
-
-                                                            return {
-                                                                text: `${truncatedLabel} (${percentage}%)`,
-                                                                fillStyle: dataset.backgroundColor[ index ],
-                                                                strokeStyle: dataset.borderColor,
-                                                                lineWidth: dataset.borderWidth,
-                                                                hidden: false,
-                                                                index: index
-                                                            };
-                                                        });
-                                                    }
-                                                    return [];
-                                                }
-                                            },
+                                    layout: {
+                                        padding: {
+                                            top: 30,
+                                            bottom: 30,
+                                            left: 30,
+                                            right: 30
                                         }
                                     }
                                 }
@@ -1166,42 +1177,12 @@
                                 data,
                                 'university-programs',
                                 {
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                            position: 'bottom',
-                                            labels: {
-                                                padding: 10,
-                                                font: { size: 9, weight: '500' },
-                                                usePointStyle: true,
-                                                generateLabels: function (chart)
-                                                {
-                                                    const data = chart.data;
-                                                    if (data.labels.length && data.datasets.length)
-                                                    {
-                                                        return data.labels.map((label, index) =>
-                                                        {
-                                                            const dataset = data.datasets[ 0 ];
-                                                            const value = dataset.data[ index ];
-                                                            const total = dataset.data.reduce((sum, val) => sum + val, 0);
-                                                            const percentage = ((value / total) * 100).toFixed(1);
-
-                                                            // Truncate long labels for pie chart legend
-                                                            const truncatedLabel = label.length > 15 ? label.substring(0, 12) + '...' : label;
-
-                                                            return {
-                                                                text: `${truncatedLabel} (${percentage}%)`,
-                                                                fillStyle: dataset.backgroundColor[ index ],
-                                                                strokeStyle: dataset.borderColor,
-                                                                lineWidth: dataset.borderWidth,
-                                                                hidden: false,
-                                                                index: index
-                                                            };
-                                                        });
-                                                    }
-                                                    return [];
-                                                }
-                                            }
+                                    layout: {
+                                        padding: {
+                                            top: 30,
+                                            bottom: 30,
+                                            left: 30,
+                                            right: 30
                                         }
                                     }
                                 }
@@ -1239,42 +1220,12 @@
                                 data,
                                 'program-effectiveness',
                                 {
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                            position: 'bottom',
-                                            labels: {
-                                                padding: 10,
-                                                font: { size: 9, weight: '500' },
-                                                usePointStyle: true,
-                                                generateLabels: function (chart)
-                                                {
-                                                    const data = chart.data;
-                                                    if (data.labels.length && data.datasets.length)
-                                                    {
-                                                        return data.labels.map((label, index) =>
-                                                        {
-                                                            const dataset = data.datasets[ 0 ];
-                                                            const value = dataset.data[ index ];
-                                                            const total = dataset.data.reduce((sum, val) => sum + val, 0);
-                                                            const percentage = ((value / total) * 100).toFixed(1);
-
-                                                            // Truncate long labels for pie chart legend
-                                                            const truncatedLabel = label.length > 15 ? label.substring(0, 12) + '...' : label;
-
-                                                            return {
-                                                                text: `${truncatedLabel} (${percentage}%)`,
-                                                                fillStyle: dataset.backgroundColor[ index ],
-                                                                strokeStyle: dataset.borderColor,
-                                                                lineWidth: dataset.borderWidth,
-                                                                hidden: false,
-                                                                index: index
-                                                            };
-                                                        });
-                                                    }
-                                                    return [];
-                                                }
-                                            },
+                                    layout: {
+                                        padding: {
+                                            top: 30,
+                                            bottom: 30,
+                                            left: 30,
+                                            right: 30
                                         }
                                     }
                                 }
@@ -1314,53 +1265,36 @@
                                 {
                                     responsive: true,
                                     maintainAspectRatio: false,
+                                    categoryPercentage: 0.4,
+                                    barPercentage: 0.5,
                                     scales: {
                                         x: {
                                             grid: { display: false },
                                             ticks: {
-                                                font: { size: 10, weight: '500' },
+                                                font: { size: 10, weight: '600' },
                                                 color: '#374151',
-                                                maxRotation: 0, // Remove rotation
-                                                minRotation: 0, // Ensure no rotation
-                                                padding: 8,
-                                                callback: function (value, index)
-                                                {
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                padding: 12,
+                                                autoSkip: false,
+                                                callback: function(value, index, values) {
                                                     const label = this.getLabelForValue(value);
-
-                                                    // Always return something, even if it's just the original label
-                                                    if (!label) return '';
-
-                                                    // Check for "/" first and split there
-                                                    if (label.includes('/'))
-                                                    {
-                                                        const slashIndex = label.indexOf('/');
-                                                        const firstLine = label.substring(0, slashIndex + 1); // Include the "/"
-                                                        const secondLine = label.substring(slashIndex + 1);   // Everything after "/"
-                                                        return [ firstLine, secondLine ];
-                                                    }
-
-                                                    // Split long labels into multiple lines
-                                                    if (label.length > 8)
-                                                    {
-                                                        // Try to split at word boundaries first
+                                                    if (label.length > 15) {
                                                         const words = label.split(' ');
-
-                                                        if (words.length >= 2)
-                                                        {
-                                                            // For multiple words, split roughly in half
-                                                            const mid = Math.floor(words.length / 2);
-                                                            const firstLine = words.slice(0, mid).join(' ');
-                                                            const secondLine = words.slice(mid).join(' ');
-                                                            return [ firstLine, secondLine ];
-                                                        } else
-                                                        {
-                                                            // For single long words, split at middle
-                                                            const mid = Math.floor(label.length / 2);
-                                                            return [ label.substring(0, mid), label.substring(mid) ];
-                                                        }
+                                                        const lines = [];
+                                                        let currentLine = '';
+                                                        
+                                                        words.forEach(word => {
+                                                            if ((currentLine + word).length > 15) {
+                                                                if (currentLine) lines.push(currentLine.trim());
+                                                                currentLine = word + ' ';
+                                                            } else {
+                                                                currentLine += word + ' ';
+                                                            }
+                                                        });
+                                                        if (currentLine) lines.push(currentLine.trim());
+                                                        return lines;
                                                     }
-
-                                                    // Return original label if short enough
                                                     return label;
                                                 }
                                             }
@@ -1372,7 +1306,7 @@
                                                 drawBorder: false
                                             },
                                             ticks: {
-                                                font: { size: 10 },
+                                                font: { size: 11 },
                                                 color: '#6b7280',
                                                 callback: function (value)
                                                 {
@@ -1416,37 +1350,54 @@
                                 data,
                                 'gig-challenges',
                                 {
-                                    indexAxis: 'y',
                                     responsive: true,
                                     maintainAspectRatio: false,
+                                    categoryPercentage: 0.3,
+                                    barPercentage: 0.4,
                                     scales: {
                                         x: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 9, weight: '600' },
+                                                color: '#374151',
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                padding: 12,
+                                                autoSkip: false,
+                                                callback: function(value, index, values) {
+                                                    const label = this.getLabelForValue(value);
+                                                    if (label.length > 12) {
+                                                        const words = label.split(' ');
+                                                        const lines = [];
+                                                        let currentLine = '';
+                                                        
+                                                        words.forEach(word => {
+                                                            if ((currentLine + word).length > 12) {
+                                                                if (currentLine) lines.push(currentLine.trim());
+                                                                currentLine = word + ' ';
+                                                            } else {
+                                                                currentLine += word + ' ';
+                                                            }
+                                                        });
+                                                        if (currentLine) lines.push(currentLine.trim());
+                                                        return lines;
+                                                    }
+                                                    return label;
+                                                }
+                                            }
+                                        },
+                                        y: {
                                             beginAtZero: true,
                                             grid: {
                                                 color: 'rgba(0,0,0,0.04)',
                                                 drawBorder: false
                                             },
                                             ticks: {
-                                                font: { size: 10 },
+                                                font: { size: 11 },
                                                 color: '#6b7280',
                                                 callback: function (value)
                                                 {
                                                     return value.toLocaleString();
-                                                }
-                                            }
-                                        },
-                                        y: {
-                                            grid: { display: false },
-                                            ticks: {
-                                                font: { size: 9, weight: '500' },
-                                                color: '#374151',
-                                                maxRotation: 0,
-                                                padding: 6,
-                                                callback: function (value, index)
-                                                {
-                                                    const label = this.getLabelForValue(value);
-                                                    // Truncate challenge labels
-                                                    return label.length > 30 ? label.substring(0, 27) + '...' : label;
                                                 }
                                             }
                                         }
@@ -1486,37 +1437,61 @@
                                 data,
                                 'support-needed',
                                 {
-                                    indexAxis: 'y',
                                     responsive: true,
                                     maintainAspectRatio: false,
+                                    categoryPercentage: 0.1,
+                                    barPercentage: 0.15,
+                                    layout: {
+                                        padding: {
+                                            bottom: 40,
+                                            left: 10,
+                                            right: 10
+                                        }
+                                    },
                                     scales: {
                                         x: {
+                                            grid: { display: false },
+                                            ticks: {
+                                                font: { size: 9, weight: '600' },
+                                                color: '#374151',
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                padding: 12,
+                                                autoSkip: false,
+                                                callback: function(value, index, values) {
+                                                    const label = this.getLabelForValue(value);
+                                                    if (label.length > 12) {
+                                                        const words = label.split(' ');
+                                                        const lines = [];
+                                                        let currentLine = '';
+                                                        
+                                                        words.forEach(word => {
+                                                            if ((currentLine + word).length > 12) {
+                                                                if (currentLine) lines.push(currentLine.trim());
+                                                                currentLine = word + ' ';
+                                                            } else {
+                                                                currentLine += word + ' ';
+                                                            }
+                                                        });
+                                                        if (currentLine) lines.push(currentLine.trim());
+                                                        return lines;
+                                                    }
+                                                    return label;
+                                                }
+                                            }
+                                        },
+                                        y: {
                                             beginAtZero: true,
                                             grid: {
                                                 color: 'rgba(0,0,0,0.04)',
                                                 drawBorder: false
                                             },
                                             ticks: {
-                                                font: { size: 10 },
+                                                font: { size: 11 },
                                                 color: '#6b7280',
                                                 callback: function (value)
                                                 {
                                                     return value.toLocaleString();
-                                                }
-                                            }
-                                        },
-                                        y: {
-                                            grid: { display: false },
-                                            ticks: {
-                                                font: { size: 9, weight: '500' },
-                                                color: '#374151',
-                                                maxRotation: 0,
-                                                padding: 6,
-                                                callback: function (value, index)
-                                                {
-                                                    const label = this.getLabelForValue(value);
-                                                    // Truncate support needed labels
-                                                    return label.length > 28 ? label.substring(0, 25) + '...' : label;
                                                 }
                                             }
                                         }
@@ -1558,45 +1533,37 @@
                                 {
                                     responsive: true,
                                     maintainAspectRatio: false,
+                                    categoryPercentage: 0.3,
+                                    barPercentage: 0.4,
                                     scales: {
                                         x: {
                                             grid: { display: false },
                                             ticks: {
-                                                font: { size: 9, weight: '500' },
+                                                font: { size: 9, weight: '600' },
                                                 color: '#374151',
-                                                maxRotation: 0, // Set to 0 to prevent rotation
-                                                minRotation: 0, // Ensure no rotation
-                                                padding: 8,
-                                                callback: function (value, index)
-                                                {
+                                                maxRotation: 0,
+                                                minRotation: 0,
+                                                padding: 12,
+                                                autoSkip: false,
+                                                callback: function(value, index, values) {
                                                     const label = this.getLabelForValue(value);
-                                                    let processedLabel = label;
-                                                    // Shorten income range labels
-                                                    if (label.includes('RM'))
-                                                    {
-                                                        processedLabel = label.replace('RM', 'RM').replace(' - ', '-');
+                                                    if (label.length > 12) {
+                                                        const words = label.split(' ');
+                                                        const lines = [];
+                                                        let currentLine = '';
+                                                        
+                                                        words.forEach(word => {
+                                                            if ((currentLine + word).length > 12) {
+                                                                if (currentLine) lines.push(currentLine.trim());
+                                                                currentLine = word + ' ';
+                                                            } else {
+                                                                currentLine += word + ' ';
+                                                            }
+                                                        });
+                                                        if (currentLine) lines.push(currentLine.trim());
+                                                        return lines;
                                                     }
-
-                                                    // Split long labels into multiple lines
-                                                    if (processedLabel.length > 8)
-                                                    {
-                                                        // For income ranges like "3,000-4,999", split at the dash
-                                                        if (processedLabel.includes('-'))
-                                                        {
-                                                            const parts = processedLabel.split('-');
-                                                            return [ parts[ 0 ] + " - ", parts[ 1 ] ];
-                                                        }
-                                                        // For other long labels, split in the middle
-                                                        else
-                                                        {
-                                                            const mid = Math.ceil(processedLabel.length / 2);
-                                                            const firstPart = processedLabel.substring(0, mid);
-                                                            const secondPart = processedLabel.substring(mid);
-                                                            return [ firstPart, secondPart ];
-                                                        }
-                                                    }
-
-                                                    return processedLabel;
+                                                    return label;
                                                 }
                                             }
                                         },
@@ -1607,7 +1574,7 @@
                                                 drawBorder: false
                                             },
                                             ticks: {
-                                                font: { size: 10 },
+                                                font: { size: 11 },
                                                 color: '#6b7280',
                                                 stepSize: 1,
                                                 callback: function (value)
@@ -1662,42 +1629,12 @@
                                 data,
                                 'job-preference',
                                 {
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                            position: 'bottom',
-                                            labels: {
-                                                padding: 10,
-                                                font: { size: 10, weight: '500' },
-                                                usePointStyle: true,
-                                                generateLabels: function (chart)
-                                                {
-                                                    const data = chart.data;
-                                                    if (data.labels.length && data.datasets.length)
-                                                    {
-                                                        return data.labels.map((label, index) =>
-                                                        {
-                                                            const dataset = data.datasets[ 0 ];
-                                                            const value = dataset.data[ index ];
-                                                            const total = dataset.data.reduce((sum, val) => sum + val, 0);
-                                                            const percentage = ((value / total) * 100).toFixed(1);
-
-                                                            // Truncate long labels for pie chart legend
-                                                            const truncatedLabel = label.length > 15 ? label.substring(0, 12) + '...' : label;
-
-                                                            return {
-                                                                text: `${truncatedLabel} (${percentage}%)`,
-                                                                fillStyle: dataset.backgroundColor[ index ],
-                                                                strokeStyle: dataset.borderColor,
-                                                                lineWidth: dataset.borderWidth,
-                                                                hidden: false,
-                                                                index: index
-                                                            };
-                                                        });
-                                                    }
-                                                    return [];
-                                                }
-                                            }
+                                    layout: {
+                                        padding: {
+                                            top: 30,
+                                            bottom: 30,
+                                            left: 30,
+                                            right: 30
                                         }
                                     }
                                 }

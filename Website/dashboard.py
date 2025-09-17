@@ -44,14 +44,14 @@ def create_sample_data():
         ], sample_size, p=[0.4, 0.3, 0.2, 0.1]),
         
         # Study Fields
-        'Bidang pengajian utama anda? ': np.random.choice([
+        'Bidang pengajian utama anda?': np.random.choice([
             'Teknologi Maklumat', 'Perniagaan', 'Kejuruteraan', 
             'Perakaunan', 'Pemasaran', 'Sains Komputer',
             'Pengurusan', 'Kewangan'
         ], sample_size),
         
         # Graduation Years
-        'Tahun graduasi anda? ': np.random.choice([2020, 2021, 2022, 2023, 2024], sample_size),
+        'Tahun graduasi anda?': np.random.choice([2020, 2021, 2022, 2023, 2024], sample_size),
         
         # Current Salary
         'Berapakah julat gaji bulanan anda sekarang?': np.random.choice([
@@ -153,13 +153,13 @@ def create_sample_data():
         ],
         
         # Gender
-        'Jantina anda? ': np.random.choice(['Lelaki', 'Perempuan'], sample_size),
+        'Jantina anda?': np.random.choice(['Lelaki', 'Perempuan'], sample_size),
         
         # Age
-        'Umur anda? ': np.random.randint(22, 35, sample_size),
+        'Umur anda?': np.random.randint(22, 35, sample_size),
         
         # Institution
-        'Institusi pendidikan MARA yang anda hadiri? ': np.random.choice([
+        'Institusi pendidikan MARA yang anda hadiri?': np.random.choice([
             'MARA Professional College',
             'MARA University of Technology',
             'MARA Skills Institute'
@@ -233,83 +233,122 @@ def find_column_fuzzy(df, target_columns):
                 return col
     return None
 
-# Enhanced column mapping
+# Enhanced column mapping with multiple possible column names
 COLUMN_MAPPING = {
-    'employment_status': 'Adakah anda kini bekerja?',
-    'job_type': 'Apakah jenis pekerjaan anda sekarang',
-    'time_to_employment': 'Jika bekerja, berapa lama selepas tamat pengajian anda mendapat pekerjaan pertama?',
-    'field_of_study': 'Bidang pengajian utama anda? ',
-    'graduation_year': 'Tahun graduasi anda? ',
-    'current_salary': 'Berapakah julat gaji bulanan anda sekarang?',
-    'expected_salary': 'Apakah jangkaan gaji permulaan yang anda anggap sesuai dengan kelulusan anda?',
-    'out_of_field_reason': 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
-    'academic_skills_needed': 'Jika anda bekerja di luar bidang pengajian, adakah pekerjaan tersebut masih memerlukan kemahiran akademik anda?',
-    'job_challenges': 'Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?',
-    'success_factors': 'Apakah faktor utama yang membantu anda mendapat pekerjaan tersebut?',
-    'employment_sectors': 'Apakah sektor pekerjaan anda?',
-    'professional_cert': 'Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?',
-    'internship': 'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?',
-    'university_preparation': 'Sejauh mana anda bersetuju bahawa universiti telah menyediakan anda untuk pasaran kerja?',
-    'gig_economy': 'Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?',
-    'support_needed': 'Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?',
-    'gender': 'Jantina anda? ',
-    'age': 'Umur anda? ',
-    'institution': 'Institusi pendidikan MARA yang anda hadiri? '
+    'employment_status': ['Adakah anda kini bekerja?'],
+    'job_type': ['Apakah jenis pekerjaan anda sekarang'],
+    'time_to_employment': ['Jika bekerja, berapa lama selepas tamat pengajian anda mendapat pekerjaan pertama?'],
+    'field_of_study': ['Bidang pengajian utama anda?'],
+    'graduation_year': ['Tahun graduasi anda?'],
+    'current_salary': ['Berapakah julat gaji bulanan anda sekarang?'],
+    'expected_salary': ['Apakah jangkaan gaji permulaan yang anda anggap sesuai dengan kelulusan anda?'],
+    'out_of_field_reason': ['Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'],
+    'academic_skills_needed': ['Jika anda bekerja di luar bidang pengajian, adakah pekerjaan tersebut masih memerlukan kemahiran akademik anda?'],
+    'job_challenges': ['Apakah cabaran utama yang anda hadapi dalam mendapatkan pekerjaan?'],
+    'success_factors': ['Apakah faktor utama yang membantu anda mendapat pekerjaan tersebut?'],
+    'employment_sectors': ['Apakah sektor pekerjaan anda?'],
+    'professional_cert': ['Adakah anda memiliki sijil profesional tambahan selain ijazah/diploma?'],
+    'internship': ['Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'],
+    'university_preparation': ['Sejauh mana anda bersetuju bahawa universiti telah menyediakan anda untuk pasaran kerja?'],
+    'gig_economy': ['Apakah bentuk pekerjaan bebas yang anda ceburi sekarang atau bercadang untuk ceburi dalam masa terdekat?'],
+    'support_needed': ['Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?'],
+    'gender': ['Jantina anda?'],
+    'age': ['Umur anda?'],
+    'institution': ['Institusi pendidikan MARA yang anda hadiri?']
 }
 
 def get_column(key):
     """Get column name from mapping"""
-    return COLUMN_MAPPING.get(key)
+    possible_names = COLUMN_MAPPING.get(key, [])
+    return possible_names[0] if possible_names else None
 
 def find_column_smart(df, possible_keys):
     """Smart column finder that uses both mapping and fuzzy matching"""
+    # First try exact matches from mapping
     for key in possible_keys:
-        col = get_column(key)
-        if col and col in df.columns:
-            return col
+        possible_names = COLUMN_MAPPING.get(key, [])
+        for col_name in possible_names:
+            if col_name in df.columns:
+                return col_name
     
+    # Then try fuzzy matching
     all_possible_names = []
     for key in possible_keys:
         if key in COLUMN_MAPPING:
-            all_possible_names.append(COLUMN_MAPPING[key])
+            all_possible_names.extend(COLUMN_MAPPING[key])
         all_possible_names.append(key.replace('_', ' ').title())
+        all_possible_names.append(key)
     
     return find_column_fuzzy(df, all_possible_names)
 
 def apply_filters(data_df, filters):
-    """Enhanced filter application with better error handling"""
+    """Enhanced filter application with array support and proper column mapping"""
     filtered_df = data_df.copy()
     initial_count = len(filtered_df)
     
     try:
-        if filters.get('year'):
+        logger.info(f"Starting filter application with {initial_count} rows")
+        logger.info(f"Filters received: {filters}")
+        logger.info(f"Available columns: {list(filtered_df.columns)}")
+        
+        # Handle year filter (array) - check both short and full column names
+        year_filters = filters.get('year', []) + filters.get('Tahun graduasi anda?', [])
+        if year_filters and len(year_filters) > 0:
             year_col = find_column_smart(filtered_df, ['graduation_year'])
+            logger.info(f"Year filter - Column found: {year_col}")
             if year_col and year_col in filtered_df.columns:
-                filtered_df = filtered_df[filtered_df[year_col].astype(str) == str(filters['year'])]
+                unique_years = filtered_df[year_col].unique()
+                logger.info(f"Available years: {sorted(unique_years)}")
+                logger.info(f"Filtering for years: {year_filters}")
+                
+                # Create mask for multiple years
+                year_mask = pd.Series([False] * len(filtered_df))
+                for year_filter in year_filters:
+                    mask = (filtered_df[year_col].astype(str) == str(year_filter))
+                    try:
+                        numeric_year = int(year_filter)
+                        mask |= (pd.to_numeric(filtered_df[year_col], errors='coerce') == numeric_year)
+                    except (ValueError, TypeError):
+                        pass
+                    year_mask |= mask
+                
+                filtered_df = filtered_df[year_mask]
                 logger.info(f"Year filter applied: {len(filtered_df)} rows remaining")
         
-        if filters.get('field'):
+        # Handle field filter (array) - check both short and full column names
+        field_filters = filters.get('field', []) + filters.get('Bidang pengajian utama anda?', [])
+        if field_filters and len(field_filters) > 0:
             field_col = find_column_smart(filtered_df, ['field_of_study'])
+            logger.info(f"Field filter - Column found: {field_col}")
             if field_col and field_col in filtered_df.columns:
-                filtered_df = filtered_df[filtered_df[field_col] == filters['field']]
+                filtered_df = filtered_df[filtered_df[field_col].isin(field_filters)]
                 logger.info(f"Field filter applied: {len(filtered_df)} rows remaining")
         
-        if filters.get('employment'):
+        # Handle employment filter (array) - check both short and full column names
+        emp_filters = filters.get('employment', []) + filters.get('Adakah anda kini bekerja?', [])
+        if emp_filters and len(emp_filters) > 0:
             emp_col = find_column_smart(filtered_df, ['employment_status'])
+            logger.info(f"Employment filter - Column found: {emp_col}")
             if emp_col and emp_col in filtered_df.columns:
-                filtered_df = filtered_df[filtered_df[emp_col] == filters['employment']]
+                filtered_df = filtered_df[filtered_df[emp_col].isin(emp_filters)]
                 logger.info(f"Employment filter applied: {len(filtered_df)} rows remaining")
         
-        if filters.get('gender'):
+        # Handle gender filter (array) - check both short and full column names
+        gender_filters = filters.get('gender', []) + filters.get('Jantina anda?', [])
+        if gender_filters and len(gender_filters) > 0:
             gender_col = find_column_smart(filtered_df, ['gender'])
+            logger.info(f"Gender filter - Column found: {gender_col}")
             if gender_col and gender_col in filtered_df.columns:
-                filtered_df = filtered_df[filtered_df[gender_col] == filters['gender']]
+                filtered_df = filtered_df[filtered_df[gender_col].isin(gender_filters)]
                 logger.info(f"Gender filter applied: {len(filtered_df)} rows remaining")
         
-        if filters.get('institution'):
+        # Handle institution filter (array) - check both short and full column names
+        inst_filters = filters.get('institution', []) + filters.get('Institusi pendidikan MARA yang anda hadiri?', [])
+        if inst_filters and len(inst_filters) > 0:
             inst_col = find_column_smart(filtered_df, ['institution'])
+            logger.info(f"Institution filter - Column found: {inst_col}")
             if inst_col and inst_col in filtered_df.columns:
-                filtered_df = filtered_df[filtered_df[inst_col] == filters['institution']]
+                filtered_df = filtered_df[filtered_df[inst_col].isin(inst_filters)]
                 logger.info(f"Institution filter applied: {len(filtered_df)} rows remaining")
         
         logger.info(f"Total filtering: {initial_count} -> {len(filtered_df)} rows")
@@ -317,6 +356,8 @@ def apply_filters(data_df, filters):
         
     except Exception as e:
         logger.error(f"Error applying filters: {str(e)}")
+        import traceback
+        logger.error(f"Full traceback: {traceback.format_exc()}")
         return data_df
 
 def create_table_data(labels, data, label_key='label', count_key='count'):
@@ -390,7 +431,13 @@ def index():
 
 @app.route('/dashboard') 
 def dashboard():
-    return render_template('dashboard.html')  # Your dashboard page 
+    return render_template('dashboard.html')  # Your dashboard page
+
+@app.route('/data-table')
+def data_table_page():
+    return render_template('data_table.html', 
+                         page_title='Graduate Data Table',
+                         api_endpoint='/api/table-data') 
 
 # 1. Enhanced Employment Status API with proper response count
 @app.route('/api/employment-status')
@@ -1202,22 +1249,30 @@ def support_needed():
 @app.route('/api/summary-stats')
 def summary_stats():
     try:
+        # Get filter parameters with both short and full column names
         filters = {
-            'year': request.args.get('year'),
-            'field': request.args.get('field'),
-            'employment': request.args.get('employment'),
-            'gender': request.args.get('gender'),
-            'institution': request.args.get('institution')
+            'year': request.args.getlist('year'),
+            'field': request.args.getlist('field'),
+            'employment': request.args.getlist('employment'),
+            'gender': request.args.getlist('gender'),
+            'institution': request.args.getlist('institution'),
+            'Tahun graduasi anda?': request.args.getlist('Tahun graduasi anda?'),
+            'Bidang pengajian utama anda?': request.args.getlist('Bidang pengajian utama anda?'),
+            'Adakah anda kini bekerja?': request.args.getlist('Adakah anda kini bekerja?'),
+            'Jantina anda?': request.args.getlist('Jantina anda?'),
+            'Institusi pendidikan MARA yang anda hadiri?': request.args.getlist('Institusi pendidikan MARA yang anda hadiri?')
         }
+        
+        logger.info(f"Summary stats filters: {filters}")
         
         filtered_df = apply_filters(df, filters)
         total_graduates = len(filtered_df)
         
-        if total_graduates == 0:
-            return safe_api_response('No data available after filtering', False)
+        logger.info(f"Summary stats - Total graduates after filtering: {total_graduates}")
         
         # Employment rate calculation
         employment_col = find_column_smart(filtered_df, ['employment_status'])
+        logger.info(f"Employment column found: {employment_col}")
         
         employed = 0
         if employment_col:
@@ -1233,7 +1288,7 @@ def summary_stats():
         fields_count = len(filtered_df[field_col].unique()) if field_col else 0
         
         year_col = find_column_smart(filtered_df, ['graduation_year'])
-        year_range = ""
+        year_range = "N/A"
         if year_col:
             try:
                 years = pd.to_numeric(filtered_df[year_col], errors='coerce').dropna()
@@ -1244,22 +1299,17 @@ def summary_stats():
             except:
                 year_range = "N/A"
         
-        # Calculate data quality metrics
-        completeness = round((filtered_df.count().sum() / (len(filtered_df) * len(filtered_df.columns))) * 100, 1) if len(filtered_df) > 0 else 0
-        
         result = {
-            'total_graduates': total_graduates,
+            'total_records': total_graduates,
             'employment_rate': round(employment_rate, 1),
-            'fields_count': fields_count,
+            'fields_of_study_count': fields_count,
             'year_range': year_range,
-            'employed_count': employed,
-            'data_quality': {
-                'completeness': completeness,
-                'response_rate': 100,
-                'filters_applied': sum(1 for v in filters.values() if v)
-            }
+            'total_institutions': len(filtered_df[find_column_smart(filtered_df, ['institution'])].unique()) if find_column_smart(filtered_df, ['institution']) else 0,
+            'gender_distribution': dict(filtered_df[find_column_smart(filtered_df, ['gender'])].value_counts()) if find_column_smart(filtered_df, ['gender']) else {},
+            'filter_applied': any(v for v in filters.values() if v)
         }
         
+        logger.info(f"Summary stats result: {result}")
         return safe_api_response(result)
     except Exception as e:
         logger.error(f"❌ Error in summary_stats: {str(e)}")
@@ -1316,6 +1366,207 @@ def not_found(error):
 def internal_error(error):
     return safe_api_response('Internal server error', False), 500
 
+# Table Data API for data_table.html template
+@app.route('/api/table-data')
+def table_data():
+    """Generic table data endpoint with search, filtering, and pagination"""
+    try:
+        # Get request parameters
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 50))
+        search_query = request.args.get('search', '').strip()
+        sort_by = request.args.get('sort_by', '')
+        sort_direction = request.args.get('sort_direction', 'asc')
+        
+        # Get filter parameters (handle multiple values with exact column names)
+        filters = {
+            'year': request.args.getlist('year'),
+            'field': request.args.getlist('field'),
+            'employment': request.args.getlist('employment'),
+            'gender': request.args.getlist('gender'),
+            'institution': request.args.getlist('institution'),
+            'Tahun graduasi anda?': request.args.getlist('Tahun graduasi anda?'),
+            'Bidang pengajian utama anda?': request.args.getlist('Bidang pengajian utama anda?'),
+            'Adakah anda kini bekerja?': request.args.getlist('Adakah anda kini bekerja?'),
+            'Jantina anda?': request.args.getlist('Jantina anda?'),
+            'Institusi pendidikan MARA yang anda hadiri?': request.args.getlist('Institusi pendidikan MARA yang anda hadiri?')
+        }
+        
+        logger.info(f"🔍 Raw request args: {dict(request.args)}")
+        logger.info(f"📋 Processed filters: {filters}")
+        
+        logger.info(f"📊 Table data request - Page: {page}, Per page: {per_page}, Search: '{search_query}'")
+        logger.info(f"🎯 Active filters: {filters}")
+        
+        # Apply filters
+        filtered_df = apply_filters(df, filters)
+        
+        # Apply search if provided
+        if search_query:
+            # Search across all text columns
+            text_columns = filtered_df.select_dtypes(include=['object']).columns
+            search_mask = pd.Series([False] * len(filtered_df))
+            
+            for col in text_columns:
+                search_mask |= filtered_df[col].astype(str).str.contains(search_query, case=False, na=False)
+            
+            filtered_df = filtered_df[search_mask]
+            logger.info(f"Search applied: {len(filtered_df)} rows remaining")
+        
+        # Apply sorting if specified
+        if sort_by and sort_by in filtered_df.columns:
+            ascending = sort_direction.lower() == 'asc'
+            filtered_df = filtered_df.sort_values(by=sort_by, ascending=ascending)
+            logger.info(f"Sorting applied: {sort_by} {sort_direction}")
+        
+        # Calculate pagination
+        total_records = len(filtered_df)
+        total_pages = max(1, (total_records + per_page - 1) // per_page)
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+        
+        # Get page data
+        page_data = filtered_df.iloc[start_idx:end_idx]
+        
+        # Convert to records format
+        records = page_data.to_dict('records')
+        columns = list(filtered_df.columns)
+        
+        # Clean up the data for JSON serialization
+        for record in records:
+            for key, value in record.items():
+                if pd.isna(value):
+                    record[key] = ''
+                elif isinstance(value, (np.integer, np.floating)):
+                    record[key] = int(value) if isinstance(value, np.integer) else float(value)
+                else:
+                    record[key] = str(value)
+        
+        result = {
+            'records': records,
+            'columns': columns,
+            'pagination': {
+                'current_page': page,
+                'per_page': per_page,
+                'total': total_records,
+                'pages': total_pages,
+                'has_next': page < total_pages,
+                'has_prev': page > 1
+            },
+            'search': {
+                'query': search_query,
+                'results_count': len(records)
+            },
+            'filters_applied': {k: v for k, v in filters.items() if v},
+            'sort': {
+                'column': sort_by,
+                'direction': sort_direction
+            }
+        }
+        
+        logger.info(f"Returning {len(records)} records (page {page}/{total_pages})")
+        return safe_api_response(result)
+        
+    except Exception as e:
+        logger.error(f"❌ Error in table_data: {str(e)}")
+        return safe_api_response(str(e), False)
+
+# Export Data API for data_table.html template
+@app.route('/api/export')
+def export_data():
+    """Export filtered data in various formats"""
+    try:
+        format_type = request.args.get('format', 'csv').lower()
+        
+        # Get filter parameters (same as table_data) - handle arrays with exact column names
+        filters = {
+            'year': request.args.getlist('year'),
+            'field': request.args.getlist('field'),
+            'employment': request.args.getlist('employment'),
+            'gender': request.args.getlist('gender'),
+            'institution': request.args.getlist('institution'),
+            'Tahun graduasi anda?': request.args.getlist('Tahun graduasi anda?'),
+            'Bidang pengajian utama anda?': request.args.getlist('Bidang pengajian utama anda?'),
+            'Adakah anda kini bekerja?': request.args.getlist('Adakah anda kini bekerja?'),
+            'Jantina anda?': request.args.getlist('Jantina anda?'),
+            'Institusi pendidikan MARA yang anda hadiri?': request.args.getlist('Institusi pendidikan MARA yang anda hadiri?')
+        }
+        
+        search_query = request.args.get('search', '').strip()
+        
+        # Apply filters and search (same logic as table_data)
+        filtered_df = apply_filters(df, filters)
+        
+        if search_query:
+            text_columns = filtered_df.select_dtypes(include=['object']).columns
+            search_mask = pd.Series([False] * len(filtered_df))
+            
+            for col in text_columns:
+                search_mask |= filtered_df[col].astype(str).str.contains(search_query, case=False, na=False)
+            
+            filtered_df = filtered_df[search_mask]
+        
+        # Generate filename
+        timestamp = pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"graduate_data_{timestamp}"
+        
+        if format_type == 'csv':
+            from flask import Response
+            import io
+            
+            output = io.StringIO()
+            filtered_df.to_csv(output, index=False)
+            output.seek(0)
+            
+            return Response(
+                output.getvalue(),
+                mimetype='text/csv',
+                headers={"Content-disposition": f"attachment; filename={filename}.csv"}
+            )
+            
+        elif format_type == 'excel':
+            from flask import Response
+            import io
+            
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                filtered_df.to_excel(writer, sheet_name='Graduate Data', index=False)
+            output.seek(0)
+            
+            return Response(
+                output.getvalue(),
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                headers={"Content-disposition": f"attachment; filename={filename}.xlsx"}
+            )
+            
+        elif format_type == 'json':
+            from flask import Response
+            import json
+            
+            # Convert to JSON-serializable format
+            records = filtered_df.to_dict('records')
+            for record in records:
+                for key, value in record.items():
+                    if pd.isna(value):
+                        record[key] = None
+                    elif isinstance(value, (np.integer, np.floating)):
+                        record[key] = int(value) if isinstance(value, np.integer) else float(value)
+            
+            json_data = json.dumps(records, indent=2, ensure_ascii=False)
+            
+            return Response(
+                json_data,
+                mimetype='application/json',
+                headers={"Content-disposition": f"attachment; filename={filename}.json"}
+            )
+        
+        else:
+            return safe_api_response(f'Unsupported format: {format_type}', False)
+            
+    except Exception as e:
+        logger.error(f"❌ Error in export_data: {str(e)}")
+        return safe_api_response(str(e), False)
+
 if __name__ == '__main__':
     logger.info("🚀 Starting COMPLETELY FIXED Graduate Analytics Dashboard...")
     logger.info("🔗 Dashboard URL: http://localhost:5000")
@@ -1325,8 +1576,9 @@ if __name__ == '__main__':
     logger.info("   3. ✅ Tempoh Mendapat Kerja - Area Chart [RESPONSE COUNT FIXED]")
     logger.info("   4. ✅ Graduan Mengikut Bidang & Tahun - Stacked Bar [RESPONSE COUNT FIXED]")
     logger.info("   5. ✅ Julat Gaji Graduan Mengikut Bidang - Stacked Bar [RESPONSE COUNT FIXED]")
-    logger.info("   6. ✅ Jangkaan Gaji vs Realiti - Bar Chart [RESPONSE COUNT FIXED]")
+    logger.info("   6. ✅ Julat Gaji Graduan Mengikut Bidang - Stacked Bar [RESPONSE COUNT FIXED]")
     logger.info("   7. ✅ Graduan Bekerja di Luar Bidang - Multiple Charts [RESPONSE COUNT FIXED]")
     logger.info("   8. ✅ Cabaran Utama Mendapat Kerja - Bar Chart [CHECKBOX DATA FIXED]")
+    logger.info("   9. ✅ Table Data API - Search, Filter, Sort, Export [NEW]")
     
     app.run(debug=True, port=5000, host='0.0.0.0')

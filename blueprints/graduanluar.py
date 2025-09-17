@@ -116,12 +116,49 @@ def table_view():
 def api_summary():
     """Get enhanced summary statistics for graduan luar data"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Get filters properly like demografi
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if values:  # Only include non-empty filters
+                filters[key] = values
+        
         print(f"GRADUAN LUAR SUMMARY DEBUG: Received filters: {filters}")
         
-        filtered_processor = data_processor.apply_filters(filters)
-        stats = filtered_processor.get_summary_stats()
-        filtered_df = filtered_processor.filtered_df
+        # Apply filters directly to dataframe like demografi
+        filtered_df = data_processor.df.copy()
+        
+        for column, values in filters.items():
+            if not values or len(values) == 0:
+                continue
+            
+            if column in filtered_df.columns:
+                print(f"Applying filter: {column} = {values}")
+                print(f"Before filter - rows: {len(filtered_df)}")
+                
+                # Convert filter values to match column data type
+                if filtered_df[column].dtype in ['int64', 'float64']:
+                    try:
+                        converted_values = []
+                        for v in values:
+                            if isinstance(v, (int, float)):
+                                converted_values.append(v)
+                            else:
+                                converted_values.append(int(float(v)))
+                        print(f"Converted filter values to numbers: {converted_values}")
+                        filtered_df = filtered_df[filtered_df[column].isin(converted_values)]
+                    except Exception as e:
+                        print(f"Number conversion failed: {e}, using string matching")
+                        filtered_df = filtered_df[filtered_df[column].astype(str).isin([str(v) for v in values])]
+                else:
+                    # String matching
+                    filtered_df = filtered_df[filtered_df[column].isin(values)]
+                
+                print(f"After filter - rows: {len(filtered_df)}")
+                
+                if len(filtered_df) == 0:
+                    print("WARNING: Filter eliminated all rows!")
+                    break
         
         total_records = len(filtered_df)
         print(f"GRADUAN LUAR SUMMARY DEBUG: Processing {total_records} records")
@@ -243,8 +280,7 @@ def api_summary():
             'top_jobs': job_type_stats.get('top_3_jobs', {}),
             'most_represented_institution': institution_stats.get('most_represented_institution', 'N/A'),
             'institution_diversity': institution_stats.get('institution_count', 0),
-            'filter_applied': len([f for f in filters.values() if f]) > 0,
-            **stats
+            'filter_applied': len([f for f in filters.values() if f]) > 0
         }
         
         print(f"GRADUAN LUAR SUMMARY RESULT: {enhanced_stats}")
@@ -268,18 +304,38 @@ def api_summary():
 def api_reasons_distribution():
     """Get enhanced reasons distribution data for horizontal bar chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Get filters properly like demografi
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if values:
+                filters[key] = values
+        
+        # Apply filters directly to dataframe
+        filtered_df = data_processor.df.copy()
+        
+        for column, values in filters.items():
+            if not values or len(values) == 0:
+                continue
+            if column in filtered_df.columns:
+                if filtered_df[column].dtype in ['int64', 'float64']:
+                    try:
+                        converted_values = [int(float(v)) if isinstance(v, str) else v for v in values]
+                        filtered_df = filtered_df[filtered_df[column].isin(converted_values)]
+                    except:
+                        filtered_df = filtered_df[filtered_df[column].astype(str).isin([str(v) for v in values])]
+                else:
+                    filtered_df = filtered_df[filtered_df[column].isin(values)]
         
         reason_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
-        if reason_column not in filtered_processor.filtered_df.columns:
+        if reason_column not in filtered_df.columns:
             return jsonify(formatter.format_horizontal_bar_chart(
                 pd.Series([1], index=['No Data Available']),
                 "Sebab Bekerja di Luar Bidang"
             ))
         
         # Enhanced reason processing
-        reasons = filtered_processor.filtered_df[reason_column].dropna()
+        reasons = filtered_df[reason_column].dropna()
         all_reasons = []
         
         for reasons_list in reasons:
@@ -310,21 +366,41 @@ def api_reasons_distribution():
 def api_job_types():
     """Get enhanced job types distribution for pie chart"""
     try:
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
-        filtered_processor = data_processor.apply_filters(filters)
+        # Get filters properly like demografi
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if values:
+                filters[key] = values
+        
+        # Apply filters directly to dataframe
+        filtered_df = data_processor.df.copy()
+        
+        for column, values in filters.items():
+            if not values or len(values) == 0:
+                continue
+            if column in filtered_df.columns:
+                if filtered_df[column].dtype in ['int64', 'float64']:
+                    try:
+                        converted_values = [int(float(v)) if isinstance(v, str) else v for v in values]
+                        filtered_df = filtered_df[filtered_df[column].isin(converted_values)]
+                    except:
+                        filtered_df = filtered_df[filtered_df[column].astype(str).isin([str(v) for v in values])]
+                else:
+                    filtered_df = filtered_df[filtered_df[column].isin(values)]
         
         job_column = 'Apakah jenis pekerjaan anda sekarang'
-        if job_column not in filtered_processor.filtered_df.columns:
+        if job_column not in filtered_df.columns:
             return jsonify(formatter.format_enhanced_pie_chart(
                 pd.Series([1], index=['No Data Available']),
-                "Agihan Jenis Pekerjaan"
+                "Agihan Bidang Pekerjaan"
             ))
         
-        job_counts = filtered_processor.filtered_df[job_column].value_counts()
+        job_counts = filtered_df[job_column].value_counts()
         
         chart_data = formatter.format_enhanced_pie_chart(
             job_counts,
-            "Agihan Jenis Pekerjaan Semasa",
+            "Agihan Bidang Pekerjaan Semasa",
             max_items=8
         )
         
@@ -341,26 +417,67 @@ def api_reasons_simple():
     """Get simplified reasons distribution for vertical bar chart (NEW ENDPOINT)"""
     try:
         print("GRADUAN LUAR: Reasons Simple API called")
-        filters = {k: request.args.getlist(k) for k in request.args.keys()}
+        # Get filters properly like demografi
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if values:
+                filters[key] = values
         print(f"GRADUAN LUAR: Filters received: {filters}")
         
-        filtered_processor = data_processor.apply_filters(filters)
-        print(f"GRADUAN LUAR: Filtered data has {len(filtered_processor.filtered_df)} records")
+        # Apply filters directly to dataframe
+        filtered_df = data_processor.df.copy()
+        
+        for column, values in filters.items():
+            if not values or len(values) == 0:
+                continue
+            if column in filtered_df.columns:
+                if filtered_df[column].dtype in ['int64', 'float64']:
+                    try:
+                        converted_values = [int(float(v)) if isinstance(v, str) else v for v in values]
+                        filtered_df = filtered_df[filtered_df[column].isin(converted_values)]
+                    except:
+                        filtered_df = filtered_df[filtered_df[column].astype(str).isin([str(v) for v in values])]
+                else:
+                    filtered_df = filtered_df[filtered_df[column].isin(values)]
+        
+        print(f"GRADUAN LUAR: Filtered data has {len(filtered_df)} records")
         
         reason_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
-        if reason_column not in filtered_processor.filtered_df.columns:
+        if reason_column not in filtered_df.columns:
             print(f"GRADUAN LUAR: Column '{reason_column}' not found in data")
             return jsonify(formatter.format_vertical_bar_chart(
                 pd.Series([1], index=['No Data Available']),
                 "Sebab Tidak Bekerja dalam Bidang"
             ))
         
-        # Simple value counts like the matplotlib example
-        reason_counts = filtered_processor.filtered_df[reason_column].value_counts().head(10)
-        print(f"GRADUAN LUAR: Reason counts: {reason_counts.to_dict()}")
-        
+        # Handle checkbox data - split multiple reasons and count individually
+        reason_series = filtered_df[reason_column].dropna()
+        print(f"GRADUAN LUAR: Raw reason data sample: {reason_series.head().tolist()}")
+
+        # Split checkbox responses (assuming they're separated by commas, semicolons, or similar)
+        all_reasons = []
+        for response in reason_series:
+            if pd.isna(response) or response == '':
+                continue
+            # Split by common separators and clean up
+            reasons = str(response).split(';')  # Try semicolon first
+            if len(reasons) == 1:
+                reasons = str(response).split(',')  # Then comma
+            if len(reasons) == 1:
+                reasons = [str(response)]  # Single response
+
+            for reason in reasons:
+                cleaned_reason = reason.strip()
+                if cleaned_reason and cleaned_reason != '':
+                    all_reasons.append(cleaned_reason)
+
+        # Count individual reasons
+        reason_counts = pd.Series(all_reasons).value_counts().head(10)
+        print(f"GRADUAN LUAR: Individual reason counts: {reason_counts.to_dict()}")
+
         if len(reason_counts) == 0:
-            print("GRADUAN LUAR: No reason data found")
+            print("GRADUAN LUAR: No reason data found after processing")
             return jsonify(formatter.format_vertical_bar_chart(
                 pd.Series([1], index=['No Data Available']),
                 "Sebab Tidak Bekerja dalam Bidang"
@@ -482,6 +599,183 @@ def api_table_data():
         print(f"GRADUAN LUAR TABLE ERROR: {str(e)}")
         import traceback
         traceback.print_exc()
+        return jsonify({
+            'error': str(e),
+            'data': [],
+            'pagination': {'page': 1, 'per_page': 50, 'total': 0, 'pages': 0},
+            'columns': []
+        }), 500
+
+@graduanluar_bp.route('/api/outside-field-programs')
+def api_outside_field_programs():
+    """Get programs breakdown for graduates working outside their field - requested for Graduan Luar module"""
+    try:
+        # Get filters properly like demografi
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if values:
+                filters[key] = values
+        
+        # Apply filters directly to dataframe
+        filtered_df = data_processor.df.copy()
+        
+        for column, values in filters.items():
+            if not values or len(values) == 0:
+                continue
+            if column in filtered_df.columns:
+                if filtered_df[column].dtype in ['int64', 'float64']:
+                    try:
+                        converted_values = [int(float(v)) if isinstance(v, str) else v for v in values]
+                        filtered_df = filtered_df[filtered_df[column].isin(converted_values)]
+                    except:
+                        filtered_df = filtered_df[filtered_df[column].astype(str).isin([str(v) for v in values])]
+                else:
+                    filtered_df = filtered_df[filtered_df[column].isin(values)]
+
+        # Use the correct program column from the actual data structure
+        program_column = 'Bidang pengajian utama anda?'
+        not_in_field_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
+
+        if program_column not in filtered_df.columns:
+            return jsonify({
+                'labels': ['No Data Available'],
+                'datasets': [{
+                    'label': 'Program Luar Bidang',
+                    'data': [1],
+                    'backgroundColor': ['#DC2626']
+                }]
+            })
+
+        # Filter for graduates who ARE working outside their field
+        # These are people who have actual reasons (not "Tidak berkaitan kerana saya bekerja dalam bidang pengajian")
+        outside_field_df = filtered_df[
+            filtered_df[not_in_field_column].notna() &
+            (filtered_df[not_in_field_column] != '') &
+            (~filtered_df[not_in_field_column].str.contains('Tidak berkaitan kerana saya bekerja dalam bidang pengajian', na=False))
+        ].copy()
+
+        # Debug: Check what data we have
+        print(f"DEBUG GRADUAN LUAR: Total filtered rows: {len(filtered_df)}")
+        print(f"DEBUG GRADUAN LUAR: Outside field rows: {len(outside_field_df)}")
+        print(f"DEBUG GRADUAN LUAR: Program column exists: {program_column in filtered_df.columns}")
+
+        if len(outside_field_df) > 0:
+            print(f"DEBUG GRADUAN LUAR: Sample programs: {outside_field_df[program_column].dropna().head().tolist()}")
+            print(f"DEBUG GRADUAN LUAR: Program value counts: {outside_field_df[program_column].value_counts().head()}")
+
+        # Get program distribution for those working outside their field
+        program_counts = outside_field_df[program_column].dropna().value_counts()
+
+        if program_counts.empty:
+            return jsonify({
+                'labels': ['Tiada Data Program'],
+                'datasets': [{
+                    'label': 'Program Luar Bidang',
+                    'data': [1],
+                    'backgroundColor': ['#EF4444']
+                }]
+            })
+
+        chart_data = {
+            'labels': [str(label) for label in program_counts.index.tolist()],
+            'datasets': [{
+                'label': 'Bilangan Graduan Bekerja Luar Bidang',
+                'data': [int(val) for val in program_counts.values.tolist()],
+                'backgroundColor': [
+                    '#EF4444', '#DC2626', '#B91C1C', '#991B1B',
+                    '#7F1D1D', '#F87171', '#FCA5A5', '#FECACA',
+                    '#FEE2E2', '#FEF2F2'
+                ][:len(program_counts)]
+            }]
+        }
+
+        return jsonify(chart_data)
+
+    except Exception as e:
+        print(f"Error in outside field programs endpoint: {str(e)}")
+        return jsonify({
+            'error': str(e),
+            'labels': ['Error'],
+            'datasets': [{
+                'label': 'Error',
+                'data': [1]
+            }]
+        }), 500
+
+@graduanluar_bp.route('/api/outside-field-table')
+def api_outside_field_table():
+    """Get table data for outside field programs chart"""
+    try:
+        filters = {k: request.args.getlist(k) for k in request.args.keys()
+                  if k not in ['page', 'per_page', 'search']}
+        filtered_processor = data_processor.apply_filters(filters)
+        filtered_df = filtered_processor.filtered_df
+
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 50))
+        search = request.args.get('search', '')
+
+        relevant_columns = [
+            'Bidang pengajian utama anda?',
+            'Apakah jenis pekerjaan anda sekarang',
+            'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?',
+            'Adakah anda kini bekerja?',
+            'Tahun graduasi anda?',
+            'Jantina anda?',
+            'Institusi pendidikan MARA yang anda hadiri?'
+        ]
+
+        available_columns = [col for col in relevant_columns if col in filtered_df.columns]
+
+        # Filter for graduates working outside their field (same logic as chart)
+        not_in_field_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
+        outside_field_df = filtered_df[
+            filtered_df[not_in_field_column].notna() &
+            (filtered_df[not_in_field_column] != '') &
+            (~filtered_df[not_in_field_column].str.contains('Tidak berkaitan kerana saya bekerja dalam bidang pengajian', na=False))
+        ].copy()
+
+        # Create filtered processor and get data
+        class FilteredProcessor:
+            def __init__(self, df):
+                self.filtered_df = df
+
+            def get_table_data(self, page, per_page, search, columns):
+                df_subset = self.filtered_df[columns] if columns else self.filtered_df
+
+                # Apply search if provided
+                if search:
+                    search_mask = df_subset.astype(str).apply(
+                        lambda x: x.str.contains(search, case=False, na=False)
+                    ).any(axis=1)
+                    df_subset = df_subset[search_mask]
+
+                # Calculate pagination
+                total = len(df_subset)
+                pages = (total + per_page - 1) // per_page
+                start_idx = (page - 1) * per_page
+                end_idx = start_idx + per_page
+
+                # Get page data
+                page_data = df_subset.iloc[start_idx:end_idx].fillna('').to_dict('records')
+
+                return {
+                    'data': page_data,
+                    'pagination': {
+                        'page': page,
+                        'per_page': per_page,
+                        'total': total,
+                        'pages': pages
+                    },
+                    'columns': list(df_subset.columns)
+                }
+
+        processor = FilteredProcessor(outside_field_df)
+        data = processor.get_table_data(page, per_page, search, available_columns)
+        return jsonify(data)
+
+    except Exception as e:
         return jsonify({
             'error': str(e),
             'data': [],

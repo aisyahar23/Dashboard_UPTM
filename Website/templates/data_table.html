@@ -77,21 +77,86 @@
             </button>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Dynamic filter inputs will be generated here -->
-            <template x-for="filter in availableFilters">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2" x-text="filter.label"></label>
-                    <select x-model="filters[filter.key]" 
-                            @change="applyFilters()"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="">All</option>
-                        <template x-for="option in filter.options">
-                            <option :value="option.value" x-text="option.label"></option>
-                        </template>
-                    </select>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- Graduation Year Filter -->
+            <div class="filter-section">
+                <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
+                    <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Tahun Graduasi
+                    <span class="ml-auto text-xs text-gray-500" x-show="filters.year.length > 0" x-text="`${filters.year.length} dipilih`"></span>
+                </label>
+                <div class="max-h-32 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+                    <template x-for="option in availableFilters.find(f => f.key === 'year')?.options || []" :key="option.value">
+                        <label class="flex items-center p-1 rounded-md hover:bg-blue-100 cursor-pointer transition-colors">
+                            <input type="checkbox" :value="option.value" x-model="filters.year" @change="applyFilters()" class="rounded border-blue-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0">
+                            <span class="ml-2 text-sm font-medium text-gray-700" x-text="option.label"></span>
+                        </label>
+                    </template>
                 </div>
-            </template>
+            </div>
+
+            <!-- Field Filter -->
+            <div class="filter-section">
+                <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
+                    <i class="fas fa-graduation-cap mr-2 text-green-500"></i>Bidang Pengajian
+                    <span class="ml-auto text-xs text-gray-500" x-show="filters.field.length > 0" x-text="`${filters.field.length} dipilih`"></span>
+                </label>
+                <div class="max-h-32 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+                    <template x-for="option in availableFilters.find(f => f.key === 'field')?.options || []" :key="option.value">
+                        <label class="flex items-center p-1 rounded-md hover:bg-green-100 cursor-pointer transition-colors text-sm">
+                            <input type="checkbox" :value="option.value" x-model="filters.field" @change="applyFilters()" class="rounded border-green-300 text-green-600 focus:ring-green-500 focus:ring-offset-0">
+                            <span class="ml-2 font-medium text-gray-700 leading-tight" x-text="option.label"></span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Gender Filter -->
+            <div class="filter-section">
+                <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
+                    <i class="fas fa-venus-mars mr-2 text-purple-500"></i>Jantina
+                    <span class="ml-auto text-xs text-gray-500" x-show="filters.gender.length > 0" x-text="`${filters.gender.length} dipilih`"></span>
+                </label>
+                <div class="grid grid-cols-1 gap-2">
+                    <template x-for="option in availableFilters.find(f => f.key === 'gender')?.options || []" :key="option.value">
+                        <label class="flex items-center p-2 rounded-lg hover:bg-purple-50 cursor-pointer border border-purple-100 transition-colors">
+                            <input type="checkbox" :value="option.value" x-model="filters.gender" @change="applyFilters()" class="rounded border-purple-300 text-purple-600 focus:ring-purple-500 focus:ring-offset-0">
+                            <span class="ml-3 text-sm font-medium text-gray-700" x-text="option.label"></span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Employment Filter -->
+            <div class="filter-section">
+                <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
+                    <i class="fas fa-briefcase mr-2 text-orange-500"></i>Status Pekerjaan
+                    <span class="ml-auto text-xs text-gray-500" x-show="filters.employment.length > 0" x-text="`${filters.employment.length} dipilih`"></span>
+                </label>
+                <div class="max-h-32 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+                    <template x-for="option in availableFilters.find(f => f.key === 'employment')?.options || []" :key="option.value">
+                        <label class="flex items-center p-1 rounded-md hover:bg-orange-100 cursor-pointer transition-colors text-sm">
+                            <input type="checkbox" :value="option.value" x-model="filters.employment" @change="applyFilters()" class="rounded border-orange-300 text-orange-600 focus:ring-orange-500 focus:ring-offset-0">
+                            <span class="ml-2 font-medium text-gray-700 leading-tight" x-text="option.label"></span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Institution Filter -->
+            <div class="filter-section">
+                <label class="text-sm font-bold text-gray-700 mb-3 block flex items-center">
+                    <i class="fas fa-university mr-2 text-indigo-500"></i>Institusi
+                    <span class="ml-auto text-xs text-gray-500" x-show="filters.institution.length > 0" x-text="`${filters.institution.length} dipilih`"></span>
+                </label>
+                <div class="max-h-32 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+                    <template x-for="option in availableFilters.find(f => f.key === 'institution')?.options || []" :key="option.value">
+                        <label class="flex items-center p-1 rounded-md hover:bg-indigo-100 cursor-pointer transition-colors text-sm">
+                            <input type="checkbox" :value="option.value" x-model="filters.institution" @change="applyFilters()" class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0">
+                            <span class="ml-2 font-medium text-gray-700 leading-tight" x-text="option.label"></span>
+                        </label>
+                    </template>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -200,13 +265,19 @@
             searchQuery: '',
             sortColumn: '',
             sortDirection: 'asc',
-            filters: {},
+            filters: {
+                year: [],
+                field: [],
+                gender: [],
+                employment: [],
+                institution: []
+            },
             availableFilters: [],
             apiEndpoint: '{{ api_endpoint }}',
             
             init() {
+                this.loadAvailableFilters();
                 this.loadData();
-                this.setupFilters();
             },
             
             async loadData() {
@@ -215,72 +286,188 @@
                 try {
                     const params = new URLSearchParams({
                         page: this.currentPage,
-                        per_page: this.perPage,
-                        search: this.searchQuery
+                        per_page: this.perPage
                     });
                     
-                    // Add filters
-                    Object.entries(this.filters).forEach(([key, value]) => {
-                        if (value) params.append(key, value);
-                    });
+                    // Add search if provided
+                    if (this.searchQuery && this.searchQuery.trim()) {
+                        params.append('search', this.searchQuery.trim());
+                    }
                     
-                    const response = await fetch(`${this.apiEndpoint}?${params}`);
+                    // Try both column name variations
+                    if (this.filters.year && this.filters.year.length > 0) {
+                        this.filters.year.forEach(value => {
+                            params.append('Tahun graduasi anda?', String(value));
+                            params.append('Tahun graduasi anda? ', String(value)); // with trailing space
+                        });
+                    }
+                    if (this.filters.field && this.filters.field.length > 0) {
+                        this.filters.field.forEach(value => params.append('Bidang pengajian utama anda?', String(value)));
+                    }
+                    if (this.filters.gender && this.filters.gender.length > 0) {
+                        this.filters.gender.forEach(value => params.append('Jantina anda?', String(value)));
+                    }
+                    if (this.filters.employment && this.filters.employment.length > 0) {
+                        this.filters.employment.forEach(value => params.append('Adakah anda kini bekerja?', String(value)));
+                    }
+                    if (this.filters.institution && this.filters.institution.length > 0) {
+                        this.filters.institution.forEach(value => params.append('Institusi pendidikan MARA yang anda hadiri?', String(value)));
+                    }
+                    
+                    // Add sorting if specified
+                    if (this.sortColumn) {
+                        params.append('sort_by', this.sortColumn);
+                        params.append('sort_direction', this.sortDirection);
+                    }
+                    
+                    const paramString = params.toString();
+                    console.log('🚀 Loading data with params:', paramString);
+                    console.log('🎯 Full URL will be:', `${this.apiEndpoint}?${paramString}`);
+                    
+                    // Use alldata API endpoint for consistent filtering
+                    const response = await fetch(`/alldata/api/table-data?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
                     const result = await response.json();
                     
+                    // Handle alldata API response format
                     this.data = result.data || [];
                     this.columns = result.columns || [];
-                    this.totalRecords = result.pagination?.total || 0;
-                    this.totalPages = result.pagination?.pages || 1;
+                    this.totalRecords = result.pagination?.total || this.data.length;
+                    this.totalPages = result.pagination?.pages || Math.ceil(this.totalRecords / this.perPage);
+                        
+                        console.log('✅ Data loaded successfully:');
+                        console.log('📊 Records:', this.data.length);
+                        console.log('📋 Columns:', this.columns.length);
+                        console.log('📈 Total records:', this.totalRecords);
+                    if (result.error) {
+                        console.error('❌ API returned error:', result.error);
+                        throw new Error(result.error);
+                    }
                     
                 } catch (error) {
                     console.error('Error loading data:', error);
-                    Toast.show('Error loading data', 'error');
+                    this.showToast('Error loading data: ' + error.message, 'error');
+                    // Set empty state
+                    this.data = [];
+                    this.columns = [];
+                    this.totalRecords = 0;
+                    this.totalPages = 1;
                 } finally {
                     this.loading = false;
                 }
             },
             
-            setupFilters() {
-                // This would be dynamic based on your data structure
-                this.availableFilters = [
-                    {
-                        key: 'graduation_year',
-                        label: 'Graduation Year',
-                        options: [
-                            { value: '2020', label: '2020' },
-                            { value: '2021', label: '2021' },
-                            { value: '2022', label: '2022' },
-                            { value: '2023', label: '2023' },
-                            { value: '2024', label: '2024' }
-                        ]
-                    }
-                ];
+            async loadAvailableFilters() {
+                try {
+                    console.log('🔍 Loading filter options...');
+                    // Try direct API call like alldata does
+                    const response = await fetch('/alldata/api/filters/available');
+                    const data = await response.json();
+                    
+                    console.log('📊 Direct filter API response:', data);
+                    
+                    this.availableFilters = [
+                        {
+                            key: 'year',
+                            label: 'Tahun Graduasi',
+                            options: (data['Tahun graduasi anda?'] || data['Tahun graduasi anda? '] || []).map(year => ({ value: year, label: year }))
+                        },
+                        {
+                            key: 'field',
+                            label: 'Bidang Pengajian',
+                            options: (data['Bidang pengajian utama anda?'] || data['Bidang pengajian utama anda? '] || []).map(field => ({ value: field, label: field }))
+                        },
+                        {
+                            key: 'gender',
+                            label: 'Jantina',
+                            options: (data['Jantina anda?'] || data['Jantina anda? '] || []).map(gender => ({ value: gender, label: gender }))
+                        },
+                        {
+                            key: 'employment',
+                            label: 'Status Pekerjaan',
+                            options: (data['Adakah anda kini bekerja?'] || []).map(emp => ({ value: emp, label: emp }))
+                        },
+                        {
+                            key: 'institution',
+                            label: 'Institusi',
+                            options: (data['Institusi pendidikan MARA yang anda hadiri?'] || []).map(inst => ({ value: inst, label: inst }))
+                        }
+                    ];
+                    console.log('✅ Direct API filters processed:', this.availableFilters);
+                } catch (error) {
+                    console.error('❌ Error loading filter options:', error);
+                    this.availableFilters = [
+                        {
+                            key: 'year',
+                            label: 'Tahun Graduasi',
+                            options: [2020, 2021, 2022, 2023, 2024].map(year => ({ value: year, label: year }))
+                        }
+                    ];
+                }
             },
             
             search() {
+                console.log('Search triggered with query:', this.searchQuery);
                 this.currentPage = 1;
                 this.loadData();
             },
             
             applyFilters() {
+                console.log('🔧 Applying filters:', this.filters);
+                console.log('📅 Year filter specifically:', this.filters.year);
+                
+                // Debug: Show what will be sent as parameters
+                const params = new URLSearchParams();
+                Object.entries(this.filters).forEach(([key, values]) => {
+                    if (Array.isArray(values) && values.length > 0) {
+                        const paramKey = key === 'year' ? 'Tahun graduasi anda?' : key;
+                        values.forEach(value => {
+                            if (key === 'year') {
+                                const yearValue = parseInt(value);
+                                if (!isNaN(yearValue)) {
+                                    params.append(paramKey, yearValue.toString());
+                                    console.log(`📅 Adding year filter: ${paramKey} = ${yearValue}`);
+                                }
+                            } else {
+                                params.append(paramKey, value);
+                            }
+                        });
+                    }
+                });
+                console.log('🔗 Filter params that will be sent:', params.toString());
+                
                 this.currentPage = 1;
                 this.loadData();
             },
             
             clearFilters() {
-                this.filters = {};
+                console.log('Clearing all filters');
+                this.filters = {
+                    year: [],
+                    field: [],
+                    gender: [],
+                    employment: [],
+                    institution: []
+                };
                 this.searchQuery = '';
                 this.currentPage = 1;
                 this.loadData();
+                this.showToast('All filters cleared', 'info');
             },
             
             sortBy(column) {
+                console.log('Sorting by column:', column);
                 if (this.sortColumn === column) {
                     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
                 } else {
                     this.sortColumn = column;
                     this.sortDirection = 'asc';
                 }
+                this.currentPage = 1;
                 this.loadData();
             },
             
@@ -310,11 +497,26 @@
                         search: this.searchQuery
                     });
                     
-                    Object.entries(this.filters).forEach(([key, value]) => {
-                        if (value) params.append(key, value);
-                    });
+                    if (this.filters.year && this.filters.year.length > 0) {
+                        this.filters.year.forEach(value => {
+                            params.append('Tahun graduasi anda?', String(value));
+                            params.append('Tahun graduasi anda? ', String(value)); // with trailing space
+                        });
+                    }
+                    if (this.filters.field && this.filters.field.length > 0) {
+                        this.filters.field.forEach(value => params.append('Bidang pengajian utama anda?', String(value)));
+                    }
+                    if (this.filters.gender && this.filters.gender.length > 0) {
+                        this.filters.gender.forEach(value => params.append('Jantina anda?', String(value)));
+                    }
+                    if (this.filters.employment && this.filters.employment.length > 0) {
+                        this.filters.employment.forEach(value => params.append('Adakah anda kini bekerja?', String(value)));
+                    }
+                    if (this.filters.institution && this.filters.institution.length > 0) {
+                        this.filters.institution.forEach(value => params.append('Institusi pendidikan MARA yang anda hadiri?', String(value)));
+                    }
                     
-                    const response = await fetch(`${this.apiEndpoint.replace('/table-data', '/export')}?${params}`);
+                    const response = await fetch(`/alldata/api/export?${params}`);
                     
                     if (response.ok) {
                         const blob = await response.blob();
@@ -325,13 +527,25 @@
                         a.click();
                         window.URL.revokeObjectURL(url);
                         
-                        Toast.show(`Data exported as ${format.toUpperCase()}`, 'success');
+                        this.showToast(`Data exported as ${format.toUpperCase()}`, 'success');
                     } else {
                         throw new Error('Export failed');
                     }
                 } catch (error) {
                     console.error('Export error:', error);
-                    Toast.show('Export failed', 'error');
+                    this.showToast('Export failed', 'error');
+                }
+            },
+            
+            showToast(message, type = 'info') {
+                if (typeof Toast !== 'undefined' && Toast.show) {
+                    Toast.show(message, type);
+                } else {
+                    console.log(`${type.toUpperCase()}: ${message}`);
+                    // Fallback alert for important messages
+                    if (type === 'error') {
+                        alert('Error: ' + message);
+                    }
                 }
             }
         }

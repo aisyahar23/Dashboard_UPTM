@@ -212,9 +212,9 @@ colorSchemes: {
             borderWidth: 0,
             borderSkipped: false,
             barThickness: 'flex',
-            maxBarThickness: 35,
-            categoryPercentage: 0.8,
-            barPercentage: 0.85,
+            maxBarThickness: 50,
+            categoryPercentage: 0.95,
+            barPercentage: 0.9,
         },
 
         // Enhanced stacked bar template
@@ -245,9 +245,9 @@ colorSchemes: {
             borderWidth: 0,
             borderSkipped: false,
             barThickness: 'flex',
-            maxBarThickness: 45,
-            categoryPercentage: 0.8,
-            barPercentage: 0.75
+            maxBarThickness: 40,
+            categoryPercentage: 0.6,
+            barPercentage: 0.7
         },
 
         // Enhanced pie template
@@ -278,8 +278,8 @@ colorSchemes: {
         maintainAspectRatio: false,
         devicePixelRatio: 2, // Better quality on high DPI displays
         interaction: {
-            intersect: false,
-            mode: 'index'
+            intersect: true,
+            mode: 'nearest'
         },
         animation: {
             duration: 1200,
@@ -484,6 +484,16 @@ class EnhancedChartFactory
             options: {
                 ...ChartConfig.globalOptions,
                 indexAxis: isHorizontal ? 'y' : 'x',
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: isHorizontal ? 50 : 20,
+                        right: 20,
+                        top: 20,
+                        bottom: 20
+                    }
+                },
                 ...options,
                 scales: {
                     [ isHorizontal ? 'x' : 'y' ]: {
@@ -514,17 +524,29 @@ class EnhancedChartFactory
                         grid: { display: false },
                         ticks: {
                             font: {
-                                size: 11,
-                                weight: '600',
+                                size: 8,
+                                weight: '500',
                                 family: "'Inter', 'Segoe UI', sans-serif"
                             },
-                            color: '#6b7280',
+                            color: '#1f2937',
                             maxRotation: 0,
                             minRotation: 0,
-                            padding: 10
+                            padding: isHorizontal ? 15 : 10,
+                            maxTicksLimit: undefined,
+                            autoSkip: false
                         },
                         border: {
                             display: false
+                        },
+                        beforeFit: function(scale) {
+                            if (isHorizontal) {
+                                scale.width = 800;
+                            }
+                        },
+                        afterFit: function(scale) {
+                            if (isHorizontal) {
+                                scale.width = 800;
+                            }
                         }
                     },
                     ...options.scales
@@ -533,14 +555,55 @@ class EnhancedChartFactory
                     ...ChartConfig.globalOptions.plugins,
                     tooltip: {
                         ...ChartConfig.globalOptions.plugins.tooltip,
+                        enabled: true,
+                        mode: 'nearest',
+                        intersect: true,
                         callbacks: {
+                            title: function(context) {
+                                if (isHorizontal && context[0]) {
+                                    return context[0].label;
+                                }
+                                return context[0]?.label || '';
+                            },
                             label: function (context)
                             {
                                 return `${context.dataset.label || 'Nilai'}: ${context.parsed[ isHorizontal ? 'x' : 'y' ].toLocaleString()}`;
                             }
                         }
                     },
+                    customLabels: isHorizontal ? {
+                        afterDraw: function(chart) {
+                            const ctx = chart.ctx;
+                            const yScale = chart.scales.y;
+                            const originalLabels = chart.data.labels;
+                            
+                            if (!originalLabels || !yScale) return;
+                            
+                            // Hide original labels by making them transparent
+                            yScale.options.ticks.color = 'transparent';
+                            
+                            ctx.save();
+                            ctx.font = '9px Inter, sans-serif';
+                            ctx.fillStyle = '#1f2937';
+                            ctx.textAlign = 'right';
+                            ctx.textBaseline = 'middle';
+                            
+                            originalLabels.forEach((label, index) => {
+                                const y = yScale.getPixelForValue(index);
+                                const x = yScale.left - 20;
+                                
+                                // Draw full text without truncation
+                                ctx.fillText(label.toString(), x, y);
+                            });
+                            
+                            ctx.restore();
+                        }
+                    } : {},
                     ...options.plugins
+                },
+                interaction: {
+                    intersect: true,
+                    mode: 'nearest'
                 }
             }
         });
@@ -580,40 +643,17 @@ class EnhancedChartFactory
                         labels: {
                             usePointStyle: true,
                             pointStyle: 'circle',
-                            padding: 20,
+                            padding: 15,
                             font: {
-                                size: 12,
+                                size: 9,
                                 weight: '500',
                                 family: "'Inter', 'Segoe UI', sans-serif"
                             },
                             color: '#374151',
-                            boxWidth: 15,
-                            boxHeight: 15,
-                            generateLabels: function (chart)
-                            {
-                                const data = chart.data;
-                                if (data.labels.length && data.datasets.length)
-                                {
-                                    return data.labels.map((label, index) =>
-                                    {
-                                        const dataset = data.datasets[ 0 ];
-                                        const value = dataset.data[ index ];
-                                        const total = dataset.data.reduce((sum, val) => sum + val, 0);
-                                        const percentage = ((value / total) * 100).toFixed(1);
+                            boxWidth: 10,
+                            boxHeight: 10,
+                            maxWidth: 180,
 
-                                        return {
-                                            text: `${label} (${percentage}%)`,
-                                            fillStyle: dataset.backgroundColor[ index ],
-                                            strokeStyle: '#ffffff',
-                                            lineWidth: 3,
-                                            hidden: false,
-                                            index: index,
-                                            fontColor: '#374151'
-                                        };
-                                    });
-                                }
-                                return [];
-                            }
                         }
                     },
                     tooltip: {
@@ -737,17 +777,23 @@ class EnhancedChartFactory
                         grid: { display: false },
                         ticks: {
                             font: {
-                                size: 10,
+                                size: 8,
                                 weight: '600',
                                 family: "'Inter', 'Segoe UI', sans-serif"
                             },
-                            color: '#6b7280',
+                            color: '#1f2937',
                             maxRotation: 0,
                             minRotation: 0,
-                            padding: 8
+                            padding: 15,
+                            align: 'end'
                         },
                         border: {
                             display: false
+                        },
+                        afterFit: function(scale) {
+                            if (isHorizontal) {
+                                scale.width = 400;
+                            }
                         }
                     },
                     ...options.scales

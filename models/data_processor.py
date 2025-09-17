@@ -17,7 +17,15 @@ class DataProcessor:
         for filter_key, filter_values in filters.items():
             if filter_values and len(filter_values) > 0:
                 if filter_key in filtered_df.columns:
-                    filtered_df = filtered_df[filtered_df[filter_key].isin(filter_values)]
+                    # Convert filter values to match column data type
+                    if filtered_df[filter_key].dtype in ['int64', 'float64']:
+                        try:
+                            converted_values = [int(float(v)) for v in filter_values]
+                            filtered_df = filtered_df[filtered_df[filter_key].isin(converted_values)]
+                        except:
+                            filtered_df = filtered_df[filtered_df[filter_key].astype(str).isin([str(v) for v in filter_values])]
+                    else:
+                        filtered_df = filtered_df[filtered_df[filter_key].isin(filter_values)]
         
         new_processor = DataProcessor(filtered_df)
         new_processor.filtered_df = filtered_df

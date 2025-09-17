@@ -533,17 +533,20 @@ class ChartFactory {
                     ...this.defaultOptions.plugins,
                     legend: {
                         display: true,
-                        position: 'right',
+                        position: 'bottom',
                         labels: {
                             usePointStyle: true,
                             pointStyle: 'circle',
                             padding: 15,
                             font: {
-                                size: 12,
+                                size: 11,
                                 weight: '500',
                                 family: "'Inter', 'Segoe UI', sans-serif"
                             },
                             color: '#374151',
+                            boxWidth: 12,
+                            boxHeight: 12,
+                            maxWidth: 300,
                             generateLabels: function(chart) {
                                 const data = chart.data;
                                 if (data.labels.length && data.datasets.length) {

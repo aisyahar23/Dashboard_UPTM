@@ -15,12 +15,7 @@ EXCEL_FILE_PATH = 'data/Questionnaire.xlsx'
 df = load_excel_data(EXCEL_FILE_PATH)
 data_processor = DataProcessor(df)
 
-# Print debug info on startup
-print("="*50)
-print("INTERN ROUTES DEBUG INFO")
-print("="*50)
-print(f"Data loaded. Shape: {df.shape}")
-print(f"Columns: {len(df.columns)}")
+
 
 # Check key columns
 key_columns = [
