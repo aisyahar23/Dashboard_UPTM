@@ -291,7 +291,7 @@
                         <div class="text-sm text-white flex items-center space-x-2">
                             <span x-show="dataLoaded && !loading" class="flex items-center gap-x-1">
                                 <i class="fas fa-users mr-1"></i>
-                                <strong x-text="kpis.total_records ? kpis.total_records : '0'"></strong> Responden
+                                <strong x-text="kpis.total_records || '0'"></strong> Responden
                             </span>
                             <span x-show="loading" class="flex items-center">
                                 <i class="fas fa-spinner fa-spin mr-2"></i>
@@ -318,7 +318,7 @@
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Perempuan</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.female_rate ? kpis.female_rate + '%' : '0%'"></div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.female_rate || 0) + '%'"></div>
                         </div>
                     </div>
                 </div>
@@ -337,7 +337,7 @@
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Kumpulan Umur Utama</div>
-                            <div class="text-lg font-bold text-gray-900 leading-tight" x-text="kpis.most_common_age ? kpis.most_common_age : 'N/A'"></div>
+                            <div class="text-lg font-bold text-gray-900 leading-tight" x-text="kpis.most_common_age || 'N/A'"></div>
                         </div>
                     </div>
                 </div>
@@ -356,7 +356,7 @@
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">UPTM</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.uptm_rate ? kpis.uptm_rate + '%' : '0%'"></div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.uptm_rate || 0) + '%'"></div>
                         </div>
                     </div>
                 </div>
@@ -375,7 +375,7 @@
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Kejuruteraan</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.engineering_rate ? kpis.engineering_rate + '%' : '0%'"></div>
+                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.engineering_rate || 0) + '%'"></div>
                         </div>
                     </div>
                 </div>
@@ -577,6 +577,54 @@
                 </div>
             </div>
         </div>
+
+        <!-- NEW: Field Distribution Chart (Ungrouped) -->
+        <div class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden">
+            <div class="px-6 py-3 text-black border-b border-gray-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-md font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-graduation-cap text-primary-600 mr-3"></i>
+                            Taburan Bidang Pengajian Mengikut Bidang Pengajian 
+                        </h3>
+                        <p class="text-gray-600 text-[10px] mt-1">Taburan terperinci graduan berdasarkan bidang pengajian </p>
+                    </div>
+                    <div class="flex space-x-1">
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-primary-600 transition-all duration-200">
+                            <button @click="openChartModal('field-distribution', 'Pengagihan Bidang Pengajian')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-table text-xs"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Maklumat Lanjut
+                            </div>
+                        </div>
+                        <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-primary-600 transition-all duration-200">
+                            <button @click="refreshChart('field-distribution')"
+                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
+                                <i class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
+                                Muat Semula
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-8">
+                <div class="chart-container h-96 relative">
+                    <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
+                        <div class="text-center">
+                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-600 mx-auto mb-4"></div>
+                            <div class="text-gray-700 font-medium">Memuatkan taburan bidang pengajian...</div>
+                        </div>
+                    </div>
+                    <canvas id="fieldDistributionChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -607,10 +655,10 @@
                 if (this.isInitialized) return;
                 this.isInitialized = true;
                 
-                // Prevent layout shifts immediately
+                // Wait for dependencies and then load data
                 this.$nextTick(() => {
                     this.preventLayoutShift();
-                    this.waitForEnhancedChart();
+                    this.waitForDependencies();
                     this.loadAvailableFilters();
                     this.updateActiveFiltersCount();
                 });
@@ -630,19 +678,31 @@
                 });
             },
 
-            waitForEnhancedChart() {
+            waitForDependencies() {
+                console.log('Checking for Chart.js and EnhancedChartFactory...');
+                console.log('Chart available:', typeof Chart !== 'undefined');
+                console.log('EnhancedChartFactory available:', typeof EnhancedChartFactory !== 'undefined');
+                
                 if (typeof Chart === 'undefined' || typeof EnhancedChartFactory === 'undefined') {
-                    setTimeout(() => this.waitForEnhancedChart(), 100);
+                    console.log('Dependencies not ready, retrying in 100ms...');
+                    setTimeout(() => this.waitForDependencies(), 100);
                     return;
                 }
+                
+                console.log('All dependencies loaded, starting data load...');
                 this.loadData();
             },
 
             async loadAvailableFilters() {
                 try {
+                    console.log('Loading available filters...');
                     const response = await fetch('/demografi/api/filters/available');
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
-
                     console.log('Raw filter data received:', data);
 
                     this.availableFilters = {
@@ -656,6 +716,7 @@
                     console.log('Processed availableFilters:', this.availableFilters);
                 } catch (error) {
                     console.error('Error loading filters:', error);
+                    this.showToast('Error loading filters: ' + error.message, 'error');
                 }
             },
 
@@ -674,14 +735,19 @@
 
             async loadData() {
                 if (this.loading) return;
+                
+                console.log('Starting data load...');
                 this.loading = true;
 
                 try {
                     // Add delay to prevent flickering
                     await new Promise(resolve => setTimeout(resolve, 150));
                     
+                    console.log('Loading summary...');
                     await this.loadSummary();
                     await this.delay(200);
+                    
+                    console.log('Loading charts...');
                     await this.loadAgeByYearChart();
                     await this.delay(200);
                     await this.loadGenderDistributionChart();
@@ -689,7 +755,10 @@
                     await this.loadInstitutionCategoryChart();
                     await this.delay(200);
                     await this.loadFieldOfStudyChart();
+                    await this.delay(200);
+                    await this.loadFieldDistributionChart();
 
+                    console.log('All data loaded successfully');
                     this.dataLoaded = true;
                 } catch (error) {
                     console.error('Error loading dashboard data:', error);
@@ -706,9 +775,13 @@
             async loadSummary() {
                 try {
                     const params = this.buildFilterParams();
+                    console.log('Loading summary with params:', params);
+                    
                     const response = await fetch(`/demografi/api/summary?${params}`);
                     if (!response.ok) throw new Error('Failed to load summary');
+                    
                     this.kpis = await response.json();
+                    console.log('KPIs loaded:', this.kpis);
                 } catch (error) {
                     console.error('Error loading summary:', error);
                     this.kpis = {
@@ -722,195 +795,153 @@
                         most_common_field: 'N/A',
                         engineering_rate: 0
                     };
+                    this.showToast('Error loading summary data', 'error');
                 }
             },
 
             async loadAgeByYearChart() {
                 try {
+                    console.log('Loading age by year chart...');
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/age-by-graduation-year?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
+                    console.log('Age by year data:', data);
 
                     this.safeDestroyChart('ageByYear');
 
                     const canvas = document.getElementById('ageByYearChart');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.ageByYear = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'age-by-year', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context) {
-                                                return `${context.dataset.label}: ${context.parsed.y.toLocaleString()} responden`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: true,
-                                        position: 'top',
-                                        labels: {
-                                            font: { size: 11 }
+                    if (!canvas) {
+                        console.error('Canvas element ageByYearChart not found');
+                        return;
+                    }
+
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        window.globalCharts = window.globalCharts || {};
+                        window.globalCharts.ageByYear = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'age-by-year', {
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return `${context.dataset.label}: ${context.parsed.y.toLocaleString()} responden`;
                                         }
                                     }
                                 },
-                                scales: {
-                                    x: {
-                                        stacked: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Tahun Graduasi'
-                                        },
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 10 }
-                                        }
-                                    },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Bilangan Responden'
-                                        }
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                    labels: {
+                                        font: { size: 11 }
                                     }
                                 }
-                            });
-                        }
+                            },
+                            scales: {
+                                x: {
+                                    stacked: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Tahun Graduasi'
+                                    },
+                                    ticks: {
+                                        maxRotation: 45,
+                                        font: { size: 10 }
+                                    }
+                                },
+                                y: {
+                                    stacked: true,
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Bilangan Responden'
+                                    }
+                                }
+                            }
+                        });
+                        console.log('Age by year chart created successfully');
                     }
                 } catch (error) {
                     console.error('Error loading age by year chart:', error);
+                    this.showToast('Error loading age by year chart', 'error');
                 }
             },
 
             async loadGenderDistributionChart() {
                 try {
+                    console.log('Loading gender distribution chart...');
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/gender-distribution?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
+                    console.log('Gender distribution data:', data);
 
                     this.safeDestroyChart('genderDistribution');
 
                     const canvas = document.getElementById('genderDistributionChart');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.genderDistribution = EnhancedChartFactory.createChart(ctx, 'enhanced-pie', data, 'gender-distribution', {
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context) {
-                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                                const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                                return `${context.label}: ${context.parsed.toLocaleString()} (${percentage}%)`;
-                                            }
+                    if (!canvas) {
+                        console.error('Canvas element genderDistributionChart not found');
+                        return;
+                    }
+
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        window.globalCharts = window.globalCharts || {};
+                        window.globalCharts.genderDistribution = EnhancedChartFactory.createChart(ctx, 'enhanced-pie', data, 'gender-distribution', {
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                            return `${context.label}: ${context.parsed.toLocaleString()} (${percentage}%)`;
                                         }
                                     }
                                 }
-                            });
-                        }
+                            }
+                        });
+                        console.log('Gender distribution chart created successfully');
                     }
                 } catch (error) {
                     console.error('Error loading gender distribution chart:', error);
+                    this.showToast('Error loading gender distribution chart', 'error');
                 }
             },
 
             async loadInstitutionCategoryChart() {
                 try {
+                    console.log('Loading institution category chart...');
                     const params = this.buildFilterParams();
                     const response = await fetch(`/demografi/api/institution-category?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
                     const data = await response.json();
+                    console.log('Institution category data:', data);
 
                     this.safeDestroyChart('institutionCategory');
 
                     const canvas = document.getElementById('institutionCategoryChart');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.institutionCategory = EnhancedChartFactory.createChart(
-                                ctx, 'vertical-bar', data, 'institution-category',
-                                {
-                                    plugins: {
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function (context) {
-                                                    return `Bilangan: ${context.parsed.y.toLocaleString()}`;
-                                                }
-                                            }
-                                        },
-                                        legend: { display: false }
-                                    },
-                                    scales: {
-                                        x: {
-                                            ticks: {
-                                                maxRotation: 0,
-                                                minRotation: 0,
-                                                font: { size: 11 },
-                                                callback: function (value) {
-                                                    const label = this.getLabelForValue(value);
-                                                    if (!label) return '';
-                                                    const maxWidth = 20;
-                                                    const lines = [];
-                                                    let line = '';
-                                                    const words = label.split(' ');
-                                                    for (const word of words) {
-                                                        if ((line + word).length <= maxWidth) {
-                                                            line += (line ? ' ' : '') + word;
-                                                        } else {
-                                                            if (line) lines.push(line);
-                                                            if (word.length > maxWidth) {
-                                                                for (let i = 0; i < word.length; i += maxWidth) {
-                                                                    lines.push(word.slice(i, i + maxWidth));
-                                                                }
-                                                                line = '';
-                                                            } else {
-                                                                line = word;
-                                                            }
-                                                        }
-                                                    }
-                                                    if (line) lines.push(line);
-                                                    return lines;
-                                                },
-                                                padding: 10
-                                            }
-                                        },
-                                        y: {
-                                            beginAtZero: true,
-                                            title: {
-                                                display: true,
-                                                text: 'Bilangan Responden'
-                                            }
-                                        }
-                                    },
-                                    layout: {
-                                        padding: { bottom: 20 }
-                                    }
-                                }
-                            );
-                        }
+                    if (!canvas) {
+                        console.error('Canvas element institutionCategoryChart not found');
+                        return;
                     }
-                } catch (error) {
-                    console.error('Error loading institution category chart:', error);
-                }
-            },
 
-            async loadFieldOfStudyChart() {
-                try {
-                    const params = this.buildFilterParams();
-                    const response = await fetch(`/demografi/api/field-of-study?${params}`);
-                    const data = await response.json();
-
-                    this.safeDestroyChart('fieldOfStudy');
-
-                    const canvas = document.getElementById('fieldOfStudyChart');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.fieldOfStudy = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'field-of-study', {
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        window.globalCharts = window.globalCharts || {};
+                        window.globalCharts.institutionCategory = EnhancedChartFactory.createChart(
+                            ctx, 'vertical-bar', data, 'institution-category',
+                            {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
@@ -926,22 +957,24 @@
                                         ticks: {
                                             maxRotation: 0,
                                             minRotation: 0,
-                                            font: { size: 10 },
+                                            font: { size: 11 },
                                             callback: function (value) {
                                                 const label = this.getLabelForValue(value);
                                                 if (!label) return '';
-                                                const charsPerLine = 11;
+                                                const maxWidth = 20;
                                                 const lines = [];
                                                 let line = '';
-                                                for (const word of label.split(' ')) {
-                                                    if ((line + word).length <= charsPerLine) {
+                                                const words = label.split(' ');
+                                                for (const word of words) {
+                                                    if ((line + word).length <= maxWidth) {
                                                         line += (line ? ' ' : '') + word;
                                                     } else {
                                                         if (line) lines.push(line);
-                                                        if (word.length > charsPerLine) {
-                                                            for (let i = 0; i < word.length; i += charsPerLine) {
-                                                                lines.push(word.slice(i, i + charsPerLine));
+                                                        if (word.length > maxWidth) {
+                                                            for (let i = 0; i < word.length; i += maxWidth) {
+                                                                lines.push(word.slice(i, i + maxWidth));
                                                             }
+                                                            line = '';
                                                         } else {
                                                             line = word;
                                                         }
@@ -951,8 +984,7 @@
                                                 return lines;
                                             },
                                             padding: 10
-                                        },
-                                        grid: { display: false }
+                                        }
                                     },
                                     y: {
                                         beginAtZero: true,
@@ -963,13 +995,204 @@
                                     }
                                 },
                                 layout: {
-                                    padding: { bottom: 30 }
+                                    padding: { bottom: 20 }
                                 }
-                            });
-                        }
+                            }
+                        );
+                        console.log('Institution category chart created successfully');
+                    }
+                } catch (error) {
+                    console.error('Error loading institution category chart:', error);
+                    this.showToast('Error loading institution category chart', 'error');
+                }
+            },
+
+            async loadFieldOfStudyChart() {
+                try {
+                    console.log('Loading field of study chart...');
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/demografi/api/field-of-study?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Field of study data:', data);
+
+                    this.safeDestroyChart('fieldOfStudy');
+
+                    const canvas = document.getElementById('fieldOfStudyChart');
+                    if (!canvas) {
+                        console.error('Canvas element fieldOfStudyChart not found');
+                        return;
+                    }
+
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        window.globalCharts = window.globalCharts || {};
+                        window.globalCharts.fieldOfStudy = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'field-of-study', {
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return `Bilangan: ${context.parsed.y.toLocaleString()}`;
+                                        }
+                                    }
+                                },
+                                legend: { display: false }
+                            },
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        maxRotation: 0,
+                                        minRotation: 0,
+                                        font: { size: 10 },
+                                        callback: function (value) {
+                                            const label = this.getLabelForValue(value);
+                                            if (!label) return '';
+                                            const charsPerLine = 11;
+                                            const lines = [];
+                                            let line = '';
+                                            for (const word of label.split(' ')) {
+                                                if ((line + word).length <= charsPerLine) {
+                                                    line += (line ? ' ' : '') + word;
+                                                } else {
+                                                    if (line) lines.push(line);
+                                                    if (word.length > charsPerLine) {
+                                                        for (let i = 0; i < word.length; i += charsPerLine) {
+                                                            lines.push(word.slice(i, i + charsPerLine));
+                                                        }
+                                                    } else {
+                                                        line = word;
+                                                    }
+                                                }
+                                            }
+                                            if (line) lines.push(line);
+                                            return lines;
+                                        },
+                                        padding: 10
+                                    },
+                                    grid: { display: false }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Bilangan Responden'
+                                    }
+                                }
+                            },
+                            layout: {
+                                padding: { bottom: 30 }
+                            }
+                        });
+                        console.log('Field of study chart created successfully');
                     }
                 } catch (error) {
                     console.error('Error loading field of study chart:', error);
+                    this.showToast('Error loading field of study chart', 'error');
+                }
+            },
+
+            // NEW: Load Field Distribution Chart
+            async loadFieldDistributionChart() {
+                try {
+                    console.log('Loading field distribution chart...');
+                    const params = this.buildFilterParams();
+                    const response = await fetch(`/demografi/api/field-distribution?${params}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Field distribution data:', data);
+
+                    this.safeDestroyChart('fieldDistribution');
+
+                    const canvas = document.getElementById('fieldDistributionChart');
+                    if (!canvas) {
+                        console.error('Canvas element fieldDistributionChart not found');
+                        return;
+                    }
+
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        window.globalCharts = window.globalCharts || {};
+                        window.globalCharts.fieldDistribution = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'field-distribution', {
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return `Bilangan: ${context.parsed.y.toLocaleString()}`;
+                                        }
+                                    }
+                                },
+                                legend: { display: false }
+                            },
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        maxRotation: 0,
+                                        minRotation: 0,
+                                        font: { size: 9 },
+                                        callback: function (value) {
+                                            const label = this.getLabelForValue(value);
+                                            if (!label) return '';
+                                            // For centered labels, break long text into multiple lines
+                                            const maxCharsPerLine = 12;
+                                            const words = label.split(' ');
+                                            const lines = [];
+                                            let currentLine = '';
+                                            
+                                            for (const word of words) {
+                                                if ((currentLine + ' ' + word).length <= maxCharsPerLine) {
+                                                    currentLine = currentLine ? currentLine + ' ' + word : word;
+                                                } else {
+                                                    if (currentLine) lines.push(currentLine);
+                                                    if (word.length > maxCharsPerLine) {
+                                                        // Break very long words
+                                                        for (let i = 0; i < word.length; i += maxCharsPerLine) {
+                                                            lines.push(word.slice(i, i + maxCharsPerLine));
+                                                        }
+                                                        currentLine = '';
+                                                    } else {
+                                                        currentLine = word;
+                                                    }
+                                                }
+                                            }
+                                            if (currentLine) lines.push(currentLine);
+                                            
+                                            // Limit to 3 lines maximum
+                                            if (lines.length > 3) {
+                                                lines.splice(2);
+                                                lines[2] = lines[2] + '...';
+                                            }
+                                            
+                                            return lines;
+                                        },
+                                        padding: 20
+                                    },
+                                    grid: { display: false }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Bilangan Responden'
+                                    }
+                                }
+                            },
+                            layout: {
+                                padding: { bottom: 50 }
+                            }
+                        });
+                        console.log('Field distribution chart created successfully');
+                    }
+                } catch (error) {
+                    console.error('Error loading field distribution chart:', error);
+                    this.showToast('Error loading field distribution chart', 'error');
                 }
             },
 
@@ -978,6 +1201,7 @@
                     try {
                         window.globalCharts[chartName].destroy();
                         delete window.globalCharts[chartName];
+                        console.log(`Chart ${chartName} destroyed successfully`);
                     } catch (error) {
                         console.warn(`Error destroying chart ${chartName}:`, error);
                     }
@@ -1027,22 +1251,31 @@
             },
 
             async refreshData() {
+                console.log('Refreshing all data...');
                 this.dataLoaded = false;
                 await this.loadData();
                 this.showToast('Data berjaya dimuat semula', 'success');
             },
 
             async refreshChart(chartType) {
-                if (chartType === 'age-by-year') {
-                    await this.loadAgeByYearChart();
-                } else if (chartType === 'gender-distribution') {
-                    await this.loadGenderDistributionChart();
-                } else if (chartType === 'institution-category') {
-                    await this.loadInstitutionCategoryChart();
-                } else if (chartType === 'field-of-study') {
-                    await this.loadFieldOfStudyChart();
+                console.log(`Refreshing chart: ${chartType}`);
+                try {
+                    if (chartType === 'age-by-year') {
+                        await this.loadAgeByYearChart();
+                    } else if (chartType === 'gender-distribution') {
+                        await this.loadGenderDistributionChart();
+                    } else if (chartType === 'institution-category') {
+                        await this.loadInstitutionCategoryChart();
+                    } else if (chartType === 'field-of-study') {
+                        await this.loadFieldOfStudyChart();
+                    } else if (chartType === 'field-distribution') {
+                        await this.loadFieldDistributionChart();
+                    }
+                    this.showToast(`Graf ${chartType} dimuat semula`, 'success');
+                } catch (error) {
+                    console.error(`Error refreshing chart ${chartType}:`, error);
+                    this.showToast(`Error memuat semula graf ${chartType}`, 'error');
                 }
-                this.showToast(`Graf ${chartType} dimuat semula`, 'success');
             },
 
             async exportData(format) {
@@ -1058,6 +1291,7 @@
             },
 
             showToast(message, type = 'info') {
+                console.log(`Toast: ${type} - ${message}`);
                 const toast = document.createElement('div');
                 const colors = {
                     success: 'bg-emerald-500 text-white border-emerald-600',
@@ -1080,7 +1314,7 @@
                     </div>
                     <div class="text-sm font-medium">${message}</div>
                 </div>
-            `;
+                `;
 
                 document.body.appendChild(toast);
                 setTimeout(() => toast.style.transform = 'translateX(0)', 10);
@@ -1093,6 +1327,40 @@
         }
     }
 
+    // Initialize global charts object
     window.globalCharts = window.globalCharts || {};
+
+    // Debug function to check dependencies
+    window.checkDependencies = function() {
+        console.log('=== DEPENDENCY CHECK ===');
+        console.log('Chart.js:', typeof Chart !== 'undefined' ? 'LOADED' : 'MISSING');
+        console.log('EnhancedChartFactory:', typeof EnhancedChartFactory !== 'undefined' ? 'LOADED' : 'MISSING');
+        console.log('Alpine.js:', typeof Alpine !== 'undefined' ? 'LOADED' : 'MISSING');
+        console.log('========================');
+        
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js is not loaded! Make sure Chart.js is included in base.html');
+        }
+        
+        if (typeof EnhancedChartFactory === 'undefined') {
+            console.error('EnhancedChartFactory is not loaded! Make sure chart-config.js is included');
+        }
+        
+        return {
+            chartjs: typeof Chart !== 'undefined',
+            factory: typeof EnhancedChartFactory !== 'undefined',
+            alpine: typeof Alpine !== 'undefined'
+        };
+    };
+
+    // Check dependencies on load
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            const deps = window.checkDependencies();
+            if (!deps.chartjs || !deps.factory) {
+                console.error('Critical dependencies missing! Charts will not work.');
+            }
+        }, 1000);
+    });
 </script>
 {% endblock %}

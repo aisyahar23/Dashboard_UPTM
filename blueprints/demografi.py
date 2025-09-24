@@ -741,6 +741,82 @@ def api_field_of_study():
             "Error"
         )), 500
 
+@demografi_bp.route('/api/field-distribution')
+def api_field_distribution():
+    """Get detailed field of study distribution (ungrouped) - vertical-bar (STANDARDIZED)"""
+    try:
+        # Get filters properly
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if values:  # Only include non-empty filters
+                filters[key] = values
+        
+        print(f"Field distribution filters: {filters}")
+        
+        # Use debug filter application
+        df_filtered = debug_filter_application(data_processor.df, filters)
+        
+        print(f"Field distribution filtered data shape: {df_filtered.shape}")
+        
+        # Try multiple possible column names
+        field_columns = [
+            'Bidang pengajian utama anda?',
+            'Bidang pengajian utama anda? ', 
+            'Bidang pengajian utama anda'
+        ]
+        field_column = None
+        
+        # Find the correct column name
+        for col in field_columns:
+            if col in df_filtered.columns:
+                field_column = col
+                break
+        
+        print(f"Available columns: {list(df_filtered.columns)}")
+        print(f"Field column found: {field_column}")
+        
+        if field_column is None:
+            print("Field column not found - available columns:", list(df_filtered.columns))
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Data Available']),
+                "Field Distribution"
+            ))
+        
+        # Get raw field counts (without grouping)
+        field_data = df_filtered[field_column].dropna()
+        
+        if field_data.empty:
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Field Data']),
+                "Field Distribution"
+            ))
+        
+        # Get field distribution counts (ungrouped)
+        field_counts = field_data.value_counts().head(15)  # Top 15 fields
+        
+        print(f"Field distribution sample values: {field_data.head()}")
+        print(f"Field distribution counts: {field_counts}")
+        
+        if field_counts.empty:
+            return jsonify(formatter.format_bar_chart(
+                pd.Series([1], index=['No Field Data']),
+                "Field Distribution"
+            ))
+        
+        chart_data = formatter.format_bar_chart(field_counts, "Field Distribution", sort_desc=True)
+        print(f"Chart data: {chart_data}")
+        return jsonify(chart_data)
+        
+    except Exception as e:
+        print(f"Error in field distribution endpoint: {str(e)}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
+        return jsonify(formatter.format_bar_chart(
+            pd.Series([1], index=['Error Loading Field Data']),
+            "Error"
+        )), 500
+        
 @demografi_bp.route('/api/table-data')
 def api_table_data():
     """Get paginated table data for demografi"""
