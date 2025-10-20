@@ -228,7 +228,7 @@ def api_grouped_challenges():
             'Saya tidak tahu bagaimana mencari pekerjaan yang sesuai': 'Tiada Pengetahuan',
             'Tiada rangkaian atau hubungan yang boleh membantu saya mendapatkan pekerjaan': 'Tiada Rangkaian',
             'Kriteria pekerjaan tidak sesuai dengan kelayakan akademik saya': 'Kelayakan Tidak Sepadan',
-            'Kebanyakan syarikat lebih memilih pekerja yang sudah berpengalaman': 'Tiada Pengalaman 2',
+            'Kebanyakan syarikat lebih memilih pekerja yang sudah berpengalaman': 'Tiada Pengalaman',
             'Tiada peluang pekerjaan dalam bidang saya di kawasan tempat tinggal saya': 'Lokasi Pekerjaan',
             'Saya perlu menjaga keluarga dan sukar untuk bekerja di luar kawasan': 'Isu Keluarga',
             'Proses permohonan kerja terlalu kompleks atau mengambil masa yang lama': 'Proses Permohonan',
@@ -451,9 +451,8 @@ def api_internship_benefits():
         filters = {k: request.args.getlist(k) for k in request.args.keys()}
         df_filtered = debug_filter_application(data_processor.df, filters)
         
-        df_internship = df_filtered[
-            df_filtered['Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'] != 'Tidak menjalani internship'
-        ].copy()
+        # Include all respondents (both with and without internship)
+        df_internship = df_filtered.copy()
         
         benefits_column = 'Bagaimana internship membantu anda dalam mendapatkan pekerjaan?'
         
@@ -548,7 +547,7 @@ def api_employment_challenges():
             'Saya tidak tahu bagaimana mencari pekerjaan yang sesuai': 'Tiada Pengetahuan',
             'Tiada rangkaian atau hubungan yang boleh membantu saya mendapatkan pekerjaan': 'Tiada Rangkaian',
             'Kriteria pekerjaan tidak sesuai dengan kelayakan akademik saya': 'Kelayakan Tidak Sepadan',
-            'Kebanyakan syarikat lebih memilih pekerja yang sudah berpengalaman': 'Tiada Pengalaman 2',
+            'Kebanyakan syarikat lebih memilih pekerja yang sudah berpengalaman': 'Tiada Pengalaman',
             'Tiada peluang pekerjaan dalam bidang saya di kawasan tempat tinggal saya': 'Lokasi Pekerjaan',
             'Saya perlu menjaga keluarga dan sukar untuk bekerja di luar kawasan': 'Isu Keluarga',
             'Proses permohonan kerja terlalu kompleks atau mengambil masa yang lama': 'Proses Permohonan',

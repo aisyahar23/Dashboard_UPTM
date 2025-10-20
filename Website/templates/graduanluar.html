@@ -33,7 +33,7 @@
                     </button>
 
                     <!-- Enhanced Filter Dropdown - FIXED -->
-                    <div x-show="showFilters" 
+                    <div x-show="showFilters" x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 transform scale-95"
                          x-transition:enter-end="opacity-100 transform scale-100"
@@ -145,7 +145,7 @@
                     </button>
 
                     <!-- FIXED Export Dropdown -->
-                    <div x-show="showExport"
+                    <div x-show="showExport" x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 transform scale-95"
                          x-transition:enter-end="opacity-100 transform scale-100"
@@ -329,7 +329,7 @@
         </div>
 
         <!-- Enhanced Main Reasons Chart - Horizontal Bar -->
-        <div class="col-span-12 lg:col-span-8 bg-white rounded-2xl shadow-xl border overflow-hidden">
+        <div class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden">
             <div class="px-6 py-3 border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -385,7 +385,7 @@
         </div>
 
         <!-- Enhanced Job Type Distribution - Pie Chart -->
-        <div class="col-span-12 lg:col-span-4 bg-white rounded-2xl shadow-xl border overflow-hidden">
+        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -495,7 +495,7 @@
         </div>
 
         <!-- Outside Field Programs Chart - NEW CHART (Better positioned) -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden hover:shadow-3xl transition-shadow duration-300">
+        <div class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden hover:shadow-3xl transition-shadow duration-300">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -724,63 +724,109 @@
             async loadReasonsChart() {
                 try {
                     const params = this.buildFilterParams();
-                    const response = await fetch(`/graduan-luar/api/reasons-distribution${params ? '?' + params : ''}`);
-                    const data = await response.json();
+                    const url = `/graduan-luar/api/reasons-distribution${params ? '?' + params : ''}`;
+                    console.log('Loading reasons distribution from:', url);
+
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        const text = await response.text().catch(() => '');
+                        console.error('Reasons API error:', response.status, text);
+                        throw new Error(`Failed to load reasons: ${response.status}`);
+                    }
+
+                    const raw = await response.json();
+                    console.log('Raw reasons data:', raw);
+
+                    // Basic validation + normalization
+                    const labelsRaw = Array.isArray(raw.labels) ? raw.labels : (raw.labels ? [raw.labels] : []);
+                    const datasetsRaw = Array.isArray(raw.datasets) ? raw.datasets : (Array.isArray(raw.data) ? [{ data: raw.data, label: raw.label || '' }] : []);
+
+                    // Sanitize labels to strings and remove null/undefined
+                    const labels = labelsRaw.map(l => (l === null || l === undefined) ? '' : String(l));
+
+                    // Sanitize dataset numeric values
+                    const datasets = datasetsRaw.map(ds => {
+                        const safeData = (ds.data || []).map(v => {
+                            const n = typeof v === 'number' ? v : (v === null || v === undefined ? 0 : Number(v));
+                            return Number.isFinite(n) ? n : 0;
+                        });
+                        return { ...ds, data: safeData };
+                    });
+
+                    // If nothing useful, show friendly message
+                    if (!labels.length || !datasets.length || datasets[0].data.length === 0) {
+                        console.warn('No valid reasons data to render');
+                        this.showChartError('reasonsChart', 'Tiada data tersedia untuk "Sebab Utama Bekerja di Luar Bidang"');
+                        return;
+                    }
+
+                    // Wrap labels into multi-line arrays so Chart.js will render second line
+                    const wrappedLabels = labels.map(l => {
+                        const lines = this.wrapLabel(l, 40); // wrap at ~40 chars
+                        return Array.isArray(lines) ? lines.slice(0, 2) : [String(lines || '')]; // limit 2 lines
+                    });
+
+                    const chartData = {
+                        ...raw,
+                        labels: wrappedLabels,
+                        datasets
+                    };
 
                     this.safeDestroyChart('reasons');
 
                     const canvas = document.getElementById('reasonsChart');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.reasons = EnhancedChartFactory.createBarChart(ctx, data, 'horizontal-bar', {
-                                indexAxis: 'y',
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context) {
-                                                return `Bilangan: ${context.parsed.x.toLocaleString()}`;
-                                            }
-                                        }
-                                    },
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        beginAtZero: true,
-                                        grid: {
-                                            color: 'rgba(0,0,0,0.06)',
-                                            drawBorder: false
-                                        },
-                                        ticks: {
-                                            font: {
-                                                size: 11,
-                                                weight: '500'
-                                            },
-                                            callback: function (value) {
-                                                return value.toLocaleString();
-                                            }
-                                        }
-                                    },
-                                    y: {
-                                        grid: { display: false },
-                                        ticks: {
-                                            font: {
-                                                size: 10,
-                                                weight: '500'
-                                            },
-                                            color: '#6b7280'
-                                        }
+                    if (!canvas) {
+                        console.error('reasonsChart canvas not found');
+                        return;
+                    }
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        console.error('reasonsChart context not available');
+                        return;
+                    }
+
+                    window.globalCharts = window.globalCharts || {};
+                    window.globalCharts.reasons = EnhancedChartFactory.createBarChart(ctx, chartData, 'horizontal-bar', {
+                        indexAxis: 'y',
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `Bilangan: ${context.parsed.x.toLocaleString()}`;
                                     }
                                 }
-                            });
-                        }
-                    }
+                            },
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0,0,0,0.06)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    font: { size: 11, weight: '500' },
+                                    callback: function (value) { return value.toLocaleString(); }
+                                }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: {
+                                    font: { size: 10, weight: '500' },
+                                    color: '#6b7280',
+                                    autoSkip: false
+                                    // No callback here: labels are already arrays (multi-line)
+                                }
+                            }
+                        },
+                        layout: { padding: { bottom: 10 } }
+                    });
+
+                    console.log('Reasons chart rendered successfully');
                 } catch (error) {
                     console.error('Error loading reasons chart:', error);
+                    this.showChartError('reasonsChart', 'Ralat memuatkan data sebab utama');
                 }
             },
 
@@ -989,6 +1035,7 @@
 
                     const data = await response.json();
                     console.log('GRADUAN LUAR: Received outside field programs data:', data);
+                    console.log('GRADUAN LUAR: Total programs count:', data.datasets[0].data.reduce((a,b) => a+b, 0));
 
                     this.safeDestroyChart('outsideFieldPrograms');
 
@@ -997,39 +1044,79 @@
                         const ctx = canvas.getContext('2d');
                         if (ctx) {
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.outsideFieldPrograms = EnhancedChartFactory.createChart(ctx, 'enhanced-pie', data, 'outside-field-programs', {
+                            window.globalCharts.outsideFieldPrograms = EnhancedChartFactory.createChart(ctx, 'vertical-bar', data, 'outside-field-programs', {
                                 plugins: {
                                     tooltip: {
                                         callbacks: {
                                             label: function (context) {
-                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                                const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                                return `${context.label}: ${context.parsed.toLocaleString()} graduan (${percentage}%)`;
+                                                return `${context.dataset.label}: ${context.parsed.y} graduan`;
                                             }
                                         }
                                     },
                                     legend: {
-                                        position: 'bottom',
-                                        labels: {
-                                            padding: 15,
-                                            usePointStyle: true,
-                                            font: {
-                                                size: 11
-                                            },
-                                            generateLabels: function(chart) {
-                                                const data = chart.data;
-                                                return data.labels.map((label, index) => {
-                                                    const value = data.datasets[0].data[index];
-                                                    const truncatedLabel = label.length > 25 ? label.substring(0, 25) + '...' : label;
-                                                    return {
-                                                        text: `${truncatedLabel} (${value})`,
-                                                        fillStyle: data.datasets[0].backgroundColor[index],
-                                                        hidden: false,
-                                                        index: index
-                                                    };
-                                                });
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        ticks: {
+                                            maxRotation: 0,
+                                            minRotation: 0,
+                                            font: { size: 10, weight: '500' },
+                                            align: 'center',
+                                            textAlign: 'center',
+                                            autoSkip: false,
+                                            color: '#6b7280',
+                                            callback: function(value) {
+                                                const label = this.getLabelForValue(value);
+                                                if (!label) return '';
+                                                
+                                                // Break long labels into multiple lines
+                                                const maxCharsPerLine = 20;
+                                                const words = label.split(' ');
+                                                const lines = [];
+                                                let currentLine = '';
+                                                
+                                                for (const word of words) {
+                                                    const testLine = currentLine ? currentLine + ' ' + word : word;
+                                                    if (testLine.length <= maxCharsPerLine) {
+                                                        currentLine = testLine;
+                                                    } else {
+                                                        if (currentLine) lines.push(currentLine);
+                                                        currentLine = word;
+                                                    }
+                                                }
+                                                if (currentLine) lines.push(currentLine);
+                                                
+                                                // Limit to 3 lines max
+                                                return lines.slice(0, 3);
                                             }
+                                        },
+                                        grid: {
+                                            display: false
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: 'Program Pengajian',
+                                            font: { size: 10, weight: '600' }
                                         }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1,
+                                            font: { size: 11 }
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: 'Bilangan Graduan',
+                                            font: { size: 12, weight: 'bold' }
+                                        }
+                                    }
+                                },
+                                layout: {
+                                    padding: {
+                                        bottom: 40
                                     }
                                 }
                             });

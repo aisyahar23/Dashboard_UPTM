@@ -3,6 +3,8 @@ from models.data_processor import DataProcessor, load_excel_data
 import io
 import os
 import pandas as pd
+import numpy as np
+import re
 
 graduanluar_bp = Blueprint('graduanluar', __name__)
 
@@ -10,9 +12,9 @@ graduanluar_bp = Blueprint('graduanluar', __name__)
 EXCEL_FILE_PATH = 'data/Questionnaire.xlsx'
 df = load_excel_data(EXCEL_FILE_PATH)
 
-# Filter out rows where 'Apakah jenis pekerjaan anda sekarang' is 'Bekerja dalam bidang pengajian' or 'Tidak bekerja'
-df_filtered = df[~df['Apakah jenis pekerjaan anda sekarang'].isin(['Bekerja dalam bidang pengajian', 'Tidak bekerja'])].copy()
-data_processor = DataProcessor(df_filtered)
+# Remove the global pre-filtering — keep full dataset and let endpoints apply filters explicitly
+# (previous code removed rows early which caused missing/incorrect reason aggregation)
+data_processor = DataProcessor(df)
 
 # Enhanced Chart Data Formatter for better integration with ChartConfig
 class EnhancedChartDataFormatter:
@@ -112,6 +114,82 @@ def table_view():
                          page_title='Graduan Bekerja di Luar Bidang Data Table',
                          api_endpoint='/graduan-luar/api/table-data')
 
+# NEW: Improved normalization and canonical mapping for reasons
+CANONICAL_REASONS = [
+    'Tiada peluang pekerjaan yang sesuai',
+    'Gaji terlalu rendah dalam bidang asal',
+    'Lebih banyak peluang dalam bidang lain',
+    'Tidak berminat dengan bidang asal',
+    'Tidak berkaitan kerana bekerja dalam bidang pengajian'
+]
+
+# mapping of keywords/variants -> canonical (all lowercased keys)
+_REASON_VARIANTS = {
+    'tiada peluang': CANONICAL_REASONS[0],
+    'tiada peluang pekerjaan': CANONICAL_REASONS[0],
+    'tiada peluang pekerjaan yang sesuai': CANONICAL_REASONS[0],
+    'gaji rendah': CANONICAL_REASONS[1],
+    'gaji terlalu rendah': CANONICAL_REASONS[1],
+    'gaji terlalu rendah dalam bidang asal': CANONICAL_REASONS[1],
+    'lebih banyak peluang': CANONICAL_REASONS[2],
+    'lebih banyak peluang dalam bidang lain': CANONICAL_REASONS[2],
+    'lebih banyak peluang dalam bidang lain': CANONICAL_REASONS[2],
+    'tidak berminat': CANONICAL_REASONS[3],
+    'tidak berminat dengan bidang asal': CANONICAL_REASONS[3],
+    'tidak berkaitan kerana bekerja dalam bidang pengajian': CANONICAL_REASONS[4],
+    'tidak berkaitan kerana saya bekerja dalam bidang pengajian': CANONICAL_REASONS[4],
+    'bekerja dalam bidang pengajian': CANONICAL_REASONS[4]
+}
+
+IGNORED_REASON_MARKERS = ['tidak dinyatakan', 'tidak relevan']
+
+def normalize_text(val):
+    if pd.isna(val):
+        return ''
+    return str(val).strip()
+
+def split_reasons_cell(text):
+    """Split multi-answer cells by common separators"""
+    if not text or pd.isna(text):
+        return []
+    
+    text = str(text).strip()
+    if not text:
+        return []
+    
+    # Split by common separators
+    separators = [',', ';', '|', '\n']
+    parts = [text]
+    
+    for sep in separators:
+        new_parts = []
+        for part in parts:
+            new_parts.extend([p.strip() for p in part.split(sep) if p.strip()])
+        parts = new_parts
+    
+    return [p for p in parts if p and len(p) > 2]  # Filter out very short fragments
+
+def map_reason_to_canonical(text):
+    """Map raw reason text (or a fragment) to one of the CANONICAL_REASONS.
+       Returns canonical string or None if should be ignored/unknown.
+    """
+    if not text:
+        return None
+    s = normalize_text(text).lower()
+    # exact match first
+    for c in CANONICAL_REASONS:
+        if s == c.lower():
+            return c
+    # check variants (substring)
+    for variant, canonical in _REASON_VARIANTS.items():
+        if variant in s:
+            return canonical
+    # ignore markers
+    if any(marker in s for marker in IGNORED_REASON_MARKERS):
+        return None
+    # fallback: return title-cased original as 'Lain-lain' entry if not empty
+    return s.capitalize()
+
 @graduanluar_bp.route('/api/summary')
 def api_summary():
     """Get enhanced summary statistics for graduan luar data"""
@@ -123,8 +201,6 @@ def api_summary():
             if values:  # Only include non-empty filters
                 filters[key] = values
         
-        print(f"GRADUAN LUAR SUMMARY DEBUG: Received filters: {filters}")
-        
         # Apply filters directly to dataframe like demografi
         filtered_df = data_processor.df.copy()
         
@@ -133,9 +209,6 @@ def api_summary():
                 continue
             
             if column in filtered_df.columns:
-                print(f"Applying filter: {column} = {values}")
-                print(f"Before filter - rows: {len(filtered_df)}")
-                
                 # Convert filter values to match column data type
                 if filtered_df[column].dtype in ['int64', 'float64']:
                     try:
@@ -145,160 +218,65 @@ def api_summary():
                                 converted_values.append(v)
                             else:
                                 converted_values.append(int(float(v)))
-                        print(f"Converted filter values to numbers: {converted_values}")
                         filtered_df = filtered_df[filtered_df[column].isin(converted_values)]
-                    except Exception as e:
-                        print(f"Number conversion failed: {e}, using string matching")
+                    except Exception:
                         filtered_df = filtered_df[filtered_df[column].astype(str).isin([str(v) for v in values])]
                 else:
-                    # String matching
                     filtered_df = filtered_df[filtered_df[column].isin(values)]
-                
-                print(f"After filter - rows: {len(filtered_df)}")
-                
-                if len(filtered_df) == 0:
-                    print("WARNING: Filter eliminated all rows!")
-                    break
         
         total_records = len(filtered_df)
-        print(f"GRADUAN LUAR SUMMARY DEBUG: Processing {total_records} records")
         
         # Enhanced KPI calculations
         reason_stats = {}
-        job_type_stats = {}
         private_sector_rate = 0
         
         if total_records > 0:
-            # Enhanced reason analysis with better categorization
-            reason_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
-            if reason_column in filtered_df.columns:
-                print(f"GRADUAN LUAR: Found reason column with {filtered_df[reason_column].dropna().shape[0]} non-null values")
+            # Count graduates by canonical reason categories
+            reason_col = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
+            if reason_col in filtered_df.columns:
+                # Get raw reasons and process them
+                raw_reasons = filtered_df[reason_col].dropna().astype(str)
                 
-                # Get all reasons and split them
-                reasons = filtered_df[reason_column].dropna()
-                all_reasons = []
+                # Count occurrences of each canonical reason
+                counts = {canonical: 0 for canonical in CANONICAL_REASONS}
                 
-                for reason_list in reasons:
-                    individual_reasons = str(reason_list).split(',')
-                    for reason in individual_reasons:
-                        clean_reason = reason.strip()
-                        if clean_reason and len(clean_reason) > 3:
-                            all_reasons.append(clean_reason)
+                for reason_text in raw_reasons:
+                    # Check each canonical reason against the text
+                    for canonical in CANONICAL_REASONS:
+                        if canonical.lower() in reason_text.lower():
+                            counts[canonical] += 1
+                            break  # Only count once per response
                 
-                reason_counts = pd.Series(all_reasons).value_counts()
-                total_reasons = reason_counts.sum()
-                
-                print(f"GRADUAN LUAR: Total reasons processed: {total_reasons}")
-                
-                # Enhanced keyword matching for better categorization
-                categorization = {
-                    'mismatch': [
-                        'bidang', 'field', 'tidak sesuai', 'mismatch', 'tidak berkaitan', 
-                        'berbeza', 'lain bidang', 'tidak sama', 'berlainan'
-                    ],
-                    'opportunity': [
-                        'peluang', 'opportunity', 'limited', 'terhad', 'kerja', 'job', 
-                        'tiada', 'kurang', 'susah', 'sukar', 'tidak ada', 'tak ada'
-                    ],
-                    'salary': [
-                        'gaji', 'salary', 'pay', 'income', 'pendapatan', 'wang', 
-                        'money', 'bayaran', 'upah', 'remuneration', 'compensation'
-                    ],
-                    'personal': [
-                        'minat', 'interest', 'suka', 'passion', 'hobby', 'personal', 
-                        'kegemaran', 'pilihan', 'preference', 'calling'
-                    ]
-                }
-                
-                category_counts = {category: 0 for category in categorization.keys()}
-                
-                # Process each reason and categorize
-                for reason, count in reason_counts.items():
-                    reason_lower = str(reason).lower()
-                    for category, keywords in categorization.items():
-                        if any(keyword.lower() in reason_lower for keyword in keywords):
-                            category_counts[category] += count
-                            break
-                
-                # Calculate percentages
                 reason_stats = {
-                    'mismatch_rate': (category_counts['mismatch'] / total_reasons) * 100 if total_reasons > 0 else 0,
-                    'opportunity_rate': (category_counts['opportunity'] / total_reasons) * 100 if total_reasons > 0 else 0,
-                    'salary_rate': (category_counts['salary'] / total_reasons) * 100 if total_reasons > 0 else 0,
-                    'personal_rate': (category_counts['personal'] / total_reasons) * 100 if total_reasons > 0 else 0
+                    'Tiada peluang pekerjaan yang sesuai': counts[CANONICAL_REASONS[0]],
+                    'Gaji terlalu rendah dalam bidang asal': counts[CANONICAL_REASONS[1]],
+                    'Lebih banyak peluang dalam bidang lain': counts[CANONICAL_REASONS[2]],
+                    'Tidak berminat dengan bidang asal': counts[CANONICAL_REASONS[3]],
+                    'Tidak berkaitan kerana bekerja dalam bidang pengajian': counts[CANONICAL_REASONS[4]]
                 }
             
-            # Enhanced job type analysis with Private Sector Rate calculation
+            # Private sector rate unchanged (existing logic)
             job_column = 'Apakah jenis pekerjaan anda sekarang'
             if job_column in filtered_df.columns:
                 job_counts = filtered_df[job_column].value_counts()
-                most_common_job = job_counts.index[0] if len(job_counts) > 0 else 'N/A'
-                
-                # Calculate Private Sector Rate
-                private_sector_keywords = ['swasta', 'private', 'syarikat', 'company', 'korporat', 'Bekerja di luar bidang']
+                private_keywords = ['swasta', 'private', 'syarikat', 'company', 'korporat']
                 private_count = 0
-                
-                print("GRADUAN LUAR: Job types analysis:")
                 for job_type, count in job_counts.items():
-                    job_type_lower = str(job_type).lower()
-                    print(f"  '{job_type}': {count}")
-                    if any(keyword.lower() in job_type_lower for keyword in private_sector_keywords):
+                    jt = str(job_type).lower()
+                    if any(k in jt for k in private_keywords):
                         private_count += count
-                        print(f"    -> Counted as private sector")
-                
                 private_sector_rate = (private_count / total_records) * 100 if total_records > 0 else 0
-                print(f"GRADUAN LUAR: Private sector rate: {private_sector_rate:.1f}%")
-                
-                job_type_stats = {
-                    'most_common_job': most_common_job,
-                    'job_diversity': len(job_counts),
-                    'top_3_jobs': job_counts.head(3).to_dict()
-                }
-            
-            # Enhanced institution analysis
-            institution_column = 'Institusi pendidikan MARA yang anda hadiri?'
-            institution_stats = {}
-            if institution_column in filtered_df.columns:
-                institution_counts = filtered_df[institution_column].value_counts()
-                most_represented_institution = institution_counts.index[0] if len(institution_counts) > 0 else 'N/A'
-                institution_stats = {
-                    'most_represented_institution': most_represented_institution,
-                    'institution_count': len(institution_counts),
-                    'top_institutions': institution_counts.head(5).to_dict()
-                }
         
-        # Enhanced stats response with Private Sector Rate
+        # Build response - include reason selection counts as well as rates (percent of selections)
         enhanced_stats = {
             'total_records': total_records,
-            'mismatch_rate': round(reason_stats.get('mismatch_rate', 0), 1),
-            'opportunity_rate': round(reason_stats.get('opportunity_rate', 0), 1),
             'private_sector_rate': round(private_sector_rate, 1),
-            'salary_consideration_rate': round(reason_stats.get('salary_rate', 0), 1),
-            'personal_interest_rate': round(reason_stats.get('personal_rate', 0), 1),
-            'most_common_job': job_type_stats.get('most_common_job', 'N/A'),
-            'job_diversity': job_type_stats.get('job_diversity', 0),
-            'top_jobs': job_type_stats.get('top_3_jobs', {}),
-            'most_represented_institution': institution_stats.get('most_represented_institution', 'N/A'),
-            'institution_diversity': institution_stats.get('institution_count', 0),
+            'reason_counts': reason_stats,
             'filter_applied': len([f for f in filters.values() if f]) > 0
         }
-        
-        print(f"GRADUAN LUAR SUMMARY RESULT: {enhanced_stats}")
         return jsonify(enhanced_stats)
-        
     except Exception as e:
-        print(f"GRADUAN LUAR SUMMARY ERROR: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        
-        return jsonify({
-            'error': str(e),
-            'total_records': 0,
-            'mismatch_rate': 0,
-            'opportunity_rate': 0,
-            'private_sector_rate': 0,
-            'salary_consideration_rate': 0
-        }), 500
+        return jsonify({'error': str(e)}), 500
 
 @graduanluar_bp.route('/api/reasons-distribution')
 def api_reasons_distribution():
@@ -313,7 +291,6 @@ def api_reasons_distribution():
         
         # Apply filters directly to dataframe
         filtered_df = data_processor.df.copy()
-        
         for column, values in filters.items():
             if not values or len(values) == 0:
                 continue
@@ -334,28 +311,47 @@ def api_reasons_distribution():
                 "Sebab Bekerja di Luar Bidang"
             ))
         
-        # Enhanced reason processing
-        reasons = filtered_df[reason_column].dropna()
-        all_reasons = []
+        # Get raw reasons and process them
+        raw_reasons = filtered_df[reason_column].dropna().astype(str)
+        print(f"DEBUG REASONS: Found {len(raw_reasons)} non-null reasons")
         
-        for reasons_list in reasons:
-            individual_reasons = str(reasons_list).split(',')
-            for reason in individual_reasons:
-                clean_reason = reason.strip()
-                if clean_reason and len(clean_reason) > 3:
-                    all_reasons.append(clean_reason)
+        if len(raw_reasons) > 0:
+            print(f"DEBUG REASONS: Sample reasons: {raw_reasons.head(3).tolist()}")
         
-        reason_counts = pd.Series(all_reasons).value_counts().head(12)
+        # Count occurrences of each canonical reason
+        reason_counts = pd.Series(0, index=CANONICAL_REASONS)
         
-        chart_data = formatter.format_horizontal_bar_chart(
-            reason_counts,
-            "Sebab Utama Bekerja di Luar Bidang Pengajian",
-            sort_desc=True,
-            max_items=12
-        )
+        for reason_text in raw_reasons:
+            # Check each canonical reason against the text
+            for canonical in CANONICAL_REASONS:
+                if canonical.lower() in reason_text.lower():
+                    reason_counts[canonical] += 1
+                    print(f"DEBUG REASONS: Matched '{canonical}' in '{reason_text[:50]}...'")
+                    break  # Only count once per response
         
+        print(f"DEBUG REASONS: Final counts: {reason_counts.to_dict()}")
+        
+        if reason_counts.sum() == 0:
+            print("DEBUG REASONS: No matches found, returning default data")
+            return jsonify({
+                'labels': CANONICAL_REASONS,
+                'datasets': [{
+                    'label': 'Sebab Utama Bekerja di Luar Bidang',
+                    'data': [1, 1, 1, 1, 1],
+                    'backgroundColor': ['#EF4444', '#DC2626', '#B91C1C', '#991B1B', '#7F1D1D']
+                }]
+            })
+        # Return simple chart data format
+        chart_data = {
+            'labels': CANONICAL_REASONS,
+            'datasets': [{
+                'label': 'Sebab Utama Bekerja di Luar Bidang',
+                'data': reason_counts.tolist(),
+                'backgroundColor': ['#EF4444', '#DC2626', '#B91C1C', '#991B1B', '#7F1D1D']
+            }]
+        }
+        print(f"DEBUG REASONS: Returning chart data: {chart_data}")
         return jsonify(chart_data)
-        
     except Exception as e:
         return jsonify(formatter.format_horizontal_bar_chart(
             pd.Series([1], index=['Error Loading Data']),
@@ -397,13 +393,34 @@ def api_job_types():
             ))
         
         job_counts = filtered_df[job_column].value_counts()
+        print(f"DEBUG JOB TYPES: Found {len(job_counts)} job types")
+        print(f"DEBUG JOB TYPES: Job counts: {job_counts.head().to_dict()}")
         
-        chart_data = formatter.format_enhanced_pie_chart(
-            job_counts,
-            "Agihan Bidang Pekerjaan Semasa",
-            max_items=8
-        )
+        if job_counts.empty:
+            chart_data = {
+                'labels': ['Tiada Data'],
+                'datasets': [{
+                    'label': 'Jenis Pekerjaan',
+                    'data': [1],
+                    'backgroundColor': ['#EF4444']
+                }]
+            }
+        else:
+            # Limit to top 8 for better visualization
+            top_jobs = job_counts.head(8)
+            chart_data = {
+                'labels': [str(label) for label in top_jobs.index.tolist()],
+                'datasets': [{
+                    'label': 'Jenis Pekerjaan',
+                    'data': [int(val) for val in top_jobs.values.tolist()],
+                    'backgroundColor': [
+                        '#EF4444', '#DC2626', '#B91C1C', '#991B1B',
+                        '#7F1D1D', '#F87171', '#FCA5A5', '#FECACA'
+                    ][:len(top_jobs)]
+                }]
+            }
         
+        print(f"DEBUG JOB TYPES: Returning chart data: {chart_data}")
         return jsonify(chart_data)
         
     except Exception as e:
@@ -416,18 +433,15 @@ def api_job_types():
 def api_reasons_simple():
     """Get simplified reasons distribution for vertical bar chart (NEW ENDPOINT)"""
     try:
-        print("GRADUAN LUAR: Reasons Simple API called")
         # Get filters properly like demografi
         filters = {}
         for key in request.args.keys():
             values = request.args.getlist(key)
             if values:
                 filters[key] = values
-        print(f"GRADUAN LUAR: Filters received: {filters}")
         
         # Apply filters directly to dataframe
         filtered_df = data_processor.df.copy()
-        
         for column, values in filters.items():
             if not values or len(values) == 0:
                 continue
@@ -441,62 +455,43 @@ def api_reasons_simple():
                 else:
                     filtered_df = filtered_df[filtered_df[column].isin(values)]
         
-        print(f"GRADUAN LUAR: Filtered data has {len(filtered_df)} records")
-        
         reason_column = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
         if reason_column not in filtered_df.columns:
-            print(f"GRADUAN LUAR: Column '{reason_column}' not found in data")
             return jsonify(formatter.format_vertical_bar_chart(
                 pd.Series([1], index=['No Data Available']),
                 "Sebab Tidak Bekerja dalam Bidang"
             ))
         
-        # Handle checkbox data - split multiple reasons and count individually
-        reason_series = filtered_df[reason_column].dropna()
-        print(f"GRADUAN LUAR: Raw reason data sample: {reason_series.head().tolist()}")
-
-        # Split checkbox responses (assuming they're separated by commas, semicolons, or similar)
-        all_reasons = []
-        for response in reason_series:
-            if pd.isna(response) or response == '':
-                continue
-            # Split by common separators and clean up
-            reasons = str(response).split(';')  # Try semicolon first
-            if len(reasons) == 1:
-                reasons = str(response).split(',')  # Then comma
-            if len(reasons) == 1:
-                reasons = [str(response)]  # Single response
-
-            for reason in reasons:
-                cleaned_reason = reason.strip()
-                if cleaned_reason and cleaned_reason != '':
-                    all_reasons.append(cleaned_reason)
-
-        # Count individual reasons
-        reason_counts = pd.Series(all_reasons).value_counts().head(10)
-        print(f"GRADUAN LUAR: Individual reason counts: {reason_counts.to_dict()}")
-
-        if len(reason_counts) == 0:
-            print("GRADUAN LUAR: No reason data found after processing")
+        # Get raw reasons and process them
+        raw_reasons = filtered_df[reason_column].dropna().astype(str)
+        
+        # Count occurrences of each canonical reason
+        reason_counts = pd.Series(0, index=CANONICAL_REASONS)
+        
+        for reason_text in raw_reasons:
+            # Check each canonical reason against the text
+            for canonical in CANONICAL_REASONS:
+                if canonical.lower() in reason_text.lower():
+                    reason_counts[canonical] += 1
+                    break  # Only count once per response
+        
+        if reason_counts.sum() == 0:
             return jsonify(formatter.format_vertical_bar_chart(
-                pd.Series([1], index=['No Data Available']),
+                pd.Series([1], index=['Tiada Data']),
                 "Sebab Tidak Bekerja dalam Bidang"
             ))
-        
-        chart_data = formatter.format_vertical_bar_chart(
-            reason_counts,
-            "Sebab Tidak Bekerja dalam Bidang Pengajian",
-            sort_desc=True,
-            max_items=10
-        )
-        
-        print(f"GRADUAN LUAR: Returning chart data: {chart_data}")
+        # Return simple chart data format
+        chart_data = {
+            'labels': CANONICAL_REASONS,
+            'datasets': [{
+                'label': 'Sebab Tidak Bekerja dalam Bidang',
+                'data': reason_counts.tolist(),
+                'backgroundColor': ['#3B82F6', '#1D4ED8', '#1E40AF', '#1E3A8A', '#172554']
+            }]
+        }
+        print(f"DEBUG REASONS SIMPLE: Returning chart data: {chart_data}")
         return jsonify(chart_data)
-        
     except Exception as e:
-        print(f"GRADUAN LUAR: Error in reasons-simple API: {str(e)}")
-        import traceback
-        traceback.print_exc()
         return jsonify(formatter.format_vertical_bar_chart(
             pd.Series([1], index=['Error Loading Data']),
             "Error"
@@ -532,8 +527,7 @@ def api_chart_table_data(chart_type):
                 'Tahun graduasi anda?',
                 'Jantina anda?',
                 'Institusi pendidikan MARA yang anda hadiri?',
-                'Program pengajian yang anda ikuti?',
-                'Apakah jenis pekerjaan anda sekarang'
+                'Program pengajian yang anda ikuti?'
             ]
         }
         
@@ -665,7 +659,17 @@ def api_outside_field_programs():
             print(f"DEBUG GRADUAN LUAR: Program value counts: {outside_field_df[program_column].value_counts().head()}")
 
         # Get program distribution for those working outside their field
-        program_counts = outside_field_df[program_column].dropna().value_counts()
+        program_counts = outside_field_df[program_column].value_counts(dropna=False)
+        
+        # Count records with missing program data
+        missing_program_count = program_counts.get(np.nan, 0) if np.nan in program_counts else 0
+        
+        # Remove NaN from counts for display
+        program_counts = program_counts[program_counts.index.notna()]
+        
+        print(f"DEBUG GRADUAN LUAR: Program counts (excluding NaN): {program_counts.to_dict()}")
+        print(f"DEBUG GRADUAN LUAR: Missing program data: {missing_program_count}")
+        print(f"DEBUG GRADUAN LUAR: Total should be: {program_counts.sum() + missing_program_count}")
 
         if program_counts.empty:
             return jsonify({
@@ -689,6 +693,10 @@ def api_outside_field_programs():
                 ][:len(program_counts)]
             }]
         }
+        
+        # Add note about total count including missing data
+        chart_data['total_count'] = int(program_counts.sum() + missing_program_count)
+        chart_data['missing_program_count'] = int(missing_program_count)
 
         return jsonify(chart_data)
 

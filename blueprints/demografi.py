@@ -201,6 +201,8 @@ def api_summary():
             
             if len(age_counts) > 0:
                 most_common_age = age_counts.index[0]
+                total_age_responses = age_counts.sum()
+                most_common_age_rate = (age_counts.iloc[0] / total_age_responses) * 100
                 
                 # Calculate young graduates rate (under 25)
                 young_age_patterns = ['20-24', '18-24', '20 - 24', '18 - 24', '18-19', '20-21', '22-23', '24']
@@ -211,7 +213,6 @@ def api_summary():
                         if pattern in str(age_value).lower():
                             young_responses += age_counts[age_value]
                 
-                total_age_responses = age_counts.sum()
                 if total_age_responses > 0:
                     young_graduates_rate = (young_responses / total_age_responses) * 100
         else:
@@ -328,6 +329,7 @@ def api_summary():
             'male_rate': round(male_rate, 1),
             'female_rate': round(female_rate, 1),
             'most_common_age': most_common_age,
+            'most_common_age_rate': round(most_common_age_rate, 1),
             'young_graduates_rate': round(young_graduates_rate, 1),
             'uptm_rate': round(uptm_rate, 1),
             'most_common_institution': most_common_institution,
@@ -399,7 +401,7 @@ formatter = ChartDataFormatter()
 
 @demografi_bp.route('/api/age-by-graduation-year')
 def api_age_by_graduation_year():
-    """Get age distribution by graduation year - enhanced-stacked-bar (STANDARDIZED)"""
+    """Get age distribution by graduation year - enhanced-stacked-bar (STANDARDIZED) - PERCENTAGE VERSION"""
     try:
         # Get filters properly
         filters = {}
@@ -458,7 +460,7 @@ def api_age_by_graduation_year():
         grouped_data = clean_df.groupby([year_column, age_column]).size().unstack(fill_value=0)
         
         print(f"Grouped data shape: {grouped_data.shape}")
-        print(f"Grouped data:\n{grouped_data}")
+        print(f"Grouped data (raw counts):\n{grouped_data}")
         
         if grouped_data.empty:
             return jsonify(formatter.format_stacked_bar_chart(
@@ -466,7 +468,14 @@ def api_age_by_graduation_year():
                 "Age by Graduation Year"
             ))
         
-        chart_data = formatter.format_stacked_bar_chart(grouped_data, "Age by Graduation Year")
+        # Convert to percentages
+        percentage_data = grouped_data.div(grouped_data.sum(axis=1), axis=0) * 100
+        percentage_data = percentage_data.round(1)  # Round to 1 decimal place
+        
+        print(f"Percentage data:\n{percentage_data}")
+        
+        chart_data = formatter.format_stacked_bar_chart(percentage_data, "Age by Graduation Year (%)")
+        chart_data['isPercentage'] = True  # Flag to indicate this is percentage data
         print(f"Chart data: {chart_data}")
         return jsonify(chart_data)
         
@@ -552,7 +561,7 @@ def api_gender_distribution():
 
 @demografi_bp.route('/api/institution-category')
 def api_institution_category():
-    """Get institution category distribution - vertical-bar (STANDARDIZED)"""
+    """Get institution category distribution - pie chart with percentages (STANDARDIZED)"""
     try:
         # Get filters properly
         filters = {}
@@ -587,9 +596,9 @@ def api_institution_category():
         
         if institution_column is None:
             print("Institution column not found - available columns:", list(df_filtered.columns))
-            return jsonify(formatter.format_bar_chart(
-                pd.Series([1], index=['No Data Available']),
-                "Institution Categories"
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([100], index=['No Data Available']),
+                "Institution Categories (%)"
             ))
         
         # Apply categorization function (EXACT COLAB REPLICATION)
@@ -611,15 +620,22 @@ def api_institution_category():
         # Get institution category counts
         institution_counts = df_filtered_copy['Institution_Category'].dropna().value_counts()
         
-        print(f"Institution counts: {institution_counts}")
+        print(f"Institution counts (raw): {institution_counts}")
         
         if institution_counts.empty:
-            return jsonify(formatter.format_bar_chart(
-                pd.Series([1], index=['No Institution Data']),
-                "Institution Categories"
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([100], index=['No Institution Data']),
+                "Institution Categories (%)"
             ))
         
-        chart_data = formatter.format_bar_chart(institution_counts, "Institution Categories", sort_desc=True)
+        # Convert to percentages
+        total = institution_counts.sum()
+        institution_percentages = (institution_counts / total * 100).round(1)
+        
+        print(f"Institution percentages: {institution_percentages}")
+        
+        chart_data = formatter.format_pie_chart(institution_percentages, "Institution Categories (%)")
+        chart_data['isPercentage'] = True  # Flag to indicate this is percentage data
         print(f"Chart data: {chart_data}")
         return jsonify(chart_data)
         
@@ -627,8 +643,8 @@ def api_institution_category():
         print(f"Error in institution category endpoint: {str(e)}")
         import traceback
         print(f"Full traceback: {traceback.format_exc()}")
-        return jsonify(formatter.format_bar_chart(
-            pd.Series([1], index=['Error']),
+        return jsonify(formatter.format_pie_chart(
+            pd.Series([100], index=['Error']),
             "Error"
         )), 500
 
@@ -738,6 +754,53 @@ def api_field_of_study():
         print(f"Full traceback: {traceback.format_exc()}")
         return jsonify(formatter.format_bar_chart(
             pd.Series([1], index=['Error Loading Field Data']),
+            "Error"
+        )), 500
+
+@demografi_bp.route('/api/age-distribution')
+def api_age_distribution():
+    """Get age distribution as percentages - pie chart"""
+    try:
+        filters = {}
+        for key in request.args.keys():
+            values = request.args.getlist(key)
+            if values:
+                filters[key] = values
+        
+        df_filtered = debug_filter_application(data_processor.df, filters)
+        
+        age_columns = ['Umur anda?', 'Umur anda? ', 'Umur anda']
+        age_column = None
+        
+        for col in age_columns:
+            if col in df_filtered.columns:
+                age_column = col
+                break
+        
+        if age_column is None:
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([100], index=['No Data']),
+                "Age Distribution (%)"
+            ))
+        
+        age_data = df_filtered[age_column].dropna()
+        if age_data.empty:
+            return jsonify(formatter.format_pie_chart(
+                pd.Series([100], index=['No Data']),
+                "Age Distribution (%)"
+            ))
+        
+        age_counts = age_data.value_counts()
+        total = age_counts.sum()
+        age_percentages = (age_counts / total * 100).round(1)
+        
+        chart_data = formatter.format_pie_chart(age_percentages, "Age Distribution (%)")
+        chart_data['isPercentage'] = True
+        return jsonify(chart_data)
+        
+    except Exception as e:
+        return jsonify(formatter.format_pie_chart(
+            pd.Series([100], index=['Error']),
             "Error"
         )), 500
 

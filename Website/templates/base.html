@@ -105,14 +105,23 @@
         }
 
         .nav-item.active {
-            background-color: white;
-            color: #296899;
+            background-color: white !important;
+            color: #296899 !important;
             font-weight: 600;
         }
 
+        .nav-item.active:hover {
+            background-color: white !important;
+            color: #296899 !important;
+        }
+
         .nav-item.active .nav-icon {
-            background-color: transparent;
-            color: #296899;
+            background-color: transparent !important;
+            color: #296899 !important;
+        }
+        
+        .nav-item.active .nav-icon i {
+            color: #296899 !important;
         }
 
         .sidebar-text {
@@ -207,11 +216,8 @@
             border-style: solid;
         }
 
-        /* Main content transition */
-        .main-content {
-            transition: margin-left 0.3s ease-in-out;
-        }
-
+        /* Main content transitions added after initialization to prevent flash */
+        
         .main-content.sidebar-expanded {
             margin-left: 240px;
         }
@@ -299,6 +305,25 @@
             text-transform: capitalize;
         }
 
+        /* Prevent flash of unstyled content with Alpine.js */
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Prevent sidebar width flash on page load */
+        .sidebar {
+            width: 240px;
+        }
+        
+        /* Only add transition after page loads */
+        body.sidebar-initialized .sidebar {
+            transition: width 0.3s ease-in-out;
+        }
+        
+        body.sidebar-initialized .main-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
 
         .chart-container {
             position: relative;
@@ -312,6 +337,16 @@
         .chart-container canvas {
             max-width: 100% !important;
             max-height: 100% !important;
+        }
+        
+        /* Remove hover effects from all chart containers */
+        .bg-white.rounded-2xl.shadow-xl {
+            transition: none !important;
+        }
+        
+        .bg-white.rounded-2xl.shadow-xl:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+            transform: none !important;
         }
 
         /* Corporate Section Dividers */
@@ -327,12 +362,6 @@
             border-radius: 16px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border: 1px solid #e2e8f0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .corporate-card:hover {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            transform: translateY(-2px);
         }
 
         /* Professional Loading Animation */
@@ -493,7 +522,7 @@
 
 </head>
 
-<body class="min-h-screen font-sans" x-data="{ sidebarCollapsed: false, mobileSidebarOpen: false }">
+<body class="min-h-screen font-sans sidebar-initialized" x-data="{ sidebarCollapsed: false, mobileSidebarOpen: false }">
 
     <!-- Mobile Overlay -->
     <div x-show="mobileSidebarOpen" x-transition:enter="transition-opacity ease-linear duration-300"
@@ -516,16 +545,12 @@
                 :class="sidebarCollapsed ? 'justify-center lg:justify-center' : 'justify-between'">
                 <!-- Logo and Title -->
                 <div class="flex items-center space-x-3 min-w-0">
-                    <!-- <div class="w-8 h-8 bg-gradient-to-br from-white/20 to-white/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-transparent transition-colors duration-200">
-                        <i class="fas fa-chart-line text-sm text-white"></i>
-                    </div> -->
-
                     <div class="sidebar-text min-w-0 flex-1" x-show="!sidebarCollapsed">
                         <h1
                             class="text-[14px] font-bold bg-gradient-to-r from-white to-primary-100 bg-clip-text truncate">
                             Analitik Graduan
                         </h1>
-                        <p class="text-[12px] text-primary-200 font-medium truncate">Grad360- IPMA Graduate System</p>
+                        <p class="text-[12px] text-primary-200 font-medium truncate">Grad360- IPMA Graduate System</p>
                     </div>
                 </div>
 
@@ -733,6 +758,76 @@
     <!-- Load Chart.js BEFORE our custom scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+    <!-- Active Navigation Highlighter - INLINE to prevent flash -->
+    <style id="nav-preload-style">
+        /* Preload active state before Alpine.js loads - icon color fix */
+        {% if request.path == '/dashboard' or request.path == '/' %}
+        a[href="/dashboard"].nav-item {
+            background-color: white !important;
+            color: #296899 !important;
+            font-weight: 600;
+        }
+        a[href="/dashboard"].nav-item .nav-icon {
+            background-color: transparent !important;
+        }
+        a[href="/dashboard"].nav-item .nav-icon i {
+            color: #296899 !important;
+        }
+        {% elif request.path %}
+        a[href="{{ request.path }}"].nav-item {
+            background-color: white !important;
+            color: #296899 !important;
+            font-weight: 600;
+        }
+        a[href="{{ request.path }}"].nav-item .nav-icon {
+            background-color: transparent !important;
+        }
+        a[href="{{ request.path }}"].nav-item .nav-icon i {
+            color: #296899 !important;
+        }
+        {% endif %}
+    </style>
+    
+    <script>
+        (function() {
+            // Execute immediately, don't wait for DOMContentLoaded
+            const currentPath = window.location.pathname;
+            
+            // Function to set active navigation
+            function setActiveNav() {
+                const navItems = document.querySelectorAll('.nav-item');
+                
+                navItems.forEach(function(item) {
+                    const href = item.getAttribute('href');
+                    
+                    // Remove any existing active class first
+                    item.classList.remove('active');
+                    
+                    // Check if the href matches the current path
+                    if (href === currentPath || 
+                        (currentPath.startsWith(href) && href !== '/')) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // Special case: if on root '/', highlight dashboard
+                if (currentPath === '/' || currentPath === '') {
+                    const dashboardLink = document.querySelector('a[href="/dashboard"]');
+                    if (dashboardLink) {
+                        dashboardLink.classList.add('active');
+                    }
+                }
+            }
+            
+            // Try to set immediately
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setActiveNav);
+            } else {
+                setActiveNav();
+            }
+        })();
+    </script>
 
     {% block scripts %}{% endblock %}
 </body>

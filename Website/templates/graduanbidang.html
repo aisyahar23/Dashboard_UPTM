@@ -33,7 +33,7 @@
                     </button>
 
                     <!-- Enhanced Filter Dropdown -->
-                    <div x-show="filterOpen" x-transition:enter="transition ease-out duration-300"
+                    <div x-show="filterOpen" x-cloak x-transition:enter="transition ease-out duration-300"
                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
                         x-transition:leave="transition ease-in duration-200"
@@ -172,7 +172,7 @@
                         <span class="font-semibold text-[10px]">Eksport</span>
                     </button>
 
-                    <div x-show="exportOpen" x-transition:enter="transition ease-out duration-200"
+                    <div x-show="exportOpen" x-cloak x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
                         x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
                         x-transition:leave="transition ease-in duration-150"

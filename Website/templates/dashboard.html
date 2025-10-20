@@ -99,7 +99,7 @@
                     
                     <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 border border-white border-opacity-20">
                         <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-chart-pie text-white text-2xl"></i>
+                            <i class="fas fa-chart-pie text-black text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-3">9 Modul Analitik</h3>
                         <p class="text-blue-100 text-sm leading-relaxed">Kajian menyeluruh merangkumi semua aspek prestasi graduan</p>
@@ -115,10 +115,24 @@
                     
                     <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 border border-white border-opacity-20">
                         <div class="w-16 h-16 bg-gradient-to-br from-red-400 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-lightbulb text-white text-2xl"></i>
+                            <i class="fas fa-exchange-alt text-white text-2xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold mb-3">Wawasan Strategik</h3>
-                        <p class="text-blue-100 text-sm leading-relaxed">Cadangan berasaskan data untuk penambahbaikan</p>
+                        <div class="mb-2">
+                            <span class="text-3xl font-black" x-text="outsideFieldData.total_records || '0'"></span>
+                            <span class="text-lg font-semibold ml-2">Pelajar</span>
+                        </div>
+                        <p class="text-blue-100 text-sm leading-relaxed mb-2">Bekerja di luar bidang pengajian</p>
+                        <div class="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-white border-opacity-20">
+                            <div class="text-center">
+                                <div class="text-xs text-blue-200 mb-1">Ketidakpadanan</div>
+                                <div class="text-lg font-bold" x-text="(outsideFieldData.mismatch_rate || 0) + '%'"></div>
+                            </div>
+                            <div class="w-px h-8 bg-white bg-opacity-20"></div>
+                            <div class="text-center">
+                                <div class="text-xs text-blue-200 mb-1">Peluang Terhad</div>
+                                <div class="text-lg font-bold" x-text="(outsideFieldData.opportunity_rate || 0) + '%'"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -440,6 +454,14 @@ document.addEventListener('alpine:init', () => {
         loadedCharts: new Set(),
         chartErrors: new Set(),
         
+        // Outside Field Data
+        outsideFieldData: {
+            total_records: 0,
+            mismatch_rate: 0,
+            opportunity_rate: 0,
+            private_sector_rate: 0
+        },
+        
         // Auto-scroll settings
         autoScrollInterval: 8000, // 8 seconds
         randomIntervals: [6000, 8000, 10000, 12000], // Random intervals
@@ -501,8 +523,8 @@ document.addEventListener('alpine:init', () => {
                 secondaryColor: 'text-blue-500',
                 buttonClass: 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white',
                 statusColor: 'bg-blue-500',
-                chartTitle: 'Taburan Umur Mengikut Tahun Graduasi',
-                chartDescription: 'Visualisasi yang menunjukkan sebaran kumpulan umur graduan berdasarkan tahun mereka menamatkan pengajian'
+                chartTitle: 'Taburan Umur Mengikut Tahun Graduasi (Peratus)',
+                chartDescription: 'Visualisasi peratusan sebaran kumpulan umur graduan berdasarkan tahun mereka menamatkan pengajian'
             },
             {
                 title: 'Sosioekonomi Graduan',
@@ -699,6 +721,18 @@ document.addEventListener('alpine:init', () => {
             } catch (error) {
                 console.warn('Using default KPI data:', error.message);
             }
+            
+            // Load outside field data
+            try {
+                const response = await fetch('/graduan-luar/api/summary');
+                if (response.ok) {
+                    const data = await response.json();
+                    this.outsideFieldData = data;
+                    console.log('Outside field data loaded:', data);
+                }
+            } catch (error) {
+                console.warn('Failed to load outside field data:', error.message);
+            }
         },
         
         updateKPIData(data) {
@@ -827,14 +861,15 @@ document.addEventListener('alpine:init', () => {
             const indigoBlue = '#6366F1';
             
             const mockDataSets = [
-                // Demographics
+                // Demographics - Converted to Percentages
                 { 
                     labels: ['2020', '2021', '2022', '2023', '2024'], 
                     datasets: [
-                        { label: '21-23 Tahun', data: [8, 12, 15, 18, 14], backgroundColor: corporateBlue, borderColor: corporateBlue, borderWidth: 2 },
-                        { label: '24-26 Tahun', data: [12, 8, 10, 16, 11], backgroundColor: '#4A90B8', borderColor: '#4A90B8', borderWidth: 2 },
-                        { label: '27+ Tahun', data: [4, 6, 8, 5, 7], backgroundColor: '#6BA4C7', borderColor: '#6BA4C7', borderWidth: 2 }
-                    ]
+                        { label: '21-23 Tahun', data: [33.3, 46.2, 45.5, 46.2, 43.8], backgroundColor: corporateBlue, borderColor: corporateBlue, borderWidth: 2 },
+                        { label: '24-26 Tahun', data: [50.0, 30.8, 30.3, 41.0, 34.4], backgroundColor: '#4A90B8', borderColor: '#4A90B8', borderWidth: 2 },
+                        { label: '27+ Tahun', data: [16.7, 23.1, 24.2, 12.8, 21.9], backgroundColor: '#6BA4C7', borderColor: '#6BA4C7', borderWidth: 2 }
+                    ],
+                    isPercentage: true
                 },
                 // Sosioekonomi
                 { 
@@ -952,6 +987,8 @@ document.addEventListener('alpine:init', () => {
 
         getChartOptions(slideIndex) {
             const chartType = this.getChartType(slideIndex);
+            const chartData = this.getChartData(slideIndex);
+            const isPercentage = chartData.isPercentage || false;
 
             const baseOptions = {
                 responsive: true,
@@ -973,7 +1010,17 @@ document.addEventListener('alpine:init', () => {
                         borderColor: '#6B7280',
                         borderWidth: 1,
                         cornerRadius: 8,
-                        padding: 12
+                        padding: 12,
+                        callbacks: isPercentage ? {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed.y.toFixed(1) + '%';
+                                return label;
+                            }
+                        } : {}
                     }
                 },
                 animation: {
@@ -991,8 +1038,15 @@ document.addEventListener('alpine:init', () => {
                     },
                     y: {
                         beginAtZero: true,
+                        max: isPercentage ? 100 : undefined,
                         grid: { color: '#E5E7EB', drawBorder: false },
-                        ticks: { color: '#6B7280', font: { size: 11 } }
+                        ticks: { 
+                            color: '#6B7280', 
+                            font: { size: 11 },
+                            callback: isPercentage ? function(value) {
+                                return value + '%';
+                            } : undefined
+                        }
                     }
                 };
             }

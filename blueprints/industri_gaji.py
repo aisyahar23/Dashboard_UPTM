@@ -67,8 +67,8 @@ def api_summary():
                     avg_salary_range = str(salary_counts.index[0])
                     total_salary_responses = salary_counts.sum()
                     
-                    # Calculate high salary rate (RM4000 and above) - check various patterns
-                    high_salary_patterns = ['RM4', 'RM5', 'RM6', 'RM7', 'RM8', 'RM9', 'RM10', '4000', '5000', '6000', '7000', '8000', '9000', '10000']
+                    # Calculate high salary rate (RM3000 and above) - check various patterns
+                    high_salary_patterns = ['RM3', 'RM4', 'RM5', 'RM6', 'RM7', 'RM8', 'RM9', 'RM10', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '10000']
                     high_salary_responses = 0
                     
                     for salary_range in salary_counts.index:
@@ -453,12 +453,8 @@ def api_employment_sectors():
         employment_column = 'Adakah anda kini bekerja?'
         sector_column = 'Apakah sektor pekerjaan anda?'
         
-        if employment_column in filtered_df.columns:
-            df_working = filtered_df[filtered_df[employment_column].isin(['Ya, bekerja sepenuh masa', 'Ya, bekerja separuh masa'])].copy()
-        else:
-            df_working = filtered_df.copy()
-        
-        if sector_column not in df_working.columns or df_working.empty:
+        # Include all respondents including "Tidak bekerja"
+        if sector_column not in filtered_df.columns:
             return jsonify({
                 'labels': ['No Data Available'],
                 'datasets': [{
@@ -467,8 +463,20 @@ def api_employment_sectors():
                 }]
             })
         
-        # Get sector distribution
-        sector_counts = df_working[sector_column].value_counts()
+        # Get sector distribution including unemployed
+        sector_counts = filtered_df[sector_column].value_counts(dropna=False)
+        
+        # Add "Tidak bekerja" for those without sector data
+        if employment_column in filtered_df.columns:
+            unemployed = filtered_df[
+                (filtered_df[employment_column] == 'Tidak bekerja') |
+                (filtered_df[sector_column].isna())
+            ]
+            unemployed_count = len(unemployed)
+            if unemployed_count > 0:
+                # Check if "Tidak bekerja" already exists in counts
+                if 'Tidak bekerja' not in sector_counts:
+                    sector_counts['Tidak bekerja'] = unemployed_count
         
         chart_data = {
             'labels': [str(label) for label in sector_counts.index.tolist()],

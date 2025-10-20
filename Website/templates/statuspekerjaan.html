@@ -33,7 +33,7 @@
                     </button>
 
                     <!-- Enhanced Filter Dropdown -->
-                    <div x-show="isOpen" 
+                    <div x-show="isOpen" x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
                          x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
@@ -154,14 +154,15 @@
                         <span class="font-semibold text-[10px]">Eksport</span>
                     </button>
 
-                    <div x-show="isOpen" 
+                    <div x-show="isOpen" x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
                          x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
                          x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
-                         class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                         @click.away="isOpen = false"
+                         class="dropdown-container">
                         <div class="py-2">
                             <button @click="exportData('csv'); isOpen = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
@@ -243,7 +244,7 @@
     <div class="grid grid-cols-12 gap-6 auto-rows-auto">
 
         <!-- Enhanced KPI Cards Row -->
-        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Employment Rate -->
             <div class="flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group cursor-pointer hover:scale-105"
                  @click="scrollToChart('employment-status')">
@@ -295,7 +296,7 @@
             </div>
 
             <!-- Most Common Job Type -->
-            <div class="flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group cursor-pointer hover:scale-105"
+            <div class="hidden flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group cursor-pointer hover:scale-105"
                  @click="scrollToChart('job-types')">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
@@ -1001,22 +1002,56 @@
                                         ticks: {
                                             maxRotation: 0,
                                             minRotation: 0,
-                                            font: { size: 11 },
-                                            callback: function (value, index) {
+                                            font: { size: 10, weight: '500' },
+                                            align: 'center',
+                                            textAlign: 'center',
+                                            autoSkip: false,
+                                            color: '#6b7280',
+                                            callback: function(value) {
                                                 const label = this.getLabelForValue(value);
-                                                if (label && label.length > 25) {
-                                                    return label.substring(0, 22) + '...';
+                                                if (!label) return '';
+                                                
+                                                // Break long labels into multiple lines
+                                                const maxCharsPerLine = 20;
+                                                const words = label.split(' ');
+                                                const lines = [];
+                                                let currentLine = '';
+                                                
+                                                for (const word of words) {
+                                                    const testLine = currentLine ? currentLine + ' ' + word : word;
+                                                    if (testLine.length <= maxCharsPerLine) {
+                                                        currentLine = testLine;
+                                                    } else {
+                                                        if (currentLine) lines.push(currentLine);
+                                                        currentLine = word;
+                                                    }
                                                 }
-                                                return label;
+                                                if (currentLine) lines.push(currentLine);
+                                                
+                                                // Limit to 3 lines max
+                                                return lines.slice(0, 3);
                                             }
+                                        },
+                                        grid: {
+                                            display: false
                                         }
                                     },
                                     y: {
                                         beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1,
+                                            font: { size: 11 }
+                                        },
                                         title: {
                                             display: true,
-                                            text: 'Kekerapan'
+                                            text: 'Kekerapan',
+                                            font: { size: 12, weight: 'bold' }
                                         }
+                                    }
+                                },
+                                layout: {
+                                    padding: {
+                                        bottom: 40
                                     }
                                 }
                             });
@@ -1174,8 +1209,12 @@
             openTableModal(title, chartType) {
                 const params = this.buildFilterParams();
                 const endpoint = this.getTableEndpoint(chartType);
-                if (typeof openModal !== 'undefined') {
-                    openModal(title, `/status-pekerjaan/api/${endpoint}?${params}`);
+                const fullEndpoint = `/status-pekerjaan/api/${endpoint}?${params}`;
+                // Use openChartModal to show description
+                if (typeof window.openChartModal !== 'undefined') {
+                    window.openChartModal(chartType, title, fullEndpoint);
+                } else if (typeof openModal !== 'undefined') {
+                    openModal(title, fullEndpoint);
                 }
             },
 

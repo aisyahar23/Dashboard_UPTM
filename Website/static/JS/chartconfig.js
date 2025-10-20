@@ -693,6 +693,12 @@ class EnhancedChartFactory
             }))
         };
 
+        // Check if this is a horizontal stacked bar with multiple datasets
+        // Disabled: Use standard stacked bar chart instead
+        // if (isHorizontal && data.datasets.length > 1) {
+        //     return this.createMultipleStackedHorizontalBarChart(ctx, enhancedData, options);
+        // }
+
         return new Chart(ctx, {
             type: 'bar',
             data: enhancedData,
@@ -744,6 +750,59 @@ class EnhancedChartFactory
                             }
                         }
                     },
+                    customStackedLabels: isHorizontal ? {
+                        id: 'customStackedLabels',
+                        afterDatasetsDraw(chart) {
+                            const { ctx: canvasCtx, scales: { y: yScale }, data } = chart;
+                            
+                            if (!yScale) return;
+                            
+                            canvasCtx.save();
+                            canvasCtx.font = '8px Inter, sans-serif';
+                            canvasCtx.fillStyle = '#1f2937';
+                            canvasCtx.textAlign = 'right';
+                            canvasCtx.textBaseline = 'middle';
+                            
+                            const maxWidth = 170;
+                            const lineHeight = 12;
+                            
+                            data.labels.forEach((label, index) => {
+                                const y = yScale.getPixelForValue(index);
+                                const x = yScale.left - 10;
+                                
+                                // Wrap text to multiple lines
+                                const words = label.toString().split(' ');
+                                let lines = [];
+                                let currentLine = '';
+                                
+                                words.forEach(word => {
+                                    const testLine = currentLine ? currentLine + ' ' + word : word;
+                                    const metrics = canvasCtx.measureText(testLine);
+                                    
+                                    if (metrics.width > maxWidth && currentLine) {
+                                        lines.push(currentLine);
+                                        currentLine = word;
+                                    } else {
+                                        currentLine = testLine;
+                                    }
+                                });
+                                
+                                if (currentLine) {
+                                    lines.push(currentLine);
+                                }
+                                
+                                // Draw wrapped text
+                                const totalHeight = lines.length * lineHeight;
+                                let startY = y - (totalHeight / 2);
+                                
+                                lines.forEach((line, lineIndex) => {
+                                    canvasCtx.fillText(line, x, startY + (lineIndex * lineHeight));
+                                });
+                            });
+                            
+                            canvasCtx.restore();
+                        }
+                    } : {},
                     ...options.plugins
                 },
                 scales: {
@@ -777,7 +836,128 @@ class EnhancedChartFactory
                         grid: { display: false },
                         ticks: {
                             font: {
-                                size: 8,
+                                size: 7,
+                                weight: '600',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#1f2937',
+                            maxRotation: 0,
+                            minRotation: 0,
+                            padding: 10,
+                            align: 'end',
+                            autoSkip: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        afterFit: function(scale) {
+                            if (isHorizontal) {
+                                scale.width = 280;
+                            }
+                        }
+                    },
+                    ...options.scales
+                }
+            }
+        });
+    }
+
+    // NEW: Multiple Stacked Horizontal Bar Chart (for charts with multiple datasets)
+    static createMultipleStackedHorizontalBarChart(ctx, data, options = {})
+    {
+        return new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                ...ChartConfig.globalOptions,
+                responsive: true,
+                indexAxis: 'y',
+                layout: {
+                    padding: {
+                        left: 250,
+                        right: 20,
+                        top: 20,
+                        bottom: 20
+                    }
+                },
+                ...options,
+                plugins: {
+                    ...ChartConfig.globalOptions.plugins,
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'start',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'rectRounded',
+                            padding: 15,
+                            font: {
+                                size: 11,
+                                weight: '600',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#374151',
+                            boxWidth: 12,
+                            boxHeight: 12
+                        }
+                    },
+                    tooltip: {
+                        ...ChartConfig.globalOptions.plugins.tooltip,
+                        callbacks: {
+                            label: function (context)
+                            {
+                                return `${context.dataset.label}: ${context.parsed.x.toLocaleString()}`;
+                            },
+                            afterLabel: function (context)
+                            {
+                                const datasetArray = [];
+                                context.chart.data.datasets.forEach((dataset) =>
+                                {
+                                    if (dataset.data[ context.dataIndex ] != undefined)
+                                    {
+                                        datasetArray.push(dataset.data[ context.dataIndex ]);
+                                    }
+                                });
+                                const total = datasetArray.reduce((total, dataItem) => total + dataItem, 0);
+                                const percentage = ((context.parsed.x / total) * 100).toFixed(1);
+                                return `Peratus: ${percentage}%`;
+                            }
+                        }
+                    },
+                    ...options.plugins
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.04)',
+                            drawBorder: false,
+                            lineWidth: 1
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                weight: '600',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            },
+                            color: '#4b5563',
+                            padding: 12,
+                            callback: function (value)
+                            {
+                                return value.toLocaleString();
+                            }
+                        },
+                        border: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        grid: { display: false },
+                        ticks: {
+                            font: {
+                                size: 9,
                                 weight: '600',
                                 family: "'Inter', 'Segoe UI', sans-serif"
                             },
@@ -791,9 +971,7 @@ class EnhancedChartFactory
                             display: false
                         },
                         afterFit: function(scale) {
-                            if (isHorizontal) {
-                                scale.width = 400;
-                            }
+                            scale.width = 250;
                         }
                     },
                     ...options.scales

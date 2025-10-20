@@ -282,10 +282,43 @@
                 'university-preparedness': 'Data persepsi graduan tentang kesiapan universiti untuk pasaran kerja',
                 'additional-skills': 'Data kemahiran tambahan yang diminta oleh majikan',
 
-                // Add to descriptions object in getChartDescription method
+                // Graduan Luar Bidang descriptions
                 'reasons': 'Data sebab utama graduan bekerja di luar bidang pengajian dengan analisis terperinci',
                 'jobtypes': 'Data agihan jenis pekerjaan semasa yang diceburi oleh graduan luar bidang',
-                'reasons-simple': 'Data analisis mudah sebab graduan tidak bekerja dalam bidang pengajian mereka'
+                'reasons-simple': 'Data analisis mudah sebab graduan tidak bekerja dalam bidang pengajian mereka',
+                
+                // Graduan Bidang descriptions
+                'field-by-year': 'Data taburan graduan mengikut bidang pengajian dan tahun graduasi dalam bentuk stacked bar',
+                
+                // Intern/Employment Challenge descriptions
+                'internship-participation': 'Data penyertaan graduan dalam program latihan industri sebelum graduasi',
+                'internship-benefits': 'Data manfaat latihan industri dalam membantu graduan mendapat pekerjaan',
+                'employment-challenges': 'Data cabaran utama yang dihadapi graduan semasa mencari pekerjaan',
+                'no-internship-reasons': 'Data sebab mengapa graduan tidak menamatkan latihan industri',
+                'grouped-challenges': 'Data analisis kategori cabaran pekerjaan yang dihadapi oleh graduan',
+                
+                // Demografi & Latar Belakang Akademik descriptions
+                'age-by-graduation-year': 'Data taburan umur graduan mengikut tahun graduasi',
+                'gender-distribution': 'Data pengagihan graduan mengikut jantina',
+                'institution-category': 'Data pengagihan graduan mengikut kategori institusi pendidikan MARA',
+                'field-of-study': 'Data pengagihan bidang pengajian yang diambil oleh graduan',
+                'field-distribution': 'Data taburan terperinci bidang pengajian mengikut kategori',
+                
+                // Status Pekerjaan descriptions
+                'employment-status': 'Data status pekerjaan semasa graduan (bekerja, mencari kerja, dll)',
+                'job-status': 'Data jenis pekerjaan semasa yang diceburi oleh graduan',
+                'time-to-job': 'Data masa yang diambil graduan untuk mendapat pekerjaan pertama selepas graduasi',
+                'job-types': 'Data agihan jenis pekerjaan mengikut sektor dan industri',
+                'job-factors': 'Data faktor utama yang membantu graduan mendapat pekerjaan',
+                'field-alignment': 'Data peratus graduan yang bekerja dalam bidang pengajian mereka',
+                
+                // Sektor, Industri & Gaji descriptions
+                'salary-by-field': 'Data perbandingan gaji bulanan mengikut bidang pengajian graduan',
+                'salary-by-education': 'Data perbandingan gaji bulanan mengikut tahap pendidikan (diploma, ijazah, dll)',
+                'employment-sectors': 'Data taburan sektor pekerjaan yang diceburi oleh graduan (awam, swasta, dll)',
+                'salary-by-industry': 'Data perbandingan gaji mengikut industri atau bidang pekerjaan',
+                'expected-vs-current-salary': 'Data perbandingan antara jangkaan gaji dan gaji sebenar yang diterima',
+                'salary-commensurate': 'Data persepsi graduan tentang kesesuaian gaji dengan kelayakan dan pengalaman'
             };
             return descriptions[chartType] || 'Data yang berkaitan dengan graf ini';
         }
@@ -662,6 +695,9 @@
                     console.error('Modal manager not ready');
                     return;
                 }
+                // Set the chart type so descriptions will appear
+                window.modalManagerInstance.currentChartType = chartType;
+                window.modalManagerInstance.currentTitle = title;
                 const columns = CHART_COLUMNS[chartType] || null;
                 window.modalManagerInstance.openModal(title, endpoint, columns);
             };

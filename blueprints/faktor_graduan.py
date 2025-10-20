@@ -94,14 +94,96 @@ def api_summary():
         cert_impact_rate = 0
         
         if cert_column in filtered_df.columns:
-            cert_responses = filtered_df[cert_column].dropna()
+            # Standardize 'Ya' responses
+            filtered_df_copy = filtered_df.copy()
+            filtered_df_copy[cert_column] = filtered_df_copy[cert_column].replace(
+                'Ya, contoh: ACCA, CFA, PMP, Cisco, Google Certification', 'Ya'
+            )
+            
+            cert_responses = filtered_df_copy[cert_column].dropna()
             if len(cert_responses) > 0:
-                cert_ownership_rate = (len(cert_responses[cert_responses.str.contains('Ya', na=False)]) / len(cert_responses)) * 100
+                # Count people with certificates
+                with_certs = len(cert_responses[cert_responses == 'Ya'])
+                cert_ownership_rate = (with_certs / len(cert_responses)) * 100
+                
+                # For impact rate, only consider those WITH certificates
+                if cert_impact_column in filtered_df_copy.columns and with_certs > 0:
+                    # Filter to only those who have certificates
+                    with_certs_df = filtered_df_copy[filtered_df_copy[cert_column] == 'Ya'].copy()
+                    cert_impact_responses = with_certs_df[cert_impact_column].dropna()
+                    
+                    if len(cert_impact_responses) > 0:
+                        # Count how many said certificates helped
+                        helped_count = len(cert_impact_responses[cert_impact_responses.str.contains('Ya', na=False)])
+                        cert_impact_rate = (helped_count / len(cert_impact_responses)) * 100
+                        print(f"Certificate impact: {helped_count} out of {len(cert_impact_responses)} = {cert_impact_rate}%")
         
-        if cert_impact_column in filtered_df.columns:
-            cert_impact_responses = filtered_df[cert_impact_column].dropna()
-            if len(cert_impact_responses) > 0:
-                cert_impact_rate = (len(cert_impact_responses[cert_impact_responses.str.contains('Ya', na=False)]) / len(cert_impact_responses)) * 100
+        # Most requested additional skill analysis - matching the chart API
+        skills_column = 'Kemahiran tambahan manakah yang paling banyak diminta oleh majikan semasa temu duga? '
+        most_requested_skill = "N/A"
+        
+        # Try to find the column with variations
+        if skills_column not in filtered_df.columns:
+            similar_columns = [col for col in filtered_df.columns if 'kemahiran tambahan' in col.lower()]
+            print(f"Skills column not found. Similar columns: {similar_columns}")
+            if similar_columns:
+                skills_column = similar_columns[0]
+                print(f"Using column: {skills_column}")
+        
+        if skills_column in filtered_df.columns:
+            print(f"Processing skills from column: {skills_column}")
+            # Use the same categorization as the chart
+            additional_skills_grouping = {
+                'Kemahiran Komunikasi': 'Kemahiran Komunikasi & Interpersonal',
+                'Kemahiran Pembentangan': 'Kemahiran Komunikasi & Interpersonal',
+                'Kemahiran Penulisan profesional': 'Kemahiran Komunikasi & Interpersonal',
+                'Kemahiran Perundingan dan diplomasi': 'Kemahiran Komunikasi & Interpersonal',
+                'Pemikiran kritis dan penyelesaian masalah': 'Pemikiran Kritis & Penyelesaian Masalah',
+                'Keupayaan membuat keputusan berasaskan data': 'Pemikiran Kritis & Penyelesaian Masalah',
+                'Analisis data dan penyelidikan': 'Pemikiran Kritis & Penyelesaian Masalah',
+                'Kepimpinan dan pengurusan projek': 'Kemahiran Kepimpinan & Pengurusan Diri',
+                'Pengurusan masa dan multitasking': 'Kemahiran Kepimpinan & Pengurusan Diri',
+                'Keusahawanan dan pengurusan perniagaan': 'Kemahiran Kepimpinan & Pengurusan Diri',
+                'Kemahiran bekerja dalam pasukan': 'Kemahiran Bekerja Dalam Pasukan',
+                'Penggunaan perisian pejabat (Microsoft Office, Google Workspace)': 'Kemahiran Digital & Teknologi',
+                'Kecekapan dalam perisian industri (AutoCAD, Photoshop, QuickBooks)': 'Kemahiran Digital & Teknologi',
+                'Pemasaran digital dan media sosial': 'Kemahiran Digital & Teknologi',
+                'Kemahiran pengaturcaraan (Python, SQL, Java)': 'Kemahiran Digital & Teknologi'
+            }
+            
+            skills_data = filtered_df[skills_column].dropna()
+            print(f"Skills data count: {len(skills_data)}")
+            if len(skills_data) > 0:
+                print(f"Sample skills data: {skills_data.head(3).tolist()}")
+                # Count occurrences using the same grouping logic
+                all_skills = []
+                for cell in skills_data:
+                    if pd.isnull(cell):
+                        continue
+                    text = str(cell)
+                    matched_groups = set()
+                    
+                    for keyword, group in additional_skills_grouping.items():
+                        if keyword in text:
+                            matched_groups.add(group)
+                    
+                    if matched_groups:
+                        all_skills.extend(matched_groups)
+                    else:
+                        all_skills.append('Lain-lain')
+                        print(f"Uncategorized skill: {text[:100]}")
+                
+                if all_skills:
+                    skill_counts = Counter(all_skills)
+                    most_requested_skill = skill_counts.most_common(1)[0][0]
+                    print(f"Most requested skill: {most_requested_skill} from {len(all_skills)} responses")
+                    print(f"All skill counts: {dict(skill_counts)}")
+                else:
+                    print(f"No skills data found after processing {len(skills_data)} responses")
+            else:
+                print(f"Skills column found but no data: {len(skills_data)} responses")
+        else:
+            print(f"Skills column '{skills_column}' not found in dataframe. Available columns: {list(filtered_df.columns)}")
         
         enhanced_stats = {
             'total_records': total_records,
@@ -112,6 +194,7 @@ def api_summary():
             'high_preparedness_rate': round(high_preparedness_rate, 1),
             'cert_ownership_rate': round(cert_ownership_rate, 1),
             'cert_impact_rate': round(cert_impact_rate, 1),
+            'most_requested_skill': most_requested_skill,
             'filter_applied': len([f for f in filters.values() if f]) > 0
         }
         

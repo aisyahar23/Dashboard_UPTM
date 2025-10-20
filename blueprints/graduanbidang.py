@@ -468,15 +468,30 @@ def api_field_by_year():
             # If sorting fails, keep original order
             pass
         
+        # Combine "Other" into "Economy, Business & Management"
+        if 'Other' in grouped_data.columns:
+            if 'Economy, Business & Management' in grouped_data.columns:
+                # Add Other values to existing Economy, Business & Management
+                grouped_data['Economy, Business & Management'] = grouped_data['Economy, Business & Management'] + grouped_data['Other']
+            else:
+                # Rename Other to Economy, Business & Management
+                grouped_data.rename(columns={'Other': 'Economy, Business & Management'}, inplace=True)
+            
+            # Drop the Other column if it still exists (after adding to Economy)
+            if 'Other' in grouped_data.columns:
+                grouped_data = grouped_data.drop('Other', axis=1)
+        
         # Prepare data for stacked bar chart
         labels = [str(year) for year in grouped_data.index.tolist()]
         datasets = []
         
         # Each field becomes a dataset (series in the stacked bar)
         for field in grouped_data.columns:
+            # Use .loc to explicitly get the column as a Series, then convert to list
+            field_values = grouped_data.loc[:, field].values.tolist()
             datasets.append({
                 'label': str(field),
-                'data': [int(val) for val in grouped_data[field].tolist()]
+                'data': field_values
             })
         
         chart_data = {

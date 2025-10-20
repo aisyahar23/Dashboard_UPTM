@@ -242,7 +242,8 @@
                 <div>
                     <div class="text-lg lg:text-xl font-bold text-gray-800"
                         x-text="(kpis.university_support_rate || 0) + '%'"></div>
-                    <div class="text-xs text-gray-500">Sokongan Uni</div>
+                    <div class="text-xs text-gray-500">Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?
+</div>
                 </div>
             </div>
         </div>
@@ -256,14 +257,55 @@
                 <div>
                     <div class="text-lg lg:text-xl font-bold text-gray-800"
                         x-text="(kpis.job_preference_rate || 0) + '%'"></div>
-                    <div class="text-xs text-gray-500">Pilih Kerja Tetap</div>
+                    <div class="text-xs text-gray-500">Pilihan Kerjaya</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Professional Bento Grid Layout for Charts -->
-    <div class="grid grid-cols-12 gap-4 lg:gap-6">
+    <!-- Tabbed Chart Organization -->
+    <div x-data="{ activeTab: 'overview' }" class="space-y-5">
+        <!-- Minimal Modern Tab Navigation -->
+        <div class="bg-white rounded-2xl shadow-md border border-gray-200/50 overflow-hidden">
+            <div class="flex border-b border-gray-200">
+                <!-- Tab 1: Gambaran Keseluruhan -->
+                <button @click="activeTab = 'overview'" 
+                    :class="activeTab === 'overview' ? 'border-primary-600 text-primary-600 bg-primary-50/50' : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+                    class="flex-1 group relative px-6 py-4 border-b-2 font-medium text-sm transition-all duration-200 focus:outline-none">
+                    <div class="flex items-center justify-center gap-2">
+                        <i class="fas fa-chart-pie text-base"></i>
+                        <span>Gambaran Keseluruhan</span>
+                    </div>
+                </button>
+
+                <!-- Tab 2: Sokongan Universiti -->
+                <button @click="activeTab = 'university'" 
+                    :class="activeTab === 'university' ? 'border-primary-600 text-primary-600 bg-primary-50/50' : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+                    class="flex-1 group relative px-6 py-4 border-b-2 font-medium text-sm transition-all duration-200 focus:outline-none">
+                    <div class="flex items-center justify-center gap-2">
+                        <i class="fas fa-graduation-cap text-base"></i>
+                        <span>Sokongan Universiti</span>
+                    </div>
+                </button>
+
+                <!-- Tab 3: Bantuan & Kewangan -->
+                <button @click="activeTab = 'support'" 
+                    :class="activeTab === 'support' ? 'border-primary-600 text-primary-600 bg-primary-50/50' : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+                    class="flex-1 group relative px-6 py-4 border-b-2 font-medium text-sm transition-all duration-200 focus:outline-none">
+                    <div class="flex items-center justify-center gap-2">
+                        <i class="fas fa-hands-helping text-base"></i>
+                        <span>Bantuan & Kewangan</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab 1: Gambaran Keseluruhan -->
+        <div x-show="activeTab === 'overview'" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             class="grid grid-cols-12 gap-4 lg:gap-6">
         <!-- Row 1: 2 Charts - Jenis Kerja Ekonomi Gig & Cabaran Utama -->
         <!-- Jenis Kerja Ekonomi Gig (6 cols) -->
         <div
@@ -306,8 +348,8 @@
                     </div>
                 </div>
             </div>
-            <div class="p-6">
-                <div class="h-56 relative">
+            <div class="p-6 pb-0">
+                <div class="h-screen relative" style="max-height: 350px;">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
                         <div class="text-center">
@@ -361,8 +403,8 @@
                     </div>
                 </div>
             </div>
-            <div class="p-6">
-                <div class="h-56 relative">
+            <div class="p-6 pb-0">
+                <div class="h-screen relative" style="max-height: 350px;">
                     <div x-show="loading" class="absolute inset-0 flex items-center justify-center bg-white/90">
                         <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-500"></div>
                     </div>
@@ -426,7 +468,15 @@
                 </div>
             </div>
         </div>
+        </div>
+        <!-- End Tab 1: Gambaran Keseluruhan -->
 
+        <!-- Tab 2: Sokongan Universiti -->
+        <div x-show="activeTab === 'university'" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             class="grid grid-cols-12 gap-4 lg:gap-6">
         <!-- Row 3: Sokongan Universiti + Program Universiti -->
         <!-- Sokongan Universiti (6 cols) -->
         <div
@@ -628,8 +678,16 @@
                 </div>
             </div>
         </div>
+        </div>
+        <!-- End Tab 2: Sokongan Universiti -->
 
-        <!-- Row 4: Sokongan & Bantuan Diperlukan (12 cols) -->
+        <!-- Tab 3: Bantuan & Kewangan -->
+        <div x-show="activeTab === 'support'" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             class="grid grid-cols-12 gap-4 lg:gap-6">
+        <!-- Sokongan & Bantuan Diperlukan (12 cols) -->
         <div
             class="col-span-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/60 overflow-hidden">
             <div class=" text-black border-b border-gray-300 px-6 py-3">
@@ -783,7 +841,10 @@
                 </div>
             </div>
         </div>
+        </div>
+        <!-- End Tab 3: Bantuan & Kewangan -->
     </div>
+    <!-- End Tabbed Chart Organization -->
 
 </div>
 {% endblock %}

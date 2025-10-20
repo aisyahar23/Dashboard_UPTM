@@ -34,7 +34,7 @@
                     </button>
 
                     <!-- Enhanced Filter Dropdown - FIXED -->
-                    <div x-show="showFilters" 
+                    <div x-show="showFilters" x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 transform scale-95"
                          x-transition:enter-end="opacity-100 transform scale-100"
@@ -189,7 +189,7 @@
                     </button>
 
                     <!-- FIXED Export Dropdown -->
-                    <div x-show="showExport"
+                    <div x-show="showExport" x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 transform scale-95"
                          x-transition:enter-end="opacity-100 transform scale-100"
@@ -294,7 +294,7 @@
                             <i class="fas fa-chart-line text-xl text-green-600"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-gray-600 font-medium">Pendapatan Utama</div>
+                            <div class="text-sm text-gray-600 font-medium">Pendapatan Isi Rumah</div>
                             <div class="text-lg font-bold text-gray-900 leading-tight"
                                 x-text="kpis.avg_income_range || 'N/A'"></div>
                         </div>
@@ -302,7 +302,7 @@
                 </div>
                 <div class="text-xs text-gray-500 flex items-center">
                     <i class="fas fa-info-circle mr-2"></i>
-                    Kategori terbanyak
+                    Majoriti pendapatan isi rumah
                 </div>
             </div>
 
@@ -324,7 +324,7 @@
                 </div>
                 <div class="text-xs text-gray-500 flex items-center">
                     <i class="fas fa-info-circle mr-2"></i>
-                    RM5,000 ke atas
+                    Pendapatan isi rumah melebihi RM4,850
                 </div>
             </div>
 
@@ -462,7 +462,7 @@
         </div>
 
         <!-- Father Occupation by Income - Stacked Bar Chart -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden">
+        <div class="hidden col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -518,7 +518,7 @@
         </div>
 
         <!-- Mother Occupation by Income - Stacked Bar Chart -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden">
+        <div class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>

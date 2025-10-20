@@ -298,6 +298,7 @@ def api_summary():
                 entrepreneurship_rate = (entrepreneur_count / total_records) * 100 if total_records > 0 else 0
                 
                 gig_stats['gig_participation_rate'] = gig_participation_rate
+                gig_stats['gig_participation_count'] = gig_interested
                 gig_stats['entrepreneurship_rate'] = entrepreneurship_rate
             
             # University support rate
@@ -348,6 +349,7 @@ def api_summary():
         enhanced_stats = {
             'total_records': total_records,
             'gig_participation_rate': round(gig_stats.get('gig_participation_rate', 0), 1),
+            'gig_participation_count': gig_stats.get('gig_participation_count', 0),
             'entrepreneurship_rate': round(gig_stats.get('entrepreneurship_rate', 0), 1),
             'university_support_rate': round(gig_stats.get('university_support_rate', 0), 1),
             'avg_income': gig_stats.get('avg_income', 'RM0'),
@@ -366,6 +368,7 @@ def api_summary():
             'error': str(e),
             'total_records': 0,
             'gig_participation_rate': 0,
+            'gig_participation_count': 0,
             'entrepreneurship_rate': 0,
             'university_support_rate': 0,
             'avg_income': 'RM0',
@@ -769,13 +772,87 @@ def api_support_needed():
                 "Support Needed"
             ))
         
-        # Process comma-separated support needs
+        # Categorization mapping for support needs
+        support_categories = {
+            'Latihan teknikal spesifik': [
+                'latihan teknikal',
+                'latihan kemahiran',
+                'kursus profesional',
+                'teknikal dalam bidang',
+                'kemahiran khusus',
+                'latihan praktis'
+            ],
+            'Bimbingan kewangan dan cukai': [
+                'panduan menguruskan kewangan',
+                'nasihat cukai',
+                'bimbingan kewangan',
+                'pengurusan kewangan',
+                'panduan cukai',
+                'bantuan kewangan',
+                'pengurusan wang'
+            ],
+            'Platform khas graduan MARA': [
+                'platform',
+                'direktori',
+                'graduan MARA',
+                'rangkaian graduan',
+                'network graduan',
+                'komuniti MARA'
+            ],
+            'Pinjaman/geran untuk gig': [
+                'modal permulaan',
+                'pinjaman',
+                'geran',
+                'perniagaan',
+                'startup',
+                'dana permulaan',
+                'pembiayaan',
+                'modal awal'
+            ],
+            'Perlindungan sosial (KWSP, PERKESO, insurans)': [
+                'perlindungan sosial',
+                'kwsp',
+                'perkeso',
+                'insurans',
+                'insurance',
+                'jaminan sosial',
+                'perlindungan pekerja',
+                'benefit',
+                'kesihatan'
+            ]
+        }
+        
+        # Process comma-separated support needs with categorization
         all_support = []
+        uncategorized_items = []  # For debugging
+        
         for support_cell in filtered_df[support_column].dropna():
             if pd.notna(support_cell):
                 support_items = [s.strip() for s in str(support_cell).split(',')]
-                support_items = [s for s in support_items if s and 'Tidak relevan' not in s]
-                all_support.extend(support_items)
+                
+                for item in support_items:
+                    if not item or 'tidak relevan' in item.lower():
+                        continue
+                    
+                    # Try to categorize
+                    categorized = False
+                    item_lower = item.lower()
+                    
+                    for category, keywords in support_categories.items():
+                        # Check if any keyword matches
+                        if any(keyword in item_lower for keyword in keywords):
+                            all_support.append(category)
+                            categorized = True
+                            break
+                    
+                    # If not categorized, add to Lain-lain
+                    if not categorized:
+                        all_support.append('Lain-lain')
+                        uncategorized_items.append(item)
+        
+        # Print uncategorized items for debugging
+        if uncategorized_items:
+            print(f"Uncategorized support items ({len(uncategorized_items)}): {set(uncategorized_items)}")
         
         if not all_support:
             return jsonify(formatter.format_bar_chart(

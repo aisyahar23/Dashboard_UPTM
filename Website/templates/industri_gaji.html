@@ -49,7 +49,7 @@
                     </button>
 
                     <!-- Enhanced Filter Dropdown -->
-                    <div x-show="open" 
+                    <div x-show="open" x-cloak
                          x-transition:enter="transition ease-out duration-300"
                          x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
                          x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
@@ -202,15 +202,16 @@
                         <span class="font-semibold text-[10px] ml-1">Eksport</span>
                     </button>
 
-                    <div x-show="open" 
+                    <div x-show="open" x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 transform scale-95 translate-y-2"
                          x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
                          x-transition:leave-end="opacity-0 transform scale-95 translate-y-2"
-                         class="absolute right-0 mt-2 w-64 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
-                         style="display: none;">
+                         @click.away="open = false"
+                         class="absolute right-0 mt-2 bg-white backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+                         style="width: 256px;">
                         <div class="py-2">
                             <button @click="exportData('csv'); open = false"
                                 class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 flex items-center space-x-3 transition-colors group">
@@ -337,7 +338,7 @@
                 </div>
                 <div class="text-xs text-gray-500 flex items-center">
                     <i class="fas fa-info-circle mr-2"></i>
-                    RM4000 ke atas
+                    RM 3,000 ke atas
                 </div>
             </div>
 
@@ -399,7 +400,7 @@
                     </div>
                     <div class="flex space-x-1">
                         <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Salary by Field', buildTableEndpoint())"
+                            <button @click="openTableModal('salary-by-field', 'Gaji Mengikut Bidang', buildTableEndpoint())"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -421,8 +422,8 @@
                     </div>
                 </div>
             </div>
-            <div class="p-8">
-                <div class="h-80 relative">
+            <div class="p-8 overflow-x-auto">
+                <div class="h-80 relative min-w-full">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
@@ -449,7 +450,7 @@
                     </div>
                     <div class="flex space-x-1">
                         <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Salary by Education', buildTableEndpoint())"
+                            <button @click="openTableModal('salary-by-education', 'Gaji Mengikut Pendidikan', buildTableEndpoint())"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -499,7 +500,7 @@
                     </div>
                     <div class="flex space-x-1">
                         <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Employment Sectors', buildTableEndpoint())"
+                            <button @click="openTableModal('employment-sectors', 'Sektor Pekerjaan', buildTableEndpoint())"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -549,7 +550,7 @@
                     </div>
                     <div class="flex space-x-1">
                         <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Salary by Industry', buildTableEndpoint())"
+                            <button @click="openTableModal('salary-by-industry', 'Gaji Mengikut Industri', buildTableEndpoint())"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -571,8 +572,8 @@
                     </div>
                 </div>
             </div>
-            <div class="p-8">
-                <div class="h-80 relative">
+            <div class="p-8 overflow-x-auto">
+                <div class="h-80 relative min-w-full">
                     <div x-show="loading"
                         class="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm z-10 rounded-lg">
                         <div class="text-center">
@@ -601,7 +602,7 @@
                     </div>
                     <div class="flex space-x-1">
                         <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Expected vs Current Salary', buildTableEndpoint())"
+                            <button @click="openTableModal('expected-vs-current-salary', 'Perbandingan Gaji', buildTableEndpoint())"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -651,7 +652,7 @@
                     </div>
                     <div class="flex space-x-1">
                         <div class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openTableModal('Salary Commensurate', buildTableEndpoint())"
+                            <button @click="openTableModal('salary-commensurate', 'Kesesuaian Gaji', buildTableEndpoint())"
                                 class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -852,7 +853,19 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.salaryByField = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'salary-by-field', {
+
+                            // Wrap y-axis labels into multiple lines so long labels don't get cut off
+                            const wrappedLabels = (data.labels || []).map(label => {
+                                const lines = this.wrapLabel(label, 17); // adjust chars per line as needed
+                                return Array.isArray(lines) ? lines : [String(lines || '')];
+                            });
+
+                            const chartData = {
+                                ...data,
+                                labels: wrappedLabels
+                            };
+
+                            window.globalCharts.salaryByField = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', chartData, 'salary-by-field', {
                                 indexAxis: 'y',
                                 plugins: {
                                     tooltip: {
@@ -878,16 +891,9 @@
                                             text: 'Bidang Pengajian'
                                         },
                                         ticks: {
-                                            font: { size: 10 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 20)
-                                                {
-                                                    return label.substring(0, 17) + '...';
-                                                }
-                                                return label;
-                                            }
+                                            font: { size: 10 }
+                                            // removed callback that tried to manually trim labels;
+                                            // using array labels allows Chart.js to render multi-line labels
                                         }
                                     }
                                 }
@@ -1061,7 +1067,19 @@
                         if (ctx)
                         {
                             window.globalCharts = window.globalCharts || {};
-                            window.globalCharts.salaryByIndustry = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', data, 'salary-by-industry', {
+
+                            // Wrap y-axis labels into multiple lines so long industry names wrap
+                            const wrappedLabels = (data.labels || []).map(label => {
+                                const lines = this.wrapLabel(label, 17); // tweak length for best fit
+                                return Array.isArray(lines) ? lines : [String(lines || '')];
+                            });
+
+                            const chartData = {
+                                ...data,
+                                labels: wrappedLabels
+                            };
+
+                            window.globalCharts.salaryByIndustry = EnhancedChartFactory.createChart(ctx, 'enhanced-stacked-bar', chartData, 'salary-by-industry', {
                                 indexAxis: 'y',
                                 plugins: {
                                     tooltip: {
@@ -1087,16 +1105,8 @@
                                             text: 'Sektor Industri'
                                         },
                                         ticks: {
-                                            font: { size: 10 },
-                                            callback: function (value, index)
-                                            {
-                                                const label = this.getLabelForValue(value);
-                                                if (label && label.length > 20)
-                                                {
-                                                    return label.substring(0, 17) + '...';
-                                                }
-                                                return label;
-                                            }
+                                            font: { size: 10 }
+                                            // multi-line labels from chartData.labels will be rendered automatically
                                         }
                                     }
                                 }
@@ -1412,16 +1422,20 @@
                     this.showToast('Eksport gagal', 'error');
                 }
             },
-
-            openTableModal(title, endpoint)
+            
+            openTableModal(chartType, title, endpoint)
             {
-                if (typeof window.modalManagerInstance !== 'undefined' && window.modalManagerInstance) {
+                // Use openChartModal to show description
+                if (typeof window.openChartModal !== 'undefined') {
+                    window.openChartModal(chartType, title, endpoint);
+                } else if (typeof window.modalManagerInstance !== 'undefined' && window.modalManagerInstance) {
                     window.modalManagerInstance.openModal(title, endpoint);
                 } else {
                     console.error('Modal manager not available');
                     this.showToast('Modal manager tidak tersedia', 'error');
                 }
             },
+            
 
             showChartError(chartId, message)
             {
