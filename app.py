@@ -49,6 +49,10 @@ def create_app():
     def dashboard():
         return render_template('login.html')
     
+    @app.route('/main-dashboard')
+    def main_dashboard():
+        return render_template('dashboard.html')
+    
     return app
 
 app = create_app()

@@ -297,7 +297,7 @@
     <div class="grid grid-cols-12 gap-6 auto-rows-auto">
 
         <!-- Enhanced KPI Cards Row -->
-        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Average Salary Range -->
             <div
                 class="flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
@@ -320,27 +320,6 @@
                 </div>
             </div>
 
-            <!-- High Salary Rate -->
-            <div
-                class="flex flex-col justify-between gap-y-4 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
-                <div class="flex items-start justify-between">
-                    <div class="flex items-start space-x-4">
-                        <div
-                            class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
-                            <i class="fas fa-chart-line text-md text-blue-600"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-sm text-gray-600 font-medium">Gaji Tinggi</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.high_salary_rate || 0) + '%'">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    RM 3,000 ke atas
-                </div>
-            </div>
 
             <!-- Most Common Education -->
             <div
@@ -354,7 +333,8 @@
                         <div class="min-w-0 flex-1">
                             <div class="text-sm text-gray-600 font-medium">Tahap Pendidikan</div>
                             <div class="text-lg font-bold text-gray-900 leading-tight"
-                                x-text="kpis.most_common_education || 'N/A'"></div>
+                                x-text="kpis.most_common_education === 'Universiti Poly-Tech Malaysia (UPTM)' ? 'Ijazah Sarjana Muda' : (kpis.most_common_education || 'N/A')">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -646,7 +626,7 @@
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 flex items-center">
                             <i class="fas fa-check-circle text-primary-600 mr-2"></i>
-                            Kesesuaian Gaji
+                            Persepsi graduan berkenaan gaji
                         </h3>
                         <p class="text-gray-600 text-xs mt-1">Gaji sesuai dengan kelulusan</p>
                     </div>

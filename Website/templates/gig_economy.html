@@ -166,7 +166,7 @@
                     <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg">
                         Trend Ekonomi Gig & Keusahawanan
                     </h1>
-                    <p class="text-white text-lg leading-relaxed">Analisis menyeluruh mengenai pilihan kerja bebas
+                    <p class="text-white text-lg leading-relaxed">Analisis menyeluruh mengenai ekonomi gig
                         dan
                         aktiviti keusahawanan</p>
                     <div class="flex items-center mt-4 space-x-8 text-sm">
@@ -190,75 +190,98 @@
         </div>
     </div>
 
-    <!-- Minimal KPI Strip -->
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-4">
+    <!-- KPI Cards - Updated Style -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+
+        <!-- Gig Participation Rate -->
         <div
-            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
-                    <i class="fas fa-users text-[#074e7e] text-sm"></i>
+            class="bg-white rounded-2xl px-6 py-3 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div class="flex items-center justify-start">
+                <div class="flex items-center space-x-2">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <i class="fas fa-briefcase text-sm text-red-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-600 font-medium">Kerja Gig</div>
+                        <div class="text-3xl font-bold text-gray-900"
+                            x-text="(kpis.gig_participation_rate || 0) + '%'"></div>
+                    </div>
                 </div>
-                <div>
-                    <div class="text-lg lg:text-xl font-bold text-gray-800" x-text="kpis.total_records || '0'"></div>
-                    <div class="text-xs text-gray-500">Jumlah Responden</div>
-                </div>
+            </div>
+            <div class="mt-2 text-xs text-gray-500 flex items-center">
+                <button class="fas fa-info-circle mr-2 text-gray-400 hover:text-gray-600 cursor-pointer" 
+                        @click="showInfoModal('Kerja Gig', 'Peratusan graduan yang terlibat atau merancang untuk terlibat dalam ekonomi gig')"></button>
+                Penyertaan dalam ekonomi gig
             </div>
         </div>
 
+        <!-- Top Gig Motivation -->
         <div
-            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
-                    <i class="fas fa-briefcase text-[#c92427] text-sm"></i>
+            class="bg-white rounded-2xl px-6 py-3 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div class="flex items-start justify-start">
+                <div class="flex items-start space-x-2">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
+                        <i class="fas fa-heart text-sm text-green-600"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm text-gray-600 font-medium">Motivasi Ekonomi Gig</div>
+                        <div class="text-sm font-bold text-gray-900 leading-tight titlecase"
+                            x-text="kpis.top_gig_motivation || 'N/A'"></div>
+                    </div>
                 </div>
-                <div>
-                    <div class="text-lg lg:text-xl font-bold text-gray-800"
-                        x-text="(kpis.gig_participation_rate || 0) + '%'"></div>
-                    <div class="text-xs text-gray-500">Kerja Gig</div>
-                </div>
+            </div>
+            <div class="mt-2 text-xs text-gray-500 flex items-center">
+                <button class="fas fa-info-circle mr-2 text-gray-400 hover:text-gray-600 cursor-pointer" 
+                        @click="showInfoModal('Motivasi Ekonomi Gig', 'Sebab utama memilih kerja gig')"></button>
+                Sebab utama memilih ekonomi gig
             </div>
         </div>
 
+        <!-- University Support Rate -->
         <div
-            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center shrink-0">
-                    <i class="fas fa-rocket text-green-600 text-sm"></i>
+            class="bg-white rounded-2xl px-6 py-3 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div class="flex items-center justify-start">
+                <div class="flex items-center space-x-2">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <i class="fas fa-graduation-cap text-sm text-purple-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-600 font-medium">Sokongan Universiti</div>
+                        <div class="text-3xl font-bold text-gray-900"
+                            x-text="(kpis.university_support_rate || 0) + '%'"></div>
+                    </div>
                 </div>
-                <div>
-                    <div class="text-lg lg:text-xl font-bold text-gray-800"
-                        x-text="(kpis.entrepreneurship_rate || 0) + '%'"></div>
-                    <div class="text-xs text-gray-500">Usahawan</div>
-                </div>
+            </div>
+            <div class="mt-2 text-xs text-gray-500 flex items-center">
+                <button class="fas fa-info-circle mr-2 text-gray-400 hover:text-gray-600 cursor-pointer" 
+                        @click="showInfoModal('Sokongan Universiti', 'Peratusan universiti yang menawarkan kursus keusahawanan')"></button>
+                Kursus keusahawanan tersedia
             </div>
         </div>
 
+        <!-- Top Gig Type -->
         <div
-            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center shrink-0">
-                    <i class="fas fa-graduation-cap text-purple-600 text-sm"></i>
-                </div>
-                <div>
-                    <div class="text-lg lg:text-xl font-bold text-gray-800"
-                        x-text="(kpis.university_support_rate || 0) + '%'"></div>
-                    <div class="text-xs text-gray-500">Apakah bantuan atau sokongan yang anda rasa perlu untuk berjaya dalam keusahawanan dan ekonomi gig?
-</div>
+            class="bg-white rounded-2xl px-6 py-3 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+            <div class="flex items-center justify-start">
+                <div class="flex items-center space-x-2">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <i class="fas fa-briefcase text-sm text-indigo-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-600 font-medium">Jenis Kerja Ekonomi Gig</div>
+                        <div class="text-lg font-bold text-gray-900 leading-tight titlecase"
+                            x-text="kpis.top_gig_type || 'N/A'"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div
-            class="bg-white/80 backdrop-blur-sm rounded-xl p-3 lg:p-4 shadow-md border border-gray-200/50 hover:shadow-lg transition-all">
-            <div class="flex flex-row items-start space-x-2">
-                <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center shrink-0">
-                    <i class="fas fa-chart-line text-indigo-600 text-sm"></i>
-                </div>
-                <div>
-                    <div class="text-lg lg:text-xl font-bold text-gray-800"
-                        x-text="(kpis.job_preference_rate || 0) + '%'"></div>
-                    <div class="text-xs text-gray-500">Pilihan Kerjaya</div>
-                </div>
+            <div class="mt-2 text-xs text-gray-500 flex items-center">
+                <button class="fas fa-info-circle mr-2 text-gray-400 hover:text-gray-600 cursor-pointer" 
+                        @click="showInfoModal('Jenis Kerja Ekonomi Gig', 'Jenis kerja ekonomi gig yang paling tinggi')"></button>
+                Jenis kerja paling popular
             </div>
         </div>
     </div>
@@ -486,13 +509,13 @@
                     <div>
                         <h3 class="text-md font-bold text-gray-900 flex items-center"> 
                             <i class="fas fa-graduation-cap text-primary-600 mr-2"></i>
-                            Sokongan Universiti</h3>
+                            Penawaran kursus atau latihan keusahawanan di Universiti</h3>
                         <p class="text-gray-500 text-xs mt-1">Kursus Keusahawanan</p>
                     </div>
                     <div class="flex space-x-1">
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openChartTableModal('university-support', 'Sokongan Universiti')"
+                            <button @click="openChartTableModal('university-support', 'Penawaran kursus atau latihan keusahawanan di Universiti')"
                                 class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -536,13 +559,13 @@
                     <div>
                         <h3 class="text-md font-bold text-gray-900"> 
                             <i class="fas fa-rocket text-primary-600 mr-2"></i>
-                            Program Universiti</h3>
+                            Penganjuran program berkaitan perniagaan & ekonomi gig</h3>
                         <p class="text-gray-500 text-xs mt-1">Inisiatif perniagaan & ekonomi gig</p>
                     </div>
                     <div class="flex space-x-1">
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openChartTableModal('university-programs', 'Program Universiti')"
+                            <button @click="openChartTableModal('university-programs', 'Penganjuran program berkaitan perniagaan & ekonomi gig')"
                                 class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -695,13 +718,13 @@
                     <div>
                         <h3 class="text-md font-bold text-gray-900"> 
                             <i class="fas fa-handshake text-primary-600 mr-2"></i>
-                            Sokongan & Bantuan Diperlukan</h3>
+                            Bantuan atau sokongan yang diperlukan untuk mencapai kejayaan </h3>
                         <p class="text-gray-500 text-xs mt-1">Apa yang usahawan perlukan untuk berjaya</p>
                     </div>
                     <div class="flex space-x-1">
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openChartTableModal('support-needed', 'Sokongan & Bantuan Diperlukan')"
+                            <button @click="openChartTableModal('support-needed', 'Bantuan atau sokongan yang diperlukan untuk mencapai kejayaan')"
                                 class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-black text-xs">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -746,13 +769,13 @@
                     <div class="flex-1 pr-2">
                         <h3 class="text-md font-bold text-gray-900"> 
                             <i class="fas fa-balance-scale text-primary-600 mr-2"></i>
-                            Pilihan Kerjaya</h3>
+                            Kesediaan menerima pekerjaan tetap </h3>
                         <p class="text-gray-500 text-xs mt-1 leading-relaxed">Pilihan kerja tetap vs ekonomi gig</p>
                     </div>
                     <div class="flex space-x-1">
                         <div
                             class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openChartTableModal('job-preference', 'Pilihan Kerjaya')"
+                            <button @click="openChartTableModal('job-preference', 'Kesediaan menerima pekerjaan tetap')"
                                 class="p-1 w-8 h-8 bg-white/20 rounded hover:bg-white/30 transition-colors text-black text-xs">
                                 <i class="fas fa-table text-xs"></i>
                             </button>
@@ -1902,12 +1925,65 @@
                         console.log(`${endpoint}: ${scheme}`);
                     });
                 }
+            },
+
+            // Info modal functionality
+            showInfoModal(title, description)
+            {
+                // Create modal HTML
+                const modalHtml = `
+                    <div id="infoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div class="bg-white rounded-2xl p-6 max-w-md mx-4 shadow-2xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                    ${title}
+                                </h3>
+                                <button onclick="document.getElementById('infoModal').remove()" 
+                                        class="text-gray-400 hover:text-gray-600 text-xl">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <p class="text-gray-600 leading-relaxed">${description}</p>
+                            <div class="mt-6 flex justify-end">
+                                <button onclick="document.getElementById('infoModal').remove()" 
+                                        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                                    Tutup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Remove existing modal if any
+                const existingModal = document.getElementById('infoModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+                
+                // Add modal to body
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                
+                // Close modal when clicking outside
+                document.getElementById('infoModal').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.remove();
+                    }
+                });
             }
         }
     }
 
     // Make dashboard available globally for development/debugging
     window.gigEconomyDashboard = gigEconomyDashboard;
+    
+    // Make showInfoModal available globally
+    window.showInfoModal = function(title, description) {
+        const dashboardInstance = window.currentDashboardInstance;
+        if (dashboardInstance && dashboardInstance.showInfoModal) {
+            dashboardInstance.showInfoModal(title, description);
+        }
+    };
 
     // Auto-initialize when DOM is loaded
     document.addEventListener('DOMContentLoaded', function ()

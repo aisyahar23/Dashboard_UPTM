@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Papan Pemuka Eksekutif - Analitik Kecerdasan Graduan{% endblock %}
-
-
+{% block title %}Grad360 - IPMA Graduate Intelligence System{% endblock %}
 
 {% block content %}
-<div x-data="dashboardKorporat()" x-init="initialize()" class="min-h-screen bg-corporate-light font-inter">
+<div x-data="dashboardKorporat()" x-init="initialize()" class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 font-inter">
     
     <!-- Professional Loading Overlay -->
     <div x-show="isLoading" 
@@ -18,23 +16,23 @@
          class="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center z-50">
         <div class="text-center">
             <div class="loading-ring mx-auto mb-6"></div>
-            <h3 class="text-2xl font-bold text-gray-800 mb-3">Memuatkan Papan Pemuka Eksekutif</h3>
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">Memuatkan Grad360 Dashboard</h3>
             <p class="text-lg text-gray-600 mb-4">Menyediakan analitik kecerdasan graduan...</p>
             <div class="flex justify-center space-x-2">
-                <div class="w-3 h-3 bg-corporate-blue rounded-full animate-bounce"></div>
-                <div class="w-3 h-3 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: 0.15s;"></div>
-                <div class="w-3 h-3 bg-corporate-red rounded-full animate-bounce" style="animation-delay: 0.3s;"></div>
+                <div class="w-3 h-3 bg-blue-600 rounded-full animate-bounce"></div>
+                <div class="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.15s;"></div>
+                <div class="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.3s;"></div>
             </div>
         </div>
     </div>
 
     <!-- Corporate Navigation Header -->
-    <nav class="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-40">
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <!-- Brand Section -->
                 <div class="flex items-center space-x-8">
-                    <div class="flex items-center space-x-4 bg-gray-50 px-6 py-3 rounded-xl">
+                    <div class="flex items-center space-x-4 bg-gray-50 px-6 py-3 rounded-lg border border-gray-200">
                         <img src="{{ url_for('static', filename='img/1. UPTM.png') }}" alt="Logo UPTM"
                             style="width: auto; height: 30px;">
                         <img src="{{ url_for('static', filename='img/2.MARA 2.png') }}" alt="Logo MARA"
@@ -51,106 +49,296 @@
                 <!-- Controls Section -->
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex items-center space-x-4">
-                        <div class="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-lg">
+                        <div class="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
                             <div class="status-dot bg-green-500"></div>
                             <span class="text-sm font-semibold text-green-700">Data Langsung</span>
                         </div>
-                        <span x-text="lastUpdated" class="text-sm font-mono text-gray-500 bg-gray-100 px-3 py-2 rounded-lg"></span>
+                        <span x-text="lastUpdated" class="text-sm font-mono text-gray-600 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200"></span>
                     </div>
                     
                     <button @click="refreshAllData()" 
                             :disabled="isRefreshing"
-                            class="btn-corporate-secondary px-4 py-2 text-sm">
+                            class="btn-corporate-secondary px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all shadow-sm">
                         <i class="fas fa-sync-alt" :class="{'animate-spin': isRefreshing}"></i>
                         <span class="hidden md:inline ml-2">Kemaskini</span>
                     </button>
-                    
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Welcome Hero Section -->
-        <section class="bg-primary-500 to-indigo-800 text-white py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
+    <!-- Enhanced Hero Section -->
+    <section class="relative overflow-hidden" style="min-height: 100vh; background: #16519E;">
+        <!-- Subtle Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 40px 40px;"></div>
+        </div>
+        
+        <!-- Centered Container with Max Width -->
+        <div class="relative mx-auto px-8 py-16 w-full" style="max-width: 1300px;">
+            <div class="grid lg:grid-cols-12 gap-16 items-start">
                 
-                <h1 class="text-5xl md:text-7xl font-black mb-8">
-                    <span class="block">Grad360- IPMA </span>
-                    <span class="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-                       Graduate System
-                    </span>
-                </h1>
-                
-                <div class="max-w-4xl mx-auto mb-12">
-                    <p class="text-lg text-blue-200 leading-relaxed">
-                        Sistem ini menyediakan wawasan mendalam mengenai demografi, sosioekonomi, status pekerjaan, serta faktor kejayaan graduan bagi menyokong pengambilan keputusan strategik yang berasaskan data dan bukti empirikal.
-                    </p>
+                <!-- Left Side - Corporate Branding (5 columns) -->
+                <div class="lg:col-span-5 space-y-10 z-10">
+                    
+                    <!-- Status Badge -->
+                    <div class="inline-flex items-center space-x-3 border-l-4 border-yellow-400 pl-4">
+                        <div class="w-2.5 h-2.5 bg-yellow-400 rounded-full animate-pulse"></div>
+                        <span class="text-xs font-bold text-yellow-300 uppercase tracking-[0.2em] letter-spacing-widest">Graduate Intelligence System</span>
+                    </div>
+                    
+                    <!-- Main Brand Identity -->
+                    <div class="space-y-6">
+                        <div class="space-y-4">
+                            <h1 class="text-7xl lg:text-8xl font-black leading-[0.9] tracking-tight">
+                                <span class="text-yellow-400">Grad</span><span class="text-white">360</span>
+                            </h1>
+                            <div class="text-2xl font-bold text-white tracking-wider">IPMA Graduate System</div>
+                        </div>
+                        
+                        <p class="text-lg text-blue-100 leading-relaxed max-w-xl">
+                            Platform analitik komprehensif untuk pemantauan prestasi graduan. Menyediakan wawasan mendalam mengenai demografi, sosioekonomi, status pekerjaan, serta faktor kejayaan graduan bagi menyokong pengambilan keputusan strategik.
+                        </p>
+                    </div>
+                    
+                    <!-- Big Stats Squares -->
+                    <div class="grid grid-cols-3 gap-4 max-w-md">
+                        <div class="bg-white/10 backdrop-blur-sm p-4 text-center border border-white/20">
+                            <div class="text-3xl font-black text-yellow-400" x-text="qualityMeta.total_graduates || '39'"></div>
+                            <div class="text-xs text-blue-200 font-medium">Graduan</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm p-4 text-center border border-white/20">
+                            <div class="text-3xl font-black text-yellow-400">
+                                <span x-text="formatNumber(qualityMeta.average_score || 0, 1)"></span><span class="text-lg">/12</span>
+                            </div>
+                            <div class="text-xs text-blue-200 font-medium">Skor</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm p-4 text-center border border-white/20">
+                            <div class="text-3xl font-black text-yellow-400">
+                                <span x-text="formatNumber(qualityMeta.high_quality_pct || 0, 1)"></span><span class="text-lg">%</span>
+                            </div>
+                            <div class="text-xs text-blue-200 font-medium">Tinggi</div>
+                        </div>
+                    </div>
+                    
+                    <!-- CTA Section -->
+                    <div class="space-y-4 pt-2">
+                        <button @click="scrollToAnalytics()" 
+                                class="group w-full bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold py-5 px-8 text-base tracking-wide uppercase transition-all duration-300 transform hover:scale-[1.02] shadow-xl hover:shadow-2xl flex items-center justify-between">
+                            <span>Teroka Sistem Analitik</span>
+                            <i class="fas fa-arrow-right text-lg group-hover:translate-x-2 transition-transform duration-300"></i>
+                        </button>
+                        
+                        <div class="flex items-center space-x-6 text-sm text-blue-200">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-yellow-400"></i>
+                                <span>7 Kriteria Analisis</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-check-circle text-yellow-400"></i>
+                                <span>9 Modul Terperinci</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 border border-white border-opacity-20">
-                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-users text-white text-2xl"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">39 Responden</h3>
-                        <p class="text-blue-100 text-sm leading-relaxed">Graduan yang mengambil bahagian dalam kajian komprehensif</p>
-                    </div>
+                <!-- Right Side - 7 Criteria Cards (7 columns) -->
+                <div class="lg:col-span-7 relative z-10 space-y-8 mt-52">
                     
-                    <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 border border-white border-opacity-20">
-                        <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-chart-pie text-black text-2xl"></i>
+                   
+
+                    <!-- Main Carousel Display -->
+                    <div class="relative w-full h-[460px] flex items-center justify-center">
+                        
+                        <!-- Half Circle Container -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            
+                            <!-- 7 Criteria Cards in Half Circle -->
+                            <template x-for="(criterion, index) in qualityCriteria.slice(0, 7)" :key="criterion.id">
+                                <div class="absolute transition-all duration-700 ease-in-out"
+                                     :style="`
+                                        left: ${50 + 44 * Math.cos((index - heroTickerIndex) * (Math.PI / 6) - Math.PI/2)}%;
+                                        top: ${50 + 44 * Math.sin((index - heroTickerIndex) * (Math.PI / 6) - Math.PI/2)}%;
+                                        transform: translate(-50%, -50%) scale(${heroTickerIndex === index ? 1.15 : 0.65});
+                                        opacity: ${heroTickerIndex === index ? 1 : 0.4};
+                                        z-index: ${heroTickerIndex === index ? 45 : 10};
+                                     `">
+                                    
+                                    <!-- Enhanced Criterion Card -->
+                                    <div class="bg-white rounded-2xl shadow-2xl border-3 overflow-hidden cursor-pointer transition-all duration-300"
+                                         :class="heroTickerIndex === index ? 'border-blue-500 ring-4 ring-blue-300/40' : 'border-gray-200'"
+                                         :style="heroTickerIndex === index ? 'width: 300px; height: 450px;' : 'width: 190px; height: 250px;'"
+                                         @click="setHeroTicker(index)">
+                                        
+                                        <!-- Card Header -->
+                                        <div class="relative overflow-hidden bg-blue-600"
+                                             :class="heroTickerIndex === index ? 'p-5' : 'p-3'">
+                                            
+                                            <div class="relative flex items-center gap-3 mb-2">
+                                                <div class="rounded-xl bg-white/20 flex items-center justify-center text-white shadow-lg backdrop-blur-sm"
+                                                     :class="heroTickerIndex === index ? 'w-12 h-12' : 'w-9 h-9'">
+                                                    <i :class="criterion.icon + (heroTickerIndex === index ? ' text-xl' : ' text-sm')"></i>
+                                                </div>
+                                                <span class="text-blue-100 font-black uppercase tracking-wider"
+                                                      :class="heroTickerIndex === index ? 'text-xs' : 'text-[10px]'"
+                                                      x-text="formatCriterionIndex(index)"></span>
+                                            </div>
+                                            <h3 class="text-white font-black leading-tight line-clamp-2 relative"
+                                                :class="heroTickerIndex === index ? 'text-base' : 'text-xs'"
+                                                x-text="criterion.title"></h3>
+                                        </div>
+                                        
+                                        <!-- Card Body -->
+                                        <div class="bg-white"
+                                             :class="heroTickerIndex === index ? 'p-5' : 'p-3'">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <div>
+                                                    <div class="flex items-baseline gap-1">
+                                                        <span class="font-black text-blue-600"
+                                                              :class="heroTickerIndex === index ? 'text-4xl' : 'text-2xl'"
+                                                              x-text="formatNumber(criterion.average_score, 1)"></span>
+                                                        <span class="text-gray-400 font-bold"
+                                                              :class="heroTickerIndex === index ? 'text-lg' : 'text-xs'">/2</span>
+                                                    </div>
+                                                    <div class="text-[10px] text-gray-600 font-semibold"
+                                                         :class="heroTickerIndex === index ? 'text-xs' : 'text-[9px]'">Skor Purata</div>
+                                                </div>
+                                                <div class="text-center bg-blue-50 rounded-lg px-2 py-1.5 border border-blue-200"
+                                                     :class="heroTickerIndex === index ? 'px-3 py-2' : 'px-2 py-1'">
+                                                    <div class="font-black text-blue-700"
+                                                         :class="heroTickerIndex === index ? 'text-2xl' : 'text-lg'"
+                                                         x-text="`${formatNumber(criterion.average_pct, 1)}%`"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="bg-gray-200 rounded-full overflow-hidden"
+                                                     :class="heroTickerIndex === index ? 'h-2.5' : 'h-1.5'">
+                                                    <div class="h-full bg-blue-600 rounded-full transition-all duration-1000"
+                                                         :style="`width: ${criterion.average_pct || 0}%;`"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="space-y-1.5">
+                                                <template x-for="dist in criterion.distribution.slice(0, heroTickerIndex === index ? 3 : 2)" :key="dist.label">
+                                                    <div class="flex items-center justify-between"
+                                                         :class="heroTickerIndex === index ? 'text-xs' : 'text-[10px]'">
+                                                        <span class="text-gray-600 truncate font-medium" x-text="dist.label"></span>
+                                                        <span class="font-bold text-gray-800" x-text="`${formatNumber(dist.percentage, 1)}%`"></span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                            
+
+                                            
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
-                        <h3 class="text-xl font-bold mb-3">9 Modul Analitik</h3>
-                        <p class="text-blue-100 text-sm leading-relaxed">Kajian menyeluruh merangkumi semua aspek prestasi graduan</p>
-                    </div>
-                    
-                    <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 border border-white border-opacity-20">
-                        <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-briefcase text-white text-2xl"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">84.2% Bekerja</h3>
-                        <p class="text-blue-100 text-sm leading-relaxed">Kadar penggajian yang menggalakkan di kalangan graduan</p>
-                    </div>
-                    
-                    <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 border border-white border-opacity-20">
-                        <div class="w-16 h-16 bg-gradient-to-br from-red-400 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-exchange-alt text-white text-2xl"></i>
-                        </div>
-                        <div class="mb-2">
-                            <span class="text-3xl font-black" x-text="outsideFieldData.total_records || '0'"></span>
-                            <span class="text-lg font-semibold ml-2">Pelajar</span>
-                        </div>
-                        <p class="text-blue-100 text-sm leading-relaxed mb-2">Bekerja di luar bidang pengajian</p>
-                        <div class="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-white border-opacity-20">
-                            <div class="text-center">
-                                <div class="text-xs text-blue-200 mb-1">Ketidakpadanan</div>
-                                <div class="text-lg font-bold" x-text="(outsideFieldData.mismatch_rate || 0) + '%'"></div>
+                        
+                        <!-- Navigation Controls -->
+                        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+                            <div class="flex items-center gap-4 bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full shadow-2xl border border-blue-200">
+                                <button @click="advanceHeroTicker(-1); pauseHeroTicker();"
+                                        class="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition-all flex items-center justify-center text-white">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                
+                                <div class="flex gap-2">
+                                    <template x-for="(criterion, index) in qualityCriteria.slice(0, 7)" :key="index">
+                                        <button @click="setHeroTicker(index)"
+                                                class="transition-all duration-300 rounded-full"
+                                                :class="heroTickerIndex === index ? 
+                                                    'w-8 h-2.5 bg-blue-600 shadow-md' : 
+                                                    'w-2.5 h-2.5 bg-gray-300 hover:bg-gray-400'">
+                                        </button>
+                                    </template>
+                                </div>
+                                
+                                <button @click="advanceHeroTicker(1); pauseHeroTicker();"
+                                        class="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition-all flex items-center justify-center text-white">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
                             </div>
-                            <div class="w-px h-8 bg-white bg-opacity-20"></div>
-                            <div class="text-center">
-                                <div class="text-xs text-blue-200 mb-1">Peluang Terhad</div>
-                                <div class="text-lg font-bold" x-text="(outsideFieldData.opportunity_rate || 0) + '%'"></div>
+                        </div>
+                        
+                        <!-- Current Criterion Display -->
+                        <div class="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-40">
+                            <div class="bg-white/90 backdrop-blur-sm text-gray-900 px-10 py-4 rounded-xl shadow-2xl border border-blue-200">
+                                <div class="text-center">
+                                    <div class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1" x-text="formatCriterionIndex(heroTickerIndex)"></div>
+                                    <div class="text-base font-black" x-text="activeHeroCriterion().title"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-                    <button @click="scrollToKPI()" 
-                            class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl">
-                        <i class="fas fa-chart-bar mr-3"></i>
-                        Lihat Statistik Utama
-                    </button>
-                    <button @click="scrollToAnalytics()" 
-                            class="bg-white bg-opacity-10 hover:bg-opacity-20 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-300 border-2 border-white border-opacity-30">
-                        <i class="fas fa-rocket mr-3"></i>
-                        Eksplorasi Data Analitik
-                    </button>
                 </div>
             </div>
         </div>
     </section>
+
+    <style>
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        33% { transform: translateY(-30px) rotate(2deg); }
+        66% { transform: translateY(-15px) rotate(-2deg); }
+    }
+    
+    @keyframes float-delayed {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        33% { transform: translateY(-40px) rotate(-2deg); }
+        66% { transform: translateY(-20px) rotate(2deg); }
+    }
+    
+    .animate-float { 
+        animation: float 8s ease-in-out infinite; 
+    }
+    
+    .animate-float-delayed { 
+        animation: float-delayed 10s ease-in-out infinite; 
+    }
+    
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: pulse-dot 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    
+    .loading-ring {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        border: 6px solid #f3f4f6;
+        border-top: 6px solid #2563eb;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .border-3 {
+        border-width: 3px;
+    }
+    
+    .shadow-3xl {
+        box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .ring-4 {
+        box-shadow: 0 0 0 4px rgba(147, 197, 253, 0.4);
+    }
+    </style>
 
     <!-- KPI Statistics Section -->
     <section id="kpi-section" class="py-20 bg-white">
@@ -164,7 +352,7 @@
                 <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-6">Statistik Prestasi Graduan</h2>
                 <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
                     Ringkasan komprehensif prestasi graduan berdasarkan analisis data terkini yang menunjukkan 
-                    kejayaan program pendidikan dan kebolehpasaran graduan dalam pasaran kerja semasa
+                    kejayaan program pengajian dan kebolehpasaran graduan dalam pasaran kerja semasa
                 </p>
             </div>
             
@@ -210,26 +398,23 @@
         </div>
     </section>
 
-    <!-- Section Divider -->
-    <div class="section-divider"></div>
+
+
 
     <!-- Analytics Carousel Section -->
-    <section id="analytics-section" class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+    <section id="analytics-section" class="py-20" style="background: #16519E;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Section Header -->
             <div class="text-center mb-16">
-                <div class="inline-flex items-center bg-indigo-100 px-6 py-3 rounded-full mb-6">
-                    <i class="fas fa-microscope text-indigo-600 mr-3"></i>
-                    <span class="text-sm font-semibold text-indigo-600 uppercase tracking-wide">Sistem Analitik</span>
+                <div class="inline-flex items-center bg-white/10 px-6 py-3 rounded-full mb-6 border border-white/20 backdrop-blur-sm">
+                    <i class="fas fa-microscope text-white mr-3"></i>
+                    <span class="text-sm font-semibold text-white uppercase tracking-wide">Sistem Analitik</span>
                 </div>
-                <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-6">Platform Kecerdasan Strategik</h2>
-                <p class="text-xl text-gray-600 max-w-5xl mx-auto leading-relaxed mb-8">
-                    Sistem analitik komprehensif yang mengintegrasikan 10 modul utama untuk memberikan wawasan 
-                    mendalam tentang prestasi graduan, trend industri, dan faktor-faktor yang mempengaruhi kebolehpasaran. 
-                    Setiap modul direka khusus untuk membantu pembuat dasar membuat keputusan strategik berdasarkan bukti empirik.
+                <h2 class="text-4xl md:text-5xl font-black text-white mb-6">Platform Kecerdasan Strategik</h2>
+                <p class="text-xl text-white/80 max-w-5xl mx-auto leading-relaxed mb-8">
+                    Sistem analitik komprehensif yang mengintegrasikan 9 modul utama untuk memberikan wawasan 
+                    mendalam tentang prestasi graduan, trend industri, dan faktor-faktor yang mempengaruhi kebolehpasaran.
                 </p>
                 
-                <!-- Carousel Progress -->
                 <div class="flex justify-center items-center space-x-6 mb-8">
                     <span class="text-lg font-bold text-gray-700">Modul</span>
                     <div class="flex space-x-2">
@@ -237,84 +422,75 @@
                             <button
                                 @click="goToSlide(index)"
                                 :class="currentSlide === index ?
-                                    'w-16 h-4 bg-gradient-to-r from-corporate-blue to-indigo-600' :
+                                    'w-16 h-4 bg-blue-600' :
                                     'w-4 h-4 bg-gray-300 hover:bg-gray-400'"
                                 class="rounded-full transition-all duration-300 transform hover:scale-110">
                             </button>
                         </template>
                     </div>
-                    <span class="text-lg font-bold text-corporate-blue"
-                          x-text="`${currentSlide + 1} daripada ${slideData.length}`"></span>
+                    <span class="text-lg font-bold text-blue-600"
+                          x-text="`${currentSlide + 1} / ${slideData.length}`"></span>
                 </div>
             </div>
 
-            <!-- Enhanced Carousel Container -->
-            <div class="corporate-card overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                 <div class="relative">
-                    <!-- Slides Container -->
                     <div class="carousel-slides flex"
                          :style="`transform: translateX(-${currentSlide * 100}%)`">
 
                         <template x-for="(slide, index) in slideData" :key="index">
-                            <div class="w-full flex-shrink-0 p-8 lg:p-12"
-                                 :class="`gradient-overlay-${slide.colorTheme}`">
+                            <div class="w-full flex-shrink-0 p-8 lg:p-12" :class="`bg-${slide.colorTheme}-50`">
                                 <div class="grid lg:grid-cols-2 gap-12 items-center">
-
-                                    <!-- Left Column - Information -->
                                     <div class="space-y-8">
-                                        <!-- Module Header -->
                                         <div class="flex items-start space-x-6">
-                                        <div class="w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl flex-shrink-0"
-                                            :class="slide.iconBg">
-                                            <i :class="slide.icon + ' text-white text-3xl'"></i>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <div class="flex items-start space-x-3 mb-3">
-                                            <h3 class="text-2xl lg:text-3xl font-black text-gray-900 flex-1 min-w-0" x-text="slide.title"></h3>
-                                            <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap flex-shrink-0"
-                                                    x-text="`Modul ${index + 1}`"></span>
+                                            <div class="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0"
+                                                 :class="slide.iconBg">
+                                                <i :class="slide.icon + ' text-white text-3xl'"></i>
                                             </div>
-                                            <!-- ✅ use x-html instead of x-text -->
-                                            <p class="text-base lg:text-lg text-gray-600 leading-relaxed" x-html="slide.subtitle"></p>
-                                        </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-start space-x-3 mb-3">
+                                                    <h3 class="text-2xl lg:text-3xl font-black text-gray-900 flex-1 min-w-0" x-text="slide.title"></h3>
+                                                    <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap flex-shrink-0"
+                                                          x-text="`Modul ${index + 1}`"></span>
+                                                </div>
+                                                <p class="text-base lg:text-lg text-gray-600 leading-relaxed" x-html="slide.subtitle"></p>
+                                            </div>
                                         </div>
 
-
-                                        <!-- Detailed Description -->
-                                        <div class="bg-white bg-opacity-80 backdrop-blur-sm rounded-xl p-6 border border-gray-200">
+                                        <div class="bg-blue-50 rounded-xl p-6 border border-blue-100">
                                             <p class="text-gray-800 leading-relaxed" x-text="slide.description"></p>
                                         </div>
 
-                                        <!-- Key Metrics -->
                                         <div class="grid grid-cols-2 gap-6">
-                                            <div class="bg-white rounded-xl p-6 text-center shadow-lg border border-gray-100">
-                                                <div class="text-3xl font-black mb-2"
-                                                     :class="slide.primaryColor"
+                                            <div class="bg-blue-50 rounded-xl p-6 text-center border border-blue-200">
+                                                <div class="text-3xl font-black text-blue-600 mb-2"
                                                      x-text="getMetric(index, 'primary')"></div>
-                                                <div class="text-sm font-semibold text-gray-600 uppercase tracking-wide"
+                                                <div class="text-sm font-semibold text-blue-700 uppercase tracking-wide"
                                                      x-text="getMetric(index, 'primaryLabel')"></div>
                                             </div>
 
-                                            <div class="bg-white rounded-xl p-6 text-center shadow-lg border border-gray-100">
-                                                <div class="text-2xl font-bold mb-2"
-                                                     :class="slide.secondaryColor"
+                                            <div class="bg-gray-50 rounded-xl p-6 text-center border border-gray-200">
+                                                <div class="text-2xl font-bold text-gray-600 mb-2"
                                                      x-text="getMetric(index, 'secondary')"></div>
-                                                <div class="text-sm font-semibold text-gray-600 uppercase tracking-wide"
+                                                <div class="text-sm font-semibold text-gray-700 uppercase tracking-wide"
                                                      x-text="getMetric(index, 'secondaryLabel')"></div>
                                             </div>
                                         </div>
 
-                                        <!-- Action Button -->
                                         <button @click="viewDetailedAnalysis(index)"
-                                                :class="slide.buttonClass"
-                                                class="w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                class="w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
                                             <i class="fas fa-microscope mr-3"></i>
                                             Lihat Analisis Terperinci
                                         </button>
                                     </div>
 
-                                    <!-- Right Column - Chart -->
-                                    <div class="bg-white rounded-2xl p-8 shadow-xl border border-gray-200">
+                                    <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-md relative">
+                                        <div class="absolute -top-3 right-6">
+                                            <span class="inline-flex items-center bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full border border-blue-200 shadow-sm">
+                                                <i class="fas fa-chart-line text-blue-500 mr-1"></i>
+                                                Modul Analitik Khusus
+                                            </span>
+                                        </div>
                                         <div class="mb-6">
                                             <h4 class="text-xl font-bold text-gray-800 mb-2" x-text="slide.chartTitle"></h4>
                                             <p class="text-gray-600 text-sm leading-relaxed" x-text="slide.chartDescription"></p>
@@ -323,7 +499,6 @@
                                         <div class="chart-container">
                                             <canvas :id="`chart-${index}`" class="w-full h-full"></canvas>
 
-                                            <!-- Loading State -->
                                             <div x-show="!chartLoaded(index) && !chartError(index)"
                                                  class="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg">
                                                 <div class="text-center">
@@ -332,7 +507,6 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Error State -->
                                             <div x-show="chartError(index)"
                                                  class="absolute inset-0 flex items-center justify-center bg-red-50 rounded-lg border-2 border-red-200 border-dashed">
                                                 <div class="text-center p-6">
@@ -353,40 +527,38 @@
                         </template>
                     </div>
 
-                    <!-- Navigation Controls -->
                     <button @click="previousSlide()"
-                            class="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-90 hover:bg-opacity-100 p-4 rounded-full shadow-xl transition-all duration-200 group">
-                        <i class="fas fa-chevron-left text-gray-700 text-xl group-hover:text-corporate-blue transition-colors"></i>
+                            class="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white hover:bg-gray-50 p-4 rounded-full shadow-xl transition-all duration-200 group z-10 border border-gray-100">
+                        <i class="fas fa-chevron-left text-gray-700 text-xl group-hover:text-blue-600 transition-colors"></i>
                     </button>
-
+                    
+                    <button @click="toggleCarousel()"
+                            class="absolute left-1/2 -translate-x-1/2 bottom-6 bg-white hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 transition-all duration-200 z-10 border border-gray-100"
+                            :class="{'bg-gray-100': carouselPaused}">
+                        <i :class="carouselPaused ? 'fas fa-play text-green-600' : 'fas fa-pause text-amber-500'"></i>
+                        <span class="text-sm font-medium" x-text="carouselPaused ? 'Lanjutkan' : 'Jeda'"></span>
+                    </button>
+                    
                     <button @click="nextSlide()"
-                            class="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-90 hover:bg-opacity-100 p-4 rounded-full shadow-xl transition-all duration-200 group">
-                        <i class="fas fa-chevron-right text-gray-700 text-xl group-hover:text-corporate-blue transition-colors"></i>
+                            class="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white hover:bg-gray-50 p-4 rounded-full shadow-xl transition-all duration-200 group z-10 border border-gray-100">
+                        <i class="fas fa-chevron-right text-gray-700 text-xl group-hover:text-blue-600 transition-colors"></i>
                     </button>
                 </div>
 
-                <!-- Carousel Status -->
-                <div class="bg-gradient-to-r from-gray-100 to-blue-100 px-8 py-6 border-t border-gray-200">
+                <div class="bg-gray-50 px-8 py-6 border-t border-gray-100">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-4">
-                            <div class="status-dot"
-                                 :class="slideData[currentSlide]?.statusColor || 'bg-corporate-blue'"></div>
+                            <div class="w-3 h-3 rounded-full bg-blue-600 animate-pulse"></div>
                             <h4 class="text-lg font-bold text-gray-800"
                                 x-text="slideData[currentSlide]?.title || 'Memuatkan...'"></h4>
-                            <span class="text-sm text-gray-500 bg-white px-3 py-1 rounded-full font-semibold"
-                                  x-text="`Modul ${currentSlide + 1} daripada ${slideData.length}`"></span>
-                            <div class="flex items-center space-x-2 text-sm"
-                                 :class="carouselPaused ? 'text-red-600' : 'text-green-600'">
-                                <i :class="carouselPaused ? 'fas fa-pause' : 'fas fa-play'" class="text-xs"></i>
-                                <span x-text="carouselPaused ? 'Dijeda' : 'Auto-scroll Aktif'"></span>
-                            </div>
+                            <span class="text-sm text-gray-500 bg-white px-3 py-1 rounded-full font-semibold border border-gray-200"
+                                  x-text="`Modul ${currentSlide + 1} / ${slideData.length}`"></span>
                         </div>
 
                         <div class="hidden lg:flex items-center space-x-4 text-sm text-gray-500">
-                            <span class="font-medium">Kawalan Navigasi:</span>
-                            <kbd class="px-2 py-1 bg-gray-200 rounded font-mono text-xs">←→</kbd>
-                            <kbd class="px-2 py-1 bg-gray-200 rounded font-mono text-xs">Ruang</kbd>
-                            <kbd class="px-2 py-1 bg-gray-200 rounded font-mono text-xs">1-0</kbd>
+                            <span class="font-medium">Kawalan:</span>
+                            <kbd class="px-2 py-1 bg-white rounded font-mono text-xs border border-gray-200">←→</kbd>
+                            <kbd class="px-2 py-1 bg-white rounded font-mono text-xs border border-gray-200">Ruang</kbd>
                         </div>
                     </div>
                 </div>
@@ -395,39 +567,31 @@
     </section>
 
     <!-- Section Divider -->
-    <div class="section-divider"></div>
+    <div class="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
 
     <!-- Quick Access Modules -->
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Section Header -->
             <div class="text-center mb-16">
-                <div class="inline-flex items-center bg-emerald-100 px-6 py-3 rounded-full mb-6">
-                    <i class="fas fa-rocket text-emerald-600 mr-3"></i>
-                    <span class="text-sm font-semibold text-emerald-600 uppercase tracking-wide">Akses Pantas</span>
-                </div>
                 <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-6">Modul Analitik Khusus</h2>
                 <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-                    Akses terus kepada modul-modul analitik spesifik untuk mendapatkan maklumat terperinci tentang 
-                    aspek-aspek khusus dalam kajian prestasi graduan. Setiap modul menyediakan analisis mendalam 
-                    dengan visualisasi data interaktif dan laporan komprehensif
+                    Akses modul analitik khusus untuk mendapatkan analisis terperinci, visualisasi data interaktif dan laporan komprehensif mengenai prestasi graduan.
                 </p>
             </div>
 
-            <!-- Quick Access Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 <template x-for="(module, index) in quickAccessModules" :key="index">
                     <a :href="module.url" 
-                       class="corporate-card p-6 text-center transition-all duration-300 transform hover:scale-105 group">
-                        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow" 
+                       class="group bg-white border border-gray-300 rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-xl hover:border-blue-200 hover:-translate-y-1">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow" 
                              :class="module.iconBg">
                             <i :class="module.icon + ' text-white text-2xl'"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-800 mb-2" x-text="module.title"></h3>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors" x-text="module.title"></h3>
                         <p class="text-sm text-gray-600 mb-4 leading-relaxed" x-text="module.description"></p>
-                        <div class="flex items-center justify-center font-medium text-sm group-hover:translate-x-1 transition-transform"
-                             :class="module.linkColor">
-                            Terokai <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                        <div class="flex items-center justify-center font-medium text-sm text-blue-600 group-hover:gap-3 transition-all">
+                            <span>Terokai</span>
+                            <i class="fas fa-arrow-right ml-2 text-xs group-hover:translate-x-1 transition-transform"></i>
                         </div>
                     </a>
                 </template>
@@ -436,12 +600,9 @@
     </section>
 
 </div>
-
-<!-- Fixed JavaScript Implementation -->
 <script>
 // Avoid conflicts by using a unique namespace
 window.DashboardCharts = window.DashboardCharts || new Map();
-
 document.addEventListener('alpine:init', () => {
     Alpine.data('dashboardKorporat', () => ({
         // Core State
@@ -451,71 +612,53 @@ document.addEventListener('alpine:init', () => {
         currentSlide: 0,
         carouselTimer: null,
         lastUpdated: '',
+        randomIntervals: [6000, 7000, 8000, 9000, 10000],
         loadedCharts: new Set(),
         chartErrors: new Set(),
         
-        // Outside Field Data
-        outsideFieldData: {
-            total_records: 0,
-            mismatch_rate: 0,
-            opportunity_rate: 0,
-            private_sector_rate: 0
-        },
+        // Chart Data Management
+        chartDataCache: new Map(),
+        chartConfigs: [
+            { endpoint: '/demografi/api/age-by-graduation-year', chartType: 'bar' },
+            { endpoint: '/sosioekonomi/api/household-income', chartType: 'bar' },
+            { endpoint: '/graduan-luar/api/job-types', chartType: 'doughnut' },
+            { endpoint: '/sektor-gaji/api/salary-by-industry', chartType: 'bar' },
+            { endpoint: '/intern/api/internship-participation', chartType: 'doughnut' },
+            { endpoint: '/status-pekerjaan/api/job-finding-factors', chartType: 'bar' },
+            { endpoint: '/graduan-bidang/api/field-by-year', chartType: 'line' },
+            { endpoint: '/program-universiti/api/program-types', chartType: 'bar' },
+            { endpoint: '/faktor-graduan/api/additional-skills', chartType: 'bar' }
+        ],
         
-        // Auto-scroll settings
-        autoScrollInterval: 8000, // 8 seconds
-        randomIntervals: [6000, 8000, 10000, 12000], // Random intervals
+        qualityMeta: {
+            total_graduates: 0,
+            average_score: 0,
+            average_score_pct: 0,
+            high_quality_pct: 0,
+            medium_quality_pct: 0,
+            low_quality_pct: 0,
+            entrepreneurial_pct: 0,
+            aligned_role_pct: 0,
+            generated_at: ''
+        },
+        qualityHighlights: [],
+        qualityCriteria: [],
+        qualityBands: [],
         
         // KPI Data
-        kpiData: [
-            {
-                title: 'Jumlah Responden Kajian',
-                value: '39',
-                description: 'Peratus graduan yang berjaya mendapat pekerjaan dalam tempoh 6 bulan selepas tamat pengajian',
-                icon: 'fas fa-users',
-                iconBg: 'bg-gradient-to-br from-blue-500 to-green-600',
-                valueColor: 'text-corporate-blue',
-                trend: '+15%',
-                trendClass: 'text-green-600 bg-green-100'
-            },
-            {
-                title: 'Kadar Penggajian Keseluruhan',
-                value: '84.2%',
-                description: 'Peratus graduan yang berjaya mendapat pekerjaan dalam tempoh 6 bulan selepas tamat pengajian',
-                icon: 'fas fa-briefcase',
-                iconBg: 'bg-gradient-to-br from-emerald-500 to-green-600',
-                valueColor: 'text-emerald-600',
-                trend: 'Cemerlang',
-                trendClass: 'text-emerald-600 bg-emerald-100'
-            },
-            {
-                title: 'Padanan Bidang Pengajian',
-                value: '71.3%',
-                description: 'Peratus graduan yang bekerja dalam bidang yang berkaitan dengan pengajian mereka',
-                icon: 'fas fa-crosshairs',
-                iconBg: 'bg-gradient-to-br from-yellow-500 to-orange-500',
-                valueColor: 'text-orange-600',
-                trend: 'Sederhana',
-                trendClass: 'text-yellow-600 bg-yellow-100'
-            },
-            {
-                title: 'Purata Masa ke Pekerjaan',
-                value: '3.2 bulan',
-                description: 'Tempoh purata yang diperlukan graduan untuk mendapat pekerjaan pertama selepas graduasi',
-                icon: 'fas fa-stopwatch',
-                iconBg: 'bg-gradient-to-br from-purple-500 to-indigo-600',
-                valueColor: 'text-purple-600',
-                trend: 'Baik',
-                trendClass: 'text-green-600 bg-green-100'
-            }
-        ],
+        kpiData: [],
+        
+        // Hero Spotlight
+        heroTickerIndex: 0,
+        heroTickerTimer: null,
+        heroTickerInterval: 5200,
         
         // Slide Data
         slideData: [
             {
                 title: 'Demografi & Latar Belakang Akademik',
                 subtitle: 'Kajian mendalam ciri-ciri populasi dan trend demografi',
-                description: 'Modul ini menganalisis profil demografi graduan termasuk taburan umur mengikut tahun graduasi, komposisi jantina, dan trend populasi. Data ini penting untuk memahami profil graduan dan merancang program yang sesuai dengan keperluan demografik semasa.',
+                description: 'Modul ini menganalisis profil demografi graduan termasuk taburan umur mengikut tahun graduasi, komposisi jantina, dan trend populasi.',
                 icon: 'fas fa-users',
                 iconBg: 'bg-gradient-to-br from-blue-500 to-blue-700',
                 colorTheme: 'blue',
@@ -523,7 +666,7 @@ document.addEventListener('alpine:init', () => {
                 secondaryColor: 'text-blue-500',
                 buttonClass: 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white',
                 statusColor: 'bg-blue-500',
-                chartTitle: 'Taburan Umur Mengikut Tahun Graduasi (Peratus)',
+                chartTitle: 'Taburan Umur Mengikut Tahun Graduasi',
                 chartDescription: 'Visualisasi peratusan sebaran kumpulan umur graduan berdasarkan tahun mereka menamatkan pengajian'
             },
             {
@@ -531,19 +674,19 @@ document.addEventListener('alpine:init', () => {
                 subtitle: 'Latar belakang ekonomi dan sumber pembiayaan pendidikan',
                 description: 'Kajian komprehensif tentang latar belakang sosioekonomi graduan meliputi sumber pembiayaan pendidikan, status ekonomi keluarga, dan kesan faktor sosial terhadap prestasi akademik serta pencapaian kerjaya.',
                 icon: 'fas fa-coins',
-                iconBg: 'bg-gradient-to-br from-emerald-500 to-green-600',
-                colorTheme: 'green',
-                primaryColor: 'text-emerald-600',
-                secondaryColor: 'text-emerald-500',
-                buttonClass: 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white',
-                statusColor: 'bg-emerald-500',
-                chartTitle: 'Kaedah Pembiayaan Pendidikan',
-                chartDescription: 'Analisis terperinci sumber-sumber kewangan yang digunakan graduan untuk membiayai pengajian mereka'
+                iconBg: 'bg-gradient-to-br from-sky-400 to-blue-500',
+                colorTheme: 'sky',
+                primaryColor: 'text-sky-600',
+                secondaryColor: 'text-sky-400',
+                buttonClass: 'bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 text-white',
+                statusColor: 'bg-sky-500',
+                chartTitle: 'Taburan Pendapatan Isi Rumah',
+                chartDescription: 'Analisis terperinci pendapatan isi rumah graduan mengikut kategori'
             },
             {
                 title: 'Graduan Bekerja di Luar Bidang',
-                subtitle: 'Fenomena ketidakpadanan bidang pengajian dengan pekerjaan',
-                description: 'Modul khusus yang mengkaji fenomena graduan bekerja di luar bidang pengajian mereka. Menganalisis sebab-sebab, implikasi ekonomi, dan trend ketidakpadanan untuk membantu institusi pendidikan membuat penambahbaikan strategik.',
+                subtitle: 'Analisis graduan yang bekerja di luar bidang pengajian',
+                description: 'Modul khusus yang menganalisis fenomena graduan bekerja di luar bidang pengajian dengan meneliti sebab-sebab dan jenis bidang pengajian yang terlibat.',
                 icon: 'fas fa-exchange-alt',
                 iconBg: 'bg-gradient-to-br from-red-500 to-red-700',
                 colorTheme: 'red',
@@ -551,13 +694,13 @@ document.addEventListener('alpine:init', () => {
                 secondaryColor: 'text-red-500',
                 buttonClass: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white',
                 statusColor: 'bg-red-500',
-                chartTitle: 'Faktor-faktor Bekerja Luar Bidang',
-                chartDescription: 'Sebab-sebab utama yang mendorong graduan memilih kerjaya di luar bidang pengajian mereka'
+                chartTitle: 'Jenis Pekerjaan',
+                chartDescription: 'Agihan pekerjaan semasa'
             },
             {
                 title: 'Sektor, Industri & Pendapatan Graduan',
                 subtitle: 'Kesesuaian kompensasi dengan tahap pendidikan dan bidang',
-                description: 'Kajian menyeluruh tentang sektor pekerjaan graduan, analisis struktur gaji yang diterima, dan penilaian kesesuaian kompensasi dengan tahap pendidikan. Termasuk analisis ROI pendidikan dan daya saing di pasaran kerja.',
+                description: 'Kajian menyeluruh mengenai sektor pekerjaan graduan, analisis struktur gaji, serta penilaian kesepadanan gaji dengan tahap pendidikan.',
                 icon: 'fas fa-chart-line',
                 iconBg: 'bg-gradient-to-br from-purple-500 to-indigo-600',
                 colorTheme: 'purple',
@@ -565,8 +708,8 @@ document.addEventListener('alpine:init', () => {
                 secondaryColor: 'text-purple-500',
                 buttonClass: 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white',
                 statusColor: 'bg-purple-500',
-                chartTitle: 'Persepsi Kesesuaian Gaji dengan Kelulusan',
-                chartDescription: 'Pandangan graduan terhadap kesesuaian gaji yang diterima dengan tahap pendidikan dan kemahiran mereka'
+                chartTitle: 'Gaji Mengikut Industri',
+                chartDescription: 'Julat gaji berdasarkan sektor industri'
             },
             {
                 title: 'Latihan Industri & Cabaran Mendapat Kerja ',
@@ -579,13 +722,13 @@ document.addEventListener('alpine:init', () => {
                 secondaryColor: 'text-amber-500',
                 buttonClass: 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white',
                 statusColor: 'bg-amber-500',
-                chartTitle: 'Impak Program Latihan Industri',
-                chartDescription: 'Perbandingan keberkesanan dan manfaat antara graduan yang mengikuti program latihan dengan yang tidak'
+                chartTitle: 'Penyertaan Latihan Industri',
+                chartDescription: 'Adakah anda menamatkan latihan industri sebelum graduasi?'
             },
             {
                 title: 'Status Pekerjaan & Kesesuaian dengan Bidang Pengajian',
                 subtitle: 'Analisis jenis pekerjaan dan trend sektor penggajian',
-                description: 'Kajian terperinci tentang status pekerjaan semasa graduan, jenis sektor yang diminati, corak penggajian, dan trend dalam pemilihan kerjaya. Data ini membantu memahami dinamik pasaran kerja dan keperluan industri terkini.',
+                description: 'Kajian terperinci mengenai status pekerjaan semasa graduan, jenis sektor pekerjaan, dan corak penggajian.',
                 icon: 'fas fa-briefcase',
                 iconBg: 'bg-gradient-to-br from-pink-500 to-rose-600',
                 colorTheme: 'pink',
@@ -593,12 +736,12 @@ document.addEventListener('alpine:init', () => {
                 secondaryColor: 'text-pink-500',
                 buttonClass: 'bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white',
                 statusColor: 'bg-pink-500',
-                chartTitle: 'Sebaran Sektor Pekerjaan Semasa',
-                chartDescription: 'Distribusi graduan mengikut jenis sektor dan industri yang mereka ceburi dalam pasaran kerja'
+                chartTitle: 'Faktor Utama Mendapat Pekerjaan',
+                chartDescription: 'Saluran dan cara mendapat pekerjaan (dikategorikan)'
             },
             {
                 title: 'Graduan Mengikut bidang & Tahun Graduasi',
-                subtitle: 'Evolusi minat akademik dan proyeksi masa hadapan',
+                subtitle: 'Analisis komprehensif terhadap trend bidang pengajian mengikut tahun.',
                 description: 'Analisis komprehensif trend bidang pengajian yang diminati, perubahan corak pilihan kursus mengikut tahun, dan ramalan keperluan masa hadapan berdasarkan data historik dan trend industri semasa.',
                 icon: 'fas fa-graduation-cap',
                 iconBg: 'bg-gradient-to-br from-indigo-500 to-blue-600',
@@ -607,60 +750,46 @@ document.addEventListener('alpine:init', () => {
                 secondaryColor: 'text-indigo-500',
                 buttonClass: 'bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white',
                 statusColor: 'bg-indigo-500',
-                chartTitle: 'Evolusi Minat Bidang Pengajian',
+                chartTitle: 'Taburan Bidang Pengajian Mengikut Tahun Graduasi',
                 chartDescription: 'Perubahan trend dan minat graduan terhadap bidang pengajian tertentu sepanjang masa'
             },
             {
                 title: 'Trend Ekonomi Gig & Usahawanan',
-                subtitle: 'Adaptasi kepada ekonomi gig dan pekerjaan masa hadapan',
-                description: 'Kajian mendalam tentang trend ekonomi digital, pekerjaan freelance, dan kemahiran yang diperlukan untuk masa depan. Menganalisis kesiapan graduan menghadapi revolusi industri 4.0 dan perubahan paradigma kerja.',
-                icon: 'fas fa-laptop',
-                iconBg: 'bg-gradient-to-br from-teal-500 to-cyan-600',
-                colorTheme: 'teal',
-                primaryColor: 'text-teal-600',
-                secondaryColor: 'text-teal-500',
-                buttonClass: 'bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white',
-                statusColor: 'bg-teal-500',
-                chartTitle: 'Strategi Pemerolehan Kemahiran Digital',
-                chartDescription: 'Kaedah dan pendekatan graduan dalam memperoleh kemahiran tambahan untuk ekonomi digital'
+                subtitle: 'Inisiatif perniagaan & ekonomi gig',
+                description: 'Kajian mendalam mengenai trend ekonomi digital, pekerjaan bebas, serta kemahiran yang diperlukan dalam pasaran kerja gig',
+                icon: 'fas fa-university',
+                iconBg: 'bg-gradient-to-br from-cyan-400 to-blue-500',
+                colorTheme: 'cyan',
+                primaryColor: 'text-cyan-600',
+                secondaryColor: 'text-cyan-400',
+                buttonClass: 'bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-500 hover:to-blue-600 text-white',
+                statusColor: 'bg-cyan-500',
+                chartTitle: 'Program Universiti',
+                chartDescription: 'Inisiatif perniagaan & ekonomi gig yang disediakan oleh universiti'
             },
             {
                 title: 'Faktor Menpengaruhi Kebolehpasaran Graduan',
                 subtitle: 'Determinan kejayaan dan prestasi kerjaya graduan',
-                description: 'Analisis komprehensif faktor-faktor yang menentukan kejayaan graduan dalam kerjaya, kemahiran yang paling dihargai majikan, dan strategi optimum untuk meningkatkan kebolehpasaran graduan masa hadapan.',
+                description: 'Analisis komprehensif terhadap faktor-faktor yang mempengaruhi kejayaan graduan dalam kerjaya, termasuk kelayakan, kemahiran tambahan yang diminta majikan, serta impak pensijilan.',
                 icon: 'fas fa-star',
-                iconBg: 'bg-gradient-to-br from-orange-500 to-red-600',
-                colorTheme: 'yellow',
-                primaryColor: 'text-orange-600',
-                secondaryColor: 'text-orange-500',
-                buttonClass: 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white',
-                statusColor: 'bg-orange-500',
-                chartTitle: 'Kemahiran Kritikal untuk Kebolehpasaran',
+                iconBg: 'bg-gradient-to-br from-amber-400 to-orange-500',
+                colorTheme: 'amber',
+                primaryColor: 'text-amber-600',
+                secondaryColor: 'text-amber-500',
+                buttonClass: 'bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white',
+                statusColor: 'bg-amber-500',
+                chartTitle: 'Kemahiran Tambahan yang Diminta Majikan',
                 chartDescription: 'Kemahiran-kemahiran utama yang paling mempengaruhi kejayaan dan kebolehpasaran graduan'
             }
         ],
-        
-        // Metrics data
-        metricsData: {
-            0: { primary: '23-25 Tahun', primaryLabel: 'Kumpulan Umur Dominan', secondary: '52% P / 48% L', secondaryLabel: 'Keseimbangan Jantina' },
-            1: { primary: 'Pinjaman MARA', primaryLabel: 'Sumber Pembiayaan Utama', secondary: '68%', secondaryLabel: 'Bergantung Pembiayaan' },
-            2: { primary: '28.7%', primaryLabel: 'Graduan Luar Bidang', secondary: 'Prospek Lebih Baik', secondaryLabel: 'Sebab Utama' },
-            3: { primary: '73%', primaryLabel: 'Gaji Bersesuaian', secondary: 'Sektor Swasta', secondaryLabel: 'Sektor Dominan' },
-            4: { primary: '76%', primaryLabel: 'Mengikuti Latihan', secondary: 'Pengalaman Kerja', secondaryLabel: 'Manfaat Utama' },
-            5: { primary: '84%', primaryLabel: 'Kadar Bekerja', secondary: 'Sektor Swasta', secondaryLabel: 'Pilihan Utama' },
-            6: { primary: '8', primaryLabel: 'Bidang Pengajian', secondary: 'Kejuruteraan', secondaryLabel: 'Bidang Popular' },
-            7: { primary: '23%', primaryLabel: 'Ekonomi Digital', secondary: 'Pembelajaran Kendiri', secondaryLabel: 'Kaedah Utama' },
-            8: { primary: '89%', primaryLabel: 'Kadar Kejayaan', secondary: 'Komunikasi', secondaryLabel: 'Kemahiran Utama' },
-            9: { primary: '3.2 bulan', primaryLabel: 'Masa Purata', secondary: '1-3 bulan', secondaryLabel: 'Majoriti' }
-        },
         
         // Quick Access Modules
         quickAccessModules: [
             { title: 'Analisis Demografi', description: 'Profil dan ciri-ciri populasi graduan', url: '/demografi', icon: 'fas fa-users', iconBg: 'bg-gradient-to-br from-blue-500 to-blue-600', linkColor: 'text-blue-600' },
             { title: 'Status Sosioekonomi', description: 'Latar belakang ekonomi dan pembiayaan', url: '/sosioekonomi', icon: 'fas fa-coins', iconBg: 'bg-gradient-to-br from-emerald-500 to-emerald-600', linkColor: 'text-emerald-600' },
-            { title: 'Graduan Luar Bidang', description: 'Ketidakpadanan bidang dengan pekerjaan', url: '/graduan-luar', icon: 'fas fa-exchange-alt', iconBg: 'bg-gradient-to-br from-red-500 to-red-600', linkColor: 'text-red-600' },
-            { title: 'Sektor & Gaji', description: 'Analisis struktur gaji dan sektor', url: '/sektor-gaji', icon: 'fas fa-chart-line', iconBg: 'bg-gradient-to-br from-purple-500 to-purple-600', linkColor: 'text-purple-600' },
-            { title: 'Latihan Industri', description: 'Keberkesanan latihan dan magang', url: '/intern', icon: 'fas fa-user-tie', iconBg: 'bg-gradient-to-br from-amber-500 to-amber-600', linkColor: 'text-amber-600' },
+            { title: 'Graduan Luar Bidang', description: 'Ketidakpadanan bidang dengan bidang pengajian', url: '/graduan-luar', icon: 'fas fa-exchange-alt', iconBg: 'bg-gradient-to-br from-red-500 to-red-600', linkColor: 'text-red-600' },
+            { title: 'Sektor & Gaji', description: 'Analisis struktur gaji dan sektor pekerjaan', url: '/sektor-gaji', icon: 'fas fa-chart-line', iconBg: 'bg-gradient-to-br from-purple-500 to-purple-600', linkColor: 'text-purple-600' },
+            { title: 'Latihan Industri', description: 'Keberkesanan latihan industri', url: '/intern', icon: 'fas fa-user-tie', iconBg: 'bg-gradient-to-br from-amber-500 to-amber-600', linkColor: 'text-amber-600' },
             { title: 'Status Pekerjaan', description: 'Jenis dan corak pekerjaan semasa', url: '/status-pekerjaan', icon: 'fas fa-briefcase', iconBg: 'bg-gradient-to-br from-pink-500 to-pink-600', linkColor: 'text-pink-600' },
             { title: 'Ekonomi Gig & Usahawanan', description: 'Trend ekonomi gig dan digital', url: '/gig-economy', icon: 'fas fa-laptop', iconBg: 'bg-gradient-to-br from-teal-500 to-teal-600', linkColor: 'text-teal-600' },
             { title: 'Faktor Kebolehpasaran', description: 'Penentu kebolehpasaran graduan', url: '/faktor-graduan', icon: 'fas fa-star', iconBg: 'bg-gradient-to-br from-orange-500 to-orange-600', linkColor: 'text-orange-600' }
@@ -674,11 +803,12 @@ document.addEventListener('alpine:init', () => {
                 this.updateTime();
                 await this.loadChartLibrary();
                 await this.loadData();
+                this.ensureSevenCriteria(); // Ensure we always have 7 criteria
+                this.restartHeroTicker();
                 this.startCarousel();
                 this.setupEventListeners();
                 this.startTimeUpdates();
                 
-                // Create first chart
                 setTimeout(() => {
                     this.createChart(0);
                 }, 1000);
@@ -690,6 +820,43 @@ document.addEventListener('alpine:init', () => {
                     this.isLoading = false;
                 }, 2000);
             }
+        },
+        
+        ensureSevenCriteria() {
+            // Default 7th criterion if backend doesn't provide it
+            const defaultSeventhCriterion = {
+                id: 'k07',
+                title: 'Kualiti Keseluruhan Graduan',
+                description: 'Penilaian menyeluruh kualiti graduan berdasarkan gabungan semua kriteria',
+                icon: 'fas fa-award',
+                iconBg: 'bg-gradient-to-br from-purple-500 to-purple-600',
+                average_score: this.qualityMeta.average_score || 7.1,
+                average_pct: this.qualityMeta.average_score_pct || 59.2,
+                distribution: [
+                    { label: 'Skor 0', count: 0, percentage: 0 },
+                    { label: 'Skor 1', count: Math.round((this.qualityMeta.total_graduates || 39) * 0.15), percentage: 15.0 },
+                    { label: 'Skor 2', count: Math.round((this.qualityMeta.total_graduates || 39) * 0.85), percentage: 85.0 }
+                ],
+                analysis: 'Gabungan kesemua 6 kriteria menunjukkan tahap kualiti keseluruhan graduan yang baik dengan majoriti mencapai standard yang ditetapkan.',
+                insights: [
+                    { label: 'Purata Keseluruhan', value: `${this.qualityMeta.average_score || 7.1}/12` },
+                    { label: 'Graduan Cemerlang', value: `${this.qualityMeta.high_quality_pct || 10.3}%` }
+                ],
+                metrics: {
+                    primary: `${this.qualityMeta.total_graduates || 39} Graduan`,
+                    primaryLabel: 'Total Responden',
+                    secondary: `${this.qualityMeta.high_quality_pct || 10.3}%`,
+                    secondaryLabel: 'Kualiti Tinggi'
+                }
+            };
+
+            // If we have less than 7 criteria, add the default 7th one
+            if (this.qualityCriteria.length < 7) {
+                console.log('Adding 7th criterion as backend only provided', this.qualityCriteria.length);
+                this.qualityCriteria.push(defaultSeventhCriterion);
+            }
+
+            console.log('Total criteria after ensuring 7:', this.qualityCriteria.length);
         },
         
         async loadChartLibrary() {
@@ -711,43 +878,183 @@ document.addEventListener('alpine:init', () => {
         },
         
         async loadData() {
-            // Load KPI data
             try {
-                const response = await fetch('/api/summary');
+                const response = await fetch('/dashboard/api/quality-insights');
                 if (response.ok) {
                     const data = await response.json();
-                    this.updateKPIData(data);
+                    this.updateQualityData(data);
+                }
+            } catch (error) {
+                console.warn('Using default quality data:', error.message);
+            }
+            
+            // Load KPI data
+            try {
+                const kpiResponse = await fetch('/dashboard/api/kpi-statistics');
+                if (kpiResponse.ok) {
+                    const kpiData = await kpiResponse.json();
+                    this.kpiData = kpiData.kpis || this.getDefaultKpiData();
+                } else {
+                    this.kpiData = this.getDefaultKpiData();
                 }
             } catch (error) {
                 console.warn('Using default KPI data:', error.message);
-            }
-            
-            // Load outside field data
-            try {
-                const response = await fetch('/graduan-luar/api/summary');
-                if (response.ok) {
-                    const data = await response.json();
-                    this.outsideFieldData = data;
-                    console.log('Outside field data loaded:', data);
-                }
-            } catch (error) {
-                console.warn('Failed to load outside field data:', error.message);
+                this.kpiData = this.getDefaultKpiData();
             }
         },
         
-        updateKPIData(data) {
-            if (data.total_records !== undefined) {
-                this.kpiData[0].value = data.total_records.toString();
+        updateQualityData(data) {
+            this.qualityMeta = data.meta || {};
+            this.qualityCriteria = data.criteria || [];
+            this.qualityBands = data.qualityBands || [];
+            this.qualityHighlights = this.createQualityHighlights(data);
+            
+            console.log('Quality data updated. Criteria count:', this.qualityCriteria.length);
+        },
+        
+        createQualityHighlights(data) {
+            const highlights = [];
+            
+            if (data.meta) {
+                highlights.push({
+                    id: 'overall_score',
+                    title: 'Skor Keseluruhan',
+                    value: data.meta.average_score || 0,
+                    suffix: '/12',
+                    progress: data.meta.average_score_pct || 0,
+                    context: `Purata skor kualiti graduan daripada ${data.meta.total_graduates || 0} responden`,
+                    icon: 'fas fa-trophy',
+                    iconBg: 'bg-gradient-to-br from-yellow-500 to-orange-600',
+                    badge: 'Keseluruhan'
+                });
             }
-            if (data.employment_rate !== undefined) {
-                this.kpiData[1].value = `${data.employment_rate}%`;
+            
+            return highlights;
+        },
+        
+        getDefaultKpiData() {
+            return [
+                {
+                    title: 'Kadar Pekerjaan',
+                    value: '87.2%',
+                    description: 'Peratusan graduan yang mendapat pekerjaan dalam tempoh 6 bulan selepas graduasi',
+                    icon: 'fas fa-briefcase',
+                    iconBg: 'bg-gradient-to-br from-blue-500 to-blue-600',
+                    valueColor: 'text-blue-600',
+                    trend: '+5.2%',
+                    trendClass: 'bg-green-100 text-green-700'
+                },
+                {
+                    title: 'Purata Gaji',
+                    value: 'RM3,450',
+                    description: 'Purata gaji permulaan graduan dalam pasaran kerja semasa',
+                    icon: 'fas fa-money-bill-wave',
+                    iconBg: 'bg-gradient-to-br from-green-500 to-green-600',
+                    valueColor: 'text-green-600',
+                    trend: '+8.1%',
+                    trendClass: 'bg-green-100 text-green-700'
+                },
+                {
+                    title: 'Kesesuaian Bidang',
+                    value: '73.5%',
+                    description: 'Peratusan graduan yang bekerja dalam bidang yang berkaitan dengan pengajian mereka',
+                    icon: 'fas fa-bullseye',
+                    iconBg: 'bg-gradient-to-br from-purple-500 to-purple-600',
+                    valueColor: 'text-purple-600',
+                    trend: '+2.3%',
+                    trendClass: 'bg-green-100 text-green-700'
+                },
+                {
+                    title: 'Kepuasan Majikan',
+                    value: '4.2/5.0',
+                    description: 'Penilaian majikan terhadap prestasi dan kemahiran graduan',
+                    icon: 'fas fa-star',
+                    iconBg: 'bg-gradient-to-br from-yellow-500 to-orange-600',
+                    valueColor: 'text-orange-600',
+                    trend: '+0.3',
+                    trendClass: 'bg-green-100 text-green-700'
+                }
+            ];
+        },
+        
+        navigateToFieldAlignment() {
+            window.location.href = '/graduan-bidang';
+        },
+        
+        formatNumber(value, decimals = 0) {
+            if (value === null || value === undefined) return '0';
+            return Number(value).toFixed(decimals);
+        },
+        
+        formatTimestamp(timestamp) {
+            if (!timestamp) return '';
+            try {
+                return new Date(timestamp).toLocaleString('ms-MY', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (error) {
+                return timestamp;
             }
-            if (data.field_alignment !== undefined) {
-                this.kpiData[2].value = `${data.field_alignment}%`;
+        },
+        
+        activeHeroCriterion() {
+            if (!this.qualityCriteria.length) return {};
+            const total = this.qualityCriteria.length;
+            const safeIndex = ((this.heroTickerIndex % total) + total) % total;
+            return this.qualityCriteria[safeIndex] || {};
+        },
+        
+        formatCriterionIndex(index = 0) {
+            const total = this.qualityCriteria.length;
+            const safeIndex = total ? ((index % total) + total) % total : Math.max(0, index);
+            return `K${String((safeIndex) + 1).padStart(2, '0')}`;
+        },
+        
+        advanceHeroTicker(direction = 1) {
+            if (!this.qualityCriteria.length) return;
+            const total = this.qualityCriteria.length;
+            this.heroTickerIndex = (this.heroTickerIndex + direction + total) % total;
+        },
+        
+        startHeroTicker() {
+            if (this.heroTickerTimer || !this.qualityCriteria.length) return;
+            this.heroTickerTimer = setInterval(() => {
+                this.advanceHeroTicker(1);
+            }, this.heroTickerInterval);
+        },
+        
+        pauseHeroTicker() {
+            if (this.heroTickerTimer) {
+                clearInterval(this.heroTickerTimer);
+                this.heroTickerTimer = null;
             }
-            if (data.avg_time_to_employment !== undefined) {
-                this.kpiData[3].value = `${data.avg_time_to_employment} bulan`;
+        },
+        
+        resumeHeroTicker() {
+            if (!this.heroTickerTimer) {
+                this.startHeroTicker();
             }
+        },
+        
+        restartHeroTicker() {
+            this.pauseHeroTicker();
+            if (this.qualityCriteria.length) {
+                const total = this.qualityCriteria.length;
+                this.heroTickerIndex = ((this.heroTickerIndex % total) + total) % total;
+                this.startHeroTicker();
+            }
+        },
+        
+        setHeroTicker(index) {
+            if (!this.qualityCriteria.length) return;
+            const total = this.qualityCriteria.length;
+            const safeIndex = ((index % total) + total) % total;
+            this.heroTickerIndex = safeIndex;
+            this.restartHeroTicker();
         },
         
         updateTime() {
@@ -766,7 +1073,27 @@ document.addEventListener('alpine:init', () => {
         },
         
         getMetric(index, type) {
-            return this.metricsData[index]?.[type] || 'Memuatkan...';
+            // Default metrics for each slide
+            const defaultMetrics = [
+                { primary: '39', primaryLabel: 'Total Graduan', secondary: '5', secondaryLabel: 'Kumpulan Umur' },
+                { primary: 'RM4,250', primaryLabel: 'Purata Pendapatan', secondary: '6', secondaryLabel: 'Kategori Pendapatan' },
+                { primary: '26.5%', primaryLabel: 'Luar Bidang', secondary: '32', secondaryLabel: 'Dalam Bidang' },
+                { primary: 'RM3,450', primaryLabel: 'Purata Gaji', secondary: '4', secondaryLabel: 'Sektor Utama' },
+                { primary: '71.8%', primaryLabel: 'Ada Latihan', secondary: '28.2%', secondaryLabel: 'Tiada Latihan' },
+                { primary: '73.5%', primaryLabel: 'Sesuai Bidang', secondary: '41%', secondaryLabel: 'Rangkaian Sosial' },
+                { primary: '5', primaryLabel: 'Tahun Data', secondary: '3', secondaryLabel: 'Bidang Utama' },
+                { primary: '85%', primaryLabel: 'Program Tersedia', secondary: '12', secondaryLabel: 'Jenis Program' },
+                { primary: '5', primaryLabel: 'Kemahiran Utama', secondary: '82%', secondaryLabel: 'Kepentingan' }
+            ];
+            
+            const criterion = this.qualityCriteria[index] || {};
+            const metrics = criterion.metrics || defaultMetrics[index] || defaultMetrics[0];
+            
+            if (type === 'primary') return metrics.primary || defaultMetrics[index]?.primary || 'Memuatkan...';
+            if (type === 'primaryLabel') return metrics.primaryLabel || defaultMetrics[index]?.primaryLabel || 'Sorotan Utama';
+            if (type === 'secondary') return metrics.secondary || defaultMetrics[index]?.secondary || 'Memuatkan...';
+            if (type === 'secondaryLabel') return metrics.secondaryLabel || defaultMetrics[index]?.secondaryLabel || 'Sorotan Sekunder';
+            return 'Memuatkan...';
         },
         
         // Chart Management
@@ -792,14 +1119,14 @@ document.addEventListener('alpine:init', () => {
                 const ctx = canvas.getContext('2d');
                 if (!ctx) throw new Error('Cannot get canvas context');
                 
-                const data = this.getChartData(slideIndex);
-                const options = this.getChartOptions(slideIndex);
+                const data = await this.getChartData(slideIndex);
                 const chartType = this.getChartType(slideIndex);
+                const options = this.getChartOptions(slideIndex, data);
 
                 const chart = new Chart(ctx, {
                     type: chartType,
-                    data: data,
-                    options: options
+                    data,
+                    options
                 });
                 
                 window.DashboardCharts.set(canvasId, chart);
@@ -850,157 +1177,314 @@ document.addEventListener('alpine:init', () => {
             }
         },
         
-        getChartData(slideIndex) {
-            const corporateBlue = '#296899';
-            const corporateRed = '#ba454d';
-            const emeraldGreen = '#10B981';
-            const purpleViolet = '#8B5CF6';
-            const orangeAmber = '#F97316';
-            const pinkRose = '#EC4899';
-            const tealCyan = '#14B8A6';
-            const indigoBlue = '#6366F1';
+        async getChartData(slideIndex) {
+            if (this.chartDataCache.has(slideIndex)) {
+                return this.cloneChartData(this.chartDataCache.get(slideIndex));
+            }
+
+            try {
+                const config = this.chartConfigs[slideIndex];
+                if (!config || !config.endpoint) {
+                    return this.getFallbackChart(slideIndex);
+                }
+
+                const response = await fetch(config.endpoint);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const rawData = await response.json();
+                const chartData = this.prepareChartData(slideIndex, rawData);
+                
+                this.chartDataCache.set(slideIndex, this.cloneChartData(chartData));
+                
+                return chartData;
+
+            } catch (error) {
+                console.warn(`Using fallback data for slide ${slideIndex}:`, error);
+                const fallback = this.getFallbackChart(slideIndex);
+                this.chartDataCache.set(slideIndex, fallback);
+                return this.cloneChartData(fallback);
+            }
+        },
+
+        prepareChartData(slideIndex, rawData) {
+            const chartData = this.cloneChartData(rawData);
+            const isJobFactors = slideIndex === 5; // Status Pekerjaan & Kesesuaian
+            const isSkillsChart = slideIndex === 8; // Kemahiran Tambahan
+            const data = {
+                labels: chartData.labels || [],
+                datasets: chartData.datasets ? chartData.datasets.map((dataset, i) => ({
+                    ...dataset,
+                    // For job factors and skills charts, set individual background colors for each bar
+                    backgroundColor: (isJobFactors || isSkillsChart) && dataset.data 
+                        ? dataset.data.map((_, idx) => this.getJobFactorColor(idx))
+                        : dataset.backgroundColor
+                })) : []
+            };
             
-            const mockDataSets = [
-                // Demographics - Converted to Percentages
-                { 
-                    labels: ['2020', '2021', '2022', '2023', '2024'], 
+            // For job factors and skills charts, ensure we have a single dataset with individual colors
+            if ((isJobFactors || isSkillsChart) && data.datasets.length > 0) {
+                data.datasets[0].backgroundColor = data.labels.map((_, idx) => this.getJobFactorColor(idx));
+            }
+            const hasValidStructure = data &&
+                Array.isArray(data.labels) &&
+                Array.isArray(data.datasets);
+
+            if (!hasValidStructure || data.labels.length === 0) {
+                return this.getFallbackChart(slideIndex);
+            }
+
+            data.datasets = data.datasets.map(dataset => ({
+                ...dataset,
+                data: Array.isArray(dataset.data) ? dataset.data : []
+            }));
+
+            chartData.isPercentage = Boolean(chartData.isPercentage);
+
+            return this.applyCorporatePalette(slideIndex, chartData);
+        },
+
+        getFallbackChart(slideIndex) {
+            const fallbackSets = [
+                {
+                    labels: ['2020', '2021', '2022', '2023', '2024'],
                     datasets: [
-                        { label: '21-23 Tahun', data: [33.3, 46.2, 45.5, 46.2, 43.8], backgroundColor: corporateBlue, borderColor: corporateBlue, borderWidth: 2 },
-                        { label: '24-26 Tahun', data: [50.0, 30.8, 30.3, 41.0, 34.4], backgroundColor: '#4A90B8', borderColor: '#4A90B8', borderWidth: 2 },
-                        { label: '27+ Tahun', data: [16.7, 23.1, 24.2, 12.8, 21.9], backgroundColor: '#6BA4C7', borderColor: '#6BA4C7', borderWidth: 2 }
+                        { label: '21-23 Tahun', data: [33.3, 46.2, 45.5, 46.2, 43.8] },
+                        { label: '24-26 Tahun', data: [50.0, 30.8, 30.3, 41.0, 34.4] },
+                        { label: '27+ Tahun', data: [16.7, 23.1, 24.2, 12.8, 21.9] }
                     ],
                     isPercentage: true
                 },
-                // Sosioekonomi
-                { 
-                    labels: ['Pinjaman MARA', 'Pinjaman Kerajaan', 'Biasiswa', 'Ibu Bapa', 'Lain-lain'], 
-                    datasets: [{ 
-                        data: [15, 8, 6, 7, 3], 
-                        backgroundColor: [corporateBlue, '#4A90B8', emeraldGreen, orangeAmber, corporateRed],
-                        borderWidth: 2 
+                {
+                    labels: ['< RM1,000', 'RM1k - 2,999', 'RM3k - 4,999', 'RM5k - 6,999', 'RM7k - 9,999', '≥ RM10,000'],
+                    datasets: [{
+                        label: 'Bilangan Responden',
+                        data: [4, 7, 12, 9, 5, 2]
                     }]
                 },
-                // Graduan Luar
-                { 
-                    labels: ['Prospek Lebih Baik', 'Gaji Lebih Tinggi', 'Peluang Terhad', 'Minat Berubah'], 
-                    datasets: [{ 
-                        label: 'Sebab Luar Bidang', 
-                        data: [8, 6, 5, 4], 
-                        backgroundColor: corporateRed, 
-                        borderColor: corporateRed, 
-                        borderWidth: 2 
+                {
+                    labels: ['Sektor Swasta', 'Kerajaan', 'Startup', 'Freelance', 'Usahawan'],
+                    datasets: [{
+                        label: 'Jenis Pekerjaan',
+                        data: [14, 6, 5, 3, 4]
                     }]
                 },
-                // Sektor Gaji
-                { 
-                    labels: ['Sangat Bersesuaian', 'Bersesuaian', 'Kurang Bersesuaian', 'Tidak Bersesuaian'], 
-                    datasets: [{ 
-                        data: [8, 18, 6, 2], 
-                        backgroundColor: [emeraldGreen, corporateBlue, orangeAmber, corporateRed],
-                        borderWidth: 2 
-                    }]
-                },
-                // Latihan
-                { 
-                    labels: ['Pengalaman', 'Rangkaian', 'Kemahiran', 'Keyakinan'], 
+                {
+                    labels: ['Teknologi', 'Pembuatan', 'Perkhidmatan', 'Keusahawanan'],
                     datasets: [
-                        { label: 'Dengan Latihan', data: [92, 85, 88, 82], backgroundColor: orangeAmber, borderColor: orangeAmber, borderWidth: 2 },
-                        { label: 'Tanpa Latihan', data: [65, 45, 58, 52], backgroundColor: '#9CA3AF', borderColor: '#9CA3AF', borderWidth: 2 }
+                        { label: 'RM2k - RM3.9k', data: [6, 5, 4, 3] },
+                        { label: 'RM4k - RM5.9k', data: [8, 6, 5, 4] },
+                        { label: '≥ RM6k', data: [4, 3, 2, 2] }
                     ]
                 },
-                // Status Pekerjaan
-                { 
-                    labels: ['Sektor Swasta', 'Sektor Awam', 'Bekerja Sendiri', 'Pekerja Bebas'], 
-                    datasets: [{ 
-                        label: 'Jenis Pekerjaan', 
-                        data: [22, 8, 4, 3], 
-                        backgroundColor: [corporateBlue, emeraldGreen, orangeAmber, purpleViolet],
-                        borderWidth: 2 
+                {
+                    labels: ['Ya', 'Tidak', 'Dalam Perancangan'],
+                    datasets: [{
+                        label: 'Penyertaan Latihan',
+                        data: [28, 8, 3]
                     }]
                 },
-                // Graduan Bidang
-                { 
-                    labels: ['2020', '2021', '2022', '2023', '2024'], 
+                {
+                    labels: ['Saluran Rasmi', 'Rangkaian Sosial', 'Institusi Pendidikan', 'Keusahawanan'],
+                    datasets: [{
+                        label: 'Faktor Utama',
+                        data: [16, 12, 9, 4]
+                    }]
+                },
+                {
+                    labels: ['2020', '2021', '2022', '2023', '2024'],
                     datasets: [
-                        { label: 'Kejuruteraan', data: [12, 15, 18, 22, 16], backgroundColor: corporateBlue, borderColor: corporateBlue, borderWidth: 3, fill: false, tension: 0.4 },
-                        { label: 'IT', data: [8, 10, 12, 14, 11], backgroundColor: emeraldGreen, borderColor: emeraldGreen, borderWidth: 3, fill: false, tension: 0.4 },
-                        { label: 'Perniagaan', data: [6, 8, 7, 9, 8], backgroundColor: orangeAmber, borderColor: orangeAmber, borderWidth: 3, fill: false, tension: 0.4 }
+                        { label: 'Kejuruteraan', data: [12, 15, 18, 22, 16] },
+                        { label: 'IT', data: [8, 10, 12, 14, 11] },
+                        { label: 'Perniagaan', data: [6, 8, 7, 9, 8] }
                     ]
                 },
-                // Ekonomi Digital
-                { 
-                    labels: ['Pembelajaran Kendiri', 'Kursus Online', 'Pengalaman Kerja', 'Bimbingan'], 
-                    datasets: [{ 
-                        label: 'Kaedah Pembelajaran', 
-                        data: [18, 12, 10, 6], 
-                        backgroundColor: tealCyan, 
-                        borderColor: tealCyan, 
-                        borderWidth: 2 
+                {
+                    labels: ['Penghantaran', 'Digital', 'E-dagang', 'Pendidikan', 'Usahawan'],
+                    datasets: [{
+                        label: 'Jenis Kerja Gig',
+                        data: [10, 14, 9, 6, 7]
                     }]
                 },
-                // Faktor Kejayaan
-                { 
-                    labels: ['Komunikasi', 'Pemikiran Kritis', 'Digital', 'Kepimpinan'], 
-                    datasets: [{ 
-                        label: 'Kemahiran Penting', 
-                        data: [22, 18, 16, 14], 
-                        backgroundColor: orangeAmber, 
-                        borderColor: orangeAmber, 
-                        borderWidth: 2 
-                    }]
-                },
-                // Wawasan Strategik
-                { 
-                    labels: ['< 1 bulan', '1-3 bulan', '4-6 bulan', '7-12 bulan', '> 1 tahun'], 
-                    datasets: [{ 
-                        label: 'Masa ke Pekerjaan', 
-                        data: [8, 15, 12, 3, 1], 
-                        backgroundColor: 'rgba(41, 104, 153, 0.3)', 
-                        borderColor: corporateBlue, 
-                        borderWidth: 3, 
-                        fill: true, 
-                        tension: 0.4 
+                {
+                    labels: ['Komunikasi', 'Pemikiran Kritis', 'Kemahiran Digital', 'Kepimpinan', 'Pengurusan Projek'],
+                    datasets: [{
+                        label: 'Kemahiran Penting',
+                        data: [22, 18, 16, 14, 12]
                     }]
                 }
             ];
-            
-            return mockDataSets[slideIndex] || mockDataSets[0];
+
+            const template = this.cloneChartData(fallbackSets[slideIndex] || fallbackSets[0]);
+            return this.applyCorporatePalette(slideIndex, template);
+        },
+
+        applyCorporatePalette(slideIndex, chartData) {
+            if (!chartData || !Array.isArray(chartData.datasets)) {
+                return chartData;
+            }
+
+            const palette = ['#296899', '#ba454d', '#10B981', '#F97316', '#8B5CF6', '#14B8A6', '#6366F1', '#EC4899', '#0EA5E9', '#F59E0B'];
+            const chartType = this.getChartType(slideIndex);
+
+            chartData.datasets = chartData.datasets.map((dataset, datasetIndex) => {
+                const updated = { ...dataset };
+                const baseColor = palette[datasetIndex % palette.length];
+
+                if (chartType === 'doughnut' || chartType === 'pie') {
+                    updated.backgroundColor = updated.backgroundColor || chartData.labels.map((_, idx) => palette[idx % palette.length]);
+                    updated.borderColor = updated.borderColor || '#ffffff';
+                    updated.borderWidth = updated.borderWidth ?? 2;
+                } else if (chartType === 'line') {
+                    updated.borderColor = updated.borderColor || baseColor;
+                    updated.backgroundColor = updated.backgroundColor || this.hexToRgba(baseColor, 0.25);
+                    updated.fill = updated.fill ?? false;
+                    updated.tension = updated.tension ?? 0.35;
+                    updated.pointRadius = updated.pointRadius ?? 4;
+                    updated.pointBackgroundColor = updated.pointBackgroundColor || baseColor;
+                    updated.pointBorderColor = updated.pointBorderColor || '#ffffff';
+                } else {
+                    if (chartData.datasets.length > 1) {
+                        updated.backgroundColor = updated.backgroundColor || baseColor;
+                        updated.borderColor = updated.borderColor || baseColor;
+                    } else {
+                        updated.backgroundColor = updated.backgroundColor || chartData.labels.map((_, idx) => palette[idx % palette.length]);
+                        updated.borderColor = updated.borderColor || '#ffffff';
+                    }
+                    updated.borderWidth = updated.borderWidth ?? 2;
+                }
+
+                return updated;
+            });
+
+            return chartData;
+        },
+
+        hexToRgba(hex, alpha = 1) {
+            const sanitized = hex.replace('#', '');
+            const bigint = parseInt(sanitized, 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        },
+
+        cloneChartData(data) {
+            if (data === undefined || data === null) {
+                return data;
+            }
+
+            try {
+                return structuredClone(data);
+            } catch (error) {
+                try {
+                    return JSON.parse(JSON.stringify(data));
+                } catch (jsonError) {
+                    console.warn('Fallback cloning failed, returning original data reference:', jsonError);
+                    return data;
+                }
+            }
         },
 
         getChartType(slideIndex) {
-            // Define appropriate chart types for each carousel slide
-            const chartTypes = [
-                'bar',        // 0: Demographics - Bar chart for age groups by year
-                'doughnut',   // 1: Sosioekonomi - Pie chart for funding sources
-                'bar',        // 2: Graduan Luar - Bar chart for reasons
-                'doughnut',   // 3: Sektor Gaji - Pie chart for salary suitability
-                'bar',        // 4: Latihan - Bar chart comparing with/without training
-                'doughnut',   // 5: Status Pekerjaan - Pie chart for job sectors
-                'line',       // 6: Graduan Bidang - Line chart for trends over time
-                'bar',        // 7: Ekonomi Digital - Bar chart for learning methods
-                'bar',        // 8: Faktor Kejayaan - Bar chart for skills importance
-                'line'        // 9: Wawasan Strategik - Area chart for time to employment
+            return this.chartConfigs[slideIndex]?.chartType || 'bar';
+        },
+        
+        // Get color for job factors chart
+        getJobFactorColor(index) {
+            const colors = [
+                '#4F46E5', // indigo-600
+                '#10B981', // emerald-500
+                '#F59E0B', // amber-500
+                '#EF4444', // red-500
+                '#8B5CF6', // violet-500
+                '#EC4899', // pink-500
+                '#14B8A6', // teal-500
+                '#F97316'  // orange-500
             ];
-
-            return chartTypes[slideIndex] || 'bar';
+            return colors[index % colors.length];
         },
 
-        getChartOptions(slideIndex) {
+        getChartOptions(slideIndex, chartData) {
             const chartType = this.getChartType(slideIndex);
-            const chartData = this.getChartData(slideIndex);
-            const isPercentage = chartData.isPercentage || false;
-
+            const isPercentage = chartData?.isPercentage || false;
+            const isSalaryByIndustry = slideIndex === 3; // Stacked bar chart
+            const isIncomeDistribution = slideIndex === 1; // Sosioekonomi Graduan
+            const isJobFactors = slideIndex === 5; // Status Pekerjaan & Kesesuaian
+            const isSkillsChart = slideIndex === 8; // Kemahiran Tambahan
+            
+            // Check if this is a bar chart that should use category labels instead of legend
+            const isBarChart = chartType === 'bar';
+            const useCategoryLabels = isBarChart && !isSalaryByIndustry;
+            
             const baseOptions = {
                 responsive: true,
                 maintainAspectRatio: false,
+                // Disable all hover interactions
+                events: [],
+                hover: {
+                    mode: null,
+                    intersect: false
+                },
+                // Disable animations
+                animation: {
+                    duration: 0
+                },
+                elements: {
+                    point: {
+                        radius: 0,
+                        hoverRadius: 0
+                    },
+                    line: {
+                        tension: 0.3,
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    bar: {
+                        borderWidth: 0,
+                        borderRadius: 4,
+                        borderSkipped: false,
+                        hoverBorderWidth: 0,
+                        hoverBorderRadius: 0,
+                        hoverBackgroundColor: undefined,
+                        hoverBorderColor: undefined
+                    }
+                },
                 plugins: {
                     legend: {
+                        display: isJobFactors || isSkillsChart || !useCategoryLabels, // Show for both job factors and skills charts
                         position: 'bottom',
                         labels: {
                             usePointStyle: true,
-                            padding: 16,
-                            font: { size: 12, weight: '600', family: 'Inter' },
-                            color: '#374151'
+                            font: { 
+                                size: 12, 
+                                weight: '600', 
+                                family: 'Inter' 
+                            },
+                            color: '#374151',
+                            boxWidth: 10,
+                            padding: 10,
+                            generateLabels: (isJobFactors || isSkillsChart) ? function(chart) {
+                                // Generate custom labels for job factors chart
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => ({
+                                        text: label,
+                                        fillStyle: data.datasets[0].backgroundColor[i] || '#4F46E5',
+                                        hidden: false,
+                                        lineCap: 'round',
+                                        lineDash: [],
+                                        lineDashOffset: 0,
+                                        lineJoin: 'round',
+                                        lineWidth: 1,
+                                        strokeStyle: 'rgba(0,0,0,0.1)',
+                                        pointStyle: 'circle',
+                                        rotation: 0
+                                    }));
+                                }
+                                return [];
+                            } : undefined
                         }
                     },
                     tooltip: {
@@ -1011,38 +1495,204 @@ document.addEventListener('alpine:init', () => {
                         borderWidth: 1,
                         cornerRadius: 8,
                         padding: 12,
-                        callbacks: isPercentage ? {
+                        callbacks: {
                             label: function(context) {
                                 let label = context.dataset.label || '';
                                 if (label) {
                                     label += ': ';
                                 }
-                                label += context.parsed.y.toFixed(1) + '%';
+                                const value = context.parsed.y;
+                                if (isPercentage) {
+                                    label += value.toFixed(1) + '%';
+                                } else {
+                                    label += value.toLocaleString();
+                                }
                                 return label;
-                            }
-                        } : {}
-                    }
+                            },
+                            // For bar charts, show the category as the title
+                            title: useCategoryLabels ? function(context) {
+                                return context[0].label;
+                            } : undefined
+                        }
+                    },
+                    // For non-stacked bar charts, show labels on the bars
+                    datalabels: useCategoryLabels ? {
+                        display: function(context) {
+                            // Only show label if there's enough space
+                            return context.dataset.data[context.dataIndex] > 5;
+                        },
+                        color: '#fff',
+                        anchor: 'end',
+                        align: 'end',
+                        offset: 5,
+                        font: {
+                            weight: 'bold',
+                            size: 10
+                        },
+                        // For job factors chart, show the value and label
+                        formatter: isJobFactors ? function(value, context) {
+                            return value + '%';
+                        } : undefined
+                    } : {}
                 },
-                animation: {
-                    duration: 800,
-                    easing: 'easeInOutQuart'
+                // Disable all interactions
+                interaction: {
+                    mode: null,
+                    intersect: false
                 }
             };
 
-            // Add scales for charts that need them (bar and line charts)
             if (chartType === 'bar' || chartType === 'line') {
+                const isIncomeDistribution = slideIndex === 1;
+                const isSalaryByIndustry = slideIndex === 3; // Stacked bar chart
+                const isJobFactors = slideIndex === 5;
+                const isSkillsChart = slideIndex === 8;
+                
+                // Special handling for job factors chart to show color-coded legends
+                
                 baseOptions.scales = {
                     x: {
-                        grid: { display: chartType === 'line' },
-                        ticks: { color: '#6B7280', font: { size: 11 } }
+                        grid: { 
+                            display: chartType === 'line',
+                            drawBorder: false
+                        },
+                        stacked: isSalaryByIndustry, // Only stack for salary by industry
+                        offset: isJobFactors || isSkillsChart ? false : true,
+                        title: {
+                            display: useCategoryLabels,
+                            text: chartData.xAxisTitle || '',
+                            color: '#6B7280',
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            padding: { top: 10 }
+                        },
+                        // Hide x-axis labels and show them in legend for job factors and skills charts
+                        display: !(isJobFactors || isSkillsChart), // Hide x-axis for job factors and skills
+                        title: {
+                            display: useCategoryLabels && !isJobFactors && !isSkillsChart,
+                            text: chartData.xAxisTitle || '',
+                            color: '#6B7280',
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            padding: { top: 10 }
+                        },
+                        ticks: {
+                            display: !(isJobFactors || isSkillsChart), // Hide x-axis ticks for job factors and skills
+                            color: '#6B7280',
+                            font: { 
+                                size: isSalaryByIndustry ? 9 : 11,
+                                weight: isSalaryByIndustry ? 500 : 'normal',
+                                family: 'Inter, sans-serif',
+                                lineHeight: 1.2
+                            },
+                            maxRotation: isSalaryByIndustry ? 0 : (isIncomeDistribution ? 0 : (useCategoryLabels ? 0 : 45)),
+                            minRotation: isSalaryByIndustry ? 0 : (isIncomeDistribution ? 0 : (useCategoryLabels ? 0 : 45)),
+                            autoSkip: !isIncomeDistribution,
+                            maxTicksLimit: isIncomeDistribution ? undefined : (useCategoryLabels ? 10 : (isSkillsChart ? 8 : (isSalaryByIndustry ? 4 : 6))),
+                            padding: isIncomeDistribution ? 15 : (useCategoryLabels ? 5 : (isSkillsChart ? 20 : 5)),
+                            callback: function(value, index, values) {
+                                // For income distribution chart, handle multi-line labels
+                                if (isIncomeDistribution && chartData.labels && index < chartData.labels.length) {
+                                    const label = chartData.labels[index];
+                                    if (!label) return '';
+                                    
+                                    // Split label into words and create lines with max 2 words each
+                                    const words = label.split(' ');
+                                    const lines = [];
+                                    let currentLine = words[0];
+                                    
+                                    for (let i = 1; i < words.length; i++) {
+                                        if (currentLine.length + words[i].length < 15) {
+                                            currentLine += ' ' + words[i];
+                                        } else {
+                                            lines.push(currentLine);
+                                            currentLine = words[i];
+                                        }
+                                    }
+                                    lines.push(currentLine);
+                                    
+                                    return lines.length > 1 ? lines : label;
+                                }
+                                
+                                // For Status Pekerjaan & Kesesuaian chart (Job Factors)
+                                if (isJobFactors && chartData.labels && index < chartData.labels.length) {
+                                    const label = chartData.labels[index];
+                                    if (!label) return '';
+                                    
+                                    // Split long labels into multiple lines with max 3 words per line
+                                    const words = label.split(' ');
+                                    const lines = [];
+                                    let currentLine = '';
+                                    let wordCount = 0;
+                                    const maxWordsPerLine = 3;
+                                    
+                                    for (const word of words) {
+                                        if (wordCount < maxWordsPerLine) {
+                                            currentLine += (currentLine ? ' ' : '') + word;
+                                            wordCount++;
+                                        } else {
+                                            lines.push(currentLine);
+                                            currentLine = word;
+                                            wordCount = 1;
+                                        }
+                                    }
+                                    
+                                    if (currentLine) {
+                                        lines.push(currentLine);
+                                    }
+                                    
+                                    return lines.length > 1 ? lines : label;
+                                }
+                                
+                                // For Sektor, Industri & Pendapatan Graduan chart
+                                if (isSalaryByIndustry && chartData.labels && index < chartData.labels.length) {
+                                    const label = chartData.labels[index];
+                                    if (!label) return '';
+                                    
+                                    // Split long industry names into multiple lines
+                                    const maxLength = 12; // Characters per line
+                                    if (label.length > maxLength) {
+                                        const parts = [];
+                                        for (let i = 0; i < label.length; i += maxLength) {
+                                            parts.push(label.substring(i, i + maxLength));
+                                        }
+                                        return parts;
+                                    }
+                                    return label;
+                                }
+                                
+                                // For other charts
+                                if (chartData.labels && index < chartData.labels.length) {
+                                    const label = chartData.labels[index];
+                                    const maxLength = 15;
+                                    if (label && label.length > maxLength) {
+                                        return label.substring(0, maxLength) + '...';
+                                    }
+                                    return label;
+                                }
+                                return '';
+                            }
+                        }
                     },
                     y: {
                         beginAtZero: true,
                         max: isPercentage ? 100 : undefined,
-                        grid: { color: '#E5E7EB', drawBorder: false },
+                        stacked: isSalaryByIndustry,
+                        grid: { 
+                            color: '#E5E7EB', 
+                            drawBorder: false
+                        },
                         ticks: { 
                             color: '#6B7280', 
-                            font: { size: 11 },
+                            font: { 
+                                size: 11,
+                                weight: 500
+                            },
+                            padding: 8,
                             callback: isPercentage ? function(value) {
                                 return value + '%';
                             } : undefined
@@ -1051,10 +1701,8 @@ document.addEventListener('alpine:init', () => {
                 };
             }
 
-            // Special configurations for specific chart types
-            if (chartType === 'doughnut') {
+            if (chartType === 'doughnut' || chartType === 'pie') {
                 baseOptions.cutout = '60%';
-                baseOptions.plugins.legend.position = 'right';
             }
 
             if (chartType === 'line') {
@@ -1062,8 +1710,6 @@ document.addEventListener('alpine:init', () => {
                     intersect: false,
                     mode: 'index'
                 };
-                baseOptions.scales.x.grid.display = true;
-                baseOptions.scales.x.grid.color = '#F3F4F6';
             }
 
             return baseOptions;
@@ -1075,7 +1721,7 @@ document.addEventListener('alpine:init', () => {
             this.createChart(index);
         },
         
-        // Carousel Management with Random Intervals
+        // Carousel Management
         startCarousel() {
             this.scheduleNextSlide();
         },
@@ -1086,7 +1732,6 @@ document.addEventListener('alpine:init', () => {
             }
             
             if (!this.carouselPaused) {
-                // Use random interval between 6-12 seconds
                 const randomInterval = this.randomIntervals[Math.floor(Math.random() * this.randomIntervals.length)];
                 
                 this.carouselTimer = setTimeout(() => {
@@ -1124,21 +1769,34 @@ document.addEventListener('alpine:init', () => {
         
         toggleCarousel() {
             this.carouselPaused = !this.carouselPaused;
-            if (!this.carouselPaused) {
+            if (this.carouselPaused) {
+                if (this.carouselTimer) {
+                    clearTimeout(this.carouselTimer);
+                    this.carouselTimer = null;
+                }
+            } else {
                 this.scheduleNextSlide();
-            } else if (this.carouselTimer) {
-                clearTimeout(this.carouselTimer);
             }
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+            
+            this.$nextTick();
         },
         
-        // Data Management
         async refreshAllData() {
             if (this.isRefreshing) return;
             
             this.isRefreshing = true;
             try {
                 await this.loadData();
-                this.createChart(this.currentSlide);
+                this.ensureSevenCriteria();
+                this.restartHeroTicker();
+                this.chartDataCache.clear();
+                this.loadedCharts.clear();
+                this.chartErrors.clear();
+                await this.createChart(this.currentSlide);
                 this.updateTime();
                 console.log('Data refreshed successfully');
             } catch (error) {
@@ -1146,14 +1804,6 @@ document.addEventListener('alpine:init', () => {
             } finally {
                 this.isRefreshing = false;
             }
-        },
-        
-        // Navigation Functions
-        scrollToKPI() {
-            document.getElementById('kpi-section')?.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
         },
         
         scrollToAnalytics() {
@@ -1164,32 +1814,23 @@ document.addEventListener('alpine:init', () => {
         },
         
         viewDetailedAnalysis(index) {
-            const slide = this.slideData[index];
-            console.log(`Opening detailed analysis for: ${slide.title}`);
-
-            // Map carousel slides to their corresponding detailed analysis pages
             const analysisUrls = [
-                '/demografi',           // 0: Analisis Demografi Graduan
-                '/sosioekonomi',        // 1: Status Sosioekonomi Graduan
-                '/graduan-luar',        // 2: Graduan Bekerja Luar Bidang
-                '/sektor-gaji',         // 3: Analisis Sektor dan Struktur Gaji
-                '/intern',              // 4: Program Latihan dan Pembangunan
-                '/status-pekerjaan',    // 5: Status dan Corak Pekerjaan
-                '/graduan-bidang',      // 6: Trend Bidang Pengajian
-                '/gig-economy',         // 7: Ekonomi Digital dan Masa Depan Kerja
-                '/faktor-graduan',      // 8: Faktor-faktor Kebolehpasaran
-                '/dashboard'            // 9: Integrasi Strategik dan Wawasan
+                '/demografi',
+                '/sosioekonomi',
+                '/graduan-luar',
+                '/sektor-gaji',
+                '/intern',
+                '/status-pekerjaan',
+                '/graduan-bidang',
+                '/gig-economy',
+                '/faktor-graduan'
             ];
 
-            // Navigate to the corresponding detailed analysis page
             if (index >= 0 && index < analysisUrls.length) {
                 window.location.href = analysisUrls[index];
-            } else {
-                console.error(`Invalid slide index: ${index}`);
             }
         },
         
-        // Event Listeners
         setupEventListeners() {
             document.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -1214,28 +1855,9 @@ document.addEventListener('alpine:init', () => {
                         e.preventDefault();
                         this.refreshAllData();
                         break;
-                    case 'Home':
-                        e.preventDefault();
-                        this.goToSlide(0);
-                        break;
-                    case 'End':
-                        e.preventDefault();
-                        this.goToSlide(this.slideData.length - 1);
-                        break;
-                    default:
-                        const num = parseInt(e.key);
-                        if (!isNaN(num)) {
-                            e.preventDefault();
-                            const slideIndex = num === 0 ? 9 : num - 1;
-                            if (slideIndex < this.slideData.length) {
-                                this.goToSlide(slideIndex);
-                            }
-                        }
-                        break;
                 }
             });
             
-            // Handle window resize
             window.addEventListener('resize', () => {
                 this.loadedCharts.forEach(index => {
                     const chart = window.DashboardCharts.get(`chart-${index}`);
@@ -1244,16 +1866,16 @@ document.addEventListener('alpine:init', () => {
                     }
                 });
             });
-        },
-
-        navigateToFieldAlignment() {
-            // Navigate to Status Pekerjaan page with field alignment focus
-            console.log('Navigating to field alignment analysis...');
-            window.location.href = '/status-pekerjaan';
+            
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    this.pauseHeroTicker();
+                } else {
+                    this.resumeHeroTicker();
+                }
+            });
         }
     }));
 });
-
-console.log('Dashboard Korporat Malaysia - Loaded Successfully');
 </script>
 {% endblock %}

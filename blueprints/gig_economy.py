@@ -45,6 +45,32 @@ class ChartDataFormatter:
 
 formatter = ChartDataFormatter()
 
+def _entrepreneurship_offerings_fallback():
+    return {
+        'labels': ['Tiada Data'],
+        'datasets': [{
+            'label': 'Pandangan Graduan',
+            'data': [0]
+        }],
+        'percentages': [0.0],
+        'isPercentage': False,
+        'meta': {
+            'total_responses': 0,
+            'positive_pct': 0.0,
+            'needs_improvement_pct': 0.0,
+            'no_offering_pct': 0.0,
+            'neutral_pct': 0.0,
+            'filters_applied': False,
+            'metrics': {
+                'primary': '0%',
+                'primaryLabel': 'Kursus sangat membantu',
+                'secondary': '0%',
+                'secondaryLabel': 'Institusi tanpa kursus'
+            }
+        },
+        'analysis': []
+    }
+
 # ===== IMPROVED FILTER PROCESSING =====
 
 def process_filter_values(key, values):
@@ -343,17 +369,60 @@ def api_summary():
             if job_pref_column in filtered_df.columns:
                 prefer_permanent = len(filtered_df[filtered_df[job_pref_column].str.contains('Ya', na=False)])
                 job_preference_rate = (prefer_permanent / total_records) * 100 if total_records > 0 else 0
-                gig_stats['job_preference_rate'] = job_preference_rate
+            # Top gig motivation
+            motivations_columns = [
+                'Apakah sebab utama anda memilih untuk bekerja dalam ekonomi gig? ',
+                'Apakah sebab utama anda memilih untuk bekerja dalam ekonomi gig?'
+            ]
+            
+            top_motivation = 'N/A'
+            for col in motivations_columns:
+                if col in filtered_df.columns:
+                    all_motivations = []
+                    for motivations_cell in filtered_df[col].dropna():
+                        if pd.notna(motivations_cell) and 'Tidak relevan' not in str(motivations_cell):
+                            motivations = [m.strip() for m in str(motivations_cell).split(',')]
+                            motivations = [m for m in motivations if m and len(m.strip()) > 0]
+                            all_motivations.extend(motivations)
+                    
+                    if all_motivations:
+                        motivation_counts = pd.Series(all_motivations).value_counts()
+                        if not motivation_counts.empty:
+                            top_motivation = motivation_counts.index[0]
+                            # Remove truncation to show full text
+                    break
+            
+            gig_stats['top_gig_motivation'] = top_motivation
+            
+            # Top gig type
+            top_gig_type = 'N/A'
+            if gig_column in filtered_df.columns:
+                df_gig_filtered = filtered_df_copy[filtered_df_copy['gig_clean'] != 'Tidak Berminat'].copy()
+                
+                if not df_gig_filtered.empty:
+                    all_gigs = []
+                    for gig_cell in df_gig_filtered['gig_clean'].dropna():
+                        if pd.notna(gig_cell) and gig_cell.strip():
+                            gigs = [g.strip() for g in str(gig_cell).split(';') if g.strip()]
+                            all_gigs.extend(gigs)
+                    
+                    if all_gigs:
+                        gig_counts = pd.Series(all_gigs).value_counts()
+                        if not gig_counts.empty:
+                            top_gig_type = gig_counts.index[0]
+            
+            gig_stats['top_gig_type'] = top_gig_type
         
         # Update stats with calculated values
         enhanced_stats = {
             'total_records': total_records,
             'gig_participation_rate': round(gig_stats.get('gig_participation_rate', 0), 1),
             'gig_participation_count': gig_stats.get('gig_participation_count', 0),
-            'entrepreneurship_rate': round(gig_stats.get('entrepreneurship_rate', 0), 1),
+
             'university_support_rate': round(gig_stats.get('university_support_rate', 0), 1),
             'avg_income': gig_stats.get('avg_income', 'RM0'),
-            'job_preference_rate': round(gig_stats.get('job_preference_rate', 0), 1),
+            'top_gig_motivation': gig_stats.get('top_gig_motivation', 'N/A'),
+            'top_gig_type': gig_stats.get('top_gig_type', 'N/A'),
             'filter_applied': len([f for f in filters.values() if f]) > 0
         }
         
@@ -369,10 +438,11 @@ def api_summary():
             'total_records': 0,
             'gig_participation_rate': 0,
             'gig_participation_count': 0,
-            'entrepreneurship_rate': 0,
+
             'university_support_rate': 0,
             'avg_income': 'RM0',
-            'job_preference_rate': 0
+            'top_gig_motivation': 'N/A',
+            'top_gig_type': 'N/A'
         }), 500
 
 @gig_economy_bp.route('/api/gig-types')
@@ -487,6 +557,83 @@ def api_university_support():
             pd.Series([1], index=['Error Loading Data']),
             "Error"
         )), 500
+
+@gig_economy_bp.route('/api/entrepreneurship-offerings')
+def api_entrepreneurship_offerings():
+    """Analyse sentiment on entrepreneurship course offerings."""
+    try:
+        filters = process_filters_with_conversion_v2(request.args)
+        filtered_df = apply_improved_filters(df, filters)
+        column = 'Adakah universiti anda menawarkan kursus atau latihan berkaitan keusahawanan?'
+
+        filters_applied = any(values for values in filters.values())
+
+        if column not in filtered_df.columns:
+            fallback = _entrepreneurship_offerings_fallback()
+            fallback['meta']['filters_applied'] = filters_applied
+            return jsonify(fallback)
+
+        responses = filtered_df[column].dropna()
+        if responses.empty:
+            fallback = _entrepreneurship_offerings_fallback()
+            fallback['meta']['filters_applied'] = filters_applied
+            return jsonify(fallback)
+
+        counts = responses.value_counts()
+        total = int(counts.sum())
+        labels = counts.index.tolist()
+        values = [int(val) for val in counts.values.tolist()]
+        percentages = [round((val / total) * 100, 1) if total else 0.0 for val in values]
+
+        def _lower(text):
+            return str(text).strip().lower()
+
+        positive_total = sum(counts[label] for label in labels if 'sangat membantu' in _lower(label))
+        needs_improvement_total = sum(counts[label] for label in labels if 'tidak rasa ia cukup relevan' in _lower(label))
+        negative_total = sum(counts[label] for label in labels if 'tiada kursus' in _lower(label))
+        neutral_total = sum(counts[label] for label in labels if 'tidak pasti' in _lower(label))
+
+        positive_pct = round((positive_total / total) * 100, 1) if total else 0.0
+        needs_improvement_pct = round((needs_improvement_total / total) * 100, 1) if total else 0.0
+        negative_pct = round((negative_total / total) * 100, 1) if total else 0.0
+        neutral_pct = round((neutral_total / total) * 100, 1) if total else 0.0
+
+        response = {
+            'labels': labels,
+            'datasets': [{
+                'label': 'Pandangan Graduan',
+                'data': values
+            }],
+            'percentages': percentages,
+            'isPercentage': False,
+            'meta': {
+                'total_responses': total,
+                'positive_pct': positive_pct,
+                'needs_improvement_pct': needs_improvement_pct,
+                'no_offering_pct': negative_pct,
+                'neutral_pct': neutral_pct,
+                'filters_applied': filters_applied,
+                'metrics': {
+                    'primary': f"{positive_pct:.1f}%",
+                    'primaryLabel': 'Kursus sangat membantu',
+                    'secondary': f"{negative_pct:.1f}%",
+                    'secondaryLabel': 'Institusi tanpa kursus'
+                }
+            },
+            'analysis': [
+                {'label': 'Menilai kursus bermanfaat', 'value': f"{positive_pct:.1f}%"},
+                {'label': 'Perlu penambahbaikan', 'value': f"{needs_improvement_pct:.1f}%"},
+                {'label': 'Tiada penawaran kursus', 'value': f"{negative_pct:.1f}%"}
+            ]
+        }
+
+        return jsonify(response)
+
+    except Exception as e:
+        print(f"Error in entrepreneurship offerings endpoint: {str(e)}")
+        fallback = _entrepreneurship_offerings_fallback()
+        fallback['meta']['filters_applied'] = any(request.args.getlist(k) for k in request.args.keys())
+        return jsonify(fallback), 500
 
 @gig_economy_bp.route('/api/university-programs')
 def api_university_programs():

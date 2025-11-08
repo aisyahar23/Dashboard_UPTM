@@ -272,7 +272,7 @@
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Ketidakpadanan</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.mismatch_rate || 0) + '%'">
+                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.field_mismatch_rate !== undefined ? kpis.field_mismatch_rate + '%' : '0%'">
                             </div>
                         </div>
                     </div>
@@ -294,7 +294,7 @@
                         </div>
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Peluang Terhad</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="(kpis.opportunity_rate || 0) + '%'">
+                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.limited_opportunities_rate !== undefined ? kpis.limited_opportunities_rate + '%' : '0%'">
                             </div>
                         </div>
                     </div>
@@ -317,7 +317,7 @@
                         <div>
                             <div class="text-sm text-gray-600 font-medium">Sektor Swasta</div>
                             <div class="text-3xl font-bold text-gray-900"
-                                x-text="(kpis.private_sector_rate || 0) + '%'"></div>
+                                x-text="kpis.private_sector_employment_rate !== undefined ? kpis.private_sector_employment_rate + '%' : '0%'"></div>
                         </div>
                     </div>
                 </div>
@@ -328,61 +328,6 @@
             </div>
         </div>
 
-        <!-- Enhanced Main Reasons Chart - Horizontal Bar -->
-        <div class="col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden">
-            <div class="px-6 py-3 border-b border-gray-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-chart-bar text-primary-600 mr-2"></i>
-                            Sebab Utama Bekerja di Luar Bidang
-                        </h3>
-                        <p class="text-gray-500 text-[10px] mt-1">Analisis faktor-faktor utama dengan pecahan kekerapan
-                        </p>
-                    </div>
-                    <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="openChartModal('reasons', 'Sebab Utama Bekerja di Luar Bidang')"
-                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table text-xs"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Maklumat Lanjut
-                            </div>
-                        </div>
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-200 hover:border-gray-600 transition-all duration-200">
-                            <button @click="refreshChart('reasons')"
-                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
-                            </button>
-                            <div
-                                class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-                                bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Muat Semula
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-6 py-10">
-                <div class="h-80 relative">
-                    <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10 rounded-lg">
-                        <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4">
-                            </div>
-                            <div class="text-gray-600 font-medium text-sm">Memuatkan data sebab utama...</div>
-                        </div>
-                    </div>
-                    <canvas id="reasonsChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
 
         <!-- Enhanced Job Type Distribution - Pie Chart -->
         <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden">
@@ -705,19 +650,41 @@
                     console.log('Loading summary from:', url);
                     
                     const response = await fetch(url);
-                    if (!response.ok) throw new Error('Failed to load summary');
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('API Error:', response.status, errorText);
+                        throw new Error(`Failed to load summary: ${response.status} ${errorText}`);
+                    }
                     
                     const data = await response.json();
                     console.log('Summary data received:', data);
-                    this.kpis = data;
+                    
+                    // Ensure all expected fields are present
+                    this.kpis = {
+                        total_records: data.total_records || 0,
+                        field_mismatch_rate: data.field_mismatch_rate || 0,
+                        limited_opportunities_rate: data.limited_opportunities_rate || 0,
+                        limited_field_opportunities_rate: data.limited_field_opportunities_rate || 0,
+                        private_sector_rate: data.private_sector_rate || 0,
+                        private_sector_employment_rate: data.private_sector_employment_rate || 0,
+                        reason_counts: data.reason_counts || {},
+                        filter_applied: data.filter_applied || false
+                    };
+                    
+                    console.log('Processed KPIs:', this.kpis);
                 } catch (error) {
                     console.error('Error loading summary:', error);
                     this.kpis = {
                         total_records: 0,
-                        mismatch_rate: 0,
-                        opportunity_rate: 0,
-                        private_sector_rate: 0
+                        field_mismatch_rate: 0,
+                        limited_opportunities_rate: 0,
+                        limited_field_opportunities_rate: 0,
+                        private_sector_rate: 0,
+                        private_sector_employment_rate: 0,
+                        reason_counts: {},
+                        filter_applied: false
                     };
+                    this.showToast('Error loading summary data', 'error');
                 }
             },
 

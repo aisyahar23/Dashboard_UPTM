@@ -229,23 +229,172 @@ def api_summary():
         # Enhanced KPI calculations
         reason_stats = {}
         private_sector_rate = 0
+        field_mismatch_rate = 0
+        limited_opportunities_rate = 0
+        limited_field_opportunities_rate = 0
+        private_sector_employment_rate = 0
         
         if total_records > 0:
-            # Count graduates by canonical reason categories
-            reason_col = 'Apakah sebab utama jika anda tidak bekerja dalam bidang pengajian?'
-            if reason_col in filtered_df.columns:
-                # Get raw reasons and process them
-                raw_reasons = filtered_df[reason_col].dropna().astype(str)
+            # Field Mismatch Rate (Kadar ketidakpadanan bidang kerja)
+            print("\n=== DEBUG: Field Mismatch Calculation ===")
+            print("Available columns in data:", filtered_df.columns.tolist())
+            
+            # Try to find the field mismatch column with more flexible matching
+            potential_columns = []
+            for col in filtered_df.columns:
+                col_lower = str(col).lower()
+                if any(term in col_lower for term in ['kaitan', 'bidang', 'pengajian', 'pekerjaan', 'berkaitan', 'kerja', 'pengajian', 'bidang', 'adakah', 'sama', 'mengikut']):
+                    potential_columns.append(col)
+                    print(f"Found potential field mismatch column: {col}")
+            
+            # Try each potential column until we find one with data
+            field_mismatch_col = None
+            for col in potential_columns:
+                non_empty = filtered_df[col].dropna()
+                if len(non_empty) > 0:
+                    field_mismatch_col = col
+                    print(f"Selected column with data: {col} ({len(non_empty)} non-empty values)")
+                    break
+            
+            if field_mismatch_col is not None:
+                print(f"\n=== ANALYZING COLUMN: {field_mismatch_col} ===")
                 
-                # Count occurrences of each canonical reason
+                # Get all non-empty values for analysis
+                non_empty = filtered_df[field_mismatch_col].dropna()
+                print(f"Found {len(non_empty)} non-empty values out of {len(filtered_df)} total records")
+                
+                # Show value counts for this column
+                value_counts = filtered_df[field_mismatch_col].value_counts(dropna=False).head(20)
+                print("\nValue counts:")
+                print(value_counts)
+                
+                # Convert to string and clean
+                field_mismatch_series = filtered_df[field_mismatch_col].astype(str).str.lower().str.strip()
+                
+                # Try multiple matching strategies
+                print("\n=== MATCHING STRATEGY 1: Direct Term Matching ===")
+                mismatch_terms = [
+                    'tidak', 'tidak berkaitan', 'tidak langsung', 'tidak sama', 
+                    'berbeza', 'lain', 'tidak berkait', 'tidak sesuai', 'berlainan',
+                    'tidak berkaitan langsung', 'luar bidang', 'bukan dalam bidang',
+                    'tidak mengikut pengajian', 'tidak mengikut kursus', 'berbeza bidang',
+                    'tidak sama', 'tidak berkaitan dengan', 'tidak mengikut', 'tidak dalam bidang',
+                    'tidak dalam pengajian', 'berlainan bidang', 'berbeza pengajian', 'lain bidang',
+                    'tidak berkaitan dengan pengajian', 'tidak dalam jurusan', 'berlainan jurusan',
+                    'tidak mengikut jurusan', 'tidak dalam kursus', 'berlainan kursus', 'tidak mengikut kursus',
+                    'tidak dalam bidang pengajian', 'berlainan bidang pengajian', 'tidak mengikut bidang pengajian',
+                    'no', 'not related', 'unrelated', 'different', 'berlainan', 'lain', 'luar', 'bukan', 'tidak sama',
+                    'berbeza', 'lain-lain', 'lain lain', 'lain-lain (nyatakan)', 'lain-lain (sila nyatakan)'
+                ]
+                
+                print("\nMatching counts for each term:")
+                term_matches = {}
+                for term in mismatch_terms:
+                    count = field_mismatch_series.str.contains(term, na=False).sum()
+                    if count > 0:
+                        term_matches[term] = count
+                        print(f"- '{term}': {count} matches")
+                
+                # Count total mismatches
+                mismatch_count = field_mismatch_series.apply(
+                    lambda x: any(term in x for term in mismatch_terms)
+                ).sum()
+                
+                print(f"\nTotal matches from direct terms: {mismatch_count}")
+                
+                # Strategy 2: Check for common 'no' patterns
+                if mismatch_count == 0:
+                    print("\n=== MATCHING STRATEGY 2: Common Negative Responses ===")
+                    negative_patterns = [
+                        (r'^tidak$', 'exact "tidak"'),
+                        (r'^tidak\b', 'starts with "tidak"'),
+                        (r'\btidak\b', 'contains "tidak"'),
+                        (r'^no$', 'exact "no"'),
+                        (r'^no\b', 'starts with "no"'),
+                        (r'\bno\b', 'contains "no"')
+                    ]
+                    
+                    for pattern, desc in negative_patterns:
+                        count = field_mismatch_series.str.contains(pattern, regex=True, na=False).sum()
+                        if count > 0:
+                            print(f"- {desc}: {count} matches")
+                            mismatch_count = max(mismatch_count, count)
+                
+                # Strategy 3: Check for common 'yes' patterns and count non-matches
+                if mismatch_count == 0:
+                    print("\n=== MATCHING STRATEGY 3: Positive/Negative Balance ===")
+                    positive_terms = ['ya', 'yes', 'ya,', 'ya ', 'ya.', 'ya, ', 'ya. ', 'ya!', 'ya! ']
+                    positive_count = field_mismatch_series.isin(positive_terms).sum()
+                    negative_count = field_mismatch_series.isin(['tidak', 'no', 'tidak,', 'tidak ', 'tidak.']).sum()
+                    print(f"Positive responses: {positive_count}, Negative responses: {negative_count}")
+                    
+                    if positive_count > 0 or negative_count > 0:
+                        total_responded = positive_count + negative_count
+                        mismatch_count = negative_count
+                        print(f"Using negative response count: {mismatch_count} (out of {total_responded} who responded)")
+                
+                # Final calculation
+                field_mismatch_rate = round((mismatch_count / total_records) * 100, 1) if total_records > 0 else 0
+                print(f"\n=== FINAL FIELD MISMATCH CALCULATION ===")
+                print(f"Mismatch count: {mismatch_count} out of {total_records} records")
+                print(f"Field mismatch rate: {field_mismatch_rate}%")
+                
+                # Show sample of values that didn't match anything
+                if mismatch_count == 0 and len(field_mismatch_series) > 0:
+                    print("\n=== SAMPLE OF NON-MATCHING VALUES ===")
+                    non_matching = field_mismatch_series[~field_mismatch_series.isin(['', 'nan', 'none', 'null', 'undefined'])]
+                    print(non_matching.head(20).to_dict())
+            else:
+                print(f"Warning: Could not find field mismatch column in: {filtered_df.columns.tolist()}")
+                field_mismatch_rate = 0
+            
+            # Limited Opportunities (Peluang Terhad)
+            print("\n=== DEBUG: Limited Opportunities Calculation ===")
+            
+            # Try to find the reason column with more flexible matching
+            reason_col = None
+            for col in filtered_df.columns:
+                col_lower = str(col).lower()
+                if any(term in col_lower for term in ['sebab', 'alasan', 'mengapa', 'reason', 'tidak bekerja', 'luar bidang']):
+                    reason_col = col
+                    print(f"Found potential reason column: {col}")
+                    break
+            
+            if reason_col is not None:
+                print(f"Using column for reasons: {reason_col}")
+                # Get non-null reasons
+                raw_reasons = filtered_df[reason_col].dropna().astype(str)
+                print(f"Found {len(raw_reasons)} non-null reason entries")
+                
+                # Initialize counts for all canonical reasons
                 counts = {canonical: 0 for canonical in CANONICAL_REASONS}
                 
+                # Count occurrences of each canonical reason
                 for reason_text in raw_reasons:
-                    # Check each canonical reason against the text
-                    for canonical in CANONICAL_REASONS:
-                        if canonical.lower() in reason_text.lower():
+                    reason_lower = reason_text.lower()
+                    
+                    # Check for each canonical reason
+                    for i, canonical in enumerate(CANONICAL_REASONS):
+                        # More flexible matching for the first reason (no job opportunities)
+                        if i == 0 and any(term in reason_lower for term in ['tiada peluang', 'tiada kerja', 'sukar cari kerja', 'susah cari', 'sukar dapat kerja', 'tiada kekosongan']):
                             counts[canonical] += 1
-                            break  # Only count once per response
+                            break
+                        # More flexible matching for the second reason (low salary)
+                        elif i == 1 and any(term in reason_lower for term in ['gaji', 'upah', 'pendapatan', 'sara hidup', 'gajih', 'income']):
+                            counts[canonical] += 1
+                            break
+                        # More flexible matching for the third reason (better opportunities elsewhere)
+                        elif i == 2 and any(term in reason_lower for term in ['lebih banyak peluang', 'lebih baik', 'lebih baik gaji', 'tawaran lebih baik', 'tawaran kerja']):
+                            counts[canonical] += 1
+                            break
+                        # More flexible matching for the fourth reason (not interested)
+                        elif i == 3 and any(term in reason_lower for term in ['tidak minat', 'tidak berminat', 'tidak sesuai', 'tidak mahu', 'tak minat']):
+                            counts[canonical] += 1
+                            break
+                        # More flexible matching for the fifth reason (already in field)
+                        elif i == 4 and any(term in reason_lower for term in ['dalam bidang', 'sudah bekerja', 'masih dalam bidang', 'masih berkaitan']):
+                            counts[canonical] += 1
+                            break
                 
                 reason_stats = {
                     'Tiada peluang pekerjaan yang sesuai': counts[CANONICAL_REASONS[0]],
@@ -254,23 +403,92 @@ def api_summary():
                     'Tidak berminat dengan bidang asal': counts[CANONICAL_REASONS[3]],
                     'Tidak berkaitan kerana bekerja dalam bidang pengajian': counts[CANONICAL_REASONS[4]]
                 }
+                
+                print(f"Reason counts: {reason_stats}")
+                
+                # Calculate limited opportunities rates
+                limited_opportunities = counts[CANONICAL_REASONS[0]] + counts[CANONICAL_REASONS[2]]
+                limited_opportunities_rate = round((limited_opportunities / total_records) * 100, 1) if total_records > 0 else 0
+                
+                # Limited job opportunities in the field (Peluang pekerjaan terhad dalam bidang)
+                limited_field_opportunities = counts[CANONICAL_REASONS[0]]
+                limited_field_opportunities_rate = round((limited_field_opportunities / total_records) * 100, 1) if total_records > 0 else 0
+                
+                print(f"Limited opportunities rate: {limited_opportunities_rate}% (Field only: {limited_field_opportunities_rate}%)")
+            else:
+                print(f"Warning: Could not find reason column in: {filtered_df.columns.tolist()}")
+                reason_stats = {}
+                limited_opportunities_rate = 0
+                limited_field_opportunities_rate = 0
             
-            # Private sector rate unchanged (existing logic)
-            job_column = 'Apakah jenis pekerjaan anda sekarang'
-            if job_column in filtered_df.columns:
+            # Private sector employment
+            print("\n=== DEBUG: Private Sector Calculation ===")
+            
+            # Try to find the job type column with more flexible matching
+            job_column = None
+            for col in filtered_df.columns:
+                col_lower = str(col).lower()
+                if any(term in col_lower for term in ['pekerjaan', 'kerja', 'job', 'sektor', 'bidang', 'tempat kerja']):
+                    job_column = col
+                    print(f"Found potential job type column: {col}")
+                    break
+            
+            if job_column is not None:
+                print(f"Using column for job type: {job_column}")
+                # Get value counts for debugging
                 job_counts = filtered_df[job_column].value_counts()
-                private_keywords = ['swasta', 'private', 'syarikat', 'company', 'korporat']
+                print(f"Job type counts: {job_counts.to_dict()}")
+                
+                # Expanded list of private sector keywords
+                private_keywords = [
+                    'swasta', 'private', 'syarikat', 'company', 'korporat', 
+                    'sendirian', 'sdn bhd', 'sdn. bhd.', 'enterprise', 'trading',
+                    'sdn. bhd', 'sdn bhd.', 'enterprais', 'entrprise', 'entrprse',
+                    'entrpris', 'entrprz', 'entrprs', 'entrpr', 'entrp',
+                    'sdn', 'bhd', 'syarikat swasta', 'perusahaan swasta', 'firma',
+                    'konglomerat', 'korporasi', 'korporate', 'kprt', 'kpr',
+                    'pt', 'cv', 'toko', 'usaha', 'bisnis', 'bisnes', 'enterprenuer',
+                    'enterpreneur', 'entreprenuer', 'entrprn', 'entrprnr', 'entrprnur',
+                    'entrprnrshp', 'entrprnrship', 'entrprnur', 'entrprnurshp', 'entrprnurship'
+                ]
+                
                 private_count = 0
+                total_jobs = 0
+                
+                print("\nJob Type Analysis:")
                 for job_type, count in job_counts.items():
-                    jt = str(job_type).lower()
-                    if any(k in jt for k in private_keywords):
+                    if pd.isna(job_type) or str(job_type).strip() == '':
+                        print(f"Skipping empty job type (count: {count})")
+                        continue
+                        
+                    jt = str(job_type).lower().strip()
+                    total_jobs += count
+                    
+                    # Check for private sector keywords
+                    is_private = any(k in jt for k in private_keywords)
+                    if is_private:
                         private_count += count
-                private_sector_rate = (private_count / total_records) * 100 if total_records > 0 else 0
+                        print(f"✓ Private sector: {job_type} (count: {count})")
+                    else:
+                        print(f"  Not private: {job_type} (count: {count})")
+                
+                print(f"\nTotal jobs: {total_jobs}, Private sector: {private_count}")
+                private_sector_rate = (private_count / total_jobs * 100) if total_jobs > 0 else 0
+                private_sector_employment_rate = round(private_sector_rate, 1)
+                print(f"Private sector rate: {private_sector_employment_rate}%")
+            else:
+                print(f"Warning: Could not find job column in: {filtered_df.columns.tolist()}")
+                private_sector_rate = 0
+                private_sector_employment_rate = 0
         
-        # Build response - include reason selection counts as well as rates (percent of selections)
+        # Build response - include all KPI metrics
         enhanced_stats = {
             'total_records': total_records,
+            'field_mismatch_rate': round(field_mismatch_rate, 1),
+            'limited_opportunities_rate': round(limited_opportunities_rate, 1),
+            'limited_field_opportunities_rate': round(limited_field_opportunities_rate, 1),
             'private_sector_rate': round(private_sector_rate, 1),
+            'private_sector_employment_rate': round(private_sector_employment_rate, 1),
             'reason_counts': reason_stats,
             'filter_applied': len([f for f in filters.values() if f]) > 0
         }

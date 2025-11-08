@@ -497,73 +497,83 @@ def api_no_internship_reasons():
         internship_column = 'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'
         print(f"Internship column values: {df_filtered[internship_column].unique()}")
         
-        # Handle case-insensitive matching for students who DID internships
-        df_with_internship = df_filtered[
-            df_filtered[internship_column].astype(str).str.lower().str.contains('ya', na=False, regex=True)
+        # Handle case-insensitive matching and different variations
+        df_no_internship = df_filtered[
+            df_filtered[internship_column].astype(str).str.lower().str.contains('tidak|no|tidak menjalani', na=False, regex=True)
         ].copy()
         
-        print(f"Number of respondents with internship: {len(df_with_internship)}")
+        print(f"Number of respondents without internship: {len(df_no_internship)}")
         
-        benefits_column = 'Bagaimana internship membantu anda dalam mendapatkan pekerjaan?'
+        reasons_column = 'Jika tidak menjalani internship, apakah sebab utama?'
         
-        if benefits_column not in df_with_internship.columns or df_with_internship.empty:
+        if reasons_column not in df_no_internship.columns or df_no_internship.empty:
             print("No internship data or reasons column not found")
             return jsonify({
                 'labels': ['Tiada data'],
                 'datasets': [{'data': [0], 'label': 'Tiada data'}]
             })
         
-        # Get the benefits data
-        benefits_data = df_with_internship[benefits_column].dropna().astype(str)
-        print(f"Raw benefits data:\n{benefits_data}")
+        # Get the raw reasons data
+        reasons_data = df_no_internship[reasons_column].dropna().astype(str)
+        print(f"Raw reasons data:\n{reasons_data}")
         
-        # Process each benefit individually
-        all_benefits = []
-        for benefits_cell in benefits_data:
-            if pd.notna(benefits_cell) and str(benefits_cell).strip() not in ['nan', 'None', '']:
-                # Handle multiple benefits separated by commas or semicolons
-                cell_benefits = [b.strip() for b in str(benefits_cell).replace(';', ',').split(',')]
-                for benefit in cell_benefits:
-                    if benefit and benefit.strip() not in ['nan', 'None', '']:
-                        all_benefits.append(benefit.strip())
+        # Split and clean the reasons
+        all_reasons = []
+        for reasons_cell in reasons_data:
+            # Clean and split the cell content
+            reasons = [r.strip() for r in str(reasons_cell).replace(';', ',').split(',') if r.strip()]
+            all_reasons.extend(reasons)
         
-        print(f"All individual benefits: {all_benefits}")
+        print(f"Processed reasons: {all_reasons}")
         
-        if not all_benefits:
-            print("No valid benefits found after processing")
+        if not all_reasons:
+            print("No valid reasons found after processing")
             return jsonify({
                 'labels': ['Tiada maklumat'],
-                'datasets': [{'data': [1], 'label': 'Tiada maklumat'}]
+                'datasets': [{'data': [0], 'label': 'Tiada maklumat'}]
             })
         
-        # Count occurrences of each unique benefit
-        benefits_counts = pd.Series(all_benefits).value_counts()
-        print(f"Unique benefit counts:\n{benefits_counts}")
+        # Count occurrences of each reason
+        reasons_counts = pd.Series(all_reasons).value_counts()
+        print(f"Reason counts before processing:\n{reasons_counts}")
         
-        # Only do minimal cleaning - remove empty/invalid entries
-        final_benefits = {}
-        for benefit, count in benefits_counts.items():
-            clean_benefit = benefit.strip()
-            if clean_benefit and clean_benefit.lower() not in ['nan', 'none', '', 'null']:
-                final_benefits[clean_benefit] = count
+        # Clean up the reason texts
+        cleaned_reasons = {}
+        for reason, count in reasons_counts.items():
+            # Clean up the reason text
+            clean_reason = reason.strip()
+            if clean_reason.lower() in ['nan', 'none', '']:
+                continue
+                
+            # Group similar reasons
+            found = False
+            for existing in cleaned_reasons:
+                if clean_reason.lower() in existing.lower() or existing.lower() in clean_reason.lower():
+                    cleaned_reasons[existing] += count
+                    found = True
+                    break
+            if not found:
+                cleaned_reasons[clean_reason] = count
         
-        print(f"Final benefits after cleaning: {final_benefits}")
+        print(f"Cleaned reasons: {cleaned_reasons}")
         
-        if not final_benefits:
+        if not cleaned_reasons:
             return jsonify({
                 'labels': ['Tiada maklumat'],
-                'datasets': [{'data': [1], 'label': 'Tiada maklumat'}]
+                'datasets': [{'data': [0], 'label': 'Tiada maklumat'}]
             })
         
-        # Create series and sort by count
-        benefits_series = pd.Series(final_benefits).sort_values(ascending=False)
+        # Convert to percentage of total respondents without internship
+        reasons_series = pd.Series(cleaned_reasons)
+        if not reasons_series.empty and len(df_no_internship) > 0:
+            reasons_series = (reasons_series / len(df_no_internship)) * 100
         
-        print(f"Final benefit counts (sorted):\n{benefits_series}")
+        print(f"Final reason percentages:\n{reasons_series}")
         
         # Create chart data
         chart_data = formatter.format_bar_chart(
-            benefits_series, 
-            "Manfaat Latihan Industri", 
+            reasons_series, 
+            "Sebab Tiada Latihan Industri", 
             sort_desc=True
         )
         
@@ -647,19 +657,16 @@ def api_table_data():
         
         # Filter data based on chart type
         if chart_type == 'no-internship-reasons':
-            # Filter for respondents who DID internships
-            internship_col = 'Adakah anda menjalani internship/praktikal sebelum tamat pengajian?'
-            
-            # Filter by internship status - those who did internships
+            # Filter for respondents who didn't do internship
             df_filtered = df_filtered[
-                df_filtered[internship_col].astype(str).str.lower().str.contains('ya', na=False, regex=True)
+                df_filtered['Adakah anda menjalani internship/praktikal sebelum tamat pengajian?']
+                .astype(str).str.lower().str.contains('tidak|no|tidak menjalani', na=False)
             ]
-            
             relevant_columns = [
                 'Tahun graduasi anda?',
                 'Jantina anda?',
                 'Institusi pendidikan MARA yang anda hadiri?',
-                'Bagaimana internship membantu anda dalam mendapatkan pekerjaan?'
+                'Jika tidak menjalani internship, apakah sebab utama?'
             ]
         elif chart_type == 'employment-challenges':
             relevant_columns = [

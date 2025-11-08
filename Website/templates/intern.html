@@ -203,22 +203,8 @@
 
     <!-- Main Content -->
     <div class="grid grid-cols-12 gap-6 auto-rows-auto">
-        <!-- FIXED KPI SECTION - Now showing 4 KPIs properly -->
-        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-            <!-- Total Respondents -->
-            <div
-                class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
-                <div class="flex flex-row justify-start">
-                    <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-users text-lg text-slate-600"></i>
-                    </div>
-                    <div class="text-left ml-4">
-                        <div class="text-sm text-gray-500">Jumlah Responden</div>
-                        <div class="text-2xl font-bold" x-text="kpis.total_records || '0'"></div>
-                    </div>
-                </div>
-            </div>
-
+        <!-- FIXED KPI SECTION - Now showing 3 KPIs in a 3-column grid -->
+        <div class="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
             <!-- Internship Rate -->
             <div
                 class="bg-white rounded-xl px-7 py-4 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 h-full">
@@ -227,9 +213,13 @@
                         <i class="fas fa-graduation-cap text-lg text-green-600"></i>
                     </div>
                     <div class="text-left ml-4">
-                        <div class="text-sm text-gray-500">Kadar Latihan Industri</div>
+                        <div class="text-sm text-gray-500">Kadar Penyertaan</div>
                         <div class="text-2xl font-bold" x-text="(kpis.internship_rate || 0) + '%'"></div>
                     </div>
+                </div>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Peratusan pelajar yang telah menjalani latihan industri sebelum tamat pengajian
                 </div>
             </div>
 
@@ -241,9 +231,13 @@
                         <i class="fas fa-exclamation-triangle text-lg text-[#c92427]"></i>
                     </div>
                     <div class="text-left ml-4">
-                        <div class="text-sm text-gray-500">Kekurangan Pengalaman</div>
+                        <div class="text-sm text-gray-500">Cabaran Utama Mendapat Pekerjaan</div>
                         <div class="text-2xl font-bold" x-text="(kpis.no_experience_rate || 0) + '%'"></div>
                     </div>
+                </div>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Peratusan graduan yang menghadapi kesukaran mendapatkan pekerjaan kerana kekurangan pengalaman
                 </div>
             </div>
 
@@ -258,6 +252,10 @@
                         <div class="text-sm text-gray-500">Isu Pasaran</div>
                         <div class="text-2xl font-bold" x-text="(kpis.market_competition_rate || 0) + '%'"></div>
                     </div>
+                </div>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Peratusan graduan yang menghadapi isu pasaran kerja yang kompetitif
                 </div>
             </div>
         </div>
@@ -416,7 +414,7 @@
         </div>
 
         <!-- Reasons for No Internship - 6 cols -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
+        <div class="col-span-12 lg:col-span-12 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -461,56 +459,6 @@
                         </div>
                     </div>
                     <canvas id="reasonsChart" class="w-full h-full"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- FIXED Grouped Challenges Analysis - 6 cols with refresh button -->
-        <div class="col-span-12 lg:col-span-6 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
-            <div class="px-6 py-3 text-black border-b border-gray-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-bold">Analisis Kategori Cabaran</h3>
-                        <p class="text-gray-500 text-[10px]">Cabaran pekerjaan dikumpulkan mengikut kategori</p>
-                    </div>
-                    <div class="flex space-x-1">
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-primary-600 transition-all duration-200">
-                            <button @click="openChartModal('grouped-challenges', 'Analisis Kategori Cabaran')"
-                                class="flex items-center justify-center w-8 h-8 p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i class="fas fa-table text-xs"></i>
-                            </button>
-                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Maklumat Lanjut
-                            </div>
-                        </div>
-                        <div
-                            class="relative group border border-gray-200 rounded-lg border-[1.5px] border-gray-100 hover:border-primary-600 transition-all duration-200">
-                            <button @click="refreshChart('grouped')"
-                                class="p-2 w-8 h-8 flex items-center justify-center bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
-                                <i
-                                    class="fas fa-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
-                            </button>
-                            <div class="absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-        bg-black/70 text-white text-[8px] px-2 py-1 rounded z-50 pointer-events-none transition whitespace-nowrap">
-                                Muat Semula
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-6 py-4 flex-1">
-                <div class="h-60 relative">
-                    <div x-show="loading"
-                        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm z-10">
-                        <div class="text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4">
-                            </div>
-                            <div class="text-gray-600 font-medium">Memuatkan...</div>
-                        </div>
-                    </div>
-                    <canvas id="groupedChallengesChart" class="max-w-100 h-full"></canvas>
                 </div>
             </div>
         </div>
@@ -583,18 +531,35 @@
                 }
             },
 
-            // New method to open chart-specific modals
+            // Method to open chart-specific modals with proper data handling
             openChartModal(chartType, title) {
-                const params = this.buildFilterParams();
-                const endpoint = `/intern/api/table-data?${params}`;
-
-                // Use the global function from modal-manager.js with error handling
-                if (typeof window.openChartModal === 'function') {
-                    window.openChartModal(chartType, title, endpoint);
-                } else {
-                    console.error('Modal manager not loaded. Opening fallback table view.');
-                    // Fallback - open in new window
-                    window.open(`/intern/table?${params}`, '_blank');
+                try {
+                    const params = this.buildFilterParams();
+                    
+                    // Log the action for debugging
+                    console.log(`Opening chart modal for ${chartType} with title: ${title}`);
+                    console.log('Current filters:', params);
+                    
+                    // Use the modal manager if available
+                    if (window.modalManagerInstance) {
+                        // Create endpoint with proper path
+                        const endpoint = `/intern/api/table-data?chartType=${chartType}&${params}`;
+                        console.log('Using modal manager with endpoint:', endpoint);
+                        
+                        // Store the current dashboard instance for filter access
+                        window.currentDashboardInstance = this;
+                        
+                        // Open the modal with the chart data
+                        window.modalManagerInstance.openModal(title, endpoint);
+                    } 
+                    // Fallback to direct table view if modal manager is not available
+                    else {
+                        console.warn('Modal manager not available, falling back to table view');
+                        window.open(`/intern/table?chartType=${chartType}&${params}`, '_blank');
+                    }
+                } catch (error) {
+                    console.error('Error in openChartModal:', error);
+                    alert('Gagal memuat data. Sila cuba lagi.');
                 }
             },
 

@@ -264,28 +264,7 @@
     <div class="grid grid-cols-12 gap-6 auto-rows-auto">
 
         <!-- Enhanced KPI Cards Row -->
-        <div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Total Records -->
-            <div
-                class="flex flex-col justify-between gap-y-2 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-start space-x-4">
-                        <div
-                            class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                            <i class="fas fa-users text-xl text-blue-600"></i>
-                        </div>
-                        <div>
-                            <div class="text-sm text-gray-600 font-medium">Jumlah Responden</div>
-                            <div class="text-3xl font-bold text-gray-900" x-text="kpis.total_records || 0"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="text-xs text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Bilangan Responden
-                </div>
-            </div>
-
+        <div class="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Total Years -->
             <div
                 class="flex flex-col justify-between gap-y-2 bg-white rounded-2xl px-6 py-4 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
@@ -356,12 +335,11 @@
             <div class="px-6 py-3 text-black border-b border-gray-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-md font-bold text-gray-900 flex items-center">
-                            <i class="fas fa-chart-bar text-primary-600 mr-3"></i>
-                            Taburan Bidang Pengajian Mengikut Tahun Graduasi
-                        </h3>
-                        <p class="text-gray-600 text-[10px] mt-1">Carta stacked bar menunjukkan agihan bidang pengajian
-                            untuk setiap tahun</p>
+                        <div class="flex items-center gap-3 mb-1">
+                            <i class="fas fa-chart-bar text-primary-600 text-xl"></i>
+                            <h3 class="text-xl font-bold text-gray-900">Taburan Bidang Pengajian Mengikut Tahun Graduasi</h3>
+                        </div>
+                        <p class="text-gray-600 text-[10px] mt-1 ml-9">Carta bar menunjukkan agihan bidang pengajian untuk setiap tahun graduasi </p>
                     </div>
 
                     <div class="flex space-x-3">
@@ -724,6 +702,11 @@
                         errorDiv.innerHTML = `
                             <div class="text-center">
                                 <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl mb-2"></i>
+                                <div class="flex items-center gap-2">
+                            <i class="fas fa-chart-bar text-primary-600"></i>
+                            <h3 class="text-xl font-bold text-gray-900">Taburan Bidang Pengajian Mengikut Tahun Graduasi</h3>
+                        </div>
+                        <p class="text-gray-600 text-[10px] mt-1">Carta stacked bar menunjukkan agihan bidang pengajian untuk setiap tahun</p>
                                 <div class="font-medium text-gray-700">${message}</div>
                                 <div class="text-sm text-gray-500 mt-1">Cuba muat semula halaman atau periksa data</div>
                             </div>
