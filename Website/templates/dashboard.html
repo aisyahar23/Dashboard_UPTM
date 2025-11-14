@@ -105,19 +105,19 @@
                     <div class="grid grid-cols-3 gap-4 max-w-md">
                         <div class="bg-white/10 backdrop-blur-sm p-4 text-center border border-white/20">
                             <div class="text-3xl font-black text-yellow-400" x-text="qualityMeta.total_graduates || '39'"></div>
-                            <div class="text-xs text-blue-200 font-medium">Graduan</div>
+                            <div class="text-xs text-blue-200 font-medium">Jumlah Graduan</div>
                         </div>
                         <div class="bg-white/10 backdrop-blur-sm p-4 text-center border border-white/20">
                             <div class="text-3xl font-black text-yellow-400">
-                                <span x-text="formatNumber(qualityMeta.average_score || 0, 1)"></span><span class="text-lg">/12</span>
+                                <span x-text="formatNumber(qualityMeta.average_score || 0, 1, true)"></span><span class="text-lg">/12</span>
                             </div>
-                            <div class="text-xs text-blue-200 font-medium">Skor</div>
+                            <div class="text-xs text-blue-200 font-medium">Skor Purata Kualiti Graduan</div>
                         </div>
                         <div class="bg-white/10 backdrop-blur-sm p-4 text-center border border-white/20">
                             <div class="text-3xl font-black text-yellow-400">
                                 <span x-text="formatNumber(qualityMeta.high_quality_pct || 0, 1)"></span><span class="text-lg">%</span>
                             </div>
-                            <div class="text-xs text-blue-200 font-medium">Tinggi</div>
+                            <div class="text-xs text-blue-200 font-medium">Graduan Berkualiti Tinggi</div>
                         </div>
                     </div>
                     
@@ -144,11 +144,38 @@
                 
                 <!-- Right Side - 7 Criteria Cards (7 columns) -->
                 <div class="lg:col-span-7 relative z-10 space-y-8 mt-52">
-                    
-                   
+                    <!-- Main Carousel Display -->
+                    <div class="relative w-full h-[500px] flex items-center justify-center">
+                        <!-- Navigation Controls -->
+                        <div class="absolute bottom-0 left-0 right-0 flex justify-center items-center gap-4 mb-6 z-50">
+                            <!-- Previous Button -->
+                            <button @click="advanceHeroTicker(-1)" 
+                                    class="p-3 bg-white rounded-full shadow-lg hover:bg-blue-50 transition-all duration-200 border-2 border-blue-200 flex items-center justify-center"
+                                    title="Kriteria sebelumnya">
+                                <i class="fas fa-chevron-left text-blue-600"></i>
+                            </button>
+                            
+                            <!-- Pause/Play Button -->
+                            <button @click="toggleHeroTicker()" 
+                                    class="px-5 py-2 bg-white rounded-full shadow-lg hover:bg-blue-50 transition-all duration-200 border-2 border-blue-200 flex items-center justify-center mx-4"
+                                    :class="{'bg-blue-50 border-blue-300': heroTickerPaused}"
+                                    :title="heroTickerPaused ? 'Lanjutkan putaran' : 'Henti putaran'">
+                                <i class="fas text-lg" 
+                                   :class="heroTickerPaused ? 'fa-play text-green-600' : 'fa-pause text-blue-600'"></i>
+                                <span class="ml-2 text-sm font-medium text-gray-700" 
+                                      x-text="heroTickerPaused ? 'Lanjutkan' : 'Henti'"></span>
+                            </button>
+                            
+                            <!-- Next Button -->
+                            <button @click="advanceHeroTicker(1)" 
+                                    class="p-3 bg-white rounded-full shadow-lg hover:bg-blue-50 transition-all duration-200 border-2 border-blue-200 flex items-center justify-center"
+                                    title="Kriteria seterusnya">
+                                <i class="fas fa-chevron-right text-blue-600"></i>
+                            </button>
+                        </div>
 
                     <!-- Main Carousel Display -->
-                    <div class="relative w-full h-[460px] flex items-center justify-center">
+                    <div class="relative w-full h-[500px] flex items-center justify-center">
                         
                         <!-- Half Circle Container -->
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -165,9 +192,9 @@
                                      `">
                                     
                                     <!-- Enhanced Criterion Card -->
-                                    <div class="bg-white rounded-2xl shadow-2xl border-3 overflow-hidden cursor-pointer transition-all duration-300"
+                                    <div class="bg-white rounded-2xl shadow-2xl border-3 overflow-hidden cursor-pointer transition-all duration-300 flex flex-col"
                                          :class="heroTickerIndex === index ? 'border-blue-500 ring-4 ring-blue-300/40' : 'border-gray-200'"
-                                         :style="heroTickerIndex === index ? 'width: 300px; height: 450px;' : 'width: 190px; height: 250px;'"
+                                         :style="heroTickerIndex === index ? 'width: 360px; min-height: 480px;' : 'width: 220px; min-height: 320px;'"
                                          @click="setHeroTicker(index)">
                                         
                                         <!-- Card Header -->
@@ -189,16 +216,18 @@
                                         </div>
                                         
                                         <!-- Card Body -->
-                                        <div class="bg-white"
-                                             :class="heroTickerIndex === index ? 'p-5' : 'p-3'">
-                                            <div class="flex items-center justify-between mb-3">
+                                        <div class="bg-white flex-1 flex flex-col"
+                                             :class="heroTickerIndex === index ? 'p-5' : 'p-3'"
+                                             style="overflow-y: auto;">
+                                            <div class="flex items-start justify-between mb-3">
                                                 <div>
                                                     <div class="flex items-baseline gap-1">
                                                         <span class="font-black text-blue-600"
                                                               :class="heroTickerIndex === index ? 'text-4xl' : 'text-2xl'"
-                                                              x-text="formatNumber(criterion.average_score, 1)"></span>
+                                                              x-text="formatNumber(criterion.average_score, 1, true)"></span>
                                                         <span class="text-gray-400 font-bold"
-                                                              :class="heroTickerIndex === index ? 'text-lg' : 'text-xs'">/2</span>
+                                                              :class="heroTickerIndex === index ? 'text-lg' : 'text-xs'"
+                                                              x-text="`/${criterion.max_score || 2}`"></span>
                                                     </div>
                                                     <div class="text-[10px] text-gray-600 font-semibold"
                                                          :class="heroTickerIndex === index ? 'text-xs' : 'text-[9px]'">Skor Purata</div>
@@ -219,12 +248,21 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="space-y-1.5">
+                                            <div class="mt-3 space-y-2 flex-1 overflow-y-auto" :class="{'max-h-[220px]': heroTickerIndex === index, 'max-h-[120px]': heroTickerIndex !== index}">
                                                 <template x-for="dist in criterion.distribution.slice(0, heroTickerIndex === index ? 3 : 2)" :key="dist.label">
-                                                    <div class="flex items-center justify-between"
-                                                         :class="heroTickerIndex === index ? 'text-xs' : 'text-[10px]'">
-                                                        <span class="text-gray-600 truncate font-medium" x-text="dist.label"></span>
-                                                        <span class="font-bold text-gray-800" x-text="`${formatNumber(dist.percentage, 1)}%`"></span>
+                                                    <div class="bg-gray-50 rounded-lg p-2 border border-gray-100 shadow-sm">
+                                                        <div class="flex items-start justify-between">
+                                                            <span class="font-medium text-gray-800 text-xs" x-text="dist.label"></span>
+                                                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-0.5 rounded-full ml-2 flex-shrink-0" 
+                                                                  x-text="`${formatNumber(dist.percentage, 1)}%`">
+                                                            </span>
+                                                        </div>
+                                                        <div class="mt-1 flex items-center text-[11px] text-gray-500">
+                                                            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                                            </svg>
+                                                            <span class="truncate" x-text="`${dist.count || '0'}/${qualityMeta.total_graduates || '0'} graduan`"></span>
+                                                        </div>
                                                     </div>
                                                 </template>
                                             </div>
@@ -527,22 +565,31 @@
                         </template>
                     </div>
 
-                    <button @click="previousSlide()"
-                            class="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white hover:bg-gray-50 p-4 rounded-full shadow-xl transition-all duration-200 group z-10 border border-gray-100">
-                        <i class="fas fa-chevron-left text-gray-700 text-xl group-hover:text-blue-600 transition-colors"></i>
-                    </button>
-                    
-                    <button @click="toggleCarousel()"
-                            class="absolute left-1/2 -translate-x-1/2 bottom-6 bg-white hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 transition-all duration-200 z-10 border border-gray-100"
-                            :class="{'bg-gray-100': carouselPaused}">
-                        <i :class="carouselPaused ? 'fas fa-play text-green-600' : 'fas fa-pause text-amber-500'"></i>
-                        <span class="text-sm font-medium" x-text="carouselPaused ? 'Lanjutkan' : 'Jeda'"></span>
-                    </button>
-                    
-                    <button @click="nextSlide()"
-                            class="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white hover:bg-gray-50 p-4 rounded-full shadow-xl transition-all duration-200 group z-10 border border-gray-100">
-                        <i class="fas fa-chevron-right text-gray-700 text-xl group-hover:text-blue-600 transition-colors"></i>
-                    </button>
+                    <!-- Carousel Navigation Buttons -->
+                    <div class="absolute inset-0">
+                        <!-- Previous Button -->
+                        <button @click="previousSlide()"
+                                class="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white hover:bg-gray-50 p-4 rounded-full shadow-xl transition-all duration-200 z-50 border-2 border-gray-200 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+                                aria-label="Previous slide">
+                            <i class="fas fa-chevron-left text-gray-700 text-xl group-hover:text-blue-600 transition-colors"></i>
+                        </button>
+                        
+                        <!-- Play/Pause Button -->
+                        <button @click="toggleCarousel()"
+                                class="absolute left-1/2 -translate-x-1/2 bottom-8 bg-white hover:bg-gray-50 text-gray-700 px-6 py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all duration-200 z-50 border-2 border-gray-200 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+                                :class="{'bg-blue-50 border-blue-300': carouselPaused}"
+                                :aria-label="carouselPaused ? 'Continue carousel' : 'Pause carousel'">
+                            <i :class="carouselPaused ? 'fas fa-play text-green-600 text-lg' : 'fas fa-pause text-amber-500 text-lg'"></i>
+                            <span class="text-sm font-semibold" x-text="carouselPaused ? 'Lanjutkan' : 'Henti'"></span>
+                        </button>
+                        
+                        <!-- Next Button -->
+                        <button @click="nextSlide()"
+                                class="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white hover:bg-gray-50 p-4 rounded-full shadow-xl transition-all duration-200 z-50 border-2 border-gray-200 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+                                aria-label="Next slide">
+                            <i class="fas fa-chevron-right text-gray-700 text-xl group-hover:text-blue-600 transition-colors"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="bg-gray-50 px-8 py-6 border-t border-gray-100">
@@ -609,6 +656,7 @@ document.addEventListener('alpine:init', () => {
         isLoading: true,
         isRefreshing: false,
         carouselPaused: false,
+        heroTickerPaused: false,
         currentSlide: 0,
         carouselTimer: null,
         lastUpdated: '',
@@ -651,7 +699,8 @@ document.addEventListener('alpine:init', () => {
         // Hero Spotlight
         heroTickerIndex: 0,
         heroTickerTimer: null,
-        heroTickerInterval: 5200,
+        heroTickerInterval: 5000, // 5 seconds
+        heroTickerPaused: false,
         
         // Slide Data
         slideData: [
@@ -716,7 +765,7 @@ document.addEventListener('alpine:init', () => {
                 subtitle: "Keberkesanan latihan industri dan program <i>Capacity Building</i>",
                 description: 'Penilaian holistik terhadap program latihan industri, magang, dan cabaran yang dihadapi graduan dalam transisi dari institusi pendidikan ke alam pekerjaan. Termasuk analisis impak dan cadangan penambahbaikan program.',
                 icon: 'fas fa-user-tie',
-                iconBg: 'bg-gradient-to-br from-amber-500 to-yellow-600',
+                iconBg: 'bg-gradient-to-br from-amber-500 to-amber-600',
                 colorTheme: 'orange',
                 primaryColor: 'text-amber-600',
                 secondaryColor: 'text-amber-500',
@@ -730,7 +779,7 @@ document.addEventListener('alpine:init', () => {
                 subtitle: 'Analisis jenis pekerjaan dan trend sektor penggajian',
                 description: 'Kajian terperinci mengenai status pekerjaan semasa graduan, jenis sektor pekerjaan, dan corak penggajian.',
                 icon: 'fas fa-briefcase',
-                iconBg: 'bg-gradient-to-br from-pink-500 to-rose-600',
+                iconBg: 'bg-gradient-to-br from-pink-500 to-pink-600',
                 colorTheme: 'pink',
                 primaryColor: 'text-pink-600',
                 secondaryColor: 'text-pink-500',
@@ -801,17 +850,27 @@ document.addEventListener('alpine:init', () => {
             
             try {
                 this.updateTime();
-                await this.loadChartLibrary();
-                await this.loadData();
-                this.ensureSevenCriteria(); // Ensure we always have 7 criteria
-                this.restartHeroTicker();
+                await Promise.all([
+                    this.loadChartLibrary(),
+                    this.loadData()
+                ]);
+                
+                // Ensure we have data before starting
+                if (this.qualityCriteria && this.qualityCriteria.length > 0) {
+                    console.log('Found', this.qualityCriteria.length, 'criteria, starting ticker...');
+                    this.ensureSevenCriteria();
+                    this.heroTickerPaused = false; // Ensure it's not paused initially
+                    this.startHeroTicker();
+                } else {
+                    console.warn('No criteria data available for hero ticker');
+                }
+                
                 this.startCarousel();
                 this.setupEventListeners();
                 this.startTimeUpdates();
                 
-                setTimeout(() => {
-                    this.createChart(0);
-                }, 1000);
+                // Initialize first chart
+                setTimeout(() => this.createChart(0), 1000);
                 
             } catch (error) {
                 console.error('Ralat memulakan dashboard:', error);
@@ -823,37 +882,55 @@ document.addEventListener('alpine:init', () => {
         },
         
         ensureSevenCriteria() {
-            // Default 7th criterion if backend doesn't provide it
-            const defaultSeventhCriterion = {
-                id: 'k07',
-                title: 'Kualiti Keseluruhan Graduan',
-                description: 'Penilaian menyeluruh kualiti graduan berdasarkan gabungan semua kriteria',
+            const totalGraduates = this.qualityMeta.total_graduates || 0;
+            const averageScore = this.qualityMeta.average_score || 0;
+            const maxScore = 12;
+            const averagePct = this.qualityMeta.average_score_pct || (averageScore / maxScore * 100);
+
+            const distribution = (this.qualityBands && this.qualityBands.length)
+                ? this.qualityBands.map(band => ({
+                    label: `${band.label}`,
+                    count: band.count,
+                    percentage: band.percentage
+                }))
+                : [
+                    { label: 'Graduan Berkualiti Tinggi (≥ 10)', count: Math.round(totalGraduates * 0.25), percentage: 25.0 },
+                    { label: 'Graduan Berkualiti Sederhana (7 - 9)', count: Math.round(totalGraduates * 0.5), percentage: 50.0 },
+                    { label: 'Graduan Berkualiti Rendah (≤ 6)', count: Math.round(totalGraduates * 0.25), percentage: 25.0 }
+                ];
+
+            const overallCriterion = {
+                id: 'overall_quality',
+                title: 'Kategori Kualiti Graduan',
+                description: 'Pengelasan graduan berdasarkan jumlah skor maksimum 12 mata (6 kriteria × 2).',
                 icon: 'fas fa-award',
                 iconBg: 'bg-gradient-to-br from-purple-500 to-purple-600',
-                average_score: this.qualityMeta.average_score || 7.1,
-                average_pct: this.qualityMeta.average_score_pct || 59.2,
-                distribution: [
-                    { label: 'Skor 0', count: 0, percentage: 0 },
-                    { label: 'Skor 1', count: Math.round((this.qualityMeta.total_graduates || 39) * 0.15), percentage: 15.0 },
-                    { label: 'Skor 2', count: Math.round((this.qualityMeta.total_graduates || 39) * 0.85), percentage: 85.0 }
-                ],
-                analysis: 'Gabungan kesemua 6 kriteria menunjukkan tahap kualiti keseluruhan graduan yang baik dengan majoriti mencapai standard yang ditetapkan.',
+                average_score: Number(averageScore.toFixed(2)),
+                average_pct: Number(averagePct.toFixed(1)),
+                max_score: maxScore,
+                distribution,
+                analysis: `Graduan Berkualiti Tinggi (≥ 10 mata): ${this.qualityMeta.high_quality_pct || distribution[0].percentage}% · Graduan Berkualiti Rendah (≤ 6 mata): ${this.qualityMeta.low_quality_pct || distribution.slice(-1)[0].percentage}%`,
                 insights: [
-                    { label: 'Purata Keseluruhan', value: `${this.qualityMeta.average_score || 7.1}/12` },
-                    { label: 'Graduan Cemerlang', value: `${this.qualityMeta.high_quality_pct || 10.3}%` }
+                    { label: 'Graduan Berkualiti Tinggi (≥ 10)', value: `${this.qualityMeta.high_quality_pct ?? distribution[0].percentage}%` },
+                    { label: 'Graduan Berkualiti Rendah (≤ 6)', value: `${this.qualityMeta.low_quality_pct ?? distribution.slice(-1)[0].percentage}%` }
                 ],
                 metrics: {
-                    primary: `${this.qualityMeta.total_graduates || 39} Graduan`,
-                    primaryLabel: 'Total Responden',
-                    secondary: `${this.qualityMeta.high_quality_pct || 10.3}%`,
-                    secondaryLabel: 'Kualiti Tinggi'
+                    primary: `${totalGraduates} Graduan`,
+                    primaryLabel: 'Jumlah Responden',
+                    secondary: `${this.qualityMeta.medium_quality_pct || 0}%`,
+                    secondaryLabel: 'Kategori Sederhana'
                 }
             };
 
-            // If we have less than 7 criteria, add the default 7th one
             if (this.qualityCriteria.length < 7) {
                 console.log('Adding 7th criterion as backend only provided', this.qualityCriteria.length);
-                this.qualityCriteria.push(defaultSeventhCriterion);
+                this.qualityCriteria.push(overallCriterion);
+            } else {
+                // Replace final card if backend already provided placeholder
+                const index = this.qualityCriteria.findIndex(c => c.id === 'overall_quality');
+                if (index >= 0) {
+                    this.qualityCriteria.splice(index, 1, overallCriterion);
+                }
             }
 
             console.log('Total criteria after ensuring 7:', this.qualityCriteria.length);
@@ -981,9 +1058,10 @@ document.addEventListener('alpine:init', () => {
             window.location.href = '/graduan-bidang';
         },
         
-        formatNumber(value, decimals = 0) {
+        formatNumber(value, decimals = 0, isAverageScore = false) {
             if (value === null || value === undefined) return '0';
-            return Number(value).toFixed(decimals);
+            const decimalPlaces = isAverageScore ? 2 : decimals;
+            return parseFloat(value).toFixed(decimalPlaces);
         },
         
         formatTimestamp(timestamp) {
@@ -1021,10 +1099,17 @@ document.addEventListener('alpine:init', () => {
         },
         
         startHeroTicker() {
-            if (this.heroTickerTimer || !this.qualityCriteria.length) return;
+            this.pauseHeroTicker(); // Clear any existing timer
+            if (!this.qualityCriteria.length) return;
+            
+            // Start the auto-rotation
             this.heroTickerTimer = setInterval(() => {
-                this.advanceHeroTicker(1);
+                if (!this.heroTickerPaused) {
+                    this.advanceHeroTicker(1);
+                }
             }, this.heroTickerInterval);
+            
+            console.log('Hero ticker started');
         },
         
         pauseHeroTicker() {
@@ -1413,6 +1498,7 @@ document.addEventListener('alpine:init', () => {
             const isIncomeDistribution = slideIndex === 1; // Sosioekonomi Graduan
             const isJobFactors = slideIndex === 5; // Status Pekerjaan & Kesesuaian
             const isSkillsChart = slideIndex === 8; // Kemahiran Tambahan
+            const isProgramUniversiti = slideIndex === 7; // Program Universiti chart
             
             // Check if this is a bar chart that should use category labels instead of legend
             const isBarChart = chartType === 'bar';
@@ -1453,7 +1539,7 @@ document.addEventListener('alpine:init', () => {
                 },
                 plugins: {
                     legend: {
-                        display: isJobFactors || isSkillsChart || !useCategoryLabels, // Show for both job factors and skills charts
+                        display: isJobFactors || isSkillsChart || isProgramUniversiti || !useCategoryLabels,
                         position: 'bottom',
                         labels: {
                             usePointStyle: true,
@@ -1465,23 +1551,30 @@ document.addEventListener('alpine:init', () => {
                             color: '#374151',
                             boxWidth: 10,
                             padding: 10,
-                            generateLabels: (isJobFactors || isSkillsChart) ? function(chart) {
-                                // Generate custom labels for job factors chart
+                            generateLabels: (isJobFactors || isSkillsChart || isProgramUniversiti) ? function(chart) {
+                                // Generate custom labels with color indicators
                                 const data = chart.data;
                                 if (data.labels.length && data.datasets.length) {
-                                    return data.labels.map((label, i) => ({
-                                        text: label,
-                                        fillStyle: data.datasets[0].backgroundColor[i] || '#4F46E5',
-                                        hidden: false,
-                                        lineCap: 'round',
-                                        lineDash: [],
-                                        lineDashOffset: 0,
-                                        lineJoin: 'round',
-                                        lineWidth: 1,
-                                        strokeStyle: 'rgba(0,0,0,0.1)',
-                                        pointStyle: 'circle',
-                                        rotation: 0
-                                    }));
+                                    return data.labels.map((label, i) => {
+                                        const dataset = data.datasets[0];
+                                        const bgColor = Array.isArray(dataset.backgroundColor) 
+                                            ? dataset.backgroundColor[i] 
+                                            : dataset.backgroundColor || '#4F46E5';
+                                        
+                                        return {
+                                            text: label,
+                                            fillStyle: bgColor,
+                                            hidden: false,
+                                            lineCap: 'round',
+                                            lineDash: [],
+                                            lineDashOffset: 0,
+                                            lineJoin: 'round',
+                                            lineWidth: 1,
+                                            strokeStyle: 'rgba(0,0,0,0.1)',
+                                            pointStyle: 'circle',
+                                            rotation: 0
+                                        };
+                                    });
                                 }
                                 return [];
                             } : undefined
@@ -1547,6 +1640,7 @@ document.addEventListener('alpine:init', () => {
                 const isSalaryByIndustry = slideIndex === 3; // Stacked bar chart
                 const isJobFactors = slideIndex === 5;
                 const isSkillsChart = slideIndex === 8;
+                const isProgramUniversiti = slideIndex === 7; // Program Universiti chart
                 
                 // Special handling for job factors chart to show color-coded legends
                 
@@ -1568,10 +1662,10 @@ document.addEventListener('alpine:init', () => {
                             },
                             padding: { top: 10 }
                         },
-                        // Hide x-axis labels and show them in legend for job factors and skills charts
-                        display: !(isJobFactors || isSkillsChart), // Hide x-axis for job factors and skills
+                        // Hide x-axis labels and show them in legend for job factors, skills, and program universiti charts
+                        display: !(isJobFactors || isSkillsChart || isProgramUniversiti), // Hide x-axis for these charts
                         title: {
-                            display: useCategoryLabels && !isJobFactors && !isSkillsChart,
+                            display: useCategoryLabels && !isJobFactors && !isSkillsChart && !isProgramUniversiti,
                             text: chartData.xAxisTitle || '',
                             color: '#6B7280',
                             font: {
@@ -1581,7 +1675,7 @@ document.addEventListener('alpine:init', () => {
                             padding: { top: 10 }
                         },
                         ticks: {
-                            display: !(isJobFactors || isSkillsChart), // Hide x-axis ticks for job factors and skills
+                            display: !(isJobFactors || isSkillsChart || isProgramUniversiti), // Hide x-axis ticks for these charts
                             color: '#6B7280',
                             font: { 
                                 size: isSalaryByIndustry ? 9 : 11,
@@ -1727,18 +1821,31 @@ document.addEventListener('alpine:init', () => {
         },
         
         scheduleNextSlide() {
-            if (this.carouselTimer) {
-                clearTimeout(this.carouselTimer);
+            clearInterval(this.carouselTimer);
+            this.carouselTimer = setInterval(() => {
+                if (!this.carouselPaused) {
+                    this.nextSlide();
+                }
+            }, 5000);
+        },
+        
+        toggleHeroTicker() {
+            this.heroTickerPaused = !this.heroTickerPaused;
+            console.log('Toggle hero ticker, paused:', this.heroTickerPaused);
+            
+            if (this.heroTickerPaused) {
+                this.pauseHeroTicker();
+            } else {
+                this.startHeroTicker(); // Always restart the timer when resuming
             }
             
-            if (!this.carouselPaused) {
-                const randomInterval = this.randomIntervals[Math.floor(Math.random() * this.randomIntervals.length)];
-                
-                this.carouselTimer = setTimeout(() => {
-                    this.nextSlide();
-                    this.scheduleNextSlide();
-                }, randomInterval);
+            // Haptic feedback on mobile
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
             }
+            
+            // Force UI update
+            this.$nextTick();
         },
         
         nextSlide() {
