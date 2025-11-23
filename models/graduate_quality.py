@@ -40,9 +40,9 @@ QUALITY_CRITERIA_CONFIG = [
         'icon': 'fas fa-user-tie',
         'iconBg': 'bg-gradient-to-br from-blue-500 to-indigo-600',
         'score_labels': {
-            2: 'Pengurus Muda / Pakar Teknikal dalam bidang',
-            1: 'Eksekutif dalam bidang berkaitan',
-            0: 'Bukan dalam bidang / bawah eksekutif'
+            2: 'Eksekutif / Pakar (Dalam Bidang)',
+            1: 'Eksekutif (Luar Bidang)',
+            0: 'Tidak relevan / Bawah Eksekutif'
         }
     },
     {
@@ -76,9 +76,9 @@ QUALITY_CRITERIA_CONFIG = [
         'icon': 'fas fa-stopwatch',
         'iconBg': 'bg-gradient-to-br from-cyan-500 to-blue-500',
         'score_labels': {
-            2: '<= 6 bulan / jawatan selaras',
-            1: '7 - 12 bulan / jawatan separa selaras',
-            0: '> 12 bulan / jawatan tidak selaras'
+            2: '< 1 tahun',
+            1: '1 tahun - 2 tahun',
+            0: '> 3 tahun'
         }
     },
     {
@@ -89,8 +89,8 @@ QUALITY_CRITERIA_CONFIG = [
         'iconBg': 'bg-gradient-to-br from-amber-500 to-orange-500',
         'score_labels': {
             2: 'Industri strategik (High Growth High Value)',
-            1: 'Industri umum / sokongan',
-            0: 'Industri stabil / tradisional'
+            1: 'Industri Perkhidmatan Umum (perkhidmatan sokongan/ pentadbiran)',
+            0: 'Industri Asas Ekonomi (pertanian asas, peruncitan kecil)'
         }
     },
     {
@@ -172,16 +172,24 @@ def _score_employer(sector_value: str) -> int:
 
 
 def _score_time_to_job(value: str) -> int:
-    """Implements Tempoh Dapat Kerja scoring from AGENTS.md."""
+    """Implements Tempoh Dapat Kerja scoring based on new time ranges."""
     time_value = _safe_lower(value)
     if not time_value:
         return 0
-    if 'kurang' in time_value or '3 - 6' in time_value or '3-6' in time_value:
+    
+    # Score 2: < 1 tahun (less than 1 year) - includes all responses up to 12 months
+    if any(term in time_value for term in ['kurang dari 3 bulan', '3 - 6 bulan', '7 - 12 bulan']):
         return 2
-    if '7 - 12' in time_value or '7-12' in time_value:
+    
+    # Score 1: 1 tahun - 2 tahun (1-2 years) - currently no data in this range
+    # This would be for responses like '1 - 2 tahun' if they existed
+    if any(term in time_value for term in ['1 tahun', '2 tahun', '1-2 tahun', '13-24 bulan']):
         return 1
-    if 'lebih dari 1 tahun' in time_value or 'lebih dari satu tahun' in time_value:
+    
+    # Score 0: > 3 tahun (more than 3 years) - maps to 'Lebih dari 1 tahun' since that's the highest in data
+    if any(term in time_value for term in ['lebih dari 1 tahun', 'lebih dari satu tahun']):
         return 0
+    
     return 0
 
 
