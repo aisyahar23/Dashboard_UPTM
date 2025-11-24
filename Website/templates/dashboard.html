@@ -79,76 +79,82 @@
             <div class="grid lg:grid-cols-12 gap-16 items-center">
                 
                 <!-- Left Side - Corporate Branding (5 columns) -->
-                <div class="lg:col-span-5 space-y-10 z-10">
+                <div class="lg:col-span-5 space-y-4 z-10 flex flex-col justify-center h-full">
                     
                     <!-- Status Badge -->
-                    <div class="inline-flex items-center space-x-3 border-l-4 border-blue-600 pl-4">
-                        <div class="w-2.5 h-2.5 bg-blue-600 rounded-full animate-pulse"></div>
-                        <span class="text-xs font-bold text-blue-600 uppercase tracking-[0.2em] letter-spacing-widest">Graduate Analysis System</span>
+                    <div class="inline-flex items-center space-x-2 border-l-4 border-blue-600 pl-3">
+                        <div class="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                        <span class="text-xs font-bold text-blue-600 uppercase tracking-[0.15em]">Graduate Analysis System</span>
                     </div>
                     
                     <!-- Main Brand Identity -->
-                    <div class="space-y-6">
-                        <div class="space-y-4">
-                            <h1 class="text-7xl lg:text-8xl font-black leading-[0.9] tracking-tight">
+                    <div class="space-y-4">
+                        <div class="space-y-3">
+                            <h1 class="text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight">
                                 <span class="text-blue-600">Grad</span><span class="text-red-600">360</span>
                             </h1>
-                            <div class="text-2xl font-bold text-gray-900 tracking-wider">IPMA Graduate System</div>
+                            <div class="text-xl font-bold text-gray-900 tracking-wide">IPMA Graduate System</div>
                         </div>
                         
-                        <p class="text-lg text-gray-700 leading-relaxed max-w-xl">
+                        <p class="text-base text-gray-700 leading-relaxed max-w-lg">
                             Platform analitik komprehensif untuk pemantauan prestasi graduan. Menyediakan wawasan mendalam mengenai demografi, sosioekonomi, status pekerjaan, serta faktor kejayaan graduan bagi menyokong pengambilan keputusan strategik.
                         </p>
                     </div>
                     
                     <!-- Stats with Competitiveness Indicator -->
-                    <div class="grid grid-cols-2 gap-4 max-w-md">
-                        <div class="bg-blue-50 backdrop-blur-sm p-4 text-center border-2 border-blue-200 rounded-xl">
-                            <div class="text-3xl font-black text-blue-600" x-text="qualityMeta.total_graduates || '39'"></div>
+                    <div class="grid grid-cols-2 gap-3 max-w-md">
+                        <div class="bg-blue-50 backdrop-blur-sm p-3 text-center border-2 border-blue-200 rounded-xl">
+                            <div class="text-2xl font-black text-blue-600" x-text="qualityMeta.total_graduates || '39'"></div>
                             <div class="text-xs text-gray-700 font-medium">Jumlah Graduan</div>
                         </div>
-                        <div class="bg-blue-50 backdrop-blur-sm p-4 text-center border-2 border-blue-200 rounded-xl">
-                            <div class="text-3xl font-black text-blue-600">
-                                <span x-text="formatNumber((qualityMeta.medium_quality_pct || 0) + (qualityMeta.high_quality_pct || 0), 1)"></span><span class="text-lg">%</span>
+                        <div class="bg-blue-50 backdrop-blur-sm p-3 text-center border-2 border-blue-200 rounded-xl">
+                            <div class="text-2xl font-black text-blue-600">
+                                <span x-text="formatNumber((qualityMeta.medium_quality_pct || 0) + (qualityMeta.high_quality_pct || 0), 1)"></span><span class="text-sm">%</span>
                             </div>
                             <div class="text-xs text-gray-700 font-medium">Graduan Stabil Tetapi Belum Unggul</div>
                         </div>
                     </div>
                     
                     <!-- Graduate Competitiveness Indicator -->
-                    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-                        <div class="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wide flex items-center">
-                            <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+                    <div class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm">
+                        <div class="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide flex items-center">
+                            <i class="fas fa-chart-line text-blue-600 mr-1"></i>
                             Indikator Graduate Employability (GE) 
                         </div>
-                        <div class="grid grid-cols-3 gap-3 text-xs">
-                            <div class="text-center p-2 bg-green-50 rounded-lg border border-green-200">
-                                <div class="w-2 h-2 bg-green-500 rounded-full mx-auto mb-1"></div>
-                                <div class="font-semibold text-green-800">≥ 80%</div>
-                                <div class="text-green-600">Tinggi</div>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex items-center justify-between p-2 bg-green-50 rounded-lg border border-green-200">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span class="font-semibold text-green-800">Level 3 (Tinggi): ≥ 80%</span>
+                                </div>
+                                <span class="text-green-600 text-[10px]">Graduan berdaya saing</span>
                             </div>
-                            <div class="text-center p-2 bg-yellow-50 rounded-lg border border-yellow-200">
-                                <div class="w-2 h-2 bg-yellow-500 rounded-full mx-auto mb-1"></div>
-                                <div class="font-semibold text-yellow-800">60–79%</div>
-                                <div class="text-yellow-600">Sederhana</div>
+                            <div class="flex items-center justify-between p-2 bg-yellow-50 rounded-lg border border-yellow-200">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                    <span class="font-semibold text-yellow-800">Level 2 (Sederhana): 60–79%</span>
+                                </div>
+                                <span class="text-yellow-600 text-[10px]">Graduan stabil tetapi belum unggul</span>
                             </div>
-                            <div class="text-center p-2 bg-red-50 rounded-lg border border-red-200">
-                                <div class="w-2 h-2 bg-red-500 rounded-full mx-auto mb-1"></div>
-                                <div class="font-semibold text-red-800">&lt; 60%</div>
-                                <div class="text-red-600">Rendah</div>
+                            <div class="flex items-center justify-between p-2 bg-red-50 rounded-lg border border-red-200">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                    <span class="font-semibold text-red-800">Level 1 (Rendah): &lt; 60%</span>
+                                </div>
+                                <span class="text-red-600 text-[10px]">Graduan kurang kompetitif</span>
                             </div>
                         </div>
                     </div>
                     
                     <!-- CTA Section -->
-                    <div class="space-y-4 pt-2">
+                    <div class="space-y-3 -mt-4">
                         <button @click="scrollToAnalytics()" 
-                                class="group w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-5 px-8 text-base tracking-wide uppercase transition-all duration-300 transform hover:scale-[1.02] shadow-xl hover:shadow-2xl flex items-center justify-between rounded-xl">
+                                class="group w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-7 text-sm tracking-wide uppercase transition-all duration-300 transform hover:scale-[1.02] shadow-xl hover:shadow-2xl flex items-center justify-between rounded-xl">
                             <span>Teroka Sistem Analitik</span>
-                            <i class="fas fa-arrow-right text-lg group-hover:translate-x-2 transition-transform duration-300"></i>
+                            <i class="fas fa-arrow-right text-base group-hover:translate-x-2 transition-transform duration-300"></i>
                         </button>
                         
-                        <div class="flex items-center space-x-6 text-sm text-gray-700">
+                        <div class="flex items-center space-x-5 text-sm text-gray-700">
                             <div class="flex items-center space-x-2">
                                 <i class="fas fa-check-circle text-blue-600"></i>
                                 <span class="font-medium">7 Kriteria Analisis</span>
@@ -446,9 +452,8 @@
                                         <span class="text-3xl font-black text-blue-600" 
                                               x-text="formatNumber(getSumOfValue1And2(criterion), 1)"></span>
                                         <span class="text-base text-gray-400 font-bold">%</span>
-                                        <div class="text-[10px] text-gray-600 font-semibold">Nilai 1 & 2</div>
                                     </div>
-                                    
+                                    <div class="text-[10px] text-gray-600 font-semibold" x-show="index !== 3">Nilai 1 & 2</div>
                                 </div>
                                 <!-- <div class="text-center bg-blue-50 rounded-lg px-2.5 py-1.5 border border-blue-200">
                                     <div class="text-xl font-black text-blue-700" 
@@ -461,6 +466,7 @@
                                     <div class="h-full bg-blue-600 rounded-full transition-all duration-1000"
                                          :style="`width: ${criterion.average_pct || 0}%;`"></div>
                                 </div>
+                                <div class="text-[10px] text-gray-600 font-semibold text-center mt-1" x-show="index === 3">Nilai 1 & 2</div>
                             </div>
                             
                             <div class="space-y-2 flex-1 min-h-48">
@@ -511,7 +517,7 @@
                                               x-text="formatNumber(getSumOfValue1And2(criterion), 1)"></span>
                                         <span class="text-base text-gray-400 font-bold">%</span>
                                     </div>
-                                    <div class="text-[10px] text-gray-600 font-semibold">Nilai 1 & 2</div>
+                                    <div class="text-[10px] text-gray-600 font-semibold" x-show="index + 4 !== 3">Nilai 1 & 2</div>
                                 </div>
                                 <!-- <div class="text-center bg-blue-50 rounded-lg px-2.5 py-1.5 border border-blue-200">
                                     <div class="text-xl font-black text-blue-700" 
@@ -524,6 +530,7 @@
                                     <div class="h-full bg-blue-600 rounded-full transition-all duration-1000"
                                          :style="`width: ${criterion.average_pct || 0}%;`"></div>
                                 </div>
+                                <div class="text-[10px] text-gray-600 font-semibold text-center mt-1" x-show="index + 4 === 3">Nilai 1 & 2</div>
                             </div>
                             
                             <div class="space-y-2 flex-1 min-h-48">
